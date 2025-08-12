@@ -9,10 +9,11 @@ import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, FileText, Download, Mail } from "lucide-react";
+import { Plus, Edit, Trash2, FileText, Download, Mail, Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import InvoiceForm from "@/components/forms/invoice-form";
 import { format } from "date-fns";
+import { downloadInvoicePDF, previewInvoicePDF } from "@/lib/pdf";
 
 export default function Invoices() {
   const { toast } = useToast();
@@ -82,6 +83,36 @@ export default function Invoices() {
     }
   };
 
+  const handleDownloadPDF = (invoice: any) => {
+    try {
+      downloadInvoicePDF(invoice);
+      toast({
+        title: "Success",
+        description: "Invoice PDF downloaded successfully",
+      });
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast({
+        title: "Error",
+        description: "Failed to download PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePreviewPDF = (invoice: any) => {
+    try {
+      previewInvoicePDF(invoice);
+    } catch (error) {
+      console.error("Error previewing PDF:", error);
+      toast({
+        title: "Error",
+        description: "Failed to preview PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleFormClose = () => {
     setIsFormOpen(false);
     setEditingInvoice(null);
@@ -97,7 +128,7 @@ export default function Invoices() {
     };
     
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
-    return <Badge variant={config.variant} className={config.className}>{config.label}</Badge>;
+    return <Badge variant={config.variant} className={(config as any).className}>{config.label}</Badge>;
   };
 
   if (isLoading) {
@@ -178,16 +209,36 @@ export default function Invoices() {
                         <Button
                           variant="outline"
                           size="sm"
+                          onClick={() => handlePreviewPDF(invoice)}
+                          title="Preview PDF"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Preview
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDownloadPDF(invoice)}
+                          title="Download PDF"
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          PDF
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => handleEdit(invoice)}
+                          title="Edit Invoice"
                         >
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
                         </Button>
                         <Button
-                          variant="outline"
+                          variant="destructive"
                           size="sm"
                           onClick={() => handleDelete(invoice.id)}
                           disabled={deleteMutation.isPending}
+                          title="Delete Invoice"
                         >
                           <Trash2 className="h-4 w-4 mr-1" />
                           Delete

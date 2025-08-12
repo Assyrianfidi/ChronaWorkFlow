@@ -1,329 +1,228 @@
-// PDF generation utilities for invoices and reports
-// In a real application, you would use a library like jsPDF or react-pdf
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { format } from 'date-fns';
 
-export interface InvoiceData {
+interface InvoiceData {
+  id: string;
   invoiceNumber: string;
   client: {
     name: string;
-    email?: string;
+    email: string;
+    phone?: string;
     address?: string;
   };
   project?: {
     name: string;
+    description?: string;
   };
+  status: string;
   issueDate: string;
   dueDate: string;
+  subtotal: string;
+  taxRate: string;
+  taxAmount: string;
+  discountAmount: string;
+  total: string;
+  notes?: string;
   lineItems: Array<{
     description: string;
-    quantity: number;
-    rate: number;
-    amount: number;
+    quantity: string;
+    rate: string;
+    amount: string;
   }>;
-  subtotal: number;
-  taxRate: number;
-  taxAmount: number;
-  discountAmount: number;
-  total: number;
-  notes?: string;
 }
 
-export const generateInvoicePDF = (invoiceData: InvoiceData): void => {
-  // Create a simple HTML document for PDF generation
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Invoice ${invoiceData.invoiceNumber}</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          margin: 40px;
-          color: #333;
-        }
-        .header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-bottom: 2px solid #2563EB;
-          padding-bottom: 20px;
-          margin-bottom: 30px;
-        }
-        .logo {
-          font-size: 24px;
-          font-weight: bold;
-          color: #2563EB;
-        }
-        .invoice-title {
-          font-size: 32px;
-          font-weight: bold;
-          color: #2563EB;
-        }
-        .invoice-details {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 30px;
-        }
-        .client-info, .invoice-info {
-          flex: 1;
-        }
-        .invoice-info {
-          text-align: right;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-bottom: 30px;
-        }
-        th, td {
-          padding: 12px;
-          text-align: left;
-          border-bottom: 1px solid #ddd;
-        }
-        th {
-          background-color: #f8fafc;
-          font-weight: bold;
-        }
-        .amount {
-          text-align: right;
-        }
-        .totals {
-          margin-left: auto;
-          width: 300px;
-        }
-        .totals tr td {
-          padding: 8px 0;
-        }
-        .total-row {
-          font-weight: bold;
-          font-size: 18px;
-          border-top: 2px solid #333;
-        }
-        .notes {
-          margin-top: 30px;
-          padding: 20px;
-          background-color: #f8fafc;
-          border-left: 4px solid #2563EB;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <div class="logo">Fidi WorkFlow Ledger</div>
-        <div class="invoice-title">INVOICE</div>
-      </div>
-
-      <div class="invoice-details">
-        <div class="client-info">
-          <h3>Bill To:</h3>
-          <p><strong>${invoiceData.client.name}</strong></p>
-          ${invoiceData.client.email ? `<p>${invoiceData.client.email}</p>` : ''}
-          ${invoiceData.client.address ? `<p>${invoiceData.client.address}</p>` : ''}
-        </div>
-        
-        <div class="invoice-info">
-          <p><strong>Invoice #:</strong> ${invoiceData.invoiceNumber}</p>
-          <p><strong>Issue Date:</strong> ${new Date(invoiceData.issueDate).toLocaleDateString()}</p>
-          <p><strong>Due Date:</strong> ${new Date(invoiceData.dueDate).toLocaleDateString()}</p>
-          ${invoiceData.project ? `<p><strong>Project:</strong> ${invoiceData.project.name}</p>` : ''}
-        </div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 50%">Description</th>
-            <th style="width: 15%">Quantity</th>
-            <th style="width: 15%">Rate</th>
-            <th style="width: 20%" class="amount">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${invoiceData.lineItems.map(item => `
-            <tr>
-              <td>${item.description}</td>
-              <td>${item.quantity}</td>
-              <td>$${item.rate.toFixed(2)}</td>
-              <td class="amount">$${item.amount.toFixed(2)}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-
-      <table class="totals">
-        <tr>
-          <td>Subtotal:</td>
-          <td class="amount">$${invoiceData.subtotal.toFixed(2)}</td>
-        </tr>
-        ${invoiceData.discountAmount > 0 ? `
-        <tr>
-          <td>Discount:</td>
-          <td class="amount">-$${invoiceData.discountAmount.toFixed(2)}</td>
-        </tr>
-        ` : ''}
-        <tr>
-          <td>Tax (${invoiceData.taxRate}%):</td>
-          <td class="amount">$${invoiceData.taxAmount.toFixed(2)}</td>
-        </tr>
-        <tr class="total-row">
-          <td>Total:</td>
-          <td class="amount">$${invoiceData.total.toFixed(2)}</td>
-        </tr>
-      </table>
-
-      ${invoiceData.notes ? `
-      <div class="notes">
-        <h4>Notes:</h4>
-        <p>${invoiceData.notes}</p>
-      </div>
-      ` : ''}
-
-      <div style="margin-top: 50px; text-align: center; color: #666; font-size: 12px;">
-        <p>Thank you for your business!</p>
-        <p>Generated by Fidi WorkFlow Ledger on ${new Date().toLocaleDateString()}</p>
-      </div>
-    </body>
-    </html>
-  `;
-
-  // Create a new window and print
-  const printWindow = window.open('', '_blank');
-  if (printWindow) {
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+export const generateInvoicePDF = (invoice: InvoiceData, companyInfo?: {
+  name?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+}) => {
+  const doc = new jsPDF();
+  
+  // Company info (default if not provided)
+  const company = {
+    name: companyInfo?.name || 'Fidi WorkFlow Ledger',
+    address: companyInfo?.address || '123 Business Street\nSuite 100\nBusiness City, BC 12345',
+    phone: companyInfo?.phone || '(555) 123-4567',
+    email: companyInfo?.email || 'info@fidiworkflow.com'
+  };
+  
+  // Set up colors
+  const primaryColor = [41, 128, 185]; // Blue
+  const secondaryColor = [52, 73, 94]; // Dark gray
+  const lightGray = [236, 240, 241];
+  
+  // Header - Company Info
+  doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.rect(0, 0, 210, 40, 'F');
+  
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(24);
+  doc.setFont('helvetica', 'bold');
+  doc.text(company.name, 20, 25);
+  
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  const companyLines = company.address.split('\n');
+  let yPos = 32;
+  companyLines.forEach(line => {
+    doc.text(line, 20, yPos);
+    yPos += 4;
+  });
+  
+  // Invoice title and number
+  doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+  doc.setFontSize(28);
+  doc.setFont('helvetica', 'bold');
+  doc.text('INVOICE', 150, 25);
+  
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Invoice #: ${invoice.invoiceNumber}`, 150, 35);
+  
+  // Invoice details box
+  const startY = 50;
+  doc.setFillColor(lightGray[0], lightGray[1], lightGray[2]);
+  doc.rect(20, startY, 170, 35, 'F');
+  
+  doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  
+  // Left column
+  doc.text('Bill To:', 25, startY + 8);
+  doc.setFont('helvetica', 'normal');
+  doc.text(invoice.client.name, 25, startY + 15);
+  if (invoice.client.email) doc.text(invoice.client.email, 25, startY + 21);
+  if (invoice.client.phone) doc.text(invoice.client.phone, 25, startY + 27);
+  
+  // Right column
+  doc.setFont('helvetica', 'bold');
+  doc.text('Invoice Date:', 120, startY + 8);
+  doc.text('Due Date:', 120, startY + 15);
+  doc.text('Status:', 120, startY + 22);
+  if (invoice.project) doc.text('Project:', 120, startY + 29);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.text(format(new Date(invoice.issueDate), 'MMM dd, yyyy'), 155, startY + 8);
+  doc.text(format(new Date(invoice.dueDate), 'MMM dd, yyyy'), 155, startY + 15);
+  
+  // Status with color coding
+  const statusColors: { [key: string]: number[] } = {
+    draft: [149, 165, 166],
+    sent: [52, 152, 219],
+    paid: [46, 204, 113],
+    overdue: [231, 76, 60],
+    cancelled: [149, 165, 166]
+  };
+  const statusColor = statusColors[invoice.status] || statusColors.draft;
+  doc.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.text(invoice.status.toUpperCase(), 155, startY + 22);
+  
+  doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+  doc.setFont('helvetica', 'normal');
+  if (invoice.project) doc.text(invoice.project.name, 155, startY + 29);
+  
+  // Line items table
+  const tableStartY = startY + 45;
+  
+  const tableData = invoice.lineItems.map(item => [
+    item.description,
+    parseFloat(item.quantity).toFixed(2),
+    `$${parseFloat(item.rate).toFixed(2)}`,
+    `$${parseFloat(item.amount).toFixed(2)}`
+  ]);
+  
+  autoTable(doc, {
+    startY: tableStartY,
+    head: [['Description', 'Quantity', 'Rate', 'Amount']],
+    body: tableData,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [primaryColor[0], primaryColor[1], primaryColor[2]] as [number, number, number],
+      textColor: 255,
+      fontSize: 11,
+      fontStyle: 'bold'
+    },
+    bodyStyles: {
+      fontSize: 10,
+      textColor: [secondaryColor[0], secondaryColor[1], secondaryColor[2]] as [number, number, number]
+    },
+    columnStyles: {
+      1: { halign: 'center' },
+      2: { halign: 'right' },
+      3: { halign: 'right' }
+    },
+    margin: { left: 20, right: 20 }
+  });
+  
+  // Totals section
+  const finalY = (doc as any).lastAutoTable?.finalY + 10 || tableStartY + 50;
+  const totalsX = 130;
+  
+  doc.setFontSize(11);
+  doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+  
+  // Subtotal
+  doc.setFont('helvetica', 'normal');
+  doc.text('Subtotal:', totalsX, finalY);
+  doc.text(`$${parseFloat(invoice.subtotal).toFixed(2)}`, 180, finalY, { align: 'right' });
+  
+  // Discount
+  if (parseFloat(invoice.discountAmount) > 0) {
+    doc.text('Discount:', totalsX, finalY + 7);
+    doc.text(`-$${parseFloat(invoice.discountAmount).toFixed(2)}`, 180, finalY + 7, { align: 'right' });
   }
+  
+  // Tax
+  const taxY = parseFloat(invoice.discountAmount) > 0 ? finalY + 14 : finalY + 7;
+  doc.text(`Tax (${parseFloat(invoice.taxRate).toFixed(1)}%):`, totalsX, taxY);
+  doc.text(`$${parseFloat(invoice.taxAmount).toFixed(2)}`, 180, taxY, { align: 'right' });
+  
+  // Total
+  const totalY = taxY + 7;
+  doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.line(totalsX - 5, totalY - 2, 185, totalY - 2);
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text('Total:', totalsX, totalY + 3);
+  doc.text(`$${parseFloat(invoice.total).toFixed(2)}`, 180, totalY + 3, { align: 'right' });
+  
+  // Notes section
+  if (invoice.notes) {
+    const notesY = totalY + 20;
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Notes:', 20, notesY);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    const splitNotes = doc.splitTextToSize(invoice.notes, 170);
+    doc.text(splitNotes, 20, notesY + 7);
+  }
+  
+  // Footer
+  const pageHeight = doc.internal.pageSize.height;
+  doc.setFontSize(9);
+  doc.setTextColor(100, 100, 100);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Thank you for your business!', 105, pageHeight - 30, { align: 'center' });
+  doc.text(`${company.phone} | ${company.email}`, 105, pageHeight - 20, { align: 'center' });
+  
+  return doc;
 };
 
-export const downloadInvoicePDF = (invoiceData: InvoiceData): void => {
-  // For a real implementation, you would use a proper PDF library
-  // This is a simplified version that opens the print dialog
-  generateInvoicePDF(invoiceData);
+export const downloadInvoicePDF = (invoice: InvoiceData, companyInfo?: any) => {
+  const doc = generateInvoicePDF(invoice, companyInfo);
+  doc.save(`Invoice-${invoice.invoiceNumber}.pdf`);
 };
 
-export interface TimeLogReport {
-  worker: {
-    firstName: string;
-    lastName: string;
-  };
-  project?: {
-    name: string;
-  };
-  clockIn: string;
-  clockOut?: string;
-  totalHours?: number;
-  date: string;
-}
-
-export const generateTimeLogReport = (timeLogs: TimeLogReport[], startDate: string, endDate: string): void => {
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Time Log Report</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          margin: 40px;
-          color: #333;
-        }
-        .header {
-          text-align: center;
-          border-bottom: 2px solid #2563EB;
-          padding-bottom: 20px;
-          margin-bottom: 30px;
-        }
-        .logo {
-          font-size: 24px;
-          font-weight: bold;
-          color: #2563EB;
-        }
-        .report-title {
-          font-size: 28px;
-          font-weight: bold;
-          margin: 10px 0;
-        }
-        .date-range {
-          font-size: 16px;
-          color: #666;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-bottom: 30px;
-        }
-        th, td {
-          padding: 12px;
-          text-align: left;
-          border-bottom: 1px solid #ddd;
-        }
-        th {
-          background-color: #f8fafc;
-          font-weight: bold;
-        }
-        .center {
-          text-align: center;
-        }
-        .summary {
-          margin-top: 30px;
-          padding: 20px;
-          background-color: #f8fafc;
-          border-left: 4px solid #2563EB;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <div class="logo">Fidi WorkFlow Ledger</div>
-        <div class="report-title">Time Log Report</div>
-        <div class="date-range">${startDate} to ${endDate}</div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Worker</th>
-            <th>Project</th>
-            <th>Date</th>
-            <th>Clock In</th>
-            <th>Clock Out</th>
-            <th>Hours</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${timeLogs.map(log => `
-            <tr>
-              <td>${log.worker.firstName} ${log.worker.lastName}</td>
-              <td>${log.project?.name || 'No Project'}</td>
-              <td>${new Date(log.date).toLocaleDateString()}</td>
-              <td>${new Date(log.clockIn).toLocaleTimeString()}</td>
-              <td>${log.clockOut ? new Date(log.clockOut).toLocaleTimeString() : 'Active'}</td>
-              <td>${log.totalHours ? `${log.totalHours}h` : '-'}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-
-      <div class="summary">
-        <h4>Summary:</h4>
-        <p>Total Records: ${timeLogs.length}</p>
-        <p>Total Hours: ${timeLogs.reduce((sum, log) => sum + (log.totalHours || 0), 0).toFixed(2)}h</p>
-        <p>Active Sessions: ${timeLogs.filter(log => !log.clockOut).length}</p>
-      </div>
-
-      <div style="margin-top: 50px; text-align: center; color: #666; font-size: 12px;">
-        <p>Generated by Fidi WorkFlow Ledger on ${new Date().toLocaleDateString()}</p>
-      </div>
-    </body>
-    </html>
-  `;
-
-  // Create a new window and print
-  const printWindow = window.open('', '_blank');
-  if (printWindow) {
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-  }
+export const previewInvoicePDF = (invoice: InvoiceData, companyInfo?: any) => {
+  const doc = generateInvoicePDF(invoice, companyInfo);
+  const pdfBlob = doc.output('blob');
+  const pdfUrl = URL.createObjectURL(pdfBlob);
+  window.open(pdfUrl, '_blank');
 };
