@@ -1,0 +1,97 @@
+You are a senior full-stack application architect and developer. Your task is to design and develop a production-ready, scalable, multi-platform business management application that works for any industry where companies have workers, clients, and need invoicing and time tracking.
+
+The app must be usable on desktop (web) and mobile (Android & iOS), be cloud-based, and support future feature expansion.
+
+Core Features
+1. Worker Time Tracking via QR Codes
+Each worker has a unique QR code assigned.
+
+Workers scan their QR code to clock in and out using the app’s built-in camera scanner.
+
+Automatic logging of:
+
+Time in
+
+Time out
+
+Total hours worked
+
+GPS verification on punch-in/out to ensure location accuracy.
+
+Supervisor dashboard to approve, edit, or delete time logs.
+
+2. Invoicing & Billing
+Create, edit, and send invoices via email or PDF download.
+
+Multiple line items, tax calculation, and discount support.
+
+Integration with Stripe, PayPal, and bank transfer options.
+
+Invoice status tracking: Paid, Pending, Overdue.
+
+Export invoices to Excel/CSV for accounting.
+
+3. Client Management
+Store client contact details, project history, and communication logs.
+
+Search and filter clients by name, job type, or location.
+
+Send quotes and invoices directly to clients.
+
+4. Project & Job Management
+Create jobs/projects and assign workers.
+
+Track progress, due dates, and attach job notes/photos.
+
+Status labels (Pending, In Progress, Completed).
+
+5. Hours & Payroll Management
+Weekly and monthly summaries of hours worked per employee.
+
+Automatic wage calculations based on hourly rates.
+
+Payroll export in CSV/Excel.
+
+Optional integration with payroll software.
+
+Advanced Features
+User Roles & Permissions: Admin, Manager, Worker, Accountant.
+
+Push Notifications for punch reminders, invoice due dates, and project updates.
+
+Analytics Dashboard: Revenue, hours worked, job completion rate.
+
+Cloud Sync for instant updates across devices.
+
+Offline Mode for mobile when internet is unavailable.
+
+Technical Requirements
+Frontend: React.js or Next.js for web, React Native or Flutter for mobile.
+
+Backend: Node.js with Express or NestJS.
+
+Database: PostgreSQL or MongoDB.
+
+Authentication: JWT with secure password hashing and role-based permissions.
+
+Hosting: AWS, Azure, or Google Cloud with CI/CD pipelines.
+
+Security: HTTPS, data encryption, input validation.
+
+API Documentation: Swagger or Postman collection.
+
+Deliverables
+Complete source code (frontend, backend, and mobile).
+
+Deployment to production (web + mobile).
+
+Database schema with migrations.
+
+QR code generation & scanning feature.
+
+Unit & integration test coverage.
+
+Admin dashboard for all management features.
+
+Final Goal: A universal, all-in-one business management platform that enables companies to track worker hours via QR codes, manage clients, generate invoices, and oversee projects — deployable to both web and mobile for immediate use.
+
