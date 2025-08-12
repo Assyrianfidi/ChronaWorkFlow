@@ -344,14 +344,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/invoices", isAuthenticated, async (req, res) => {
     try {
+      console.log("Received invoice data:", JSON.stringify(req.body, null, 2));
+      
       const { lineItems, ...invoiceData } = req.body;
+      
+      // Validate invoice data (omit invoiceId from line items for validation)
       const validatedInvoice = insertInvoiceSchema.parse(invoiceData);
-      const validatedLineItems = z.array(insertInvoiceLineItemSchema).parse(lineItems || []);
+      
+      // Validate line items (omit invoiceId since it will be added later)
+      const lineItemSchema = insertInvoiceLineItemSchema.omit({ invoiceId: true });
+      const validatedLineItems = z.array(lineItemSchema).parse(lineItems || []);
       
       const invoice = await storage.createInvoice(validatedInvoice, validatedLineItems);
       res.status(201).json(invoice);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
         return res.status(400).json({ message: "Invalid invoice data", errors: error.errors });
       }
       console.error("Error creating invoice:", error);

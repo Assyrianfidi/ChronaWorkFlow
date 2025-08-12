@@ -128,21 +128,27 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
     mutationFn: async (data: InvoiceFormData) => {
       // Transform data for backend
       const transformedData = {
-        ...data,
-        projectId: data.projectId === "none" ? null : data.projectId,
+        clientId: data.clientId,
+        projectId: data.projectId === "none" || !data.projectId ? null : data.projectId,
+        status: data.status,
         issueDate: new Date(data.issueDate),
         dueDate: new Date(data.dueDate),
-        subtotal: parseFloat(data.subtotal),
+        subtotal: parseFloat(data.subtotal) || 0,
         taxRate: parseFloat(data.taxRate || "0"),
+        taxAmount: data.taxAmount || 0,
         discountAmount: parseFloat(data.discountAmount || "0"),
+        total: data.total || 0,
+        notes: data.notes || null,
         lineItems: data.lineItems.map((item, index) => ({
           description: item.description,
-          quantity: parseFloat(item.quantity),
-          rate: parseFloat(item.rate),
-          amount: item.amount,
+          quantity: parseFloat(item.quantity) || 1,
+          rate: parseFloat(item.rate) || 0,
+          amount: parseFloat(item.quantity || "1") * parseFloat(item.rate || "0"),
           sortOrder: index,
         })),
       };
+      
+      console.log("Sending to backend:", transformedData);
       
       const url = invoice ? `/api/invoices/${invoice.id}` : "/api/invoices";
       const method = invoice ? "PUT" : "POST";
