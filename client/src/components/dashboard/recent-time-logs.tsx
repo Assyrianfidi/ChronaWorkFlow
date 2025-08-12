@@ -7,7 +7,7 @@ import { Link } from "wouter";
 import { format } from "date-fns";
 
 export default function RecentTimeLogs() {
-  const { data: timeLogs, isLoading } = useQuery({
+  const { data: timeLogs = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/dashboard/recent-logs"],
     retry: false,
   });
@@ -40,8 +40,8 @@ export default function RecentTimeLogs() {
       <CardHeader className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-slate-800">Recent Time Logs</CardTitle>
-          <Link href="/time-tracking">
-            <a className="text-primary font-medium hover:text-blue-700">View All</a>
+          <Link href="/time-tracking" className="text-primary font-medium hover:text-blue-700">
+            View All
           </Link>
         </div>
       </CardHeader>
@@ -65,7 +65,7 @@ export default function RecentTimeLogs() {
               </div>
             ))}
           </div>
-        ) : timeLogs && timeLogs.length > 0 ? (
+        ) : timeLogs.length > 0 ? (
           <div className="space-y-4">
             {timeLogs.map((log: any) => (
               <div key={log.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">

@@ -48,12 +48,12 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: clients } = useQuery({
+  const { data: clients = [] } = useQuery<any[]>({
     queryKey: ["/api/clients"],
     retry: false,
   });
 
-  const { data: projects } = useQuery({
+  const { data: projects = [] } = useQuery<any[]>({
     queryKey: ["/api/projects"],
     retry: false,
   });
@@ -101,8 +101,8 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
       return sum + (quantity * rate);
     }, 0);
 
-    const taxRate = parseFloat(watchedTaxRate) || 0;
-    const discountAmount = parseFloat(watchedDiscountAmount) || 0;
+    const taxRate = parseFloat(watchedTaxRate || "0") || 0;
+    const discountAmount = parseFloat(watchedDiscountAmount || "0") || 0;
     const taxAmount = (subtotal - discountAmount) * (taxRate / 100);
     const total = subtotal - discountAmount + taxAmount;
 
@@ -126,24 +126,24 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
 
   const mutation = useMutation({
     mutationFn: async (data: InvoiceFormData) => {
-      // Transform data for backend
+      // Transform data for backend - all decimals as strings for Drizzle
       const transformedData = {
         clientId: data.clientId,
         projectId: data.projectId === "none" || !data.projectId ? null : data.projectId,
         status: data.status,
-        issueDate: new Date(data.issueDate),
-        dueDate: new Date(data.dueDate),
-        subtotal: parseFloat(data.subtotal) || 0,
-        taxRate: parseFloat(data.taxRate || "0"),
-        taxAmount: data.taxAmount || 0,
-        discountAmount: parseFloat(data.discountAmount || "0"),
-        total: data.total || 0,
+        issueDate: data.issueDate,
+        dueDate: data.dueDate,
+        subtotal: (parseFloat(data.subtotal) || 0).toString(),
+        taxRate: (parseFloat(data.taxRate || "0")).toString(),
+        taxAmount: (data.taxAmount || 0).toString(),
+        discountAmount: (parseFloat(data.discountAmount || "0")).toString(),
+        total: (data.total || 0).toString(),
         notes: data.notes || null,
         lineItems: data.lineItems.map((item, index) => ({
           description: item.description,
-          quantity: parseFloat(item.quantity) || 1,
-          rate: parseFloat(item.rate) || 0,
-          amount: parseFloat(item.quantity || "1") * parseFloat(item.rate || "0"),
+          quantity: item.quantity,
+          rate: item.rate,
+          amount: (parseFloat(item.quantity || "1") * parseFloat(item.rate || "0")).toString(),
           sortOrder: index,
         })),
       };
@@ -210,7 +210,7 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {clients?.map((client: any) => (
+                        {clients.map((client: any) => (
                           <SelectItem key={client.id} value={client.id}>
                             {client.name}
                           </SelectItem>
@@ -236,7 +236,7 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="none">No Project</SelectItem>
-                        {projects?.map((project: any) => (
+                        {projects.map((project: any) => (
                           <SelectItem key={project.id} value={project.id}>
                             {project.name}
                           </SelectItem>

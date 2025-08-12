@@ -128,11 +128,9 @@ export default function QuickActions() {
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
-                <Link key={action.name} href={action.href}>
-                  <a className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-3 rounded-lg font-medium text-left transition-colors flex items-center">
-                    <Icon className={`${action.color} mr-3 h-5 w-5`} />
-                    {action.name}
-                  </a>
+                <Link key={action.name} href={action.href} className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-3 rounded-lg font-medium text-left transition-colors flex items-center">
+                  <Icon className={`${action.color} mr-3 h-5 w-5`} />
+                  {action.name}
                 </Link>
               );
             })}

@@ -354,7 +354,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Validate line items (omit invoiceId since it will be added later)
       const lineItemSchema = insertInvoiceLineItemSchema.omit({ invoiceId: true });
-      const validatedLineItems = z.array(lineItemSchema).parse(lineItems || []);
+      const validatedLineItems = lineItems?.map((item: any) => lineItemSchema.parse(item)) || [];
       console.log("Line items validation passed");
       
       const invoice = await storage.createInvoice(validatedInvoice, validatedLineItems);
