@@ -348,6 +348,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { lineItems, ...invoiceData } = req.body;
       
+      // Convert date strings to Date objects before validation
+      if (invoiceData.issueDate && typeof invoiceData.issueDate === 'string') {
+        invoiceData.issueDate = new Date(invoiceData.issueDate);
+      }
+      if (invoiceData.dueDate && typeof invoiceData.dueDate === 'string') {
+        invoiceData.dueDate = new Date(invoiceData.dueDate);
+      }
+      
       // Validate invoice data
       const validatedInvoice = insertInvoiceSchema.parse(invoiceData);
       console.log("Invoice data validation passed");
