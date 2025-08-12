@@ -360,8 +360,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const invoice = await storage.createInvoice(validatedInvoice, validatedLineItems);
       res.status(201).json(invoice);
     } catch (error) {
+      console.error("Full error in invoice creation:", error);
       if (error instanceof z.ZodError) {
-        console.error("Validation errors:", error.errors);
+        console.error("Zod validation errors:", JSON.stringify(error.errors, null, 2));
         return res.status(400).json({ message: "Invalid invoice data", errors: error.errors });
       }
       console.error("Error creating invoice:", error);
