@@ -6,7 +6,7 @@ import { Link } from "wouter";
 import { format } from "date-fns";
 
 export default function ProjectsOverview() {
-  const { data: projects, isLoading } = useQuery({
+  const { data: projects = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/projects"],
     retry: false,
   });
@@ -16,7 +16,7 @@ export default function ProjectsOverview() {
       planning: { variant: "outline" as const, label: "Planning", className: "bg-blue-100 text-blue-800" },
       in_progress: { variant: "default" as const, label: "In Progress", className: "bg-yellow-100 text-yellow-800" },
       completed: { variant: "outline" as const, label: "Nearly Complete", className: "bg-green-100 text-green-800" },
-      on_hold: { variant: "destructive" as const, label: "On Hold" },
+      on_hold: { variant: "destructive" as const, label: "On Hold", className: "bg-red-100 text-red-800" },
     };
     
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.planning;
@@ -38,8 +38,8 @@ export default function ProjectsOverview() {
       <CardHeader className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-slate-800">Current Projects</CardTitle>
-          <Link href="/projects">
-            <a className="text-primary font-medium hover:text-blue-700">Manage Projects</a>
+          <Link href="/projects" className="text-primary font-medium hover:text-blue-700">
+            Manage Projects
           </Link>
         </div>
       </CardHeader>

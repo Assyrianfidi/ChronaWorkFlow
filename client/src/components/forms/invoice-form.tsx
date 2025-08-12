@@ -131,8 +131,8 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
         clientId: data.clientId,
         projectId: data.projectId === "none" || !data.projectId ? null : data.projectId,
         status: data.status,
-        issueDate: data.issueDate,
-        dueDate: data.dueDate,
+        issueDate: new Date(data.issueDate),
+        dueDate: new Date(data.dueDate),
         subtotal: (parseFloat(data.subtotal) || 0).toString(),
         taxRate: (parseFloat(data.taxRate || "0")).toString(),
         taxAmount: (data.taxAmount || 0).toString(),
@@ -440,7 +440,7 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
               </div>
               <div className="flex justify-between">
                 <span>Discount:</span>
-                <span>-${parseFloat(watchedDiscountAmount).toFixed(2)}</span>
+                <span>-${parseFloat(watchedDiscountAmount || "0").toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Tax:</span>
