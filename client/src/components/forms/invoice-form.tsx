@@ -16,21 +16,25 @@ import { Plus, Trash2 } from "lucide-react";
 import { z } from "zod";
 import { format } from "date-fns";
 
-const lineItemSchema = insertInvoiceLineItemSchema.omit({ invoiceId: true }).extend({
-  quantity: z.string().transform(val => parseFloat(val)),
-  rate: z.string().transform(val => parseFloat(val)),
-  amount: z.number(),
-});
-
-const invoiceFormSchema = insertInvoiceSchema.extend({
-  subtotal: z.string().transform(val => parseFloat(val)),
-  taxRate: z.string().optional().transform(val => val ? parseFloat(val) : 0),
-  taxAmount: z.number(),
-  discountAmount: z.string().optional().transform(val => val ? parseFloat(val) : 0),
-  total: z.number(),
-  issueDate: z.string().transform(val => new Date(val)),
-  dueDate: z.string().transform(val => new Date(val)),
-  lineItems: z.array(lineItemSchema),
+const invoiceFormSchema = z.object({
+  clientId: z.string().min(1, "Client is required"),
+  projectId: z.string().optional(),
+  status: z.enum(["draft", "sent", "paid", "overdue", "cancelled"]).default("draft"),
+  issueDate: z.string(),
+  dueDate: z.string(),
+  subtotal: z.string(),
+  taxRate: z.string().optional(),
+  taxAmount: z.number().optional().default(0),
+  discountAmount: z.string().optional(),
+  total: z.number().optional().default(0),
+  notes: z.string().optional(),
+  lineItems: z.array(z.object({
+    description: z.string().min(1, "Description is required"),
+    quantity: z.string(),
+    rate: z.string(),
+    amount: z.number(),
+    sortOrder: z.number().optional().default(0),
+  })).min(1, "At least one line item is required"),
 });
 
 type InvoiceFormData = z.infer<typeof invoiceFormSchema>;
@@ -57,22 +61,22 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
   const form = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: {
-      clientId: invoice?.client?.id || "",
-      projectId: invoice?.project?.id || "",
+      clientId: invoice?.clientId || "",
+      projectId: invoice?.projectId || "",
       status: invoice?.status || "draft",
       issueDate: invoice?.issueDate ? format(new Date(invoice.issueDate), "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd"),
       dueDate: invoice?.dueDate ? format(new Date(invoice.dueDate), "yyyy-MM-dd") : format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"),
-      subtotal: invoice?.subtotal || "0",
-      taxRate: invoice?.taxRate || "0",
+      subtotal: invoice?.subtotal?.toString() || "0",
+      taxRate: invoice?.taxRate?.toString() || "0",
       taxAmount: invoice?.taxAmount || 0,
-      discountAmount: invoice?.discountAmount || "0",
+      discountAmount: invoice?.discountAmount?.toString() || "0",
       total: invoice?.total || 0,
       notes: invoice?.notes || "",
       lineItems: invoice?.lineItems?.map((item: any) => ({
-        description: item.description,
-        quantity: item.quantity.toString(),
-        rate: item.rate.toString(),
-        amount: parseFloat(item.amount),
+        description: item.description || "",
+        quantity: item.quantity?.toString() || "1",
+        rate: item.rate?.toString() || "0",
+        amount: parseFloat(item.amount) || 0,
         sortOrder: item.sortOrder || 0,
       })) || [
         { description: "", quantity: "1", rate: "0", amount: 0, sortOrder: 0 }
@@ -122,9 +126,27 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
 
   const mutation = useMutation({
     mutationFn: async (data: InvoiceFormData) => {
+      // Transform data for backend
+      const transformedData = {
+        ...data,
+        projectId: data.projectId === "none" ? null : data.projectId,
+        issueDate: new Date(data.issueDate),
+        dueDate: new Date(data.dueDate),
+        subtotal: parseFloat(data.subtotal),
+        taxRate: parseFloat(data.taxRate || "0"),
+        discountAmount: parseFloat(data.discountAmount || "0"),
+        lineItems: data.lineItems.map((item, index) => ({
+          description: item.description,
+          quantity: parseFloat(item.quantity),
+          rate: parseFloat(item.rate),
+          amount: item.amount,
+          sortOrder: index,
+        })),
+      };
+      
       const url = invoice ? `/api/invoices/${invoice.id}` : "/api/invoices";
       const method = invoice ? "PUT" : "POST";
-      const response = await apiRequest(method, url, data);
+      const response = await apiRequest(method, url, transformedData);
       return response.json();
     },
     onSuccess: () => {
