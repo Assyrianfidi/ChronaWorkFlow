@@ -378,7 +378,7 @@ export class DatabaseStorage implements IStorage {
 
   // Invoice operations
   async getInvoices(): Promise<any[]> {
-    return await db
+    const invoicesList = await db
       .select({
         id: invoices.id,
         invoiceNumber: invoices.invoiceNumber,
@@ -386,12 +386,17 @@ export class DatabaseStorage implements IStorage {
         issueDate: invoices.issueDate,
         dueDate: invoices.dueDate,
         subtotal: invoices.subtotal,
+        taxRate: invoices.taxRate,
+        taxAmount: invoices.taxAmount,
+        discountAmount: invoices.discountAmount,
         total: invoices.total,
+        notes: invoices.notes,
         createdAt: invoices.createdAt,
         client: {
           id: clients.id,
           name: clients.name,
           email: clients.email,
+          address: clients.address,
         },
         project: {
           id: projects.id,
@@ -402,6 +407,21 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(clients, eq(invoices.clientId, clients.id))
       .leftJoin(projects, eq(invoices.projectId, projects.id))
       .orderBy(desc(invoices.createdAt));
+
+    // Fetch line items for each invoice
+    const invoicesWithLineItems = await Promise.all(
+      invoicesList.map(async (invoice) => {
+        const lineItems = await db
+          .select()
+          .from(invoiceLineItems)
+          .where(eq(invoiceLineItems.invoiceId, invoice.id))
+          .orderBy(invoiceLineItems.sortOrder);
+        
+        return { ...invoice, lineItems };
+      })
+    );
+
+    return invoicesWithLineItems;
   }
 
   async getInvoice(id: string): Promise<any | undefined> {

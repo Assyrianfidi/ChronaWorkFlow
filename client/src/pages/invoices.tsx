@@ -85,6 +85,17 @@ export default function Invoices() {
 
   const handleDownloadPDF = (invoice: any) => {
     try {
+      console.log("Invoice data for PDF:", invoice);
+      
+      // Ensure we have the required data structure
+      if (!invoice.lineItems || !Array.isArray(invoice.lineItems)) {
+        throw new Error("Invoice line items are missing or invalid");
+      }
+      
+      if (!invoice.client) {
+        throw new Error("Invoice client information is missing");
+      }
+      
       downloadInvoicePDF(invoice);
       toast({
         title: "Success",
@@ -92,9 +103,10 @@ export default function Invoices() {
       });
     } catch (error) {
       console.error("Error downloading PDF:", error);
+      console.error("Error details:", (error as Error)?.message);
       toast({
         title: "Error",
-        description: "Failed to download PDF",
+        description: `Failed to download PDF: ${(error as Error)?.message || 'Unknown error'}`,
         variant: "destructive",
       });
     }
@@ -102,12 +114,24 @@ export default function Invoices() {
 
   const handlePreviewPDF = (invoice: any) => {
     try {
+      console.log("Invoice data for PDF preview:", invoice);
+      
+      // Ensure we have the required data structure
+      if (!invoice.lineItems || !Array.isArray(invoice.lineItems)) {
+        throw new Error("Invoice line items are missing or invalid");
+      }
+      
+      if (!invoice.client) {
+        throw new Error("Invoice client information is missing");
+      }
+      
       previewInvoicePDF(invoice);
     } catch (error) {
       console.error("Error previewing PDF:", error);
+      console.error("Error details:", (error as Error)?.message);
       toast({
         title: "Error",
-        description: "Failed to preview PDF",
+        description: `Failed to preview PDF: ${(error as Error)?.message || 'Unknown error'}`,
         variant: "destructive",
       });
     }
@@ -170,9 +194,9 @@ export default function Invoices() {
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
-          ) : invoices && invoices.length > 0 ? (
+          ) : invoices && Array.isArray(invoices) && invoices.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {invoices.map((invoice: any) => (
+              {(invoices as any[]).map((invoice: any) => (
                 <Card key={invoice.id} className="border border-gray-200 shadow-sm">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
