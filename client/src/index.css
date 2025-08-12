@@ -1,0 +1,837 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(248 10% 98%);
+  --foreground: hsl(210 25% 7.8431%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(210 25% 7.8431%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(210 25% 7.8431%);
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(210 11.8% 45.1%);
+  --secondary-foreground: hsl(0 0% 100%);
+  --muted: hsl(220 14.3% 95.9%);
+  --muted-foreground: hsl(210 25% 7.8431%);
+  --accent: hsl(159 61% 39%);
+  --accent-foreground: hsl(0 0% 100%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(214 31.8% 91.4%);
+  --input: hsl(214 31.8% 91.4%);
+  --ring: hsl(217 91% 60%);
+  --chart-1: hsl(217 91% 60%);
+  --chart-2: hsl(159 61% 39%);
+  --chart-3: hsl(42 100% 69%);
+  --chart-4: hsl(147 78% 42%);
+  --chart-5: hsl(341 75% 51%);
+  --sidebar: hsl(0 0% 100%);
+  --sidebar-foreground: hsl(210 25% 7.8431%);
+  --sidebar-primary: hsl(217 91% 60%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(214 31.8% 91.4%);
+  --sidebar-accent-foreground: hsl(217 91% 60%);
+  --sidebar-border: hsl(214 31.8% 91.4%);
+  --sidebar-ring: hsl(217 91% 60%);
+  --font-sans: "Inter", sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: hsl(0 0% 0%);
+  --foreground: hsl(210 11.1% 92.5%);
+  --card: hsl(228 9.8% 10%);
+  --card-foreground: hsl(210 11.1% 92.5%);
+  --popover: hsl(0 0% 0%);
+  --popover-foreground: hsl(210 11.1% 92.5%);
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(210 11.8% 45.1%);
+  --secondary-foreground: hsl(0 0% 100%);
+  --muted: hsl(0 0% 9.4%);
+  --muted-foreground: hsl(210 3.9% 46.3%);
+  --accent: hsl(159 61% 39%);
+  --accent-foreground: hsl(0 0% 100%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(210 5.3% 14.9%);
+  --input: hsl(210 5.3% 14.9%);
+  --ring: hsl(217 91% 60%);
+  --chart-1: hsl(217 91% 60%);
+  --chart-2: hsl(159 61% 39%);
+  --chart-3: hsl(42 100% 69%);
+  --chart-4: hsl(147 78% 42%);
+  --chart-5: hsl(341 75% 51%);
+  --sidebar: hsl(228 9.8% 10%);
+  --sidebar-foreground: hsl(210 11.1% 92.5%);
+  --sidebar-primary: hsl(217 91% 60%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(210 5.3% 14.9%);
+  --sidebar-accent-foreground: hsl(217 91% 60%);
+  --sidebar-border: hsl(210 5.3% 14.9%);
+  --sidebar-ring: hsl(217 91% 60%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+  }
+}
+
+@layer components {
+  /* Professional Business Application Styling */
+  
+  /* Sidebar Navigation Styling */
+  .sidebar-nav-item {
+    @apply flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-colors;
+  }
+
+  .sidebar-nav-item.active {
+    @apply bg-primary text-white;
+  }
+
+  .sidebar-nav-item:not(.active) {
+    @apply text-slate-600 hover:bg-slate-100;
+  }
+
+  /* Professional Card Styling */
+  .metric-card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  }
+
+  .metric-value {
+    @apply text-3xl font-bold text-slate-800;
+  }
+
+  .metric-label {
+    @apply text-slate-600 text-sm font-medium;
+  }
+
+  .metric-change {
+    @apply text-accent text-sm flex items-center;
+  }
+
+  .metric-icon-container {
+    @apply w-12 h-12 rounded-lg flex items-center justify-center;
+  }
+
+  /* Professional Data Table Styling */
+  .data-table {
+    @apply w-full border-collapse;
+  }
+
+  .data-table th {
+    @apply pb-3 text-sm font-semibold text-slate-600 text-left border-b border-gray-200;
+  }
+
+  .data-table td {
+    @apply py-4 text-slate-600 border-b border-gray-100;
+  }
+
+  .data-table tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /* Professional Button Styling */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-blue-700 font-medium transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors;
+  }
+
+  /* Quick Action Button Styling */
+  .quick-action-btn {
+    @apply w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-3 rounded-lg font-medium text-left transition-colors flex items-center;
+  }
+
+  /* QR Scanner Styling */
+  .qr-scanner-container {
+    @apply bg-gray-100 rounded-lg p-8 text-center;
+  }
+
+  .qr-display {
+    @apply bg-white p-4 rounded-lg border inline-block;
+  }
+
+  /* Status Badge Styling */
+  .badge-active {
+    @apply bg-green-500 text-white hover:bg-green-600;
+  }
+
+  .badge-pending {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-approved {
+    @apply bg-blue-500 text-white hover:bg-blue-600;
+  }
+
+  .badge-completed {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .badge-in-progress {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-planning {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .badge-on-hold {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .badge-nearly-complete {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .badge-paid {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .badge-overdue {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .badge-draft {
+    @apply bg-gray-100 text-gray-800;
+  }
+
+  .badge-sent {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .badge-cancelled {
+    @apply bg-red-100 text-red-800;
+  }
+
+  /* Progress Bar Styling */
+  .progress-bar {
+    @apply w-full bg-gray-200 rounded-full h-2;
+  }
+
+  .progress-fill {
+    @apply bg-accent h-2 rounded-full transition-all duration-300;
+  }
+
+  /* Worker Avatar Styling */
+  .worker-avatar {
+    @apply w-10 h-10 rounded-full object-cover border-2 border-white;
+  }
+
+  .worker-avatar-stack {
+    @apply flex -space-x-2;
+  }
+
+  .worker-avatar-more {
+    @apply w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-medium text-slate-600;
+  }
+
+  /* Professional Form Styling */
+  .form-professional .form-label {
+    @apply font-medium text-foreground/90;
+  }
+
+  .form-input {
+    @apply border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .form-select {
+    @apply flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Professional Empty States */
+  .empty-state {
+    @apply text-center py-12;
+  }
+
+  .empty-state-icon {
+    @apply w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4;
+  }
+
+  .empty-state-title {
+    @apply text-lg font-semibold text-slate-800 mb-2;
+  }
+
+  .empty-state-description {
+    @apply text-slate-600 mb-4;
+  }
+
+  /* Professional Loading States */
+  .loading-skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+
+  .loading-spinner {
+    @apply animate-spin rounded-full border-b-2 border-primary;
+  }
+
+  /* Notification Bell Styling */
+  .notification-bell {
+    @apply text-slate-400 text-xl cursor-pointer hover:text-slate-600 transition-colors relative;
+  }
+
+  .notification-badge {
+    @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center;
+  }
+
+  /* Professional Shadow Effects */
+  .card-shadow {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+  
+  .card-shadow-lg {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+
+  /* Professional Header Styling */
+  .page-header {
+    @apply bg-white shadow-sm border-b border-gray-200 px-8 py-6;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold text-slate-800;
+  }
+
+  .page-subtitle {
+    @apply text-slate-600 mt-1;
+  }
+
+  /* Professional Sidebar Styling */
+  .sidebar-brand {
+    @apply p-6 border-b border-gray-200;
+  }
+
+  .sidebar-logo {
+    @apply w-10 h-10 bg-primary rounded-lg flex items-center justify-center;
+  }
+
+  .sidebar-brand-text {
+    @apply text-xl font-bold text-slate-800;
+  }
+
+  .sidebar-brand-subtitle {
+    @apply text-sm text-slate-500;
+  }
+
+  /* Professional Table Row Hover */
+  .table-row-hover {
+    @apply hover:bg-slate-50 transition-colors;
+  }
+
+  /* Professional Card Grid */
+  .card-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .metrics-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  /* Professional Time Display */
+  .time-display {
+    @apply font-medium text-slate-800;
+  }
+
+  .time-duration {
+    @apply text-sm text-slate-500;
+  }
+
+  /* Professional Status Indicators */
+  .status-indicator {
+    @apply px-3 py-1 text-sm rounded-full font-medium;
+  }
+
+  /* QR Code Button Styling */
+  .qr-scan-button {
+    @apply bg-primary text-white hover:bg-blue-700 transition-colors w-full flex items-center justify-center;
+  }
+
+  /* Professional Invoice Table */
+  .invoice-table th {
+    @apply text-left pb-3 text-sm font-semibold text-slate-600 border-b border-gray-200;
+  }
+
+  .invoice-table td {
+    @apply py-4 border-b border-gray-100 last:border-0;
+  }
+
+  /* Professional Project Progress */
+  .project-progress {
+    @apply w-full bg-gray-200 rounded-full h-2;
+  }
+
+  .project-progress-fill {
+    @apply bg-accent h-2 rounded-full transition-all duration-300;
+  }
+
+  /* Professional Client Card */
+  .client-card {
+    @apply border border-gray-200 shadow-sm rounded-xl;
+  }
+
+  .client-card-header {
+    @apply pb-3;
+  }
+
+  .client-card-title {
+    @apply text-lg font-semibold text-slate-800;
+  }
+
+  .client-card-company {
+    @apply text-sm text-slate-500;
+  }
+
+  /* Professional Worker Card */
+  .worker-card {
+    @apply border border-gray-200 shadow-sm rounded-xl;
+  }
+
+  .worker-card-actions {
+    @apply flex items-center space-x-2 pt-3;
+  }
+
+  /* Professional Navigation */
+  .nav-active {
+    @apply bg-primary text-white;
+  }
+
+  .nav-inactive {
+    @apply text-slate-600 hover:bg-slate-100;
+  }
+
+  /* Professional Floating Action Button */
+  .fab {
+    @apply fixed bottom-6 right-6 lg:hidden bg-primary text-white w-14 h-14 rounded-full shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center;
+  }
+
+  /* Professional Dashboard Layout */
+  .dashboard-section {
+    @apply p-8 space-y-8;
+  }
+
+  .dashboard-grid {
+    @apply grid grid-cols-1 lg:grid-cols-3 gap-8;
+  }
+
+  .dashboard-main {
+    @apply lg:col-span-2;
+  }
+
+  .dashboard-sidebar {
+    @apply space-y-6;
+  }
+
+  /* Professional Color Classes */
+  .text-professional {
+    @apply text-slate-800 font-medium;
+  }
+
+  .text-muted-professional {
+    @apply text-slate-600;
+  }
+
+  .text-subtle {
+    @apply text-slate-500;
+  }
+
+  .bg-professional {
+    @apply bg-white;
+  }
+
+  .bg-surface {
+    @apply bg-background;
+  }
+
+  .bg-muted-professional {
+    @apply bg-slate-50;
+  }
+
+  /* Professional Border Classes */
+  .border-professional {
+    @apply border border-gray-200;
+  }
+
+  .border-subtle {
+    @apply border-gray-100;
+  }
+
+  /* Professional Spacing Classes */
+  .section-padding {
+    @apply p-8;
+  }
+
+  .card-padding {
+    @apply p-6;
+  }
+
+  .form-spacing {
+    @apply space-y-4;
+  }
+
+  /* Professional Flex Utilities */
+  .flex-between {
+    @apply flex items-center justify-between;
+  }
+
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-start {
+    @apply flex items-center justify-start;
+  }
+
+  /* Professional Rounded Corners */
+  .rounded-professional {
+    @apply rounded-xl;
+  }
+
+  /* Professional Hover Effects */
+  .hover-lift {
+    @apply transition-transform hover:-translate-y-1;
+  }
+
+  .hover-glow {
+    @apply transition-shadow hover:shadow-lg;
+  }
+
+  /* Professional Focus States */
+  .focus-professional {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+
+  /* Professional Transitions */
+  .transition-professional {
+    @apply transition-colors duration-200;
+  }
+
+  .transition-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Professional Typography */
+  .heading-xl {
+    @apply text-2xl font-bold text-slate-800;
+  }
+
+  .heading-lg {
+    @apply text-xl font-bold text-slate-800;
+  }
+
+  .heading-md {
+    @apply text-lg font-semibold text-slate-800;
+  }
+
+  .body-text {
+    @apply text-slate-600;
+  }
+
+  .caption-text {
+    @apply text-sm text-slate-500;
+  }
+
+  /* Professional Layout */
+  .app-layout {
+    @apply flex h-screen overflow-hidden bg-background;
+  }
+
+  .main-content {
+    @apply flex-1 overflow-y-auto;
+  }
+
+  .sidebar-layout {
+    @apply w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col;
+  }
+
+  /* Professional Icon Colors */
+  .icon-primary {
+    @apply text-primary;
+  }
+
+  .icon-accent {
+    @apply text-accent;
+  }
+
+  .icon-muted {
+    @apply text-slate-400;
+  }
+
+  .icon-success {
+    @apply text-green-600;
+  }
+
+  .icon-warning {
+    @apply text-yellow-600;
+  }
+
+  .icon-danger {
+    @apply text-red-600;
+  }
+
+  /* Professional Icon Background Colors */
+  .icon-bg-primary {
+    @apply bg-blue-100;
+  }
+
+  .icon-bg-accent {
+    @apply bg-green-100;
+  }
+
+  .icon-bg-warning {
+    @apply bg-yellow-100;
+  }
+
+  .icon-bg-danger {
+    @apply bg-red-100;
+  }
+
+  .icon-bg-purple {
+    @apply bg-purple-100;
+  }
+
+  /* Professional Action Button Styling */
+  .action-button {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors;
+  }
+
+  .action-button-primary {
+    @apply bg-primary text-white hover:bg-blue-700;
+  }
+
+  .action-button-secondary {
+    @apply bg-slate-100 text-slate-700 hover:bg-slate-200;
+  }
+
+  .action-button-outline {
+    @apply border border-gray-300 text-slate-700 hover:bg-slate-50;
+  }
+
+  /* Professional Modal/Dialog Styling */
+  .dialog-content {
+    @apply max-w-md mx-4;
+  }
+
+  .dialog-title {
+    @apply text-lg font-semibold text-slate-800;
+  }
+
+  /* Professional List Styling */
+  .professional-list {
+    @apply space-y-4;
+  }
+
+  .professional-list-item {
+    @apply flex items-center justify-between py-3 border-b border-gray-100 last:border-0;
+  }
+
+  /* Professional Stats Display */
+  .stats-container {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  .stat-card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  }
+
+  .stat-icon {
+    @apply w-12 h-12 rounded-lg flex items-center justify-center;
+  }
+
+  .stat-value {
+    @apply text-3xl font-bold text-slate-800 mt-2;
+  }
+
+  .stat-label {
+    @apply text-slate-600 text-sm font-medium;
+  }
+
+  .stat-change {
+    @apply text-accent text-sm mt-1 flex items-center;
+  }
+
+  /* Professional Time Log Styling */
+  .time-log-entry {
+    @apply flex items-center justify-between py-3 border-b border-gray-100 last:border-0;
+  }
+
+  .time-log-worker {
+    @apply flex items-center space-x-4;
+  }
+
+  .time-log-info {
+    @apply text-right;
+  }
+
+  .time-log-status {
+    @apply px-3 py-1 rounded-full text-sm;
+  }
+
+  /* Professional Project Card Styling */
+  .project-card {
+    @apply border border-gray-200 shadow-sm rounded-xl;
+  }
+
+  .project-header {
+    @apply pb-3;
+  }
+
+  .project-title {
+    @apply text-lg font-semibold text-slate-800;
+  }
+
+  .project-client {
+    @apply flex items-center text-sm text-slate-500;
+  }
+
+  .project-meta {
+    @apply space-y-3;
+  }
+
+  .project-actions {
+    @apply flex items-center space-x-2 pt-3;
+  }
+
+  /* Professional Invoice Styling */
+  .invoice-card {
+    @apply border border-gray-200 shadow-sm rounded-xl;
+  }
+
+  .invoice-header {
+    @apply pb-3;
+  }
+
+  .invoice-number {
+    @apply text-lg font-semibold text-slate-800;
+  }
+
+  .invoice-client {
+    @apply text-sm text-slate-500;
+  }
+
+  .invoice-meta {
+    @apply space-y-3;
+  }
+
+  .invoice-actions {
+    @apply flex items-center space-x-2 pt-3;
+  }
+
+  /* Professional Reports Styling */
+  .report-card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200;
+  }
+
+  .report-header {
+    @apply p-6 border-b border-gray-200;
+  }
+
+  .report-title {
+    @apply text-lg font-semibold text-slate-800 flex items-center;
+  }
+
+  .report-content {
+    @apply p-6;
+  }
+
+  .export-grid {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+  }
+
+  .export-button {
+    @apply justify-start border border-gray-300 text-slate-700 hover:bg-slate-50;
+  }
+
+  /* Professional Form Layout */
+  .form-grid {
+    @apply grid grid-cols-1 gap-4;
+  }
+
+  .form-grid-2 {
+    @apply grid grid-cols-2 gap-4;
+  }
+
+  .form-actions {
+    @apply flex justify-end space-x-2 pt-4;
+  }
+
+  /* Professional User Profile */
+  .user-profile {
+    @apply flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-slate-100 cursor-pointer group;
+  }
+
+  .user-avatar {
+    @apply w-10 h-10 rounded-full;
+  }
+
+  .user-info {
+    @apply flex-1 min-w-0;
+  }
+
+  .user-name {
+    @apply font-medium text-slate-800 truncate;
+  }
+
+  .user-role {
+    @apply text-sm text-slate-500 truncate;
+  }
+
+  .logout-button {
+    @apply opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-slate-200 rounded;
+  }
+}
+
+@layer utilities {
+  /* Professional spacing utilities */
+  .section-padding {
+    @apply p-8;
+  }
+
+  .card-padding {
+    @apply p-6;
+  }
+
+  .form-spacing {
+    @apply space-y-4;
+  }
+
+  /* Professional grid utilities */
+  .grid-professional {
+    @apply grid gap-6;
+  }
+
+  .grid-cards {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .grid-metrics {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  /* Professional shadow utilities */
+  .shadow-professional {
+    @apply shadow-sm;
+  }
+
+  .shadow-professional-lg {
+    @apply shadow-lg;
+  }
+}
