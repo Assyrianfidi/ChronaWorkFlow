@@ -42,10 +42,10 @@ export const generateInvoicePDF = (invoice: InvoiceData, companyInfo?: {
   
   // Company info (default if not provided)
   const company = {
-    name: companyInfo?.name || 'Fidi WorkFlow Ledger',
+    name: companyInfo?.name || 'Vigilo',
     address: companyInfo?.address || '123 Business Street\nSuite 100\nBusiness City, BC 12345',
     phone: companyInfo?.phone || '(555) 123-4567',
-    email: companyInfo?.email || 'info@fidiworkflow.com'
+    email: companyInfo?.email || 'info@vigilo.com'
   };
   
   // Set up colors

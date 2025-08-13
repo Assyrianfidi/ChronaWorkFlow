@@ -1,4 +1,4 @@
-# Business Management Application
+# Vigilo - Business Management Application
 
 ## Overview
 
@@ -6,14 +6,15 @@ This is a comprehensive, production-ready business management application design
 
 ## Recent Changes
 
-**August 13, 2025**: Deployment Configuration Fixed and Validated
-- ✅ RESOLVED: Applied all suggested deployment fixes
-- Updated DEPLOYMENT.md with step-by-step manual configuration instructions
-- Verified build process creates correct structure: dist/public/ (frontend) and dist/index.js (server)
-- Confirmed package.json scripts are properly configured for production deployment
-- Manual action required: Change deployment type from Static to Autoscale in Replit interface
-- Build and start commands validated and working correctly
-- PDF Invoice Generation System remains fully operational and production-ready
+**August 13, 2025**: Application Rebranded to "Vigilo" and Worker Location Map Feature Added
+- ✅ COMPLETED: Rebranded entire application from "Fidi WorkFlow" to "Vigilo"
+- Updated all UI text, branding, and documentation to reflect new name
+- Added comprehensive Worker Location Map feature with GPS tracking
+- Created interactive map interface showing worker QR scan locations
+- Implemented location filters for active/inactive workers and time periods
+- Fixed QR code generation and scanning with real libraries (qrcode, jsQR)
+- All core features remain fully operational: time tracking, invoicing, worker management
+- Deployment configuration remains properly configured for production
 
 **August 12, 2025**: Complete system validation and error resolution
 - Successfully resolved all invoice creation validation errors

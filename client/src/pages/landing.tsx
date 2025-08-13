@@ -13,8 +13,8 @@ export default function Landing() {
               <FileText className="text-white text-2xl" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-slate-800">Fidi WorkFlow</h1>
-              <p className="text-xl text-slate-600">Ledger</p>
+              <h1 className="text-4xl font-bold text-slate-800">Vigilo</h1>
+              <p className="text-xl text-slate-600">Business Management</p>
             </div>
           </div>
           <h2 className="text-3xl lg:text-5xl font-bold text-slate-800 mb-6">
@@ -132,7 +132,7 @@ export default function Landing() {
             Ready to Transform Your Business Management?
           </h3>
           <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses that have streamlined their operations with Fidi WorkFlow Ledger. 
+            Join thousands of businesses that have streamlined their operations with Vigilo. 
             Start your free trial today and experience the difference.
           </p>
           <Button

@@ -28,8 +28,8 @@ export default function Sidebar() {
             <FileText className="text-white text-lg" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-800">Fidi WorkFlow</h1>
-            <p className="text-sm text-slate-500">Ledger</p>
+            <h1 className="text-xl font-bold text-slate-800">Vigilo</h1>
+            <p className="text-sm text-slate-500">Business Management</p>
           </div>
         </div>
       </div>
