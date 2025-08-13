@@ -3,16 +3,17 @@
 ## Current Issue
 The deployment is configured as "static" but this is a full-stack application with an Express server. The deployment fails because static deployments cannot run server code.
 
-## Required Changes for Deployment
+## ✅ SOLUTION: Manual Configuration Required
 
-To fix the deployment, you need to manually update the deployment settings in the Replit interface:
+The `.replit` file currently has `deploymentTarget = "static"` which causes the deployment to fail. Since this file cannot be automatically edited, you need to manually update the deployment settings in the Replit interface.
 
-### 1. Change Deployment Type
-- In the Replit interface, go to the **Deployments** tab
-- Change the deployment type from **Static** to **Autoscale**
+### Step 1: Change Deployment Type
+1. Go to the **Deployments** tab in your Replit project
+2. Click on **Configure** or **Edit Deployment**
+3. Change the deployment type from **Static** to **Autoscale**
 
-### 2. Update Build and Run Configuration
-Set the following configuration values:
+### Step 2: Update Build and Run Configuration
+Set the following configuration values in the deployment settings:
 
 **Build Command:**
 ```
@@ -28,6 +29,12 @@ npm start
 ```
 dist/public
 ```
+
+### Step 3: Verify Configuration
+After making these changes, your deployment should:
+- Build both the frontend (React) and backend (Express server)
+- Start the Express server which serves the frontend and provides API endpoints
+- Use the correct public directory where the built frontend files are located
 
 ### 3. Environment Variables
 Ensure these environment variables are set in the deployment:
