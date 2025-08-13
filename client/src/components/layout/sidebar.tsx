@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { FileText, BarChart3, Users, Clock, Building, FolderOpen, File, LogOut } from "lucide-react";
+import { FileText, BarChart3, Users, Clock, Building, FolderOpen, File, LogOut, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,6 +8,7 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: BarChart3 },
   { name: "Workers", href: "/workers", icon: Users },
   { name: "Time Tracking", href: "/time-tracking", icon: Clock },
+  { name: "Worker Map", href: "/worker-map", icon: MapPin },
   { name: "Clients", href: "/clients", icon: Building },
   { name: "Projects", href: "/projects", icon: FolderOpen },
   { name: "Invoices", href: "/invoices", icon: File },

@@ -9,6 +9,7 @@ import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import Workers from "@/pages/workers";
 import TimeTracking from "@/pages/time-tracking";
+import WorkerMap from "@/pages/worker-map";
 import Clients from "@/pages/clients";
 import Projects from "@/pages/projects";
 import Invoices from "@/pages/invoices";
@@ -34,6 +35,7 @@ function Router() {
           <Route path="/" component={Dashboard} />
           <Route path="/workers" component={Workers} />
           <Route path="/time-tracking" component={TimeTracking} />
+          <Route path="/worker-map" component={WorkerMap} />
           <Route path="/clients" component={Clients} />
           <Route path="/projects" component={Projects} />
           <Route path="/invoices" component={Invoices} />
