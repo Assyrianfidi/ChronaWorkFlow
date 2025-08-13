@@ -139,20 +139,32 @@ export default function TimeTracking() {
   });
 
   const handleQRScan = (qrCode: string) => {
+    // Extract worker ID from QR code URL if it's a URL format
+    let workerQrCode = qrCode;
+    
+    // Check if QR code is a URL pointing to time tracking with worker parameter
+    if (qrCode.includes('/time-tracking?worker=')) {
+      const url = new URL(qrCode);
+      const workerId = url.searchParams.get('worker');
+      if (workerId) {
+        workerQrCode = `WORKER_${workerId}`;
+      }
+    }
+    
     // Get GPS location if available
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const gpsLocation = `${position.coords.latitude},${position.coords.longitude}`;
-          clockInMutation.mutate({ qrCode, gpsLocation });
+          clockInMutation.mutate({ qrCode: workerQrCode, gpsLocation });
         },
         () => {
           // Continue without GPS if denied
-          clockInMutation.mutate({ qrCode });
+          clockInMutation.mutate({ qrCode: workerQrCode });
         }
       );
     } else {
-      clockInMutation.mutate({ qrCode });
+      clockInMutation.mutate({ qrCode: workerQrCode });
     }
   };
 
@@ -221,7 +233,7 @@ export default function TimeTracking() {
                 <div className="flex items-center justify-center py-12">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
-              ) : timeLogs && timeLogs.length > 0 ? (
+              ) : timeLogs && Array.isArray(timeLogs) && timeLogs.length > 0 ? (
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -236,7 +248,7 @@ export default function TimeTracking() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {timeLogs.map((log: any) => (
+                      {(timeLogs as any[]).map((log: any) => (
                         <TableRow key={log.id}>
                           <TableCell>
                             <div>

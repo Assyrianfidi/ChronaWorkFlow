@@ -97,7 +97,7 @@ export default function QRGenerator({ value, workerName, size = 200 }: QRGenerat
         </head>
         <body>
           <div class="qr-container">
-            <h2>Fidi WorkFlow Ledger</h2>
+            <h2>Chrona Workflow</h2>
             <div class="worker-name">${workerName}</div>
             <div class="qr-code">
               <img src="${img.src}" alt="QR Code" style="max-width: 200px;" />

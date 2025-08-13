@@ -118,10 +118,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createWorker(workerData: InsertWorker): Promise<Worker> {
-    const qrCode = `WORKER_${randomUUID()}`;
+    // Generate QR code as URL that points to time tracking page with worker ID
+    const workerId = randomUUID();
+    const qrCode = `${process.env.REPLIT_DOMAINS || 'http://localhost:5000'}/time-tracking?worker=${workerId}`;
     const [worker] = await db
       .insert(workers)
-      .values({ ...workerData, qrCode })
+      .values({ ...workerData, id: workerId, qrCode })
       .returning();
     return worker;
   }

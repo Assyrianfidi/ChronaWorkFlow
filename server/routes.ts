@@ -272,8 +272,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { qrCode, projectId, gpsLocation } = req.body;
       
+      // Find worker by QR code (handle both old WORKER_ format and new URL format)
+      let workerQrCode = qrCode;
+      
+      // If it's a URL with worker parameter, extract the worker ID
+      if (qrCode.includes('/time-tracking?worker=')) {
+        const url = new URL(qrCode);
+        const workerId = url.searchParams.get('worker');
+        if (workerId) {
+          workerQrCode = `WORKER_${workerId}`;
+        }
+      }
+      
       // Find worker by QR code
-      const worker = await storage.getWorkerByQrCode(qrCode);
+      const worker = await storage.getWorkerByQrCode(workerQrCode);
       if (!worker) {
         return res.status(404).json({ message: "Invalid QR code or worker not found" });
       }
