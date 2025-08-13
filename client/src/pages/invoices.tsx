@@ -39,6 +39,8 @@ export default function Invoices() {
   const { data: invoices, isLoading: loadingInvoices } = useQuery({
     queryKey: ["/api/invoices"],
     retry: false,
+    staleTime: 0, // Always refetch to get fresh data
+    gcTime: 0, // Don't cache the response (React Query v5 syntax)
   });
 
   const deleteMutation = useMutation({
@@ -83,20 +85,29 @@ export default function Invoices() {
     }
   };
 
-  const handleDownloadPDF = (invoice: any) => {
+  const handleDownloadPDF = async (invoice: any) => {
     try {
       console.log("Invoice data for PDF:", invoice);
       
-      // Ensure we have the required data structure
-      if (!invoice.lineItems || !Array.isArray(invoice.lineItems)) {
+      // If line items are missing, fetch the complete invoice data
+      let completeInvoice = invoice;
+      if (!invoice.lineItems || !Array.isArray(invoice.lineItems) || invoice.lineItems.length === 0) {
+        console.log("Fetching complete invoice data including line items...");
+        const response = await apiRequest("GET", `/api/invoices/${invoice.id}`);
+        completeInvoice = response;
+        console.log("Complete invoice data:", completeInvoice);
+      }
+      
+      // Validate required data
+      if (!completeInvoice.lineItems || !Array.isArray(completeInvoice.lineItems)) {
         throw new Error("Invoice line items are missing or invalid");
       }
       
-      if (!invoice.client) {
+      if (!completeInvoice.client) {
         throw new Error("Invoice client information is missing");
       }
       
-      downloadInvoicePDF(invoice);
+      downloadInvoicePDF(completeInvoice);
       toast({
         title: "Success",
         description: "Invoice PDF downloaded successfully",
@@ -112,20 +123,29 @@ export default function Invoices() {
     }
   };
 
-  const handlePreviewPDF = (invoice: any) => {
+  const handlePreviewPDF = async (invoice: any) => {
     try {
       console.log("Invoice data for PDF preview:", invoice);
       
-      // Ensure we have the required data structure
-      if (!invoice.lineItems || !Array.isArray(invoice.lineItems)) {
+      // If line items are missing, fetch the complete invoice data
+      let completeInvoice = invoice;
+      if (!invoice.lineItems || !Array.isArray(invoice.lineItems) || invoice.lineItems.length === 0) {
+        console.log("Fetching complete invoice data including line items...");
+        const response = await apiRequest("GET", `/api/invoices/${invoice.id}`);
+        completeInvoice = response;
+        console.log("Complete invoice data:", completeInvoice);
+      }
+      
+      // Validate required data
+      if (!completeInvoice.lineItems || !Array.isArray(completeInvoice.lineItems)) {
         throw new Error("Invoice line items are missing or invalid");
       }
       
-      if (!invoice.client) {
+      if (!completeInvoice.client) {
         throw new Error("Invoice client information is missing");
       }
       
-      previewInvoicePDF(invoice);
+      previewInvoicePDF(completeInvoice);
     } catch (error) {
       console.error("Error previewing PDF:", error);
       console.error("Error details:", (error as Error)?.message);

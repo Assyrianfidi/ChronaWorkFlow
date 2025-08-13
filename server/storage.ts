@@ -420,7 +420,6 @@ export class DatabaseStorage implements IStorage {
         return { ...invoice, lineItems };
       })
     );
-
     return invoicesWithLineItems;
   }
 
