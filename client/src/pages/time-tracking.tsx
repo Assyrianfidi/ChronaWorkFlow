@@ -139,31 +139,49 @@ export default function TimeTracking() {
   });
 
   const handleQRScan = (qrCode: string) => {
+    console.log('QR Code scanned:', qrCode);
+    
     // Extract worker ID from QR code URL if it's a URL format
     let workerQrCode = qrCode;
     
     // Check if QR code is a URL pointing to time tracking with worker parameter
     if (qrCode.includes('/time-tracking?worker=')) {
-      const url = new URL(qrCode);
-      const workerId = url.searchParams.get('worker');
-      if (workerId) {
-        workerQrCode = `WORKER_${workerId}`;
+      try {
+        const url = new URL(qrCode);
+        const workerId = url.searchParams.get('worker');
+        if (workerId) {
+          workerQrCode = `WORKER_${workerId}`;
+          console.log('Extracted worker QR code from URL:', workerQrCode);
+        }
+      } catch (error) {
+        console.error('Error parsing QR code URL:', error);
+        toast({
+          title: "Invalid QR Code",
+          description: "The QR code format is not valid",
+          variant: "destructive",
+        });
+        return;
       }
     }
+    
+    console.log('Final QR code to send:', workerQrCode);
     
     // Get GPS location if available
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const gpsLocation = `${position.coords.latitude},${position.coords.longitude}`;
+          console.log('GPS location:', gpsLocation);
           clockInMutation.mutate({ qrCode: workerQrCode, gpsLocation });
         },
         () => {
           // Continue without GPS if denied
+          console.log('GPS denied, continuing without location');
           clockInMutation.mutate({ qrCode: workerQrCode });
         }
       );
     } else {
+      console.log('No geolocation support, continuing without GPS');
       clockInMutation.mutate({ qrCode: workerQrCode });
     }
   };

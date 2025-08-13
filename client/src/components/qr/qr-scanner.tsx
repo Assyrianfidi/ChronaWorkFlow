@@ -145,12 +145,13 @@ export default function QRScanner({ onScan, isLoading }: QRScannerProps) {
         <div className="flex space-x-2">
           <input
             type="text"
-            placeholder="Enter QR code (e.g., WORKER_ABC123)"
+            placeholder="Enter QR code (e.g., WORKER_f3a2a3ea-b504-4781-80f3-2204b9e96de4)"
             className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
             onKeyPress={(e) => {
               if (e.key === 'Enter') {
                 const target = e.target as HTMLInputElement;
                 if (target.value.trim()) {
+                  console.log('Manual QR Code entered:', target.value.trim());
                   onScan(target.value.trim());
                   target.value = '';
                 }
@@ -162,6 +163,7 @@ export default function QRScanner({ onScan, isLoading }: QRScannerProps) {
             onClick={(e) => {
               const input = (e.target as HTMLButtonElement).previousElementSibling as HTMLInputElement;
               if (input?.value.trim()) {
+                console.log('Manual QR Code clicked:', input.value.trim());
                 onScan(input.value.trim());
                 input.value = '';
               }
@@ -170,6 +172,9 @@ export default function QRScanner({ onScan, isLoading }: QRScannerProps) {
             Test
           </Button>
         </div>
+        <p className="text-xs text-slate-500 mt-2">
+          Use the exact QR code from a worker's profile (starts with WORKER_)
+        </p>
       </div>
     </div>
   );

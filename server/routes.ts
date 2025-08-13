@@ -271,24 +271,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/time-logs/clock-in", isAuthenticated, async (req, res) => {
     try {
       const { qrCode, projectId, gpsLocation } = req.body;
+      console.log('Clock-in request received:', { qrCode, projectId, gpsLocation });
       
       // Find worker by QR code (handle both old WORKER_ format and new URL format)
       let workerQrCode = qrCode;
       
       // If it's a URL with worker parameter, extract the worker ID
       if (qrCode.includes('/time-tracking?worker=')) {
-        const url = new URL(qrCode);
-        const workerId = url.searchParams.get('worker');
-        if (workerId) {
-          workerQrCode = `WORKER_${workerId}`;
+        try {
+          const url = new URL(qrCode);
+          const workerId = url.searchParams.get('worker');
+          if (workerId) {
+            workerQrCode = `WORKER_${workerId}`;
+            console.log('Extracted worker QR code from URL:', workerQrCode);
+          }
+        } catch (error) {
+          console.error('Error parsing QR code URL:', error);
+          return res.status(400).json({ message: "Invalid QR code URL format" });
         }
       }
+      
+      console.log('Looking for worker with QR code:', workerQrCode);
       
       // Find worker by QR code
       const worker = await storage.getWorkerByQrCode(workerQrCode);
       if (!worker) {
+        console.log('Worker not found for QR code:', workerQrCode);
         return res.status(404).json({ message: "Invalid QR code or worker not found" });
       }
+      
+      console.log('Found worker:', worker.firstName, worker.lastName);
 
       const timeLogData = {
         workerId: worker.id,
