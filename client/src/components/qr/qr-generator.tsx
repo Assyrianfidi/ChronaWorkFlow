@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import QRCode from "qrcode";
 
 interface QRGeneratorProps {
   value: string;
@@ -15,70 +16,37 @@ export default function QRGenerator({ value, workerName, size = 200 }: QRGenerat
     generateQRCode();
   }, [value, size]);
 
-  const generateQRCode = () => {
+  const generateQRCode = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Set canvas size
-    canvas.width = size;
-    canvas.height = size;
-
-    // Clear canvas
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, size, size);
-
-    // Simple QR code representation (black and white squares)
-    // In a real application, you would use a QR code library like qrcode-generator
-    // For now, we'll create a simple pattern based on the value
-    const gridSize = 20;
-    const cellSize = size / gridSize;
-    
-    ctx.fillStyle = '#000000';
-    
-    // Create a pseudo-random pattern based on the value
-    const seed = value.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    let rng = seed;
-    
-    const random = () => {
-      rng = (rng * 1103515245 + 12345) & 0x7fffffff;
-      return rng / 0x7fffffff;
-    };
-
-    // Draw QR code pattern
-    for (let row = 0; row < gridSize; row++) {
-      for (let col = 0; col < gridSize; col++) {
-        // Create finder patterns (corners)
-        const isFinderPattern = 
-          (row < 7 && col < 7) || 
-          (row < 7 && col >= gridSize - 7) || 
-          (row >= gridSize - 7 && col < 7);
-        
-        if (isFinderPattern) {
-          // Draw finder pattern
-          const isOuter = row === 0 || row === 6 || col === 0 || col === 6 ||
-                          (row === 1 && (col === 1 || col === 5)) ||
-                          (row === 5 && (col === 1 || col === 5));
-          const isInner = (row >= 2 && row <= 4 && col >= 2 && col <= 4);
-          
-          if (isOuter || isInner) {
-            ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
-          }
-        } else {
-          // Random data pattern
-          if (random() > 0.5) {
-            ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
-          }
-        }
+    try {
+      // Generate real QR code using qrcode library
+      await QRCode.toCanvas(canvas, value, {
+        width: size,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        },
+        errorCorrectionLevel: 'M'
+      });
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      
+      // Fallback: draw error message
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        canvas.width = size;
+        canvas.height = size;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = '#FF0000';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('QR Code Error', size / 2, size / 2);
       }
     }
-
-    // Draw border
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(0, 0, size, size);
   };
 
   const downloadQR = () => {

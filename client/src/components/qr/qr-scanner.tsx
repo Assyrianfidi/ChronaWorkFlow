@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, CameraOff } from "lucide-react";
+import jsQR from "jsqr";
 
 interface QRScannerProps {
   onScan: (qrCode: string) => void;
@@ -64,16 +65,19 @@ export default function QRScanner({ onScan, isLoading }: QRScannerProps) {
 
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     
-    // Simple QR code detection (in a real app, you'd use a QR code library like jsQR)
-    // For demo purposes, we'll simulate QR code detection by looking for worker patterns
-    // In production, you would use: import jsQR from 'jsqr';
-    // const code = jsQR(imageData.data, imageData.width, imageData.height);
-    
-    // Simulate QR code detection for demo
-    if (Math.random() < 0.1) { // 10% chance to "detect" a code for demo
-      const mockQRCode = `WORKER_${Math.random().toString(36).substring(7).toUpperCase()}`;
-      onScan(mockQRCode);
-      stopCamera();
+    try {
+      // Use jsQR to detect real QR codes
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: "dontInvert",
+      });
+      
+      if (code) {
+        console.log("QR Code detected:", code.data);
+        onScan(code.data);
+        stopCamera();
+      }
+    } catch (error) {
+      console.error("Error scanning QR code:", error);
     }
   };
 
