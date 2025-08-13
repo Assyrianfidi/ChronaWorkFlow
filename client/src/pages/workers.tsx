@@ -128,7 +128,7 @@ export default function Workers() {
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
-          ) : workers && workers.length > 0 ? (
+          ) : workers && Array.isArray(workers) && workers.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {workers.map((worker: Worker) => (
                 <Card key={worker.id} className="border border-gray-200 shadow-sm">

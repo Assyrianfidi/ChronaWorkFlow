@@ -89,11 +89,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/workers/:id", isAuthenticated, async (req, res) => {
     try {
-      const workerData = insertWorkerSchema.partial().parse(req.body);
+      // Convert hourlyRate to string if it's a number for Drizzle compatibility
+      const bodyData = { ...req.body };
+      if (bodyData.hourlyRate !== undefined && bodyData.hourlyRate !== null && bodyData.hourlyRate !== "") {
+        bodyData.hourlyRate = String(bodyData.hourlyRate);
+      } else if (bodyData.hourlyRate === "" || bodyData.hourlyRate === null) {
+        delete bodyData.hourlyRate;
+      }
+      
+      const workerData = insertWorkerSchema.partial().parse(bodyData);
       const worker = await storage.updateWorker(req.params.id, workerData);
       res.json(worker);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Worker update validation errors:", JSON.stringify(error.errors, null, 2));
         return res.status(400).json({ message: "Invalid worker data", errors: error.errors });
       }
       console.error("Error updating worker:", error);

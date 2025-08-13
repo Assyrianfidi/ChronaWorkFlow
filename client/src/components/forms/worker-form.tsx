@@ -12,8 +12,17 @@ import { Switch } from "@/components/ui/switch";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { z } from "zod";
 
-const workerFormSchema = insertWorkerSchema.extend({
-  hourlyRate: z.string().optional().transform(val => val ? parseFloat(val) : undefined),
+const workerFormSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email").or(z.literal("")),
+  phone: z.string(),
+  hourlyRate: z.string().transform(val => {
+    if (!val || val === "") return undefined;
+    const num = parseFloat(val);
+    return isNaN(num) ? undefined : String(num);
+  }),
+  isActive: z.boolean(),
 });
 
 type WorkerFormData = z.infer<typeof workerFormSchema>;
@@ -34,7 +43,7 @@ export default function WorkerForm({ worker, onSuccess }: WorkerFormProps) {
       lastName: worker?.lastName || "",
       email: worker?.email || "",
       phone: worker?.phone || "",
-      hourlyRate: worker?.hourlyRate || undefined,
+      hourlyRate: worker?.hourlyRate ? String(worker.hourlyRate) : "",
       isActive: worker?.isActive ?? true,
     },
   });
