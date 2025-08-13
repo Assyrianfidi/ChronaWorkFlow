@@ -276,14 +276,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Find worker by QR code (handle both old WORKER_ format and new URL format)
       let workerQrCode = qrCode;
       
-      // If it's a URL with worker parameter, extract the worker ID
+      // If it's a URL with worker parameter, extract the worker ID and look up by worker ID
       if (qrCode.includes('/time-tracking?worker=')) {
         try {
           const url = new URL(qrCode);
           const workerId = url.searchParams.get('worker');
           if (workerId) {
-            workerQrCode = `WORKER_${workerId}`;
-            console.log('Extracted worker QR code from URL:', workerQrCode);
+            console.log('Extracted worker ID from URL:', workerId);
+            // First try to find worker by the URL itself
+            let worker = await storage.getWorkerByQrCode(qrCode);
+            if (!worker) {
+              // If not found, try the old WORKER_ format
+              workerQrCode = `WORKER_${workerId}`;
+              console.log('Trying old format:', workerQrCode);
+              worker = await storage.getWorkerByQrCode(workerQrCode);
+            }
+            if (worker) {
+              console.log('Found worker:', worker.firstName, worker.lastName);
+              const timeLogData = {
+                workerId: worker.id,
+                projectId: projectId || null,
+                clockIn: new Date(),
+                gpsLocation: gpsLocation || null,
+              };
+              const timeLog = await storage.createTimeLog(timeLogData);
+              return res.status(201).json(timeLog);
+            }
           }
         } catch (error) {
           console.error('Error parsing QR code URL:', error);

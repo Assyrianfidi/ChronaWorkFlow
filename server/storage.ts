@@ -120,7 +120,18 @@ export class DatabaseStorage implements IStorage {
   async createWorker(workerData: InsertWorker): Promise<Worker> {
     // Generate QR code as URL that points to time tracking page with worker ID
     const workerId = randomUUID();
-    const qrCode = `${process.env.REPLIT_DOMAINS || 'http://localhost:5000'}/time-tracking?worker=${workerId}`;
+    
+    // Use proper domain URL - check for Replit domain first, then localhost
+    let baseUrl = 'http://localhost:5000';
+    if (process.env.REPLIT_DOMAINS) {
+      // Use the first domain from REPLIT_DOMAINS
+      const domains = process.env.REPLIT_DOMAINS.split(',');
+      baseUrl = `https://${domains[0].trim()}`;
+    }
+    
+    const qrCode = `${baseUrl}/time-tracking?worker=${workerId}`;
+    console.log('Generated QR code URL:', qrCode);
+    
     const [worker] = await db
       .insert(workers)
       .values({ ...workerData, id: workerId, qrCode })
