@@ -3,7 +3,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Users, Clock, FolderOpen, DollarSign, TrendingUp } from "lucide-react";
 
 export default function MetricsGrid() {
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats, isLoading } = useQuery<{
+    totalWorkers: string;
+    weeklyHours: string;
+    activeProjects: string;
+    monthlyRevenue: string;
+  }>({
     queryKey: ["/api/dashboard/stats"],
     retry: false,
   });
@@ -11,7 +16,7 @@ export default function MetricsGrid() {
   const metrics = [
     {
       title: "Total Workers",
-      value: stats?.totalWorkers || 0,
+      value: stats?.totalWorkers || "0",
       change: "+2 this month",
       icon: Users,
       iconBg: "bg-blue-100",
@@ -19,7 +24,7 @@ export default function MetricsGrid() {
     },
     {
       title: "Hours This Week",
-      value: `${stats?.weeklyHours || 0}`,
+      value: `${stats?.weeklyHours || "0"}`,
       change: "+12% vs last week",
       icon: Clock,
       iconBg: "bg-green-100",
@@ -27,7 +32,7 @@ export default function MetricsGrid() {
     },
     {
       title: "Active Projects",
-      value: stats?.activeProjects || 0,
+      value: stats?.activeProjects || "0",
       change: "6 due this week",
       icon: FolderOpen,
       iconBg: "bg-purple-100",
@@ -35,7 +40,7 @@ export default function MetricsGrid() {
     },
     {
       title: "Monthly Revenue",
-      value: `$${(stats?.monthlyRevenue || 0).toLocaleString()}`,
+      value: `$${parseFloat(stats?.monthlyRevenue || "0").toLocaleString()}`,
       change: "+8% vs last month",
       icon: DollarSign,
       iconBg: "bg-green-100",

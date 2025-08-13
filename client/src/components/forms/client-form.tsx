@@ -97,7 +97,7 @@ export default function ClientForm({ client, onSuccess }: ClientFormProps) {
             <FormItem>
               <FormLabel>Company Name</FormLabel>
               <FormControl>
-                <Input placeholder="Acme Corp" {...field} />
+                <Input placeholder="Acme Corp" {...field} value={field.value || ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -111,7 +111,7 @@ export default function ClientForm({ client, onSuccess }: ClientFormProps) {
             <FormItem>
               <FormLabel>Contact Person</FormLabel>
               <FormControl>
-                <Input placeholder="John Smith" {...field} />
+                <Input placeholder="John Smith" {...field} value={field.value || ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -126,7 +126,7 @@ export default function ClientForm({ client, onSuccess }: ClientFormProps) {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="contact@acme.com" {...field} />
+                  <Input type="email" placeholder="contact@acme.com" {...field} value={field.value || ""} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -140,7 +140,7 @@ export default function ClientForm({ client, onSuccess }: ClientFormProps) {
               <FormItem>
                 <FormLabel>Phone</FormLabel>
                 <FormControl>
-                  <Input placeholder="+1 (555) 123-4567" {...field} />
+                  <Input placeholder="+1 (555) 123-4567" {...field} value={field.value || ""} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -159,7 +159,8 @@ export default function ClientForm({ client, onSuccess }: ClientFormProps) {
                   placeholder="123 Business St, City, State 12345"
                   className="resize-none"
                   rows={3}
-                  {...field} 
+                  {...field}
+                  value={field.value || ""}
                 />
               </FormControl>
               <FormMessage />
@@ -178,7 +179,8 @@ export default function ClientForm({ client, onSuccess }: ClientFormProps) {
                   placeholder="Additional notes about this client..."
                   className="resize-none"
                   rows={3}
-                  {...field} 
+                  {...field}
+                  value={field.value || ""}
                 />
               </FormControl>
               <FormMessage />

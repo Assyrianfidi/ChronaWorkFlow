@@ -87,15 +87,13 @@ export default function Invoices() {
 
   const handleDownloadPDF = async (invoice: any) => {
     try {
-      console.log("Invoice data for PDF:", invoice);
+
       
       // If line items are missing, fetch the complete invoice data
       let completeInvoice = invoice;
       if (!invoice.lineItems || !Array.isArray(invoice.lineItems) || invoice.lineItems.length === 0) {
-        console.log("Fetching complete invoice data including line items...");
         const response = await apiRequest("GET", `/api/invoices/${invoice.id}`);
         completeInvoice = response;
-        console.log("Complete invoice data:", completeInvoice);
       }
       
       // Validate required data
@@ -125,15 +123,12 @@ export default function Invoices() {
 
   const handlePreviewPDF = async (invoice: any) => {
     try {
-      console.log("Invoice data for PDF preview:", invoice);
       
       // If line items are missing, fetch the complete invoice data
       let completeInvoice = invoice;
       if (!invoice.lineItems || !Array.isArray(invoice.lineItems) || invoice.lineItems.length === 0) {
-        console.log("Fetching complete invoice data including line items...");
         const response = await apiRequest("GET", `/api/invoices/${invoice.id}`);
         completeInvoice = response;
-        console.log("Complete invoice data:", completeInvoice);
       }
       
       // Validate required data

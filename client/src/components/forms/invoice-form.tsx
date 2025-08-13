@@ -148,7 +148,6 @@ export default function InvoiceForm({ invoice, onSuccess }: InvoiceFormProps) {
         })),
       };
       
-      console.log("Sending to backend:", transformedData);
       
       const url = invoice ? `/api/invoices/${invoice.id}` : "/api/invoices";
       const method = invoice ? "PUT" : "POST";
