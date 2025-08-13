@@ -402,6 +402,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reports routes
+  app.get("/api/reports", isAuthenticated, async (req: any, res) => {
+    try {
+      const { reportType, from, to } = req.query;
+      const userId = req.user.claims.sub;
+      
+      // For now, return structured data for different report types
+      // This will be expanded with real analytics data
+      let reportData = {};
+      
+      switch (reportType) {
+        case "revenue":
+          reportData = {
+            totalRevenue: 12345.67,
+            totalExpenses: 8765.43,
+            netProfit: 3580.24,
+            invoiceCount: 45,
+            averageInvoiceValue: 274.35,
+            revenueByMonth: [
+              { month: "Jan", revenue: 4000, expenses: 2400 },
+              { month: "Feb", revenue: 3000, expenses: 1398 },
+              { month: "Mar", revenue: 2000, expenses: 9800 },
+              { month: "Apr", revenue: 2780, expenses: 3908 },
+              { month: "May", revenue: 1890, expenses: 4800 },
+              { month: "Jun", revenue: 2390, expenses: 3800 },
+            ]
+          };
+          break;
+          
+        case "hours":
+          reportData = {
+            totalHours: 1240,
+            averageHoursPerWorker: 155,
+            overtimeHours: 32,
+            hoursByWeek: [
+              { week: "Week 1", hours: 320 },
+              { week: "Week 2", hours: 285 },
+              { week: "Week 3", hours: 310 },
+              { week: "Week 4", hours: 295 },
+            ]
+          };
+          break;
+          
+        case "projects":
+          reportData = {
+            totalProjects: 25,
+            completedProjects: 15,
+            inProgressProjects: 8,
+            pendingProjects: 2,
+            completionRate: 92.5,
+            averageProjectDuration: 12.5
+          };
+          break;
+          
+        case "workers":
+          reportData = {
+            totalWorkers: 8,
+            activeWorkers: 7,
+            averageProductivity: 87.2,
+            topPerformers: [
+              { name: "John Doe", hours: 160, projects: 3 },
+              { name: "Jane Smith", hours: 155, projects: 2 },
+            ]
+          };
+          break;
+          
+        case "clients":
+          reportData = {
+            totalClients: 12,
+            activeClients: 9,
+            newClientsThisMonth: 2,
+            clientRetentionRate: 85.5,
+            topClients: [
+              { name: "ABC Corp", revenue: 5000, projects: 5 },
+              { name: "XYZ Ltd", revenue: 3200, projects: 3 },
+            ]
+          };
+          break;
+          
+        default:
+          reportData = {
+            overview: {
+              totalRevenue: 12345.67,
+              totalHours: 1240,
+              activeWorkers: 7,
+              completedProjects: 15
+            }
+          };
+      }
+      
+      res.json({
+        reportType,
+        dateRange: { from, to },
+        data: reportData,
+        generatedAt: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error generating report:", error);
+      res.status(500).json({ message: "Failed to generate report" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
