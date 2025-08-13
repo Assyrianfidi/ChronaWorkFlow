@@ -13,7 +13,7 @@ export default function Landing() {
               <FileText className="text-white text-2xl" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-slate-800">Vigilo</h1>
+              <h1 className="text-4xl font-bold text-slate-800">Chrona Workflow</h1>
               <p className="text-xl text-slate-600">Business Management</p>
             </div>
           </div>
@@ -132,7 +132,7 @@ export default function Landing() {
             Ready to Transform Your Business Management?
           </h3>
           <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses that have streamlined their operations with Vigilo. 
+            Join thousands of businesses that have streamlined their operations with Chrona Workflow. 
             Start your free trial today and experience the difference.
           </p>
           <Button

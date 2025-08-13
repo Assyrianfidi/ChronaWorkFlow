@@ -28,7 +28,7 @@ export default function Sidebar() {
             <FileText className="text-white text-lg" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-800">Vigilo</h1>
+            <h1 className="text-xl font-bold text-slate-800">Chrona Workflow</h1>
             <p className="text-sm text-slate-500">Business Management</p>
           </div>
         </div>

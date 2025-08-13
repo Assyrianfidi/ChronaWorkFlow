@@ -1,4 +1,4 @@
-# Vigilo - Business Management Application
+# Chrona Workflow - Business Management Application
 
 ## Overview
 
@@ -6,8 +6,8 @@ This is a comprehensive, production-ready business management application design
 
 ## Recent Changes
 
-**August 13, 2025**: Application Rebranded to "Vigilo" and Worker Location Map Feature Added
-- ✅ COMPLETED: Rebranded entire application from "Fidi WorkFlow" to "Vigilo"
+**August 13, 2025**: Application Rebranded to "Chrona Workflow" and Worker Location Map Feature Added
+- ✅ COMPLETED: Rebranded entire application from "Fidi WorkFlow" to "Chrona Workflow"
 - Updated all UI text, branding, and documentation to reflect new name
 - Added comprehensive Worker Location Map feature with GPS tracking
 - Created interactive map interface showing worker QR scan locations
