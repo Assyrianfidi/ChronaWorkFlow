@@ -6,15 +6,16 @@ This is a comprehensive, production-ready business management application design
 
 ## Recent Changes
 
-**August 13, 2025**: Application Rebranded to "Chrona Workflow" and Worker Location Map Feature Added
+**August 13, 2025**: Application Rebranded to "Chrona Workflow" and Custom Domain Acquired
 - ✅ COMPLETED: Rebranded entire application from "Fidi WorkFlow" to "Chrona Workflow"
+- ✅ COMPLETED: Custom domain www.ChronaWorkflow.com purchased and ready for configuration
 - Updated all UI text, branding, and documentation to reflect new name
 - Added comprehensive Worker Location Map feature with GPS tracking
 - Created interactive map interface showing worker QR scan locations
 - Implemented location filters for active/inactive workers and time periods
 - Fixed QR code generation and scanning with real libraries (qrcode, jsQR)
+- Updated deployment documentation with custom domain setup instructions
 - All core features remain fully operational: time tracking, invoicing, worker management
-- Deployment configuration remains properly configured for production
 
 **August 12, 2025**: Complete system validation and error resolution
 - Successfully resolved all invoice creation validation errors
