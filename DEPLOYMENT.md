@@ -1,6 +1,6 @@
 # Deployment Configuration Guide - ChronaWorkflow.com
 
-**Custom Domain:** www.ChronaWorkflow.com
+**Custom Domain:** ChronaWorkflow.com
 
 ## Current Issue
 The deployment is configured as "static" but this is a full-stack application with an Express server. The deployment fails because static deployments cannot run server code.
@@ -75,16 +75,16 @@ Before deploying, ensure:
 - [ ] Deployment type is set to "Autoscale"
 - [ ] Public directory points to "dist/public"
 - [ ] Run command is set to "npm start"
-- [ ] Custom domain www.ChronaWorkflow.com is configured
+- [ ] Custom domain ChronaWorkflow.com is configured
 
-## Custom Domain Setup (www.ChronaWorkflow.com)
+## Custom Domain Setup (ChronaWorkflow.com)
 
 ### Steps to Configure Your Custom Domain:
 
 1. **Deploy your application first** using Autoscale deployment
 2. **Navigate to Deployments tab** in your Replit project
 3. **Go to Settings** and select "Link a domain"
-4. **Enter your domain:** www.ChronaWorkflow.com
+4. **Enter your domain:** ChronaWorkflow.com
 5. **Add DNS records** to your domain registrar:
    - Replit will provide specific A and TXT records
    - Add these records in your domain registrar's DNS management
