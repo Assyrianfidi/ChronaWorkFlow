@@ -9,7 +9,8 @@ import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
 if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
+  console.warn("Environment variable REPLIT_DOMAINS not provided, using default domains");
+  process.env.REPLIT_DOMAINS = "localhost";
 }
 
 const getOidcConfig = memoize(
@@ -87,14 +88,19 @@ export async function setupAuth(app: Express) {
   };
 
   // Add strategies for both Replit domains and common custom domains
+  const replitDomains = process.env.REPLIT_DOMAINS ? process.env.REPLIT_DOMAINS.split(",") : [];
   const allDomains = [
-    ...process.env.REPLIT_DOMAINS!.split(","),
-    "www.chronaworkflow.com",
+    ...replitDomains,
+    "www.chronaworkflow.com", 
     "chronaworkflow.com",
     "localhost"
   ];
   
-  for (const domain of allDomains) {
+  // Remove duplicates and filter out empty strings
+  const uniqueDomains = [...new Set(allDomains.filter(domain => domain.trim()))];
+  console.log(`Configuring authentication for domains: ${uniqueDomains.join(', ')}`);
+  
+  for (const domain of uniqueDomains) {
     const strategyName = `replitauth:${domain}`;
     const strategy = new Strategy(
       {
