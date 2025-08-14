@@ -88,7 +88,8 @@ export async function setupAuth(app: Express) {
   const allDomains = [
     ...process.env.REPLIT_DOMAINS!.split(","),
     "www.chronaworkflow.com",
-    "chronaworkflow.com"
+    "chronaworkflow.com",
+    "localhost"
   ];
   
   for (const domain of allDomains) {
