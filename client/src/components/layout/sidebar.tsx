@@ -62,7 +62,7 @@ export default function Sidebar() {
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-slate-100 cursor-pointer group">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={user?.profileImageUrl || undefined} alt="User Profile" />
+            <AvatarImage src={undefined} alt="User Profile" />
             <AvatarFallback className="bg-slate-200 text-slate-700">
               {user?.firstName?.[0]}{user?.lastName?.[0]}
             </AvatarFallback>
@@ -71,7 +71,7 @@ export default function Sidebar() {
             <p className="font-medium text-slate-800 truncate">
               {user?.firstName} {user?.lastName}
             </p>
-            <p className="text-sm text-slate-500 truncate">{user?.role || "Admin"}</p>
+            <p className="text-sm text-slate-500 truncate">{user?.userType === 'admin' ? 'Platform Admin' : 'Business Admin'}</p>
           </div>
           <button
             onClick={async () => {
