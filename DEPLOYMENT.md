@@ -42,8 +42,14 @@ After making these changes, your deployment should:
 Ensure these environment variables are set in the deployment:
 - `DATABASE_URL` - Your PostgreSQL connection string
 - `SESSION_SECRET` - A secure random string for session encryption
-- `REPLIT_DOMAINS` - Your deployment domain(s)
+- `REPLIT_DOMAINS` - Your deployment domain(s), should include your custom domain
 - `PORT` - Will be automatically set by Replit (usually 443 for production)
+
+**Important for Custom Domain Authentication:**
+The `REPLIT_DOMAINS` environment variable in production should include your custom domain. For example:
+```
+REPLIT_DOMAINS=your-replit-domain.replit.dev,www.chronaworkflow.com,chronaworkflow.com
+```
 
 ## Project Structure
 The build process creates:
