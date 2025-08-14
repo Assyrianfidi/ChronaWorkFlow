@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
+import LoggedOut from "@/pages/logged-out";
 import Dashboard from "@/pages/dashboard";
 import Workers from "@/pages/workers";
 import TimeTracking from "@/pages/time-tracking";
@@ -28,6 +29,9 @@ function Router() {
 
   return (
     <Switch>
+      {/* Public routes that don't require authentication */}
+      <Route path="/logged-out" component={LoggedOut} />
+      
       {!isAuthenticated ? (
         <Route path="/" component={Landing} />
       ) : (

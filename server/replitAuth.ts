@@ -179,11 +179,11 @@ export async function setupAuth(app: Express) {
       res.clearCookie('passport', options);
     });
     
-    // Send success response
-    res.json({ success: true, message: 'Logged out successfully' });
+    // Send success response with redirect instruction
+    res.json({ success: true, message: 'Logged out successfully', redirect: '/logged-out' });
   });
 
-  // Keep the original GET logout for backwards compatibility but redirect immediately
+  // Keep the original GET logout for backwards compatibility but redirect to logged-out page
   app.get("/api/logout", (req, res) => {
     // Destroy session immediately without OAuth
     if (req.session) {
@@ -194,8 +194,8 @@ export async function setupAuth(app: Express) {
     res.clearCookie('connect.sid', { path: '/' });
     res.clearCookie('session', { path: '/' });
     
-    // Direct redirect to home without any OAuth interaction
-    res.redirect('/');
+    // Direct redirect to logged-out page without any OAuth interaction
+    res.redirect('/logged-out');
   });
 }
 

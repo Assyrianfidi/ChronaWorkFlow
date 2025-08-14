@@ -52,7 +52,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             // Force reload the page to completely reset state
             setTimeout(() => {
-              window.location.replace('/');
+              window.location.replace('/logged-out');
             }, 100);
           </script>
           <p>Logging out, please wait...</p>
@@ -78,10 +78,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
               document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
             });
             
-            // Redirect to home
-            window.location.replace('/');
+            // Redirect to logged out page
+            window.location.replace('/logged-out');
           </script>
           <p>Logging out...</p>
+        </body>
+      </html>
+    `);
+  });
+
+  // Logged out page route - serves a simple logged out page
+  app.get('/logged-out', (req, res) => {
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Logged Out - Chrona Workflow</title>
+          <style>
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+              margin: 0;
+              padding: 0;
+              min-height: 100vh;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .container {
+              background: white;
+              padding: 3rem;
+              border-radius: 12px;
+              box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+              text-align: center;
+              max-width: 400px;
+              width: 90%;
+            }
+            h1 {
+              color: #2d3748;
+              margin-bottom: 1rem;
+              font-size: 2rem;
+            }
+            p {
+              color: #4a5568;
+              margin-bottom: 2rem;
+              font-size: 1.1rem;
+              line-height: 1.6;
+            }
+            .btn {
+              background: #667eea;
+              color: white;
+              padding: 0.75rem 2rem;
+              border: none;
+              border-radius: 6px;
+              font-size: 1rem;
+              font-weight: 600;
+              cursor: pointer;
+              text-decoration: none;
+              display: inline-block;
+              transition: background 0.2s;
+            }
+            .btn:hover {
+              background: #5a6fd8;
+            }
+            .logo {
+              width: 60px;
+              height: 60px;
+              background: #667eea;
+              border-radius: 12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 1.5rem;
+              color: white;
+              font-size: 24px;
+              font-weight: bold;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="logo">CW</div>
+            <h1>You've been logged out</h1>
+            <p>Thank you for using Chrona Workflow. Your session has been safely terminated.</p>
+            <a href="/api/login" class="btn">Log in again</a>
+          </div>
         </body>
       </html>
     `);
