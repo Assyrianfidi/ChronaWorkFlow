@@ -121,12 +121,12 @@ export class DatabaseStorage implements IStorage {
     // Generate QR code as URL that points to time tracking page with worker ID
     const workerId = randomUUID();
     
-    // Use proper domain URL - check for Replit domain first, then localhost
-    let baseUrl = 'http://localhost:5000';
-    if (process.env.REPLIT_DOMAINS) {
-      // Use the first domain from REPLIT_DOMAINS
-      const domains = process.env.REPLIT_DOMAINS.split(',');
-      baseUrl = `https://${domains[0].trim()}`;
+    // Use custom domain for QR codes in production
+    let baseUrl = 'https://www.chronaworkflow.com';
+    
+    // For development, use localhost
+    if (process.env.NODE_ENV === 'development') {
+      baseUrl = 'http://localhost:5000';
     }
     
     // Create URL that opens time tracking page with worker ID

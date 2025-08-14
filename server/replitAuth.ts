@@ -96,8 +96,8 @@ export async function setupAuth(app: Express) {
     "localhost"
   ];
   
-  // Remove duplicates and filter out empty strings
-  const uniqueDomains = [...new Set(allDomains.filter(domain => domain.trim()))];
+  // Remove duplicates and filter out empty strings - fix TypeScript compatibility
+  const uniqueDomains = Array.from(new Set(allDomains.filter(domain => domain.trim())));
   console.log(`Configuring authentication for domains: ${uniqueDomains.join(', ')}`);
   
   for (const domain of uniqueDomains) {
