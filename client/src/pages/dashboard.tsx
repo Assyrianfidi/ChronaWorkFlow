@@ -14,14 +14,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
+      // Redirect to logged-out page instead of auto-login
+      window.location.href = "/logged-out";
       return;
     }
   }, [isAuthenticated, isLoading, toast]);

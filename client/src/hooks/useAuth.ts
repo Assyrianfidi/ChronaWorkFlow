@@ -12,15 +12,8 @@ export function useAuth() {
   // Handle authentication errors
   const isAuthenticated = !!user && !error;
   
-  // If we get a 401 error, redirect to login
-  if (error && !isLoading) {
-    const errorMessage = error.message || '';
-    if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 100);
-    }
-  }
+  // Don't automatically redirect on 401 errors - let user manually choose to login
+  // This prevents automatic OAuth redirects that get blocked by Replit
 
   return {
     user,

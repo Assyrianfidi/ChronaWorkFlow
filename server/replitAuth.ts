@@ -32,6 +32,10 @@ export function getSession() {
     ttl: sessionTtl,
     tableName: "sessions",
   });
+  
+  // Use secure cookies only in production
+  const isProduction = process.env.NODE_ENV === "production";
+  
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
@@ -39,7 +43,7 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: isProduction, // Only use secure cookies in production
       maxAge: sessionTtl,
     },
   });
@@ -103,17 +107,28 @@ export async function setupAuth(app: Express) {
   
   for (const domain of uniqueDomains) {
     const strategyName = `replitauth:${domain}`;
+    
+    // Determine the correct protocol and port for callback URL
+    let callbackURL;
+    if (domain === "localhost" || domain === "127.0.0.1") {
+      // For local development, use http and include port
+      callbackURL = `http://${domain}:5000/api/callback`;
+    } else {
+      // For production domains, use https
+      callbackURL = `https://${domain}/api/callback`;
+    }
+    
     const strategy = new Strategy(
       {
         name: strategyName,
         config,
         scope: "openid email profile offline_access",
-        callbackURL: `https://${domain}/api/callback`,
+        callbackURL,
       },
       verify,
     );
     passport.use(strategy);
-    console.log(`Registered auth strategy: ${strategyName}`);
+    console.log(`Registered auth strategy: ${strategyName} with callback: ${callbackURL}`);
   }
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
@@ -136,10 +151,18 @@ export async function setupAuth(app: Express) {
       });
     }
     
-    passport.authenticate(strategyName, {
-      prompt: "login consent",
-      scope: ["openid", "email", "profile", "offline_access"],
-    })(req, res, next);
+    // Add error handling for authentication failures
+    try {
+      passport.authenticate(strategyName, {
+        prompt: "login consent",
+        scope: ["openid", "email", "profile", "offline_access"],
+        failureRedirect: "/logged-out",
+        failureMessage: true
+      })(req, res, next);
+    } catch (error) {
+      console.error('Authentication error:', error);
+      res.redirect('/logged-out');
+    }
   });
 
   app.get("/api/callback", (req, res, next) => {
@@ -149,7 +172,8 @@ export async function setupAuth(app: Express) {
     
     passport.authenticate(strategyName, {
       successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
+      failureRedirect: "/logged-out",
+      failureMessage: true
     })(req, res, next);
   });
 
