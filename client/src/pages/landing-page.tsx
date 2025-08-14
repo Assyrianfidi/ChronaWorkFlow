@@ -58,8 +58,7 @@ export default function LandingPage() {
           </Card>
 
           {/* Platform Admin Access */}
-          <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-purple-200" 
-                onClick={() => setLocation("/admin-setup")}>
+          <Card className="p-6 hover:shadow-lg transition-shadow border-2 hover:border-purple-200">
             <CardHeader className="pb-4">
               <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ShieldCheck className="w-8 h-8 text-purple-600 dark:text-purple-400" />
@@ -70,8 +69,15 @@ export default function LandingPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-4">
-              <Button size="lg" variant="outline" className="w-full mb-4 border-purple-600 text-purple-600 hover:bg-purple-50" 
-                      onClick={() => setLocation("/admin-auth")}>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="w-full mb-4 border-purple-600 text-purple-600 hover:bg-purple-50" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLocation("/admin-auth");
+                }}
+              >
                 Admin Login
               </Button>
               <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
@@ -79,7 +85,10 @@ export default function LandingPage() {
                 <br />
                 <button 
                   className="text-purple-600 hover:text-purple-700 underline text-xs mt-1"
-                  onClick={() => setLocation("/admin-setup")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLocation("/admin-setup");
+                  }}
                 >
                   First time? Create admin account
                 </button>
