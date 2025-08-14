@@ -93,7 +93,8 @@ export async function setupAuth(app: Express) {
     ...replitDomains,
     "www.chronaworkflow.com", 
     "chronaworkflow.com",
-    "localhost"
+    "localhost",
+    "127.0.0.1"
   ];
   
   // Remove duplicates and filter out empty strings - fix TypeScript compatibility

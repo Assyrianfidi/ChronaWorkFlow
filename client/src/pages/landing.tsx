@@ -24,13 +24,26 @@ export default function Landing() {
             Streamline your business operations with our comprehensive solution for worker time tracking, 
             client management, project oversight, and invoicing - all in one powerful platform.
           </p>
-          <Button
-            onClick={() => window.location.href = '/api/login'}
-            size="lg"
-            className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg"
-          >
-            Get Started Today
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={() => window.location.href = '/api/login'}
+              size="lg"
+              className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg"
+            >
+              Login to Your Account
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/api/login'}
+              size="lg"
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 text-lg"
+            >
+              Create New Account
+            </Button>
+          </div>
+          <p className="text-sm text-slate-500 mt-4">
+            Sign up with your Replit account to get started immediately
+          </p>
         </div>
 
         {/* Features Grid */}
@@ -132,16 +145,29 @@ export default function Landing() {
             Ready to Transform Your Business Management?
           </h3>
           <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses that have streamlined their operations with Chrona Workflow. 
-            Start your free trial today and experience the difference.
+            Join businesses that have streamlined their operations with Chrona Workflow. 
+            Sign up with your Replit account to get started immediately.
           </p>
-          <Button
-            onClick={() => window.location.href = '/api/login'}
-            size="lg"
-            className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg"
-          >
-            Start Free Trial
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={() => window.location.href = '/api/login'}
+              size="lg"
+              className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg"
+            >
+              Login to Account
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/api/login'}
+              size="lg"
+              variant="outline" 
+              className="border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 text-lg"
+            >
+              Create Account
+            </Button>
+          </div>
+          <p className="text-xs text-slate-400 mt-4">
+            Secure authentication through Replit • No credit card required
+          </p>
         </div>
       </div>
     </div>
