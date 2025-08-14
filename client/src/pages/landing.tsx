@@ -1,8 +1,21 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, Users, FileText, QrCode, BarChart3, Shield } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Clock, Users, FileText, QrCode, BarChart3, Shield, LogIn, UserPlus } from "lucide-react";
 
 export default function Landing() {
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+
+  const handleLogin = () => {
+    window.location.href = '/api/login';
+  };
+
+  const handleSignup = () => {
+    window.location.href = '/api/login';
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -24,25 +37,104 @@ export default function Landing() {
             Streamline your business operations with our comprehensive solution for worker time tracking, 
             client management, project oversight, and invoicing - all in one powerful platform.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              onClick={() => window.location.href = '/api/login'}
-              size="lg"
-              className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg"
-            >
-              Login to Your Account
-            </Button>
-            <Button
-              onClick={() => window.location.href = '/api/login'}
-              size="lg"
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 text-lg"
-            >
-              Create New Account
-            </Button>
-          </div>
+          <Dialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg"
+              >
+                Get Started
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-center text-2xl font-bold">
+                  Welcome to Chrona Workflow
+                </DialogTitle>
+              </DialogHeader>
+              
+              <Tabs defaultValue="login" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="login" className="flex items-center gap-2">
+                    <LogIn className="h-4 w-4" />
+                    Login
+                  </TabsTrigger>
+                  <TabsTrigger value="signup" className="flex items-center gap-2">
+                    <UserPlus className="h-4 w-4" />
+                    Sign Up
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="login" className="space-y-4 mt-6">
+                  <div className="text-center space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-semibold">Welcome Back</h3>
+                      <p className="text-sm text-slate-600">
+                        Sign in to your Chrona Workflow account to continue managing your business operations.
+                      </p>
+                    </div>
+                    
+                    <Button 
+                      onClick={handleLogin}
+                      className="w-full bg-primary hover:bg-blue-700 text-white py-3"
+                      size="lg"
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Login with Replit Account
+                    </Button>
+                    
+                    <p className="text-xs text-slate-500">
+                      Secure authentication through Replit
+                    </p>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="signup" className="space-y-4 mt-6">
+                  <div className="text-center space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-semibold">Create Your Account</h3>
+                      <p className="text-sm text-slate-600">
+                        Join thousands of businesses streamlining their operations with Chrona Workflow.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-3 gap-2 text-xs text-slate-500">
+                        <div className="flex flex-col items-center p-2 bg-slate-50 rounded">
+                          <QrCode className="h-6 w-6 mb-1 text-primary" />
+                          <span>QR Tracking</span>
+                        </div>
+                        <div className="flex flex-col items-center p-2 bg-slate-50 rounded">
+                          <Users className="h-6 w-6 mb-1 text-primary" />
+                          <span>Team Mgmt</span>
+                        </div>
+                        <div className="flex flex-col items-center p-2 bg-slate-50 rounded">
+                          <FileText className="h-6 w-6 mb-1 text-primary" />
+                          <span>Invoicing</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={handleSignup}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white py-3"
+                      size="lg"
+                    >
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Create Account with Replit
+                    </Button>
+                    
+                    <p className="text-xs text-slate-500">
+                      No credit card required • Free to start
+                    </p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </DialogContent>
+          </Dialog>
+          
           <p className="text-sm text-slate-500 mt-4">
-            Sign up with your Replit account to get started immediately
+            Trusted by businesses worldwide • Secure Replit authentication
           </p>
         </div>
 
@@ -148,23 +240,17 @@ export default function Landing() {
             Join businesses that have streamlined their operations with Chrona Workflow. 
             Sign up with your Replit account to get started immediately.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              onClick={() => window.location.href = '/api/login'}
-              size="lg"
-              className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg"
-            >
-              Login to Account
-            </Button>
-            <Button
-              onClick={() => window.location.href = '/api/login'}
-              size="lg"
-              variant="outline" 
-              className="border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 text-lg"
-            >
-              Create Account
-            </Button>
-          </div>
+          <Dialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg"
+              >
+                Login / Sign Up
+              </Button>
+            </DialogTrigger>
+          </Dialog>
+          
           <p className="text-xs text-slate-400 mt-4">
             Secure authentication through Replit • No credit card required
           </p>
