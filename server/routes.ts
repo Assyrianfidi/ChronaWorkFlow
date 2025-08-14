@@ -16,6 +16,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
+  // Simple logout that completely bypasses authentication
+  app.all('/api/simple-logout', (req, res) => {
+    // Clear session without calling passport or OAuth
+    if (req.session) {
+      req.session.destroy(() => {});
+    }
+    
+    // Clear all possible cookies
+    const cookieNames = ['connect.sid', 'session', 'passport', 'auth'];
+    cookieNames.forEach(name => {
+      res.clearCookie(name, { path: '/' });
+      res.clearCookie(name, { path: '/', domain: req.hostname });
+    });
+    
+    // Send HTML that clears everything and redirects
+    res.send(`
+      <html>
+        <head>
+          <title>Logging out...</title>
+          <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+          <meta http-equiv="Pragma" content="no-cache">
+          <meta http-equiv="Expires" content="0">
+        </head>
+        <body>
+          <script>
+            // Clear all storage
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Clear all cookies
+            document.cookie.split(";").forEach(function(c) { 
+              document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            // Force reload the page to completely reset state
+            setTimeout(() => {
+              window.location.replace('/');
+            }, 100);
+          </script>
+          <p>Logging out, please wait...</p>
+        </body>
+      </html>
+    `);
+  });
+
   // Emergency logout route that bypasses all authentication
   app.get('/api/force-logout', (req, res) => {
     // Send HTML that clears everything and redirects

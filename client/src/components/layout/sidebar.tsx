@@ -74,39 +74,18 @@ export default function Sidebar() {
             <p className="text-sm text-slate-500 truncate">{user?.role || "Admin"}</p>
           </div>
           <button
-            onClick={async () => {
-              try {
-                // Clear ALL client-side storage immediately
-                localStorage.clear();
-                sessionStorage.clear();
-                
-                // Clear any cookies we can access
-                document.cookie.split(";").forEach(function(c) { 
-                  document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-                });
-                
-                // Try POST logout first
-                try {
-                  await fetch('/api/logout', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: {
-                      'Cache-Control': 'no-cache',
-                      'Pragma': 'no-cache'
-                    }
-                  });
-                } catch (e) {
-                  console.log('POST logout failed, continuing...');
-                }
-                
-                // Force reload to completely reset the application state
-                window.location.replace('/');
-                
-              } catch (error) {
-                console.error("Logout error:", error);
-                // Force redirect no matter what
-                window.location.replace('/');
-              }
+            onClick={() => {
+              // Clear everything immediately and redirect
+              localStorage.clear();
+              sessionStorage.clear();
+              
+              // Clear cookies
+              document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+              });
+              
+              // Direct redirect to force logout - no API calls
+              window.location.href = '/api/force-logout';
             }}
             className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-slate-200 rounded"
             title="Logout"
