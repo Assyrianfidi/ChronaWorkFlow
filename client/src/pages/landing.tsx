@@ -1,141 +1,151 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Clock, Users, FileText, QrCode, BarChart3, Shield, LogIn, UserPlus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Clock, Users, FileText, QrCode, BarChart3, Shield, LogIn, UserPlus, Building2 } from "lucide-react";
 
 export default function Landing() {
-  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
+  const handleAdminLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // For now, redirect to Replit auth for admin verification
     window.location.href = '/api/login';
   };
 
-  const handleSignup = () => {
+  const handleBusinessSignup = () => {
     window.location.href = '/api/login';
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center space-x-3 mb-6">
-            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-              <FileText className="text-white text-2xl" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold text-slate-800">Chrona Workflow</h1>
-              <p className="text-xl text-slate-600">Business Management</p>
+      <div className="container mx-auto px-4 py-8">
+        {/* Header with Login Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+          {/* Company Info */}
+          <div className="lg:col-span-2">
+            <div className="text-left mb-8">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                  <FileText className="text-white text-2xl" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-slate-800">Chrona Workflow</h1>
+                  <p className="text-xl text-slate-600">Business Management Platform</p>
+                </div>
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
+                Complete Business Management for Multiple Organizations
+              </h2>
+              <p className="text-lg text-slate-600 mb-6">
+                Streamline your business operations with our comprehensive solution for worker time tracking, 
+                client management, project oversight, and invoicing. Designed for businesses of all sizes.
+              </p>
+              
+              {/* Key Features */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="flex flex-col items-center p-3 bg-slate-50 rounded-lg">
+                  <QrCode className="h-8 w-8 text-primary mb-2" />
+                  <span className="text-sm font-medium">QR Time Tracking</span>
+                </div>
+                <div className="flex flex-col items-center p-3 bg-slate-50 rounded-lg">
+                  <Users className="h-8 w-8 text-primary mb-2" />
+                  <span className="text-sm font-medium">Team Management</span>
+                </div>
+                <div className="flex flex-col items-center p-3 bg-slate-50 rounded-lg">
+                  <FileText className="h-8 w-8 text-primary mb-2" />
+                  <span className="text-sm font-medium">Invoicing</span>
+                </div>
+                <div className="flex flex-col items-center p-3 bg-slate-50 rounded-lg">
+                  <BarChart3 className="h-8 w-8 text-primary mb-2" />
+                  <span className="text-sm font-medium">Analytics</span>
+                </div>
+              </div>
             </div>
           </div>
-          <h2 className="text-3xl lg:text-5xl font-bold text-slate-800 mb-6">
-            Complete Business Management Platform
-          </h2>
-          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">
-            Streamline your business operations with our comprehensive solution for worker time tracking, 
-            client management, project oversight, and invoicing - all in one powerful platform.
-          </p>
-          <Dialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                size="lg"
-                className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg"
-              >
-                Get Started
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle className="text-center text-2xl font-bold">
-                  Welcome to Chrona Workflow
-                </DialogTitle>
-              </DialogHeader>
-              
-              <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="login" className="flex items-center gap-2">
-                    <LogIn className="h-4 w-4" />
-                    Login
-                  </TabsTrigger>
-                  <TabsTrigger value="signup" className="flex items-center gap-2">
-                    <UserPlus className="h-4 w-4" />
-                    Sign Up
-                  </TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="login" className="space-y-4 mt-6">
-                  <div className="text-center space-y-4">
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-semibold">Welcome Back</h3>
-                      <p className="text-sm text-slate-600">
-                        Sign in to your Chrona Workflow account to continue managing your business operations.
-                      </p>
-                    </div>
-                    
-                    <Button 
-                      onClick={handleLogin}
-                      className="w-full bg-primary hover:bg-blue-700 text-white py-3"
-                      size="lg"
-                    >
-                      <LogIn className="h-4 w-4 mr-2" />
-                      Login with Replit Account
-                    </Button>
-                    
-                    <p className="text-xs text-slate-500">
-                      Secure authentication through Replit
-                    </p>
+
+          {/* Admin Login Section */}
+          <div className="lg:col-span-1">
+            <Card className="border-2 border-primary/20 shadow-lg">
+              <CardHeader className="text-center pb-4">
+                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Building2 className="text-white text-xl" />
+                </div>
+                <CardTitle className="text-xl font-bold">Business Admin Access</CardTitle>
+                <p className="text-sm text-slate-600">
+                  Sign in to manage your organization's workflow
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <form onSubmit={handleAdminLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium">
+                      Admin Email
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="admin@yourcompany.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full"
+                      required
+                    />
                   </div>
-                </TabsContent>
-                
-                <TabsContent value="signup" className="space-y-4 mt-6">
-                  <div className="text-center space-y-4">
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-semibold">Create Your Account</h3>
-                      <p className="text-sm text-slate-600">
-                        Join thousands of businesses streamlining their operations with Chrona Workflow.
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-3 gap-2 text-xs text-slate-500">
-                        <div className="flex flex-col items-center p-2 bg-slate-50 rounded">
-                          <QrCode className="h-6 w-6 mb-1 text-primary" />
-                          <span>QR Tracking</span>
-                        </div>
-                        <div className="flex flex-col items-center p-2 bg-slate-50 rounded">
-                          <Users className="h-6 w-6 mb-1 text-primary" />
-                          <span>Team Mgmt</span>
-                        </div>
-                        <div className="flex flex-col items-center p-2 bg-slate-50 rounded">
-                          <FileText className="h-6 w-6 mb-1 text-primary" />
-                          <span>Invoicing</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <Button 
-                      onClick={handleSignup}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white py-3"
-                      size="lg"
-                    >
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Create Account with Replit
-                    </Button>
-                    
-                    <p className="text-xs text-slate-500">
-                      No credit card required • Free to start
-                    </p>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-sm font-medium">
+                      Password
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full"
+                      required
+                    />
                   </div>
-                </TabsContent>
-              </Tabs>
-            </DialogContent>
-          </Dialog>
-          
-          <p className="text-sm text-slate-500 mt-4">
-            Trusted by businesses worldwide • Secure Replit authentication
-          </p>
+                  
+                  <Button 
+                    type="submit"
+                    className="w-full bg-primary hover:bg-blue-700 text-white"
+                    size="lg"
+                  >
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Admin Sign In
+                  </Button>
+                </form>
+                
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <Separator className="w-full" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-slate-500">Or</span>
+                  </div>
+                </div>
+                
+                <Button 
+                  onClick={handleBusinessSignup}
+                  variant="outline"
+                  className="w-full border-green-200 text-green-700 hover:bg-green-50"
+                  size="lg"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Register New Business
+                </Button>
+                
+                <p className="text-xs text-center text-slate-500">
+                  Secure authentication for multi-business platform
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Features Grid */}
@@ -240,20 +250,19 @@ export default function Landing() {
             Join businesses that have streamlined their operations with Chrona Workflow. 
             Sign up with your Replit account to get started immediately.
           </p>
-          <Dialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                size="lg"
-                className="bg-primary hover:bg-blue-700 text-white px-8 py-4 text-lg"
-              >
-                Login / Sign Up
-              </Button>
-            </DialogTrigger>
-          </Dialog>
-          
-          <p className="text-xs text-slate-400 mt-4">
-            Secure authentication through Replit • No credit card required
-          </p>
+          <div className="text-center">
+            <Button
+              onClick={handleBusinessSignup}
+              size="lg"
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              Start Your Business Account
+            </Button>
+            <p className="text-xs text-slate-400 mt-4">
+              Multi-business platform • Secure authentication • No credit card required
+            </p>
+          </div>
         </div>
       </div>
     </div>
