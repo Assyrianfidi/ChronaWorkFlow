@@ -153,16 +153,22 @@ export async function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.get("/api/logout", (req, res) => {
-    req.logout(() => {
-      // Clear the session completely
-      req.session.destroy(() => {
-        // Clear the session cookie
-        res.clearCookie('connect.sid');
-        // Redirect directly to landing page without going through Replit OAuth
-        res.redirect(`${req.protocol}://${req.hostname}`);
+  app.post("/api/logout", (req, res) => {
+    // Clear session data
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Session destruction error:', err);
+        }
       });
-    });
+    }
+    
+    // Clear all session cookies
+    res.clearCookie('connect.sid', { path: '/' });
+    res.clearCookie('session', { path: '/' });
+    
+    // Send success response without redirecting through OAuth
+    res.json({ success: true, message: 'Logged out successfully' });
   });
 }
 

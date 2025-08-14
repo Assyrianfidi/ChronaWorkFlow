@@ -79,11 +79,25 @@ export default function Sidebar() {
                 // Clear client-side data first
                 localStorage.clear();
                 sessionStorage.clear();
-                // Then redirect to logout endpoint
-                window.location.href = "/api/logout";
+                
+                // Make POST request to logout endpoint
+                const response = await fetch('/api/logout', {
+                  method: 'POST',
+                  credentials: 'include'
+                });
+                
+                if (response.ok) {
+                  // Redirect to landing page
+                  window.location.href = '/';
+                } else {
+                  console.error('Logout failed');
+                  // Force redirect anyway
+                  window.location.href = '/';
+                }
               } catch (error) {
                 console.error("Logout error:", error);
-                window.location.href = "/api/logout";
+                // Force redirect to landing page
+                window.location.href = '/';
               }
             }}
             className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-slate-200 rounded"
