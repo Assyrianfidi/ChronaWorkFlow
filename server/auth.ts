@@ -236,6 +236,49 @@ export function setupAuth(app: Express) {
     })(req, res, next);
   });
 
+  // Create first admin user (one-time setup)
+  app.post("/api/admin/create-first", async (req, res, next) => {
+    try {
+      // Check if any admin users already exist
+      const existingAdmins = await storage.getAllAdminUsers();
+      if (existingAdmins.length > 0) {
+        return res.status(400).json({ message: "Admin user already exists" });
+      }
+
+      const { email, password, firstName, lastName } = req.body;
+
+      if (!email || !password || !firstName || !lastName) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      }
+
+      const hashedPassword = await hashPassword(password);
+      const admin = await storage.createAdminUser({
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        role: 'super_admin',
+      });
+
+      res.status(201).json({ 
+        message: "First admin user created successfully",
+        admin: {
+          id: admin.id,
+          email: admin.email,
+          firstName: admin.firstName,
+          lastName: admin.lastName,
+        }
+      });
+    } catch (error) {
+      console.error('Admin creation error:', error);
+      res.status(500).json({ message: "Failed to create admin user" });
+    }
+  });
+
   // Admin login
   app.post("/api/admin/login", (req, res, next) => {
     const validation = adminLoginSchema.safeParse(req.body);
