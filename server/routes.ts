@@ -16,6 +16,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
+  // Emergency logout route that bypasses all authentication
+  app.get('/api/force-logout', (req, res) => {
+    // Send HTML that clears everything and redirects
+    res.send(`
+      <html>
+        <head><title>Logging out...</title></head>
+        <body>
+          <script>
+            // Clear all storage
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Clear all cookies
+            document.cookie.split(";").forEach(function(c) { 
+              document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            // Redirect to home
+            window.location.replace('/');
+          </script>
+          <p>Logging out...</p>
+        </body>
+      </html>
+    `);
+  });
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {

@@ -153,8 +153,9 @@ export async function setupAuth(app: Express) {
     })(req, res, next);
   });
 
+  // Alternative logout route that completely avoids OAuth
   app.post("/api/logout", (req, res) => {
-    // Clear session data
+    // Clear session data immediately
     if (req.session) {
       req.session.destroy((err) => {
         if (err) {
@@ -163,12 +164,38 @@ export async function setupAuth(app: Express) {
       });
     }
     
-    // Clear all session cookies
+    // Clear all possible session cookies with various options
+    const cookieOptions = [
+      { path: '/' },
+      { path: '/', domain: req.hostname },
+      { path: '/', secure: true },
+      { path: '/', httpOnly: true },
+      { path: '/', secure: true, httpOnly: true }
+    ];
+    
+    cookieOptions.forEach(options => {
+      res.clearCookie('connect.sid', options);
+      res.clearCookie('session', options);
+      res.clearCookie('passport', options);
+    });
+    
+    // Send success response
+    res.json({ success: true, message: 'Logged out successfully' });
+  });
+
+  // Keep the original GET logout for backwards compatibility but redirect immediately
+  app.get("/api/logout", (req, res) => {
+    // Destroy session immediately without OAuth
+    if (req.session) {
+      req.session.destroy(() => {});
+    }
+    
+    // Clear cookies
     res.clearCookie('connect.sid', { path: '/' });
     res.clearCookie('session', { path: '/' });
     
-    // Send success response without redirecting through OAuth
-    res.json({ success: true, message: 'Logged out successfully' });
+    // Direct redirect to home without any OAuth interaction
+    res.redirect('/');
   });
 }
 

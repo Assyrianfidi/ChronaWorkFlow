@@ -76,28 +76,36 @@ export default function Sidebar() {
           <button
             onClick={async () => {
               try {
-                // Clear client-side data first
+                // Clear ALL client-side storage immediately
                 localStorage.clear();
                 sessionStorage.clear();
                 
-                // Make POST request to logout endpoint
-                const response = await fetch('/api/logout', {
-                  method: 'POST',
-                  credentials: 'include'
+                // Clear any cookies we can access
+                document.cookie.split(";").forEach(function(c) { 
+                  document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
                 });
                 
-                if (response.ok) {
-                  // Redirect to landing page
-                  window.location.href = '/';
-                } else {
-                  console.error('Logout failed');
-                  // Force redirect anyway
-                  window.location.href = '/';
+                // Try POST logout first
+                try {
+                  await fetch('/api/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                      'Cache-Control': 'no-cache',
+                      'Pragma': 'no-cache'
+                    }
+                  });
+                } catch (e) {
+                  console.log('POST logout failed, continuing...');
                 }
+                
+                // Force reload to completely reset the application state
+                window.location.replace('/');
+                
               } catch (error) {
                 console.error("Logout error:", error);
-                // Force redirect to landing page
-                window.location.href = '/';
+                // Force redirect no matter what
+                window.location.replace('/');
               }
             }}
             className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-slate-200 rounded"
