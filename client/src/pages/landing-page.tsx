@@ -16,7 +16,7 @@ export default function LandingPage() {
               <span className="text-white text-xl font-bold">CW</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Chrona Workflow</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Chrona Work Plus</h1>
               <p className="text-sm text-gray-600 dark:text-gray-400">Business Management Platform</p>
             </div>
           </div>
@@ -33,9 +33,8 @@ export default function LandingPage() {
           client management, project oversight, and professional invoicing.
         </p>
 
-        {/* Access Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Business Admin Access */}
+        {/* Business Access Card - Centered */}
+        <div className="max-w-md mx-auto">
           <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-blue-200" 
                 onClick={() => setLocation("/business-auth")}>
             <CardHeader className="pb-4">
@@ -53,45 +52,6 @@ export default function LandingPage() {
               </Button>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 For business owners and administrators
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Platform Admin Access */}
-          <Card className="p-6 hover:shadow-lg transition-shadow border-2 hover:border-purple-200">
-            <CardHeader className="pb-4">
-              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ShieldCheck className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-              </div>
-              <CardTitle className="text-2xl mb-2">Platform Admin</CardTitle>
-              <CardDescription className="text-base">
-                Manage multiple businesses and oversee platform operations
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="w-full mb-4 border-purple-600 text-purple-600 hover:bg-purple-50" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setLocation("/admin-auth");
-                }}
-              >
-                Admin Login
-              </Button>
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                Platform administrator access
-                <br />
-                <button 
-                  className="text-purple-600 hover:text-purple-700 underline text-xs mt-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setLocation("/admin-setup");
-                  }}
-                >
-                  First time? Create admin account
-                </button>
               </p>
             </CardContent>
           </Card>
@@ -119,9 +79,9 @@ export default function LandingPage() {
             <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
               <Users className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
-            <h4 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Multi-Business Platform</h4>
+            <h4 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Client Management</h4>
             <p className="text-gray-600 dark:text-gray-400">
-              Each business manages their own workers, clients, and projects with complete data isolation
+              Manage clients with custom email addresses using your business domain @Chronaworkplus.com
             </p>
           </div>
 

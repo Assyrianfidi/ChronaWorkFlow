@@ -48,7 +48,7 @@ export default function BusinessAuthPage() {
         const data = await response.json();
         toast({
           title: "Login successful",
-          description: `Welcome back to Chrona Workflow!`,
+          description: `Welcome back to Chrona Work Plus!`,
         });
         setLocation("/dashboard");
       } else {
@@ -87,7 +87,7 @@ export default function BusinessAuthPage() {
         const data = await response.json();
         toast({
           title: "Registration successful",
-          description: `Welcome to Chrona Workflow, ${data.business.name}!`,
+          description: `Welcome to Chrona Work Plus, ${data.business.name}!`,
         });
         setLocation("/dashboard");
       } else {
@@ -116,7 +116,7 @@ export default function BusinessAuthPage() {
           <div className="mx-auto w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mb-4">
             <span className="text-white text-2xl font-bold">CW</span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Chrona Workflow</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Chrona Work Plus</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">Business Management Platform</p>
         </div>
 

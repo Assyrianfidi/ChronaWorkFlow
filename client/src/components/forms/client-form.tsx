@@ -111,7 +111,19 @@ export default function ClientForm({ client, onSuccess }: ClientFormProps) {
             <FormItem>
               <FormLabel>Contact Person</FormLabel>
               <FormControl>
-                <Input placeholder="John Smith" {...field} value={field.value || ""} />
+                <Input 
+                  placeholder="John Smith" 
+                  {...field} 
+                  value={field.value || ""} 
+                  onChange={(e) => {
+                    field.onChange(e);
+                    // Auto-generate email when contact person changes
+                    const contactName = e.target.value.toLowerCase().replace(/\s+/g, '');
+                    if (contactName && !form.getValues('email')) {
+                      form.setValue('email', `${contactName}@Chronaworkplus.com`);
+                    }
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -126,9 +138,17 @@ export default function ClientForm({ client, onSuccess }: ClientFormProps) {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="contact@acme.com" {...field} value={field.value || ""} />
+                  <Input 
+                    type="email" 
+                    placeholder="clientname@Chronaworkplus.com" 
+                    {...field} 
+                    value={field.value || ""} 
+                  />
                 </FormControl>
                 <FormMessage />
+                <p className="text-xs text-gray-500 mt-1">
+                  Automatically generated from client name with @Chronaworkplus.com domain
+                </p>
               </FormItem>
             )}
           />
