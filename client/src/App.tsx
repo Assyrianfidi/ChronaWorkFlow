@@ -10,6 +10,7 @@ import BusinessAuthPage from "@/pages/business-auth-page";
 import AdminAuthPage from "@/pages/admin-auth-page";
 import LoggedOut from "@/pages/logged-out";
 import Dashboard from "@/pages/dashboard";
+import AdminDashboard from "@/pages/admin-dashboard";
 import Workers from "@/pages/workers";
 import TimeTracking from "@/pages/time-tracking";
 import WorkerMap from "@/pages/worker-map";
@@ -53,9 +54,9 @@ function Router() {
         </>
       ) : (
         <>
-          {/* Admin user routes - placeholder for admin dashboard */}
-          <Route path="/" component={() => <div className="p-8 text-center"><h1 className="text-2xl">Admin Dashboard Coming Soon</h1><p>Platform administration features will be available here.</p></div>} />
-          <Route path="/admin-dashboard" component={() => <div className="p-8 text-center"><h1 className="text-2xl">Admin Dashboard Coming Soon</h1><p>Platform administration features will be available here.</p></div>} />
+          {/* Admin user routes */}
+          <Route path="/" component={AdminDashboard} />
+          <Route path="/admin-dashboard" component={AdminDashboard} />
         </>
       )}
       <Route component={NotFound} />
