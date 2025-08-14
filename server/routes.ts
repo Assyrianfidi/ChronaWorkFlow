@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated, isBusinessUser, isAdmin } from "./auth";
 import { 
   insertWorkerSchema,
   insertClientSchema,
@@ -14,7 +14,7 @@ import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
-  await setupAuth(app);
+  setupAuth(app);
 
   // Simple logout that completely bypasses authentication
   app.all('/api/simple-logout', (req, res) => {
@@ -170,21 +170,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     `);
   });
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Dashboard routes (business-scoped)
+  app.get("/api/dashboard/stats", isBusinessUser, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
-
-  // Dashboard routes
-  app.get("/api/dashboard/stats", isAuthenticated, async (req, res) => {
-    try {
+      const businessId = req.user.businessId;
       const stats = await storage.getDashboardStats();
       res.json(stats);
     } catch (error) {
@@ -193,8 +182,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/dashboard/recent-logs", isAuthenticated, async (req, res) => {
+  app.get("/api/dashboard/recent-logs", isBusinessUser, async (req: any, res) => {
     try {
+      const businessId = req.user.businessId;
       const logs = await storage.getRecentTimeLogs(10);
       res.json(logs);
     } catch (error) {
@@ -203,10 +193,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Worker routes
-  app.get("/api/workers", isAuthenticated, async (req, res) => {
+  // Worker routes (business-scoped)
+  app.get("/api/workers", isBusinessUser, async (req: any, res) => {
     try {
-      const workers = await storage.getWorkers();
+      const businessId = req.user.businessId;
+      const workers = await storage.getWorkers(businessId);
       res.json(workers);
     } catch (error) {
       console.error("Error fetching workers:", error);
@@ -214,9 +205,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/workers/:id", isAuthenticated, async (req, res) => {
+  app.get("/api/workers/:id", isBusinessUser, async (req: any, res) => {
     try {
-      const worker = await storage.getWorker(req.params.id);
+      const businessId = req.user.businessId;
+      const worker = await storage.getWorker(req.params.id, businessId);
       if (!worker) {
         return res.status(404).json({ message: "Worker not found" });
       }
@@ -227,9 +219,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/workers", isAuthenticated, async (req, res) => {
+  app.post("/api/workers", isBusinessUser, async (req: any, res) => {
     try {
-      const workerData = insertWorkerSchema.parse(req.body);
+      const businessId = req.user.businessId;
+      const workerData = insertWorkerSchema.parse({
+        ...req.body,
+        businessId
+      });
       const worker = await storage.createWorker(workerData);
       res.status(201).json(worker);
     } catch (error) {
@@ -241,8 +237,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/workers/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/workers/:id", isBusinessUser, async (req: any, res) => {
     try {
+      const businessId = req.user.businessId;
       // Convert hourlyRate to string if it's a number for Drizzle compatibility
       const bodyData = { ...req.body };
       if (bodyData.hourlyRate !== undefined && bodyData.hourlyRate !== null && bodyData.hourlyRate !== "") {
@@ -252,7 +249,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const workerData = insertWorkerSchema.partial().parse(bodyData);
-      const worker = await storage.updateWorker(req.params.id, workerData);
+      const worker = await storage.updateWorker(req.params.id, workerData, businessId);
       res.json(worker);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -264,9 +261,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/workers/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/workers/:id", isBusinessUser, async (req: any, res) => {
     try {
-      await storage.deleteWorker(req.params.id);
+      const businessId = req.user.businessId;
+      await storage.deleteWorker(req.params.id, businessId);
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting worker:", error);
@@ -274,10 +272,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Client routes
-  app.get("/api/clients", isAuthenticated, async (req, res) => {
+  // Client routes (business-scoped)
+  app.get("/api/clients", isBusinessUser, async (req: any, res) => {
     try {
-      const clients = await storage.getClients();
+      const businessId = req.user.businessId;
+      const clients = await storage.getClients(businessId);
       res.json(clients);
     } catch (error) {
       console.error("Error fetching clients:", error);
@@ -285,9 +284,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/clients/:id", isAuthenticated, async (req, res) => {
+  app.get("/api/clients/:id", isBusinessUser, async (req: any, res) => {
     try {
-      const client = await storage.getClient(req.params.id);
+      const businessId = req.user.businessId;
+      const client = await storage.getClient(req.params.id, businessId);
       if (!client) {
         return res.status(404).json({ message: "Client not found" });
       }
@@ -298,9 +298,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/clients", isAuthenticated, async (req, res) => {
+  app.post("/api/clients", isBusinessUser, async (req: any, res) => {
     try {
-      const clientData = insertClientSchema.parse(req.body);
+      const businessId = req.user.businessId;
+      const clientData = insertClientSchema.parse({
+        ...req.body,
+        businessId
+      });
       const client = await storage.createClient(clientData);
       res.status(201).json(client);
     } catch (error) {
@@ -312,10 +316,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/clients/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/clients/:id", isBusinessUser, async (req: any, res) => {
     try {
+      const businessId = req.user.businessId;
       const clientData = insertClientSchema.partial().parse(req.body);
-      const client = await storage.updateClient(req.params.id, clientData);
+      const client = await storage.updateClient(req.params.id, clientData, businessId);
       res.json(client);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -326,9 +331,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/clients/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/clients/:id", isBusinessUser, async (req: any, res) => {
     try {
-      await storage.deleteClient(req.params.id);
+      const businessId = req.user.businessId;
+      await storage.deleteClient(req.params.id, businessId);
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting client:", error);
@@ -336,10 +342,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Project routes
-  app.get("/api/projects", isAuthenticated, async (req, res) => {
+  // Project routes (business-scoped)
+  app.get("/api/projects", isBusinessUser, async (req: any, res) => {
     try {
-      const projects = await storage.getProjects();
+      const businessId = req.user.businessId;
+      const projects = await storage.getProjects(businessId);
       res.json(projects);
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -347,9 +354,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/projects/:id", isAuthenticated, async (req, res) => {
+  app.get("/api/projects/:id", isBusinessUser, async (req: any, res) => {
     try {
-      const project = await storage.getProject(req.params.id);
+      const businessId = req.user.businessId;
+      const project = await storage.getProject(req.params.id, businessId);
       if (!project) {
         return res.status(404).json({ message: "Project not found" });
       }
@@ -360,9 +368,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/projects", isAuthenticated, async (req, res) => {
+  app.post("/api/projects", isBusinessUser, async (req: any, res) => {
     try {
-      const projectData = insertProjectSchema.parse(req.body);
+      const businessId = req.user.businessId;
+      const projectData = insertProjectSchema.parse({
+        ...req.body,
+        businessId
+      });
       const project = await storage.createProject(projectData);
       res.status(201).json(project);
     } catch (error) {
@@ -374,10 +386,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/projects/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/projects/:id", isBusinessUser, async (req: any, res) => {
     try {
+      const businessId = req.user.businessId;
       const projectData = insertProjectSchema.partial().parse(req.body);
-      const project = await storage.updateProject(req.params.id, projectData);
+      const project = await storage.updateProject(req.params.id, projectData, businessId);
       res.json(project);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -388,9 +401,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/projects/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/projects/:id", isBusinessUser, async (req: any, res) => {
     try {
-      await storage.deleteProject(req.params.id);
+      const businessId = req.user.businessId;
+      await storage.deleteProject(req.params.id, businessId);
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting project:", error);
@@ -398,9 +412,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Time log routes
-  app.get("/api/time-logs", isAuthenticated, async (req, res) => {
+  // Time log routes (business-scoped)
+  app.get("/api/time-logs", isBusinessUser, async (req: any, res) => {
     try {
+      const businessId = req.user.businessId;
       const timeLogs = await storage.getTimeLogs();
       res.json(timeLogs);
     } catch (error) {
@@ -409,8 +424,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/time-logs/:id", isAuthenticated, async (req, res) => {
+  app.get("/api/time-logs/:id", isBusinessUser, async (req: any, res) => {
     try {
+      const businessId = req.user.businessId;
       const timeLog = await storage.getTimeLog(req.params.id);
       if (!timeLog) {
         return res.status(404).json({ message: "Time log not found" });
@@ -489,7 +505,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/time-logs/:id/clock-out", isAuthenticated, async (req, res) => {
+  app.post("/api/time-logs/:id/clock-out", isBusinessUser, async (req: any, res) => {
     try {
       const timeLog = await storage.clockOut(req.params.id);
       res.json(timeLog);
@@ -499,7 +515,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/time-logs/:id", isAuthenticated, async (req, res) => {
+  app.put("/api/time-logs/:id", isBusinessUser, async (req: any, res) => {
     try {
       const timeLogData = insertTimeLogSchema.partial().parse(req.body);
       const timeLog = await storage.updateTimeLog(req.params.id, timeLogData);
@@ -513,7 +529,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/time-logs/:id", isAuthenticated, async (req, res) => {
+  app.delete("/api/time-logs/:id", isBusinessUser, async (req: any, res) => {
     try {
       await storage.deleteTimeLog(req.params.id);
       res.status(204).send();
@@ -523,9 +539,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Invoice routes
-  app.get("/api/invoices", isAuthenticated, async (req, res) => {
+  // Invoice routes (business-scoped)
+  app.get("/api/invoices", isBusinessUser, async (req: any, res) => {
     try {
+      const businessId = req.user.businessId;
       const invoices = await storage.getInvoices();
       res.json(invoices);
     } catch (error) {
@@ -534,8 +551,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/invoices/:id", isAuthenticated, async (req, res) => {
+  app.get("/api/invoices/:id", isBusinessUser, async (req: any, res) => {
     try {
+      const businessId = req.user.businessId;
       const invoice = await storage.getInvoice(req.params.id);
       if (!invoice) {
         return res.status(404).json({ message: "Invoice not found" });
@@ -547,7 +565,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/invoices", isAuthenticated, async (req, res) => {
+  app.post("/api/invoices", isBusinessUser, async (req: any, res) => {
     try {
       console.log("Received invoice data:", JSON.stringify(req.body, null, 2));
       

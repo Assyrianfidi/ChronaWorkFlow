@@ -1,24 +1,33 @@
 import { useQuery } from "@tanstack/react-query";
-import type { User } from "@shared/schema";
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  userType: 'business' | 'admin';
+  businessId?: string;
+}
 
 export function useAuth() {
-  const { data: user, isLoading, error } = useQuery<User>({
-    queryKey: ["/api/auth/user"],
+  const { data: response, isLoading, error } = useQuery<{user: AuthUser}>({
+    queryKey: ["/api/user"],
     retry: false,
     retryOnMount: false,
     staleTime: 0,
   });
 
-  // Handle authentication errors
+  const user = response?.user;
   const isAuthenticated = !!user && !error;
+  const isBusinessUser = user?.userType === 'business';
+  const isAdmin = user?.userType === 'admin';
   
-  // Don't automatically redirect on 401 errors - let user manually choose to login
-  // This prevents automatic OAuth redirects that get blocked by Replit
-
   return {
     user,
     isLoading,
     isAuthenticated,
+    isBusinessUser,
+    isAdmin,
     error,
   };
 }

@@ -26,14 +26,44 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table for Replit Auth
-export const users = pgTable("users", {
+// Business organizations table
+export const businesses = pgTable("businesses", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
+  name: varchar("name").notNull(),
+  email: varchar("email").notNull().unique(),
+  phone: varchar("phone"),
+  address: text("address"),
+  industry: varchar("industry"),
+  website: varchar("website"),
+  subscriptionPlan: varchar("subscription_plan").default("basic"),
+  subscriptionStatus: varchar("subscription_status").default("active"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Admin users table for platform administration
+export const adminUsers = pgTable("admin_users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email").notNull().unique(),
+  password: varchar("password").notNull(),
+  firstName: varchar("first_name").notNull(),
+  lastName: varchar("last_name").notNull(),
   role: varchar("role").default("admin"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Business users table for business account users
+export const businessUsers = pgTable("business_users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  businessId: varchar("business_id").notNull().references(() => businesses.id, { onDelete: "cascade" }),
+  email: varchar("email").notNull().unique(),
+  password: varchar("password").notNull(),
+  firstName: varchar("first_name").notNull(),
+  lastName: varchar("last_name").notNull(),
+  role: varchar("role").default("user"), // admin, manager, user
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -41,6 +71,7 @@ export const users = pgTable("users", {
 // Workers table
 export const workers = pgTable("workers", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  businessId: varchar("business_id").notNull().references(() => businesses.id, { onDelete: "cascade" }),
   firstName: varchar("first_name").notNull(),
   lastName: varchar("last_name").notNull(),
   email: varchar("email"),
@@ -55,6 +86,7 @@ export const workers = pgTable("workers", {
 // Clients table
 export const clients = pgTable("clients", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  businessId: varchar("business_id").notNull().references(() => businesses.id, { onDelete: "cascade" }),
   name: varchar("name").notNull(),
   email: varchar("email"),
   phone: varchar("phone"),
@@ -72,6 +104,7 @@ export const projectStatusEnum = pgEnum("project_status", ["planning", "in_progr
 // Projects table
 export const projects = pgTable("projects", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  businessId: varchar("business_id").notNull().references(() => businesses.id, { onDelete: "cascade" }),
   name: varchar("name").notNull(),
   description: text("description"),
   clientId: varchar("client_id").references(() => clients.id),
@@ -142,21 +175,47 @@ export const invoiceLineItems = pgTable("invoice_line_items", {
 });
 
 // Relations
-export const usersRelations = relations(users, ({ many }) => ({
+export const businessesRelations = relations(businesses, ({ many }) => ({
+  businessUsers: many(businessUsers),
+  workers: many(workers),
+  clients: many(clients),
   projects: many(projects),
 }));
 
-export const workersRelations = relations(workers, ({ many }) => ({
+export const adminUsersRelations = relations(adminUsers, ({ many }) => ({
+  // Admin users don't have direct relations to business data
+}));
+
+export const businessUsersRelations = relations(businessUsers, ({ one }) => ({
+  business: one(businesses, {
+    fields: [businessUsers.businessId],
+    references: [businesses.id],
+  }),
+}));
+
+export const workersRelations = relations(workers, ({ one, many }) => ({
+  business: one(businesses, {
+    fields: [workers.businessId],
+    references: [businesses.id],
+  }),
   timeLogs: many(timeLogs),
   projectAssignments: many(projectAssignments),
 }));
 
-export const clientsRelations = relations(clients, ({ many }) => ({
+export const clientsRelations = relations(clients, ({ one, many }) => ({
+  business: one(businesses, {
+    fields: [clients.businessId],
+    references: [businesses.id],
+  }),
   projects: many(projects),
   invoices: many(invoices),
 }));
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
+  business: one(businesses, {
+    fields: [projects.businessId],
+    references: [businesses.id],
+  }),
   client: one(clients, {
     fields: [projects.clientId],
     references: [clients.id],
@@ -245,14 +304,45 @@ export const insertInvoiceLineItemSchema = createInsertSchema(invoiceLineItems).
   id: true,
 });
 
-export const upsertUserSchema = createInsertSchema(users).omit({
+// Insert schemas for new tables
+export const insertBusinessSchema = createInsertSchema(businesses).omit({
+  id: true,
   createdAt: true,
   updatedAt: true,
 });
 
+export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBusinessUserSchema = createInsertSchema(businessUsers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Login schemas
+export const businessLoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+export const adminLoginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
 // Types
-export type UpsertUser = z.infer<typeof upsertUserSchema>;
-export type User = typeof users.$inferSelect;
+export type Business = typeof businesses.$inferSelect;
+export type InsertBusiness = z.infer<typeof insertBusinessSchema>;
+export type AdminUser = typeof adminUsers.$inferSelect;
+export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
+export type BusinessUser = typeof businessUsers.$inferSelect;
+export type InsertBusinessUser = z.infer<typeof insertBusinessUserSchema>;
+export type BusinessLogin = z.infer<typeof businessLoginSchema>;
+export type AdminLogin = z.infer<typeof adminLoginSchema>;
 export type InsertWorker = z.infer<typeof insertWorkerSchema>;
 export type Worker = typeof workers.$inferSelect;
 export type InsertClient = z.infer<typeof insertClientSchema>;

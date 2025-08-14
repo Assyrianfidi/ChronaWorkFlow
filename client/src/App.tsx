@@ -5,7 +5,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
+import LandingPage from "@/pages/landing-page";
+import BusinessAuthPage from "@/pages/business-auth-page";
+import AdminAuthPage from "@/pages/admin-auth-page";
 import LoggedOut from "@/pages/logged-out";
 import Dashboard from "@/pages/dashboard";
 import Workers from "@/pages/workers";
@@ -17,7 +19,7 @@ import Invoices from "@/pages/invoices";
 import Reports from "@/pages/reports";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isBusinessUser, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -31,12 +33,16 @@ function Router() {
     <Switch>
       {/* Public routes that don't require authentication */}
       <Route path="/logged-out" component={LoggedOut} />
+      <Route path="/business-auth" component={BusinessAuthPage} />
+      <Route path="/admin-auth" component={AdminAuthPage} />
       
       {!isAuthenticated ? (
-        <Route path="/" component={Landing} />
-      ) : (
+        <Route path="/" component={LandingPage} />
+      ) : isBusinessUser ? (
         <>
+          {/* Business user routes */}
           <Route path="/" component={Dashboard} />
+          <Route path="/dashboard" component={Dashboard} />
           <Route path="/workers" component={Workers} />
           <Route path="/time-tracking" component={TimeTracking} />
           <Route path="/worker-map" component={WorkerMap} />
@@ -44,6 +50,12 @@ function Router() {
           <Route path="/projects" component={Projects} />
           <Route path="/invoices" component={Invoices} />
           <Route path="/reports" component={Reports} />
+        </>
+      ) : (
+        <>
+          {/* Admin user routes - placeholder for admin dashboard */}
+          <Route path="/" component={() => <div className="p-8 text-center"><h1 className="text-2xl">Admin Dashboard Coming Soon</h1><p>Platform administration features will be available here.</p></div>} />
+          <Route path="/admin-dashboard" component={() => <div className="p-8 text-center"><h1 className="text-2xl">Admin Dashboard Coming Soon</h1><p>Platform administration features will be available here.</p></div>} />
         </>
       )}
       <Route component={NotFound} />

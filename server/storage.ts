@@ -1,5 +1,7 @@
 import {
-  users,
+  businesses,
+  adminUsers,
+  businessUsers,
   workers,
   clients,
   projects,
@@ -7,8 +9,12 @@ import {
   invoices,
   invoiceLineItems,
   projectAssignments,
-  type User,
-  type UpsertUser,
+  type Business,
+  type InsertBusiness,
+  type AdminUser,
+  type InsertAdminUser,
+  type BusinessUser,
+  type InsertBusinessUser,
   type Worker,
   type InsertWorker,
   type Client,
@@ -27,42 +33,53 @@ import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
-  // User operations (mandatory for Replit Auth)
-  getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  // Business operations
+  getBusiness(id: string): Promise<Business | undefined>;
+  getBusinessByEmail(email: string): Promise<Business | undefined>;
+  createBusiness(business: InsertBusiness): Promise<Business>;
   
-  // Worker operations
-  getWorkers(): Promise<Worker[]>;
-  getWorker(id: string): Promise<Worker | undefined>;
+  // Admin user operations
+  getAdminUser(id: string): Promise<AdminUser | undefined>;
+  getAdminUserByEmail(email: string): Promise<AdminUser | undefined>;
+  createAdminUser(user: InsertAdminUser): Promise<AdminUser>;
+  
+  // Business user operations
+  getBusinessUser(id: string): Promise<BusinessUser | undefined>;
+  getBusinessUserByEmail(email: string): Promise<BusinessUser | undefined>;
+  createBusinessUser(user: InsertBusinessUser): Promise<BusinessUser>;
+  
+  // Worker operations (business-scoped)
+  getWorkers(businessId: string): Promise<Worker[]>;
+  getWorker(id: string, businessId: string): Promise<Worker | undefined>;
   getWorkerByQrCode(qrCode: string): Promise<Worker | undefined>;
   createWorker(worker: InsertWorker): Promise<Worker>;
-  updateWorker(id: string, worker: Partial<InsertWorker>): Promise<Worker>;
-  deleteWorker(id: string): Promise<void>;
+  updateWorker(id: string, worker: Partial<InsertWorker>, businessId: string): Promise<Worker>;
+  deleteWorker(id: string, businessId: string): Promise<void>;
   
-  // Client operations
-  getClients(): Promise<Client[]>;
-  getClient(id: string): Promise<Client | undefined>;
+  // Client operations (business-scoped)
+  getClients(businessId: string): Promise<Client[]>;
+  getClient(id: string, businessId: string): Promise<Client | undefined>;
   createClient(client: InsertClient): Promise<Client>;
-  updateClient(id: string, client: Partial<InsertClient>): Promise<Client>;
-  deleteClient(id: string): Promise<void>;
+  updateClient(id: string, client: Partial<InsertClient>, businessId: string): Promise<Client>;
+  deleteClient(id: string, businessId: string): Promise<void>;
   
-  // Project operations
-  getProjects(): Promise<any[]>;
-  getProject(id: string): Promise<any | undefined>;
+  // Project operations (business-scoped)
+  getProjects(businessId: string): Promise<any[]>;
+  getProject(id: string, businessId: string): Promise<any | undefined>;
   createProject(project: InsertProject): Promise<Project>;
-  updateProject(id: string, project: Partial<InsertProject>): Promise<Project>;
-  deleteProject(id: string): Promise<void>;
-  assignWorkerToProject(projectId: string, workerId: string): Promise<void>;
-  unassignWorkerFromProject(projectId: string, workerId: string): Promise<void>;
+  updateProject(id: string, project: Partial<InsertProject>, businessId: string): Promise<Project>;
+  deleteProject(id: string, businessId: string): Promise<void>;
+  assignWorkerToProject(projectId: string, workerId: string, businessId: string): Promise<void>;
+  unassignWorkerFromProject(projectId: string, workerId: string, businessId: string): Promise<void>;
   
-  // Time log operations
-  getTimeLogs(): Promise<any[]>;
-  getTimeLog(id: string): Promise<any | undefined>;
-  getTimeLogsByWorker(workerId: string): Promise<any[]>;
-  getTimeLogsByProject(projectId: string): Promise<any[]>;
+  // Time log operations (business-scoped)
+  getTimeLogs(businessId: string): Promise<any[]>;
+  getTimeLog(id: string, businessId: string): Promise<any | undefined>;
+  getTimeLogsByWorker(workerId: string, businessId: string): Promise<any[]>;
+  getTimeLogsByProject(projectId: string, businessId: string): Promise<any[]>;
   createTimeLog(timeLog: InsertTimeLog): Promise<TimeLog>;
-  clockOut(timeLogId: string): Promise<TimeLog>;
-  updateTimeLog(id: string, timeLog: Partial<InsertTimeLog>): Promise<TimeLog>;
+  clockOut(timeLogId: string, businessId: string): Promise<TimeLog>;
+  updateTimeLog(id: string, timeLog: Partial<InsertTimeLog>, businessId: string): Promise<TimeLog>;
   deleteTimeLog(id: string): Promise<void>;
   
   // Invoice operations
@@ -81,34 +98,64 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // User operations
-  async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
+  // Business operations
+  async getBusiness(id: string): Promise<Business | undefined> {
+    const [business] = await db.select().from(businesses).where(eq(businesses.id, id));
+    return business;
+  }
+
+  async getBusinessByEmail(email: string): Promise<Business | undefined> {
+    const [business] = await db.select().from(businesses).where(eq(businesses.email, email));
+    return business;
+  }
+
+  async createBusiness(businessData: InsertBusiness): Promise<Business> {
+    const [business] = await db.insert(businesses).values(businessData).returning();
+    return business;
+  }
+
+  // Admin user operations
+  async getAdminUser(id: string): Promise<AdminUser | undefined> {
+    const [user] = await db.select().from(adminUsers).where(eq(adminUsers.id, id));
     return user;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
+  async getAdminUserByEmail(email: string): Promise<AdminUser | undefined> {
+    const [user] = await db.select().from(adminUsers).where(eq(adminUsers.email, email));
     return user;
   }
 
-  // Worker operations
-  async getWorkers(): Promise<Worker[]> {
-    return await db.select().from(workers).orderBy(desc(workers.createdAt));
+  async createAdminUser(userData: InsertAdminUser): Promise<AdminUser> {
+    const [user] = await db.insert(adminUsers).values(userData).returning();
+    return user;
   }
 
-  async getWorker(id: string): Promise<Worker | undefined> {
-    const [worker] = await db.select().from(workers).where(eq(workers.id, id));
+  // Business user operations
+  async getBusinessUser(id: string): Promise<BusinessUser | undefined> {
+    const [user] = await db.select().from(businessUsers).where(eq(businessUsers.id, id));
+    return user;
+  }
+
+  async getBusinessUserByEmail(email: string): Promise<BusinessUser | undefined> {
+    const [user] = await db.select().from(businessUsers).where(eq(businessUsers.email, email));
+    return user;
+  }
+
+  async createBusinessUser(userData: InsertBusinessUser): Promise<BusinessUser> {
+    const [user] = await db.insert(businessUsers).values(userData).returning();
+    return user;
+  }
+
+  // Worker operations (business-scoped)
+  async getWorkers(businessId: string): Promise<Worker[]> {
+    return await db.select().from(workers)
+      .where(eq(workers.businessId, businessId))
+      .orderBy(desc(workers.createdAt));
+  }
+
+  async getWorker(id: string, businessId: string): Promise<Worker | undefined> {
+    const [worker] = await db.select().from(workers)
+      .where(and(eq(workers.id, id), eq(workers.businessId, businessId)));
     return worker;
   }
 
@@ -140,26 +187,29 @@ export class DatabaseStorage implements IStorage {
     return worker;
   }
 
-  async updateWorker(id: string, workerData: Partial<InsertWorker>): Promise<Worker> {
+  async updateWorker(id: string, workerData: Partial<InsertWorker>, businessId: string): Promise<Worker> {
     const [worker] = await db
       .update(workers)
       .set({ ...workerData, updatedAt: new Date() })
-      .where(eq(workers.id, id))
+      .where(and(eq(workers.id, id), eq(workers.businessId, businessId)))
       .returning();
     return worker;
   }
 
-  async deleteWorker(id: string): Promise<void> {
-    await db.delete(workers).where(eq(workers.id, id));
+  async deleteWorker(id: string, businessId: string): Promise<void> {
+    await db.delete(workers).where(and(eq(workers.id, id), eq(workers.businessId, businessId)));
   }
 
-  // Client operations
-  async getClients(): Promise<Client[]> {
-    return await db.select().from(clients).orderBy(desc(clients.createdAt));
+  // Client operations (business-scoped)
+  async getClients(businessId: string): Promise<Client[]> {
+    return await db.select().from(clients)
+      .where(eq(clients.businessId, businessId))
+      .orderBy(desc(clients.createdAt));
   }
 
-  async getClient(id: string): Promise<Client | undefined> {
-    const [client] = await db.select().from(clients).where(eq(clients.id, id));
+  async getClient(id: string, businessId: string): Promise<Client | undefined> {
+    const [client] = await db.select().from(clients)
+      .where(and(eq(clients.id, id), eq(clients.businessId, businessId)));
     return client;
   }
 
@@ -171,21 +221,21 @@ export class DatabaseStorage implements IStorage {
     return client;
   }
 
-  async updateClient(id: string, clientData: Partial<InsertClient>): Promise<Client> {
+  async updateClient(id: string, clientData: Partial<InsertClient>, businessId: string): Promise<Client> {
     const [client] = await db
       .update(clients)
       .set({ ...clientData, updatedAt: new Date() })
-      .where(eq(clients.id, id))
+      .where(and(eq(clients.id, id), eq(clients.businessId, businessId)))
       .returning();
     return client;
   }
 
-  async deleteClient(id: string): Promise<void> {
-    await db.delete(clients).where(eq(clients.id, id));
+  async deleteClient(id: string, businessId: string): Promise<void> {
+    await db.delete(clients).where(and(eq(clients.id, id), eq(clients.businessId, businessId)));
   }
 
-  // Project operations
-  async getProjects(): Promise<any[]> {
+  // Project operations (business-scoped)
+  async getProjects(businessId: string): Promise<any[]> {
     return await db
       .select({
         id: projects.id,
@@ -204,10 +254,11 @@ export class DatabaseStorage implements IStorage {
       })
       .from(projects)
       .leftJoin(clients, eq(projects.clientId, clients.id))
+      .where(eq(projects.businessId, businessId))
       .orderBy(desc(projects.createdAt));
   }
 
-  async getProject(id: string): Promise<any | undefined> {
+  async getProject(id: string, businessId: string): Promise<any | undefined> {
     const [project] = await db
       .select({
         id: projects.id,
@@ -227,7 +278,7 @@ export class DatabaseStorage implements IStorage {
       })
       .from(projects)
       .leftJoin(clients, eq(projects.clientId, clients.id))
-      .where(eq(projects.id, id));
+      .where(and(eq(projects.id, id), eq(projects.businessId, businessId)));
     return project;
   }
 
@@ -239,27 +290,43 @@ export class DatabaseStorage implements IStorage {
     return project;
   }
 
-  async updateProject(id: string, projectData: Partial<InsertProject>): Promise<Project> {
+  async updateProject(id: string, projectData: Partial<InsertProject>, businessId: string): Promise<Project> {
     const [project] = await db
       .update(projects)
       .set({ ...projectData, updatedAt: new Date() })
-      .where(eq(projects.id, id))
+      .where(and(eq(projects.id, id), eq(projects.businessId, businessId)))
       .returning();
     return project;
   }
 
-  async deleteProject(id: string): Promise<void> {
-    await db.delete(projects).where(eq(projects.id, id));
+  async deleteProject(id: string, businessId: string): Promise<void> {
+    await db.delete(projects).where(and(eq(projects.id, id), eq(projects.businessId, businessId)));
   }
 
-  async assignWorkerToProject(projectId: string, workerId: string): Promise<void> {
+  async assignWorkerToProject(projectId: string, workerId: string, businessId: string): Promise<void> {
+    // Verify project and worker belong to the same business
+    const project = await this.getProject(projectId, businessId);
+    const worker = await this.getWorker(workerId, businessId);
+    
+    if (!project || !worker) {
+      throw new Error('Project or worker not found in business');
+    }
+
     await db.insert(projectAssignments).values({
       projectId,
       workerId,
     });
   }
 
-  async unassignWorkerFromProject(projectId: string, workerId: string): Promise<void> {
+  async unassignWorkerFromProject(projectId: string, workerId: string, businessId: string): Promise<void> {
+    // Verify project and worker belong to the same business
+    const project = await this.getProject(projectId, businessId);
+    const worker = await this.getWorker(workerId, businessId);
+    
+    if (!project || !worker) {
+      throw new Error('Project or worker not found in business');
+    }
+
     await db
       .delete(projectAssignments)
       .where(
