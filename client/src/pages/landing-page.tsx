@@ -71,11 +71,18 @@ export default function LandingPage() {
             </CardHeader>
             <CardContent className="pt-4">
               <Button size="lg" variant="outline" className="w-full mb-4 border-purple-600 text-purple-600 hover:bg-purple-50" 
-                      onClick={() => setLocation("/admin-setup")}>
-                Setup Admin
+                      onClick={() => setLocation("/admin-auth")}>
+                Admin Login
               </Button>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Create your platform administrator account
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                Platform administrator access
+                <br />
+                <button 
+                  className="text-purple-600 hover:text-purple-700 underline text-xs mt-1"
+                  onClick={() => setLocation("/admin-setup")}
+                >
+                  First time? Create admin account
+                </button>
               </p>
             </CardContent>
           </Card>
