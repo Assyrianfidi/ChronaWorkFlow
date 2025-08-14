@@ -14,12 +14,24 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { QrCode, Clock, MapPin, Edit, Trash2 } from "lucide-react";
 import QRScanner from "@/components/qr/qr-scanner";
 import { format } from "date-fns";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function TimeTracking() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading } = useAuth();
   const queryClient = useQueryClient();
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [selectedWorkerId, setSelectedWorkerId] = useState<string>("");
+
+  // Check URL parameters for worker ID
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const workerId = urlParams.get('worker');
+    if (workerId) {
+      console.log('Worker ID found in URL:', workerId);
+      setSelectedWorkerId(workerId);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -37,6 +49,11 @@ export default function TimeTracking() {
 
   const { data: timeLogs, isLoading: loadingLogs } = useQuery({
     queryKey: ["/api/time-logs"],
+    retry: false,
+  });
+
+  const { data: workers = [] } = useQuery({
+    queryKey: ["/api/workers"],
     retry: false,
   });
 
@@ -219,23 +236,49 @@ export default function TimeTracking() {
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <Header title="Time Tracking" subtitle="Monitor worker hours and manage time logs">
-          <Dialog open={isScannerOpen} onOpenChange={setIsScannerOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-blue-700">
-                <QrCode className="h-4 w-4 mr-2" />
-                Scan QR Code
+          {selectedWorkerId ? (
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-slate-600">Worker ready to clock in</span>
+              <Button 
+                onClick={() => {
+                  const workerQrCode = `WORKER_${selectedWorkerId}`;
+                  handleQRScan(workerQrCode);
+                }}
+                disabled={clockInMutation.isPending}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                Clock In
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>Scan Worker QR Code</DialogTitle>
-              </DialogHeader>
-              <QRScanner 
-                onScan={handleQRScan}
-                isLoading={clockInMutation.isPending}
-              />
-            </DialogContent>
-          </Dialog>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  setSelectedWorkerId("");
+                  window.history.replaceState({}, '', '/time-tracking');
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <Dialog open={isScannerOpen} onOpenChange={setIsScannerOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-primary hover:bg-blue-700">
+                  <QrCode className="h-4 w-4 mr-2" />
+                  Scan QR Code
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Scan Worker QR Code</DialogTitle>
+                </DialogHeader>
+                <QRScanner 
+                  onScan={handleQRScan}
+                  isLoading={clockInMutation.isPending}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
         </Header>
 
         <div className="p-8">

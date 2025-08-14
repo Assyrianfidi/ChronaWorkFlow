@@ -129,9 +129,9 @@ export class DatabaseStorage implements IStorage {
       baseUrl = `https://${domains[0].trim()}`;
     }
     
-    // Use worker ID format that works reliably with QR codes
-    const qrCode = `WORKER_${workerId}`;
-    console.log('Generated QR code:', qrCode);
+    // Create URL that opens time tracking page with worker ID
+    const qrCode = `${baseUrl}/time-tracking?worker=${workerId}`;
+    console.log('Generated QR code URL:', qrCode);
     
     const [worker] = await db
       .insert(workers)
