@@ -74,18 +74,34 @@ export default function Sidebar() {
             <p className="text-sm text-slate-500 truncate">{user?.role || "Admin"}</p>
           </div>
           <button
-            onClick={() => {
-              // Clear everything immediately and redirect
-              localStorage.clear();
-              sessionStorage.clear();
-              
-              // Clear cookies
-              document.cookie.split(";").forEach(function(c) { 
-                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-              });
-              
-              // Direct redirect to force logout - no API calls
-              window.location.href = '/api/force-logout';
+            onClick={async () => {
+              try {
+                // Call the logout API
+                const response = await fetch('/api/logout', {
+                  method: 'POST',
+                  credentials: 'include',
+                });
+                
+                if (response.ok) {
+                  // Clear browser storage
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  
+                  // Navigate to logged out page
+                  window.location.href = '/logged-out';
+                } else {
+                  // Fallback if API fails
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  window.location.href = '/';
+                }
+              } catch (error) {
+                console.error('Logout error:', error);
+                // Fallback
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/';
+              }
             }}
             className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-slate-200 rounded"
             title="Logout"
