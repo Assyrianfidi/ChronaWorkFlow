@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import LandingPage from "@/pages/landing-page";
 import BusinessAuthPage from "@/pages/business-auth-page";
 import AdminAuthPage from "@/pages/admin-auth-page";
+import AdminSetup from "@/pages/admin-setup";
 import LoggedOut from "@/pages/logged-out";
 import Dashboard from "@/pages/dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/logged-out" component={LoggedOut} />
       <Route path="/business-auth" component={BusinessAuthPage} />
       <Route path="/admin-auth" component={AdminAuthPage} />
+      <Route path="/admin-setup" component={AdminSetup} />
       
       {!isAuthenticated ? (
         <Route path="/" component={LandingPage} />
