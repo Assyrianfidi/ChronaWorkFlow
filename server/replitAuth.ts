@@ -155,12 +155,13 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/logout", (req, res) => {
     req.logout(() => {
-      res.redirect(
-        client.buildEndSessionUrl(config, {
-          client_id: process.env.REPL_ID!,
-          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-        }).href
-      );
+      // Clear the session completely
+      req.session.destroy(() => {
+        // Clear the session cookie
+        res.clearCookie('connect.sid');
+        // Redirect directly to landing page without going through Replit OAuth
+        res.redirect(`${req.protocol}://${req.hostname}`);
+      });
     });
   });
 }

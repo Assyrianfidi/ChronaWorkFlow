@@ -74,7 +74,18 @@ export default function Sidebar() {
             <p className="text-sm text-slate-500 truncate">{user?.role || "Admin"}</p>
           </div>
           <button
-            onClick={() => window.location.href = "/api/logout"}
+            onClick={async () => {
+              try {
+                // Clear client-side data first
+                localStorage.clear();
+                sessionStorage.clear();
+                // Then redirect to logout endpoint
+                window.location.href = "/api/logout";
+              } catch (error) {
+                console.error("Logout error:", error);
+                window.location.href = "/api/logout";
+              }
+            }}
             className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-slate-200 rounded"
             title="Logout"
           >
