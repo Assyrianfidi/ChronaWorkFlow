@@ -92,9 +92,10 @@ export async function setupAuth(app: Express) {
   ];
   
   for (const domain of allDomains) {
+    const strategyName = `replitauth:${domain}`;
     const strategy = new Strategy(
       {
-        name: `replitauth:${domain}`,
+        name: strategyName,
         config,
         scope: "openid email profile offline_access",
         callbackURL: `https://${domain}/api/callback`,
@@ -102,6 +103,7 @@ export async function setupAuth(app: Express) {
       verify,
     );
     passport.use(strategy);
+    console.log(`Registered auth strategy: ${strategyName}`);
   }
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
@@ -110,7 +112,19 @@ export async function setupAuth(app: Express) {
   app.get("/api/login", (req, res, next) => {
     // Use strategy for the current hostname
     const strategyName = `replitauth:${req.hostname}`;
-    console.log(`Using auth strategy: ${strategyName}`);
+    console.log(`Attempting to use auth strategy: ${strategyName} for hostname: ${req.hostname}`);
+    
+    // Check if strategy exists
+    const registeredStrategies = Object.keys((passport as any)._strategies || {});
+    console.log(`Available strategies: ${registeredStrategies.join(', ')}`);
+    
+    if (!registeredStrategies.includes(strategyName)) {
+      console.error(`Strategy ${strategyName} not found! Available: ${registeredStrategies.join(', ')}`);
+      return res.status(500).json({ 
+        message: `Authentication strategy not found for domain: ${req.hostname}`,
+        availableStrategies: registeredStrategies 
+      });
+    }
     
     passport.authenticate(strategyName, {
       prompt: "login consent",
