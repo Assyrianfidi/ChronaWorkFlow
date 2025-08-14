@@ -67,6 +67,8 @@ async function upsertUser(
 }
 
 export async function setupAuth(app: Express) {
+  // Custom domain authentication support - v1.0.1
+  console.log("Setting up authentication with custom domain support...");
   app.set("trust proxy", 1);
   app.use(getSession());
   app.use(passport.initialize());
