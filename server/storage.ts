@@ -49,6 +49,8 @@ export interface IStorage {
   getBusinessUser(id: string): Promise<BusinessUser | undefined>;
   getBusinessUserByEmail(email: string): Promise<BusinessUser | undefined>;
   createBusinessUser(user: InsertBusinessUser): Promise<BusinessUser>;
+  updateBusinessUserCredentials(userId: string, credentials: { email?: string; password?: string }): Promise<void>;
+  updateBusinessEmail(businessId: string, email: string): Promise<void>;
   
   // Worker operations (business-scoped)
   getWorkers(businessId: string): Promise<Worker[]>;
@@ -159,6 +161,22 @@ export class DatabaseStorage implements IStorage {
   async createBusinessUser(userData: InsertBusinessUser): Promise<BusinessUser> {
     const [user] = await db.insert(businessUsers).values(userData).returning();
     return user;
+  }
+
+  async updateBusinessUserCredentials(userId: string, credentials: { email?: string; password?: string }): Promise<void> {
+    const updateData: any = { updatedAt: new Date() };
+    if (credentials.email) updateData.email = credentials.email;
+    if (credentials.password) updateData.password = credentials.password;
+    
+    await db.update(businessUsers)
+      .set(updateData)
+      .where(eq(businessUsers.id, userId));
+  }
+
+  async updateBusinessEmail(businessId: string, email: string): Promise<void> {
+    await db.update(businesses)
+      .set({ email, updatedAt: new Date() })
+      .where(eq(businesses.id, businessId));
   }
 
   // Worker operations (business-scoped)

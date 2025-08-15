@@ -11,13 +11,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Building2, Mail, Globe, Save } from "lucide-react";
+import { Building2, Mail, Globe, Save, User, Lock } from "lucide-react";
 
 export default function BusinessSettings() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading } = useAuth();
   const queryClient = useQueryClient();
   const [customDomain, setCustomDomain] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -62,10 +65,63 @@ export default function BusinessSettings() {
     },
   });
 
+  const updateCredentialsMutation = useMutation({
+    mutationFn: async (data: { email?: string; password?: string }) => {
+      const response = await apiRequest("PUT", "/api/business/credentials", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Credentials Updated",
+        description: "Your login credentials have been updated successfully",
+      });
+      setNewEmail("");
+      setNewPassword("");
+      setConfirmPassword("");
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        window.location.href = "/logged-out";
+        return;
+      }
+      toast({
+        title: "Update Failed",
+        description: "Failed to update credentials. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSaveSettings = () => {
     updateSettingsMutation.mutate({
       customEmailDomain: customDomain,
     });
+  };
+
+  const handleUpdateCredentials = () => {
+    if (newPassword && newPassword !== confirmPassword) {
+      toast({
+        title: "Password Mismatch",
+        description: "Password and confirmation do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const updateData: { email?: string; password?: string } = {};
+    if (newEmail) updateData.email = newEmail;
+    if (newPassword) updateData.password = newPassword;
+
+    if (Object.keys(updateData).length === 0) {
+      toast({
+        title: "No Changes",
+        description: "Please enter new email or password to update",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    updateCredentialsMutation.mutate(updateData);
   };
 
   if (isLoading || loadingBusiness) {
@@ -172,6 +228,75 @@ export default function BusinessSettings() {
                 >
                   <Save className="h-4 w-4" />
                   <span>{updateSettingsMutation.isPending ? "Saving..." : "Save Settings"}</span>
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Separator />
+
+            {/* Account Credentials */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <User className="h-5 w-5" />
+                  <span>Update Login Credentials</span>
+                </CardTitle>
+                <p className="text-sm text-gray-500 mt-1">
+                  Change your email address or password for logging into Chrona Work Plus.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="newEmail">New Email Address (Optional)</Label>
+                  <Input
+                    id="newEmail"
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="Enter new email address"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="newPassword">New Password (Optional)</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                    <strong>Note:</strong> You can update either your email or password, or both. Leave fields empty if you don't want to change them.
+                  </p>
+                </div>
+
+                <Button 
+                  onClick={handleUpdateCredentials}
+                  disabled={updateCredentialsMutation.isPending}
+                  className="flex items-center space-x-2"
+                  variant="outline"
+                >
+                  <Lock className="h-4 w-4" />
+                  <span>{updateCredentialsMutation.isPending ? "Updating..." : "Update Credentials"}</span>
                 </Button>
               </CardContent>
             </Card>

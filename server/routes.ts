@@ -170,6 +170,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     `);
   });
 
+  // Business credentials update route
+  app.put("/api/business/credentials", isBusinessUser, async (req: any, res) => {
+    try {
+      const businessId = req.user.businessId;
+      const { email, password } = req.body;
+      
+      if (!email && !password) {
+        return res.status(400).json({ message: "Email or password is required" });
+      }
+
+      const updateData: any = {};
+      if (email) updateData.email = email;
+      if (password) {
+        // Hash the new password
+        const bcrypt = require('bcryptjs');
+        updateData.password = await bcrypt.hash(password, 10);
+      }
+
+      await storage.updateBusinessUserCredentials(req.user.id, updateData);
+      
+      // If email was updated, also update the business email
+      if (email) {
+        await storage.updateBusinessEmail(businessId, email);
+      }
+      
+      res.json({ message: "Credentials updated successfully" });
+    } catch (error) {
+      console.error("Error updating credentials:", error);
+      res.status(500).json({ message: "Failed to update credentials" });
+    }
+  });
+
   // Dashboard routes (business-scoped)
   app.get("/api/dashboard/stats", isBusinessUser, async (req: any, res) => {
     try {
