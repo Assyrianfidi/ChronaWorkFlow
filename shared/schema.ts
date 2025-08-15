@@ -35,6 +35,7 @@ export const businesses = pgTable("businesses", {
   address: text("address"),
   industry: varchar("industry"),
   website: varchar("website"),
+  customEmailDomain: varchar("custom_email_domain"),
   subscriptionPlan: varchar("subscription_plan").default("basic"),
   subscriptionStatus: varchar("subscription_status").default("active"),
   createdAt: timestamp("created_at").defaultNow(),

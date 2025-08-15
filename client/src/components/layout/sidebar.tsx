@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { FileText, BarChart3, Users, Clock, Building, FolderOpen, File, LogOut, MapPin } from "lucide-react";
+import { FileText, BarChart3, Users, Clock, Building, FolderOpen, File, LogOut, MapPin, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,6 +13,7 @@ const navigation = [
   { name: "Projects", href: "/projects", icon: FolderOpen },
   { name: "Invoices", href: "/invoices", icon: File },
   { name: "Reports", href: "/reports", icon: BarChart3 },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export default function Sidebar() {

@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -20,6 +20,12 @@ interface ClientFormProps {
 export default function ClientForm({ client, onSuccess }: ClientFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Fetch business settings to get custom email domain
+  const { data: businessSettings } = useQuery({
+    queryKey: ["/api/business/settings"],
+    retry: false,
+  });
 
   const form = useForm<ClientFormData>({
     resolver: zodResolver(insertClientSchema),
@@ -120,7 +126,9 @@ export default function ClientForm({ client, onSuccess }: ClientFormProps) {
                     // Auto-generate email when contact person changes
                     const contactName = e.target.value.toLowerCase().replace(/\s+/g, '');
                     if (contactName && !form.getValues('email')) {
-                      form.setValue('email', `${contactName}@Chronaworkplus.com`);
+                      // Use business custom domain or default
+                      const domain = businessSettings?.customEmailDomain || 'chronaworkflow.com';
+                      form.setValue('email', `${contactName}@${domain}`);
                     }
                   }}
                 />
@@ -140,14 +148,14 @@ export default function ClientForm({ client, onSuccess }: ClientFormProps) {
                 <FormControl>
                   <Input 
                     type="email" 
-                    placeholder="clientname@Chronaworkplus.com" 
+                    placeholder={`clientname@${businessSettings?.customEmailDomain || 'chronaworkflow.com'}`} 
                     {...field} 
                     value={field.value || ""} 
                   />
                 </FormControl>
                 <FormMessage />
                 <p className="text-xs text-gray-500 mt-1">
-                  Automatically generated from client name with @Chronaworkplus.com domain
+                  Automatically generated from client name with @{businessSettings?.customEmailDomain || 'chronaworkflow.com'}
                 </p>
               </FormItem>
             )}

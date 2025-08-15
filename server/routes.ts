@@ -625,6 +625,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Business settings routes
+  app.get("/api/business/settings", isBusinessUser, async (req: any, res) => {
+    try {
+      const businessId = req.user.businessId;
+      const business = await storage.getBusiness(businessId);
+      if (!business) {
+        return res.status(404).json({ message: "Business not found" });
+      }
+      res.json(business);
+    } catch (error) {
+      console.error("Error fetching business settings:", error);
+      res.status(500).json({ message: "Failed to fetch business settings" });
+    }
+  });
+
+  app.put("/api/business/settings", isBusinessUser, async (req: any, res) => {
+    try {
+      const businessId = req.user.businessId;
+      const { customEmailDomain } = req.body;
+      
+      const updatedBusiness = await storage.updateBusiness(businessId, {
+        customEmailDomain,
+      });
+      
+      res.json(updatedBusiness);
+    } catch (error) {
+      console.error("Error updating business settings:", error);
+      res.status(500).json({ message: "Failed to update business settings" });
+    }
+  });
+
   // Reports routes
   app.get("/api/reports", isAuthenticated, async (req: any, res) => {
     try {

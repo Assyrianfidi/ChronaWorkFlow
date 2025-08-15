@@ -37,6 +37,7 @@ export interface IStorage {
   getBusiness(id: string): Promise<Business | undefined>;
   getBusinessByEmail(email: string): Promise<Business | undefined>;
   createBusiness(business: InsertBusiness): Promise<Business>;
+  updateBusiness(id: string, business: Partial<InsertBusiness>): Promise<Business>;
   
   // Admin user operations
   getAdminUser(id: string): Promise<AdminUser | undefined>;
@@ -113,6 +114,15 @@ export class DatabaseStorage implements IStorage {
   async createBusiness(businessData: InsertBusiness): Promise<Business> {
     const [business] = await db.insert(businesses).values(businessData).returning();
     return business;
+  }
+
+  async updateBusiness(id: string, business: Partial<InsertBusiness>): Promise<Business> {
+    const [updatedBusiness] = await db
+      .update(businesses)
+      .set({ ...business, updatedAt: new Date() })
+      .where(eq(businesses.id, id))
+      .returning();
+    return updatedBusiness;
   }
 
   // Admin user operations

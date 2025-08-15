@@ -81,7 +81,7 @@ export default function LandingPage() {
             </div>
             <h4 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Client Management</h4>
             <p className="text-gray-600 dark:text-gray-400">
-              Manage clients with custom email addresses using your business domain @Chronaworkplus.com
+              Manage clients with custom email addresses using your own business domain (configurable in settings)
             </p>
           </div>
 
