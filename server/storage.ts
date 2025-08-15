@@ -372,7 +372,7 @@ export class DatabaseStorage implements IStorage {
 
   // Time log operations
   async getTimeLogs(businessId?: string): Promise<any[]> {
-    const query = db
+    let baseQuery = db
       .select({
         id: timeLogs.id,
         clockIn: timeLogs.clockIn,
@@ -380,7 +380,7 @@ export class DatabaseStorage implements IStorage {
         totalHours: timeLogs.totalHours,
         notes: timeLogs.notes,
         isApproved: timeLogs.isApproved,
-        location: timeLogs.location,
+        gpsLocation: timeLogs.gpsLocation,
         createdAt: timeLogs.createdAt,
         worker: {
           id: workers.id,
@@ -396,10 +396,13 @@ export class DatabaseStorage implements IStorage {
       .from(timeLogs)
       .leftJoin(workers, eq(timeLogs.workerId, workers.id))
       .leftJoin(projects, eq(timeLogs.projectId, projects.id))
-      .where(businessId ? eq(workers.businessId, businessId) : undefined)
       .orderBy(desc(timeLogs.createdAt));
+
+    if (businessId) {
+      return await baseQuery.where(eq(workers.businessId, businessId));
+    }
     
-    return await query;
+    return await baseQuery;
   }
 
   async getTimeLog(id: string): Promise<any | undefined> {
@@ -496,7 +499,7 @@ export class DatabaseStorage implements IStorage {
 
   // Invoice operations
   async getInvoices(businessId?: string): Promise<any[]> {
-    const query = db
+    let baseQuery = db
       .select({
         id: invoices.id,
         invoiceNumber: invoices.invoiceNumber,
@@ -524,10 +527,14 @@ export class DatabaseStorage implements IStorage {
       .from(invoices)
       .leftJoin(clients, eq(invoices.clientId, clients.id))
       .leftJoin(projects, eq(invoices.projectId, projects.id))
-      .where(businessId ? eq(invoices.businessId, businessId) : undefined)
       .orderBy(desc(invoices.createdAt));
 
-    const invoicesList = await query;
+    let invoicesList;
+    if (businessId) {
+      invoicesList = await baseQuery.where(eq(clients.businessId, businessId));
+    } else {
+      invoicesList = await baseQuery;
+    }
 
     // Fetch line items for each invoice
     const invoicesWithLineItems = await Promise.all(

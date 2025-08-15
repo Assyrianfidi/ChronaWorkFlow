@@ -387,13 +387,21 @@ const FinancialWidget = ({ widget, onUpdate, onRemove }: WidgetProps) => {
       .then(res => res.json())
       .then(data => {
         setStats({
-          totalReceivables: data.totalReceivables,
-          paidThisMonth: data.paidThisMonth,
-          profitMargin: data.profitMargin,
-          expenseRatio: data.overdueCount
+          totalReceivables: data.totalReceivables || 0,
+          paidThisMonth: data.paidThisMonth || 0,
+          profitMargin: data.profitMargin || 0,
+          expenseRatio: data.overdueCount || 0
         });
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error('Financial stats error:', err);
+        setStats({
+          totalReceivables: 0,
+          paidThisMonth: 0,
+          profitMargin: 0,
+          expenseRatio: 0
+        });
+      });
   }, []);
 
   return (
@@ -418,14 +426,14 @@ const FinancialWidget = ({ widget, onUpdate, onRemove }: WidgetProps) => {
         </DropdownMenu>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">${stats.totalReceivables.toFixed(0)}</div>
+        <div className="text-2xl font-bold">${stats?.totalReceivables?.toFixed(0) || '0'}</div>
         <p className="text-xs text-muted-foreground">Total Receivables</p>
         <div className="flex gap-4 mt-2">
           <div className="text-sm">
-            <span className="text-green-600 font-semibold">{stats.profitMargin.toFixed(1)}%</span> Margin
+            <span className="text-green-600 font-semibold">{stats?.profitMargin?.toFixed(1) || '0'}%</span> Margin
           </div>
           <div className="text-sm">
-            <span className="text-red-600 font-semibold">{stats.expenseRatio}</span> Overdue
+            <span className="text-red-600 font-semibold">{stats?.expenseRatio || '0'}</span> Overdue
           </div>
         </div>
       </CardContent>
