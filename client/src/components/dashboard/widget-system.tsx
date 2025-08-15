@@ -47,7 +47,7 @@ const WorkersWidget = ({ widget, onUpdate, onRemove }: WidgetProps) => {
     <Card className={`${widget.size === 'large' ? 'col-span-2' : ''} border-l-4`} style={{ borderLeftColor: widget.color }}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <widget.icon className="h-4 w-4" style={{ color: widget.color }} />
+          <Users className="h-4 w-4" style={{ color: widget.color }} />
           {widget.title}
         </CardTitle>
         <DropdownMenu>
@@ -109,7 +109,7 @@ const TimeLogsWidget = ({ widget, onUpdate, onRemove }: WidgetProps) => {
     <Card className={`${widget.size === 'large' ? 'col-span-2' : ''} border-l-4`} style={{ borderLeftColor: widget.color }}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <widget.icon className="h-4 w-4" style={{ color: widget.color }} />
+          <Clock className="h-4 w-4" style={{ color: widget.color }} />
           {widget.title}
         </CardTitle>
         <DropdownMenu>
@@ -161,7 +161,7 @@ const ProjectsWidget = ({ widget, onUpdate, onRemove }: WidgetProps) => {
     <Card className={`${widget.size === 'large' ? 'col-span-2' : ''} border-l-4`} style={{ borderLeftColor: widget.color }}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <widget.icon className="h-4 w-4" style={{ color: widget.color }} />
+          <FileText className="h-4 w-4" style={{ color: widget.color }} />
           {widget.title}
         </CardTitle>
         <DropdownMenu>
@@ -218,7 +218,7 @@ const RevenueWidget = ({ widget, onUpdate, onRemove }: WidgetProps) => {
     <Card className={`${widget.size === 'large' ? 'col-span-2' : ''} border-l-4`} style={{ borderLeftColor: widget.color }}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <widget.icon className="h-4 w-4" style={{ color: widget.color }} />
+          <DollarSign className="h-4 w-4" style={{ color: widget.color }} />
           {widget.title}
         </CardTitle>
         <DropdownMenu>
