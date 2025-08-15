@@ -5,11 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
-import LandingPage from "@/pages/landing-page";
-import BusinessAuthPage from "@/pages/business-auth-page";
-import AdminAuthPage from "@/pages/admin-auth-page";
-import AdminSetup from "@/pages/admin-setup";
-import AdminDashboard from "@/pages/admin-dashboard";
+import UnifiedAuthPage from "@/pages/unified-auth-page";
 import LoggedOut from "@/pages/logged-out";
 import Dashboard from "@/pages/dashboard";
 import Workers from "@/pages/workers";
@@ -36,12 +32,10 @@ function Router() {
     <Switch>
       {/* Public routes that don't require authentication */}
       <Route path="/logged-out" component={LoggedOut} />
-      <Route path="/business-auth" component={BusinessAuthPage} />
-      <Route path="/admin-auth" component={AdminAuthPage} />
-      <Route path="/admin-setup" component={AdminSetup} />
+      <Route path="/auth" component={UnifiedAuthPage} />
       
       {!isAuthenticated ? (
-        <Route path="/" component={LandingPage} />
+        <Route path="/" component={UnifiedAuthPage} />
       ) : isBusinessUser ? (
         <>
           {/* Business user routes */}
@@ -57,11 +51,7 @@ function Router() {
           <Route path="/settings" component={BusinessSettings} />
         </>
       ) : (
-        <>
-          {/* Admin user routes */}
-          <Route path="/" component={AdminDashboard} />
-          <Route path="/admin-dashboard" component={AdminDashboard} />
-        </>
+        <Route path="/" component={UnifiedAuthPage} />
       )}
       <Route component={NotFound} />
     </Switch>
