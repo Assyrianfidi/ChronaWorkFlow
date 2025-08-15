@@ -48,7 +48,7 @@ export default function BusinessAuthPage() {
         const data = await response.json();
         toast({
           title: "Login successful",
-          description: `Welcome back to Chrona Work Plus!`,
+          description: `Welcome back to Chrona Workflow Ledger!`,
         });
         setLocation("/dashboard");
       } else {

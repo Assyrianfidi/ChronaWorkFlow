@@ -242,7 +242,7 @@ export default function BusinessSettings() {
                   <span>Update Login Credentials</span>
                 </CardTitle>
                 <p className="text-sm text-gray-500 mt-1">
-                  Change your email address or password for logging into Chrona Work Plus.
+                  Change your email address or password for logging into Chrona Workflow Ledger.
                 </p>
               </CardHeader>
               <CardContent className="space-y-4">

@@ -16,7 +16,7 @@ export default function LandingPage() {
               <span className="text-white text-xl font-bold">CW</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Chrona Work Plus</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Chrona Workflow Ledger</h1>
               <p className="text-sm text-gray-600 dark:text-gray-400">Business Management Platform</p>
             </div>
           </div>

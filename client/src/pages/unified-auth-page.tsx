@@ -89,7 +89,7 @@ export default function UnifiedAuthPage() {
         <div className="hidden lg:block space-y-6">
           <div className="text-center lg:text-left">
             <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4">
-              Chrona Work Plus
+              Chrona Workflow Ledger
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
               Complete business management platform for modern teams
@@ -131,7 +131,7 @@ export default function UnifiedAuthPage() {
               <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Building2 className="w-8 h-8 text-white" />
               </div>
-              <CardTitle className="text-2xl font-bold">Welcome to Chrona Work Plus</CardTitle>
+              <CardTitle className="text-2xl font-bold">Welcome to Chrona Workflow Ledger</CardTitle>
               <p className="text-gray-500">Sign in to your account or create a new one</p>
             </CardHeader>
             <CardContent>
