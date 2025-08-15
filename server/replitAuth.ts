@@ -62,13 +62,9 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  await storage.upsertUser({
-    id: claims["sub"],
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
-  });
+  // Note: upsertUser method no longer exists in DatabaseStorage
+  // This function is kept for potential future Replit OAuth integration
+  console.log('Replit OAuth user claims:', claims);
 }
 
 export async function setupAuth(app: Express) {
@@ -88,15 +84,15 @@ export async function setupAuth(app: Express) {
     const user = {};
     updateUserSession(user, tokens);
     await upsertUser(tokens.claims());
-    verified(null, user);
+    verified(null, null);
   };
 
   // Add strategies for both Replit domains and common custom domains
   const replitDomains = process.env.REPLIT_DOMAINS ? process.env.REPLIT_DOMAINS.split(",") : [];
   const allDomains = [
     ...replitDomains,
-    "www.chronaworkflow.com", 
-    "chronaworkflow.com",
+    "www.chronaworkplus.com", 
+    "chronaworkplus.com",
     "localhost",
     "127.0.0.1"
   ];
