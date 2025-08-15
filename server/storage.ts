@@ -77,7 +77,7 @@ export interface IStorage {
   unassignWorkerFromProject(projectId: string, workerId: string, businessId: string): Promise<void>;
   
   // Time log operations (business-scoped)
-  getTimeLogs(businessId: string): Promise<any[]>;
+  getTimeLogs(businessId?: string): Promise<any[]>;
   getTimeLog(id: string, businessId: string): Promise<any | undefined>;
   getTimeLogsByWorker(workerId: string, businessId: string): Promise<any[]>;
   getTimeLogsByProject(projectId: string, businessId: string): Promise<any[]>;
@@ -87,7 +87,7 @@ export interface IStorage {
   deleteTimeLog(id: string): Promise<void>;
   
   // Invoice operations
-  getInvoices(): Promise<any[]>;
+  getInvoices(businessId?: string): Promise<any[]>;
   getInvoice(id: string): Promise<any | undefined>;
   createInvoice(invoice: InsertInvoice, lineItems: InsertInvoiceLineItem[]): Promise<Invoice>;
   updateInvoice(id: string, invoice: Partial<InsertInvoice>): Promise<Invoice>;
@@ -371,8 +371,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Time log operations
-  async getTimeLogs(): Promise<any[]> {
-    return await db
+  async getTimeLogs(businessId?: string): Promise<any[]> {
+    const query = db
       .select({
         id: timeLogs.id,
         clockIn: timeLogs.clockIn,
@@ -380,6 +380,7 @@ export class DatabaseStorage implements IStorage {
         totalHours: timeLogs.totalHours,
         notes: timeLogs.notes,
         isApproved: timeLogs.isApproved,
+        location: timeLogs.location,
         createdAt: timeLogs.createdAt,
         worker: {
           id: workers.id,
@@ -395,7 +396,10 @@ export class DatabaseStorage implements IStorage {
       .from(timeLogs)
       .leftJoin(workers, eq(timeLogs.workerId, workers.id))
       .leftJoin(projects, eq(timeLogs.projectId, projects.id))
+      .where(businessId ? eq(workers.businessId, businessId) : undefined)
       .orderBy(desc(timeLogs.createdAt));
+    
+    return await query;
   }
 
   async getTimeLog(id: string): Promise<any | undefined> {
@@ -491,8 +495,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Invoice operations
-  async getInvoices(): Promise<any[]> {
-    const invoicesList = await db
+  async getInvoices(businessId?: string): Promise<any[]> {
+    const query = db
       .select({
         id: invoices.id,
         invoiceNumber: invoices.invoiceNumber,
@@ -520,7 +524,10 @@ export class DatabaseStorage implements IStorage {
       .from(invoices)
       .leftJoin(clients, eq(invoices.clientId, clients.id))
       .leftJoin(projects, eq(invoices.projectId, projects.id))
+      .where(businessId ? eq(invoices.businessId, businessId) : undefined)
       .orderBy(desc(invoices.createdAt));
+
+    const invoicesList = await query;
 
     // Fetch line items for each invoice
     const invoicesWithLineItems = await Promise.all(

@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { MoreVertical, Settings, Plus, X, Users, Clock, FileText, BarChart3, DollarSign, MapPin } from "lucide-react";
+import { MoreVertical, Settings, Plus, X, Users, Clock, FileText, BarChart3, DollarSign, MapPin, Activity, TrendingUp, AlertTriangle, Navigation, Zap } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export interface Widget {
@@ -248,6 +248,191 @@ const RevenueWidget = ({ widget, onUpdate, onRemove }: WidgetProps) => {
   );
 };
 
+// Location/GPS Widget
+const LocationWidget = ({ widget, onUpdate, onRemove }: WidgetProps) => {
+  const [stats, setStats] = useState({ 
+    activeLocations: 0, 
+    totalScans: 0, 
+    recentActivity: [] as any[] 
+  });
+
+  useEffect(() => {
+    // Fetch location stats from dedicated endpoint
+    fetch('/api/dashboard/location-stats')
+      .then(res => res.json())
+      .then(data => {
+        setStats({
+          activeLocations: data.activeLocations,
+          totalScans: data.totalScans,
+          recentActivity: data.recentActivity
+        });
+      })
+      .catch(console.error);
+  }, []);
+
+  return (
+    <Card className={`${widget.size === 'large' ? 'col-span-2' : ''} border-l-4`} style={{ borderLeftColor: widget.color }}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <MapPin className="h-4 w-4" style={{ color: widget.color }} />
+          {widget.title}
+        </CardTitle>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onRemove?.(widget.id)}>
+              <X className="mr-2 h-4 w-4" />
+              Remove Widget
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{stats.activeLocations}</div>
+        <p className="text-xs text-muted-foreground">Active Locations Today</p>
+        <div className="flex gap-4 mt-2">
+          <div className="text-sm">
+            <span className="text-blue-600 font-semibold">{stats.totalScans}</span> QR Scans
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Real-time Operations Widget  
+const RealTimeWidget = ({ widget, onUpdate, onRemove }: WidgetProps) => {
+  const [stats, setStats] = useState({ 
+    currentlyActive: 0, 
+    recentActivity: [] as any[],
+    alertCount: 0 
+  });
+
+  useEffect(() => {
+    // Fetch real-time data
+    const fetchRealTimeData = () => {
+      fetch('/api/dashboard/realtime-stats')
+        .then(res => res.json())
+        .then(data => {
+          setStats({
+            currentlyActive: data.currentlyActive,
+            recentActivity: data.recentActivity,
+            alertCount: data.alertCount
+          });
+        })
+        .catch(console.error);
+    };
+
+    fetchRealTimeData();
+    const interval = setInterval(fetchRealTimeData, 30000); // Update every 30 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <Card className={`${widget.size === 'large' ? 'col-span-2' : ''} border-l-4`} style={{ borderLeftColor: widget.color }}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <Activity className="h-4 w-4" style={{ color: widget.color }} />
+          {widget.title}
+        </CardTitle>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onRemove?.(widget.id)}>
+              <X className="mr-2 h-4 w-4" />
+              Remove Widget
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{stats.currentlyActive}</div>
+        <p className="text-xs text-muted-foreground">Currently Active</p>
+        <div className="flex gap-4 mt-2">
+          {stats.alertCount > 0 && (
+            <div className="text-sm">
+              <span className="text-red-600 font-semibold">{stats.alertCount}</span> Alerts
+            </div>
+          )}
+          <div className="text-sm">
+            <span className="text-green-600 font-semibold">Live</span> Updates
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Financial Tracking Widget
+const FinancialWidget = ({ widget, onUpdate, onRemove }: WidgetProps) => {
+  const [stats, setStats] = useState({ 
+    totalReceivables: 0, 
+    paidThisMonth: 0, 
+    profitMargin: 0,
+    expenseRatio: 0 
+  });
+
+  useEffect(() => {
+    // Fetch financial data from dedicated endpoint
+    fetch('/api/dashboard/financial-stats')
+      .then(res => res.json())
+      .then(data => {
+        setStats({
+          totalReceivables: data.totalReceivables,
+          paidThisMonth: data.paidThisMonth,
+          profitMargin: data.profitMargin,
+          expenseRatio: data.overdueCount
+        });
+      })
+      .catch(console.error);
+  }, []);
+
+  return (
+    <Card className={`${widget.size === 'large' ? 'col-span-2' : ''} border-l-4`} style={{ borderLeftColor: widget.color }}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <TrendingUp className="h-4 w-4" style={{ color: widget.color }} />
+          {widget.title}
+        </CardTitle>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onRemove?.(widget.id)}>
+              <X className="mr-2 h-4 w-4" />
+              Remove Widget
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">${stats.totalReceivables.toFixed(0)}</div>
+        <p className="text-xs text-muted-foreground">Total Receivables</p>
+        <div className="flex gap-4 mt-2">
+          <div className="text-sm">
+            <span className="text-green-600 font-semibold">{stats.profitMargin.toFixed(1)}%</span> Margin
+          </div>
+          <div className="text-sm">
+            <span className="text-red-600 font-semibold">{stats.expenseRatio}</span> Overdue
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 // Available widget types
 export const AVAILABLE_WIDGETS: Omit<Widget, 'id' | 'enabled' | 'position'>[] = [
   {
@@ -282,6 +467,30 @@ export const AVAILABLE_WIDGETS: Omit<Widget, 'id' | 'enabled' | 'position'>[] = 
     size: 'medium',
     color: '#f59e0b',
   },
+  {
+    type: 'location',
+    title: 'Location Tracking',
+    description: 'Monitor active locations and GPS scans',
+    icon: MapPin,
+    size: 'medium',
+    color: '#ef4444',
+  },
+  {
+    type: 'realtime',
+    title: 'Real-Time Operations',
+    description: 'Live activity monitoring and alerts',
+    icon: Activity,
+    size: 'medium',
+    color: '#06b6d4',
+  },
+  {
+    type: 'financial',
+    title: 'Financial Analytics',
+    description: 'Advanced financial tracking and metrics',
+    icon: TrendingUp,
+    size: 'medium',
+    color: '#84cc16',
+  },
 ];
 
 // Widget renderer
@@ -295,6 +504,12 @@ export const WidgetRenderer = ({ widget, onUpdate, onRemove }: WidgetProps) => {
       return <ProjectsWidget widget={widget} onUpdate={onUpdate} onRemove={onRemove} />;
     case 'revenue':
       return <RevenueWidget widget={widget} onUpdate={onUpdate} onRemove={onRemove} />;
+    case 'location':
+      return <LocationWidget widget={widget} onUpdate={onUpdate} onRemove={onRemove} />;
+    case 'realtime':
+      return <RealTimeWidget widget={widget} onUpdate={onUpdate} onRemove={onRemove} />;
+    case 'financial':
+      return <FinancialWidget widget={widget} onUpdate={onUpdate} onRemove={onRemove} />;
     default:
       return null;
   }

@@ -225,6 +225,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Advanced widget API endpoints
+  app.get("/api/dashboard/location-stats", isBusinessUser, async (req: any, res) => {
+    try {
+      const businessId = req.user.businessId;
+      const timeLogs = await storage.getTimeLogs(businessId);
+      
+      const today = new Date().toDateString();
+      const todaysLogs = timeLogs.filter((log: any) => 
+        new Date(log.clockIn).toDateString() === today
+      );
+      
+      const activeLocations = new Set(
+        todaysLogs
+          .filter((log: any) => !log.clockOut && log.location)
+          .map((log: any) => `${log.location?.latitude},${log.location?.longitude}`)
+      ).size;
+      
+      const totalScans = todaysLogs.length;
+      const recentActivity = todaysLogs.slice(-5);
+      
+      res.json({ activeLocations, totalScans, recentActivity });
+    } catch (error) {
+      console.error("Error fetching location stats:", error);
+      res.status(500).json({ message: "Failed to fetch location statistics" });
+    }
+  });
+
+  app.get("/api/dashboard/realtime-stats", isBusinessUser, async (req: any, res) => {
+    try {
+      const businessId = req.user.businessId;
+      const timeLogs = await storage.getTimeLogs(businessId);
+      
+      const activeLogs = timeLogs.filter((log: any) => !log.clockOut);
+      const recentActivity = timeLogs
+        .sort((a: any, b: any) => new Date(b.clockIn).getTime() - new Date(a.clockIn).getTime())
+        .slice(0, 5);
+      
+      // Check for overtime alerts (workers clocked in >8 hours)
+      const alertCount = activeLogs.filter((log: any) => {
+        const clockInTime = new Date(log.clockIn);
+        const now = new Date();
+        const hoursWorked = (now.getTime() - clockInTime.getTime()) / (1000 * 60 * 60);
+        return hoursWorked > 8;
+      }).length;
+      
+      res.json({ 
+        currentlyActive: activeLogs.length, 
+        recentActivity,
+        alertCount,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error fetching realtime stats:", error);
+      res.status(500).json({ message: "Failed to fetch real-time statistics" });
+    }
+  });
+
+  app.get("/api/dashboard/financial-stats", isBusinessUser, async (req: any, res) => {
+    try {
+      const businessId = req.user.businessId;
+      const invoices = await storage.getInvoices(businessId);
+      const dashboardStats = await storage.getDashboardStats();
+      
+      const totalReceivables = invoices
+        .filter((inv: any) => inv.status !== 'paid')
+        .reduce((sum: number, inv: any) => sum + inv.total, 0);
+      
+      const currentMonth = new Date().getMonth();
+      const paidThisMonth = invoices
+        .filter((inv: any) => {
+          return inv.status === 'paid' && 
+                 new Date(inv.paidAt || inv.dueDate).getMonth() === currentMonth;
+        })
+        .reduce((sum: number, inv: any) => sum + inv.total, 0);
+      
+      const monthlyRevenue = parseFloat(dashboardStats.monthlyRevenue || '0');
+      const profitMargin = monthlyRevenue > 0 ? ((monthlyRevenue - (monthlyRevenue * 0.7)) / monthlyRevenue * 100) : 0;
+      
+      // Calculate overdue invoices
+      const overdueCount = invoices.filter((inv: any) => {
+        return inv.status !== 'paid' && new Date(inv.dueDate) < new Date();
+      }).length;
+      
+      res.json({ 
+        totalReceivables, 
+        paidThisMonth, 
+        profitMargin,
+        overdueCount,
+        totalInvoices: invoices.length,
+        monthlyRevenue
+      });
+    } catch (error) {
+      console.error("Error fetching financial stats:", error);
+      res.status(500).json({ message: "Failed to fetch financial statistics" });
+    }
+  });
+
   // Worker routes (business-scoped)
   app.get("/api/workers", isBusinessUser, async (req: any, res) => {
     try {
