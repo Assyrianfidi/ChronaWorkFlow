@@ -11,8 +11,8 @@ export function getAppDomain(): string {
     const hostname = window.location.hostname;
     
     // If we're on the custom domain, use it
-    if (hostname.includes('chronaworkplus.com')) {
-      return 'https://www.chronaworkplus.com';
+    if (hostname.includes('chronaworkflow.com')) {
+      return 'https://www.chronaworkflow.com';
     }
     
     // For development or Replit domains

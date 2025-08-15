@@ -35,7 +35,7 @@ This is a comprehensive, production-ready business management application design
 - Business users can customize their dashboard with relevant widgets and metrics
 - All core features tested and confirmed working: worker management, QR time tracking, client management, project oversight, invoicing, and dashboard analytics
 
-**August 15, 2025**: Unified Authentication System & Real Admin Account Created
+**August 15, 2025**: Unified Authentication System & Real Admin Account Created + Critical QR Code Domain Fix
 - ✅ COMPLETED: Created unified login page combining business registration and login
 - ✅ COMPLETED: Replaced separate auth pages with single professional authentication interface
 - ✅ COMPLETED: Added real admin account: Assyrian222@hotmail.com with secure password
@@ -46,6 +46,9 @@ This is a comprehensive, production-ready business management application design
 - ✅ COMPLETED: Client email generation now uses configurable domain (chronaworkflow.com default)
 - ✅ COMPLETED: All branding updated to "Chrona Work Plus" throughout application
 - ✅ COMPLETED: Added credentials update feature in settings page for changing email/password anytime
+- ✅ COMPLETED: CRITICAL FIX: QR codes now generate correct domain (chronaworkflow.com instead of chronaworkplus.com)
+- ✅ COMPLETED: Fixed dashboard widget icon errors - all widgets now display properly with static icons
+- ✅ COMPLETED: Updated QR code generation in server/storage.ts, client/src/lib/utils.ts, and server/replitAuth.ts
 
 **August 14, 2025**: Application Rebranded to "Chrona Work Plus" and Interface Simplified
 - ✅ COMPLETED: Rebranded entire application to "Chrona Work Plus"  

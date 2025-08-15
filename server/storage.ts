@@ -202,7 +202,7 @@ export class DatabaseStorage implements IStorage {
     const workerId = randomUUID();
     
     // Use custom domain for QR codes in production
-    let baseUrl = 'https://www.chronaworkplus.com';
+    let baseUrl = 'https://www.chronaworkflow.com';
     
     // For development, use localhost
     if (process.env.NODE_ENV === 'development') {

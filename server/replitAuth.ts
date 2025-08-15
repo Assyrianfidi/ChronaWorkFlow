@@ -91,8 +91,8 @@ export async function setupAuth(app: Express) {
   const replitDomains = process.env.REPLIT_DOMAINS ? process.env.REPLIT_DOMAINS.split(",") : [];
   const allDomains = [
     ...replitDomains,
-    "www.chronaworkplus.com", 
-    "chronaworkplus.com",
+    "www.chronaworkflow.com", 
+    "chronaworkflow.com",
     "localhost",
     "127.0.0.1"
   ];
