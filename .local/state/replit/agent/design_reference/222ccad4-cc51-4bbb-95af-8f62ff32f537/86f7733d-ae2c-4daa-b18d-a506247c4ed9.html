@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fidi WorkFlow Ledger - Business Management Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#64748B',
+                        accent: '#059669',
+                        surface: '#FFFFFF',
+                        background: '#F8FAFC',
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="font-inter bg-background text-slate-800 antialiased">
+    <!-- @COMPONENT: AppLayout -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <!-- @COMPONENT: Sidebar -->
+        <aside class="w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col">
+            <!-- Logo & Brand -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-clipboard-list text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-slate-800">Fidi WorkFlow</h1>
+                        <p class="text-sm text-slate-500">Ledger</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="#dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-primary text-white font-medium">
+                    <i class="fas fa-chart-dashboard w-5"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#workers" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-100 font-medium">
+                    <i class="fas fa-users w-5"></i>
+                    <span>Workers</span>
+                </a>
+                <a href="#timetracking" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-100 font-medium">
+                    <i class="fas fa-clock w-5"></i>
+                    <span>Time Tracking</span>
+                </a>
+                <a href="#clients" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-100 font-medium">
+                    <i class="fas fa-building w-5"></i>
+                    <span>Clients</span>
+                </a>
+                <a href="#projects" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-100 font-medium">
+                    <i class="fas fa-project-diagram w-5"></i>
+                    <span>Projects</span>
+                </a>
+                <a href="#invoices" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-100 font-medium">
+                    <i class="fas fa-file-invoice-dollar w-5"></i>
+                    <span>Invoices</span>
+                </a>
+                <a href="#reports" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-100 font-medium">
+                    <i class="fas fa-chart-bar w-5"></i>
+                    <span>Reports</span>
+                </a>
+            </nav>
+
+            <!-- User Profile Section -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-slate-100 cursor-pointer">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100" alt="User Profile" class="w-10 h-10 rounded-full object-cover" data-mock="true">
+                    <div class="flex-1">
+                        <p class="font-medium text-slate-800" data-mock="true">John Administrator</p>
+                        <p class="text-sm text-slate-500" data-mock="true">Admin</p>
+                    </div>
+                    <i class="fas fa-cog text-slate-400"></i>
+                </div>
+            </div>
+        </aside>
+        <!-- @END_COMPONENT: Sidebar -->
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Header -->
+            <!-- @COMPONENT: Header -->
+            <header class="bg-white shadow-sm border-b border-gray-200 px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Dashboard</h2>
+                        <p class="text-slate-600 mt-1">Welcome back! Here's an overview of your business.</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="bg-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>
+                            Quick Add
+                        </button>
+                        <div class="relative">
+                            <i class="fas fa-bell text-slate-400 text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- @END_COMPONENT: Header -->
+
+            <!-- Dashboard Content -->
+            <!-- @COMPONENT: DashboardContent -->
+            <div class="p-8 space-y-8">
+                <!-- Key Metrics Cards -->
+                <!-- @COMPONENT: MetricsGrid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-600 text-sm font-medium">Total Workers</p>
+                                <p class="text-3xl font-bold text-slate-800 mt-2" data-mock="true">24</p>
+                                <p class="text-accent text-sm mt-1">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    <span data-mock="true">+2 this month</span>
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-primary text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-600 text-sm font-medium">Hours This Week</p>
+                                <p class="text-3xl font-bold text-slate-800 mt-2" data-mock="true">1,847</p>
+                                <p class="text-accent text-sm mt-1">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    <span data-mock="true">+12% vs last week</span>
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-accent text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-600 text-sm font-medium">Active Projects</p>
+                                <p class="text-3xl font-bold text-slate-800 mt-2" data-mock="true">18</p>
+                                <p class="text-slate-500 text-sm mt-1" data-mock="true">6 due this week</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-project-diagram text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-600 text-sm font-medium">Monthly Revenue</p>
+                                <p class="text-3xl font-bold text-slate-800 mt-2" data-mock="true">$47,820</p>
+                                <p class="text-accent text-sm mt-1">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    <span data-mock="true">+8% vs last month</span>
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-dollar-sign text-accent text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: MetricsGrid -->
+
+                <!-- Recent Activity & Quick Actions -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Recent Time Logs -->
+                    <!-- @COMPONENT: RecentTimeLogs -->
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-slate-800">Recent Time Logs</h3>
+                                <a href="#timetracking" class="text-primary font-medium hover:text-blue-700">View All</a>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <!-- @MAP: recentTimeLogs.map(log => ( -->
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0" data-mock="true">
+                                    <div class="flex items-center space-x-4">
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100" alt="Worker" class="w-10 h-10 rounded-full object-cover">
+                                        <div>
+                                            <p class="font-medium text-slate-800">Mike Johnson</p>
+                                            <p class="text-sm text-slate-500">Construction Project A</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium text-slate-800">8:00 AM - 5:00 PM</p>
+                                        <p class="text-sm text-slate-500">9 hours</p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-accent text-white text-sm rounded-full">Clocked Out</span>
+                                </div>
+
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0" data-mock="true">
+                                    <div class="flex items-center space-x-4">
+                                        <img src="https://pixabay.com/get/g58e9ca0aa428e32a1f7ee0d93b6af9eb45f7d1028a881a51e94991e2198929da51eb06a54a303e005a976656ca1c6b071f74a762a976246bd1c2ef303921ea89_1280.jpg" alt="Worker" class="w-10 h-10 rounded-full object-cover">
+                                        <div>
+                                            <p class="font-medium text-slate-800">Sarah Davis</p>
+                                            <p class="text-sm text-slate-500">Office Renovation</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium text-slate-800">9:15 AM - Now</p>
+                                        <p class="text-sm text-slate-500">6h 45m</p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-green-500 text-white text-sm rounded-full">Active</span>
+                                </div>
+
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0" data-mock="true">
+                                    <div class="flex items-center space-x-4">
+                                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100" alt="Worker" class="w-10 h-10 rounded-full object-cover">
+                                        <div>
+                                            <p class="font-medium text-slate-800">Alex Rodriguez</p>
+                                            <p class="text-sm text-slate-500">Warehouse Setup</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium text-slate-800">7:30 AM - 4:30 PM</p>
+                                        <p class="text-sm text-slate-500">9 hours</p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-accent text-white text-sm rounded-full">Clocked Out</span>
+                                </div>
+                                <!-- @END_MAP )) -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_COMPONENT: RecentTimeLogs -->
+
+                    <!-- Quick Actions & QR Scanner -->
+                    <!-- @COMPONENT: QuickActions -->
+                    <div class="space-y-6">
+                        <!-- QR Code Scanner -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-slate-800 mb-4">QR Scanner</h3>
+                            <div class="bg-gray-100 rounded-lg p-8 text-center">
+                                <i class="fas fa-qrcode text-4xl text-slate-400 mb-4"></i>
+                                <p class="text-slate-600 mb-4">Scan worker QR code for time tracking</p>
+                                <button class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors w-full" data-implementation="Implement QR scanner using device camera">
+                                    <i class="fas fa-camera mr-2"></i>
+                                    Open Scanner
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-slate-800 mb-4">Quick Actions</h3>
+                            <div class="space-y-3">
+                                <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-3 rounded-lg font-medium text-left transition-colors">
+                                    <i class="fas fa-user-plus mr-3 text-primary"></i>
+                                    Add New Worker
+                                </button>
+                                <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-3 rounded-lg font-medium text-left transition-colors">
+                                    <i class="fas fa-building mr-3 text-primary"></i>
+                                    Add New Client
+                                </button>
+                                <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-3 rounded-lg font-medium text-left transition-colors">
+                                    <i class="fas fa-file-invoice mr-3 text-primary"></i>
+                                    Create Invoice
+                                </button>
+                                <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-3 rounded-lg font-medium text-left transition-colors">
+                                    <i class="fas fa-project-diagram mr-3 text-primary"></i>
+                                    New Project
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_COMPONENT: QuickActions -->
+                </div>
+
+                <!-- Current Projects Status -->
+                <!-- @COMPONENT: ProjectsOverview -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-slate-800">Current Projects</h3>
+                            <a href="#projects" class="text-primary font-medium hover:text-blue-700">Manage Projects</a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="text-left border-b border-gray-200">
+                                        <th class="pb-3 text-sm font-semibold text-slate-600">Project</th>
+                                        <th class="pb-3 text-sm font-semibold text-slate-600">Client</th>
+                                        <th class="pb-3 text-sm font-semibold text-slate-600">Workers</th>
+                                        <th class="pb-3 text-sm font-semibold text-slate-600">Progress</th>
+                                        <th class="pb-3 text-sm font-semibold text-slate-600">Due Date</th>
+                                        <th class="pb-3 text-sm font-semibold text-slate-600">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="space-y-4">
+                                    <!-- @MAP: projects.map(project => ( -->
+                                    <tr class="border-b border-gray-100 last:border-0" data-mock="true">
+                                        <td class="py-4">
+                                            <div>
+                                                <p class="font-medium text-slate-800">Downtown Office Building</p>
+                                                <p class="text-sm text-slate-500">Commercial construction</p>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 text-slate-600">Acme Corp</td>
+                                        <td class="py-4">
+                                            <div class="flex -space-x-2">
+                                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100" alt="Worker" class="w-8 h-8 rounded-full object-cover border-2 border-white">
+                                                <img src="https://pixabay.com/get/g58e9ca0aa428e32a1f7ee0d93b6af9eb45f7d1028a881a51e94991e2198929da51eb06a54a303e005a976656ca1c6b071f74a762a976246bd1c2ef303921ea89_1280.jpg" alt="Worker" class="w-8 h-8 rounded-full object-cover border-2 border-white">
+                                                <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center">
+                                                    <span class="text-xs font-medium text-slate-600">+3</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4">
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-accent h-2 rounded-full" style="width: 65%"></div>
+                                            </div>
+                                            <span class="text-sm text-slate-600 mt-1">65%</span>
+                                        </td>
+                                        <td class="py-4 text-slate-600">Dec 15, 2024</td>
+                                        <td class="py-4">
+                                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full">In Progress</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-b border-gray-100 last:border-0" data-mock="true">
+                                        <td class="py-4">
+                                            <div>
+                                                <p class="font-medium text-slate-800">Residential Kitchen Remodel</p>
+                                                <p class="text-sm text-slate-500">Home renovation</p>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 text-slate-600">Johnson Family</td>
+                                        <td class="py-4">
+                                            <div class="flex -space-x-2">
+                                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100" alt="Worker" class="w-8 h-8 rounded-full object-cover border-2 border-white">
+                                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100" alt="Worker" class="w-8 h-8 rounded-full object-cover border-2 border-white">
+                                            </div>
+                                        </td>
+                                        <td class="py-4">
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-accent h-2 rounded-full" style="width: 90%"></div>
+                                            </div>
+                                            <span class="text-sm text-slate-600 mt-1">90%</span>
+                                        </td>
+                                        <td class="py-4 text-slate-600">Nov 30, 2024</td>
+                                        <td class="py-4">
+                                            <span class="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">Nearly Complete</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-b border-gray-100 last:border-0" data-mock="true">
+                                        <td class="py-4">
+                                            <div>
+                                                <p class="font-medium text-slate-800">Warehouse Organization</p>
+                                                <p class="text-sm text-slate-500">Industrial setup</p>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 text-slate-600">Tech Solutions Inc</td>
+                                        <td class="py-4">
+                                            <div class="flex -space-x-2">
+                                                <img src="https://pixabay.com/get/g58e9ca0aa428e32a1f7ee0d93b6af9eb45f7d1028a881a51e94991e2198929da51eb06a54a303e005a976656ca1c6b071f74a762a976246bd1c2ef303921ea89_1280.jpg" alt="Worker" class="w-8 h-8 rounded-full object-cover border-2 border-white">
+                                                <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center">
+                                                    <span class="text-xs font-medium text-slate-600">+4</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4">
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-accent h-2 rounded-full" style="width: 25%"></div>
+                                            </div>
+                                            <span class="text-sm text-slate-600 mt-1">25%</span>
+                                        </td>
+                                        <td class="py-4 text-slate-600">Jan 15, 2025</td>
+                                        <td class="py-4">
+                                            <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">Planning</span>
+                                        </td>
+                                    </tr>
+                                    <!-- @END_MAP )) -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: ProjectsOverview -->
+            </div>
+            <!-- @END_COMPONENT: DashboardContent -->
+        </main>
+    </div>
+    <!-- @END_COMPONENT: AppLayout -->
+
+    <!-- Floating QR Scanner Button (Mobile) -->
+    <!-- @COMPONENT: FloatingQRButton -->
+    <div class="fixed bottom-6 right-6 lg:hidden">
+        <button class="bg-primary text-white w-14 h-14 rounded-full shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+            <i class="fas fa-qrcode text-xl"></i>
+        </button>
+    </div>
+    <!-- @END_COMPONENT: FloatingQRButton -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        (function() {
+            // Navigation state management
+            const navLinks = document.querySelectorAll('nav a');
+            
+            // Simple navigation highlighting
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    navLinks.forEach(l => l.classList.remove('bg-primary', 'text-white'));
+                    navLinks.forEach(l => l.classList.add('text-slate-600', 'hover:bg-slate-100'));
+                    
+                    // Add active class to clicked link
+                    this.classList.remove('text-slate-600', 'hover:bg-slate-100');
+                    this.classList.add('bg-primary', 'text-white');
+                });
+            });
+
+            // QR Scanner functionality placeholder
+            const qrButtons = document.querySelectorAll('[data-implementation*="QR scanner"]');
+            qrButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    alert('QR Scanner would open camera interface here');
+                    // TODO: Implement actual QR code scanning using device camera
+                });
+            });
+
+            // Quick action buttons
+            const quickActionButtons = document.querySelectorAll('.space-y-3 button');
+            quickActionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    console.log(`Quick action: ${action}`);
+                    // TODO: Implement actual navigation to respective modules
+                });
+            });
+
+            // Notification bell interaction
+            const notificationBell = document.querySelector('.fas.fa-bell').parentElement;
+            if (notificationBell) {
+                notificationBell.addEventListener('click', function() {
+                    alert('Notifications panel would open here');
+                    // TODO: Implement notifications dropdown
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
