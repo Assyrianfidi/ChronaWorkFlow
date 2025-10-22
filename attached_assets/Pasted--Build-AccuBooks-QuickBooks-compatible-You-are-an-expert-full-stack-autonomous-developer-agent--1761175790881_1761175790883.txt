@@ -1,0 +1,370 @@
+— Build AccuBooks (QuickBooks-compatible)
+
+You are an expert full-stack autonomous developer agent. Your job is to design, implement, test, document, and deliver a production-ready accounting software called AccuBooks that is functionally compatible with QuickBooks (offers migration/import from QuickBooks backbone data structures), includes bookkeeping, payroll, invoicing, inventory, banking integrations, and is deployable via Docker.
+
+PRIORITIES (in order)
+
+Core accounting engine (double-entry, chart of accounts, transactions/journal entries).
+
+Authentication + multi-tenant company model + RBAC.
+
+Invoices & payments (create, PDF export, email, partial payments).
+
+Reporting engine (Profit & Loss, Balance Sheet, Cash Flow).
+
+Bank import & reconciliation (CSV import + Plaid connector stub).
+
+Payroll & basic tax calculations (configurable rates).
+
+Inventory basic CRUD + stock adjustments + COGS.
+
+QuickBooks import compatibility (.QBO, .IIF, .QBW metadata import stubs and mapping tools).
+
+Frontend UI (React) with Dashboard, Invoices, Accounts, Transactions, Reports.
+
+Testing, Docker, CI/CD, and documentation.
+
+STACK & TOOLS
+
+Backend: Node.js + TypeScript + Express
+
+ORM: Prisma (Postgres) or TypeORM (Prisma preferred)
+
+Database: PostgreSQL
+
+Frontend: React + TypeScript + Vite + TailwindCSS
+
+Auth: JWT + refresh tokens (bcrypt for passwords)
+
+Background jobs: BullMQ + Redis (for reconciliation, imports)
+
+Email: SMTP (nodemailer) and Stripe for payments integration
+
+Bank connector: Plaid (implement stubs if API keys not provided)
+
+Storage: AWS S3 or local filesystem for dev
+
+Tests: Jest (backend), Vitest / Playwright (frontend e2e)
+
+Docker: Dockerfile for backend & frontend, docker-compose for local dev
+
+CI: GitHub Actions pipeline (test, lint, build, docker-compose up for integration test)
+
+Linting & formatting: ESLint + Prettier
+
+SECURITY & COMPLIANCE
+
+Use HTTPS in production, require env vars for secrets
+
+Hash passwords with bcrypt/argon2; JWT access token short-lived + refresh token rotation
+
+Encrypt bank tokens and other sensitive fields at rest (AES or similar)
+
+Audit logs immutable (append-only) for all financial changes
+
+DELIVERABLES (what to create)
+
+Full repository accubooks/ with backend/, frontend/, infra/, docs/.
+
+Docker-compose to spin up Postgres, Redis, backend, frontend.
+
+Working REST API with OpenAPI/Swagger.
+
+React UI with Login, Dashboard, Accounts, Transactions, Invoices, Reconciliation, Payroll, Inventory, Reports.
+
+QuickBooks import/migration tool: parsers for .IIF and .QBO (or clear mapping + stub to accept files) and migration scripts to map to AccuBooks schema.
+
+Seed data script: demo company (demo@accubooks.com
+ / Demo123!), sample chart of accounts, customers, vendors, invoices, transactions.
+
+Unit & integration tests covering accounting invariants (double-entry equality), invoice totals, reconciliation matching, authentication flows.
+
+README with setup steps for Windows (PowerShell), macOS, Linux and production deployment guide.
+
+GitHub Actions workflow for tests + build.
+
+Minimal "Plaid connector" implementation with config toggles; document how to enable with keys.
+
+MILESTONES & SPRINTS (agent should create tasks and commit per milestone)
+
+Sprint 1 (core): DB schema, authentication, company model, chart of accounts, transactions, double-entry enforcement, seed script
+
+Sprint 2 (invoices + payments): invoices API, PDF generation (Puppeteer), email sending, payment recording
+
+Sprint 3 (reports): P&L, Balance Sheet, Cash Flow endpoints + frontend pages
+
+Sprint 4 (banking): CSV bank import, auto-match heuristics, reconciliation UI, Plaid stub
+
+Sprint 5 (payroll + inventory): payroll run creation and payroll items, inventory CRUD and COGS updates
+
+Sprint 6 (QuickBooks compatibility): import parsers and mapping tools, test migration with sample QuickBooks files (or synthetic files)
+
+Sprint 7 (polish + docs + tests): frontend styling, accessibility, tests, README, Docker, CI
+
+Each sprint must produce a working demo and a git tag (e.g., sprint-1-complete).
+
+DB SCHEMA (core tables) — create with Prisma schema or SQL migrations
+
+Include these tables at minimum (with strong constraints):
+
+companies
+
+users
+
+roles (role assignments)
+
+accounts (chart_of_accounts)
+
+transactions (journal entries)
+
+transaction_lines
+
+invoices
+
+invoice_items
+
+payments
+
+customers
+
+vendors
+
+employees
+
+payroll_runs
+
+payroll_items
+
+inventory_items
+
+bank_transactions
+
+reconciliations
+
+audit_logs
+
+migration_logs (for QuickBooks imports)
+
+Constraints:
+
+transaction_lines sum(debits) == sum(credits) for each transaction (enforce in application + DB trigger if possible)
+
+invoice totals computed from invoice_items; payments reduce outstanding balance
+
+no destructive delete for financial records — soft-delete or void with audit entry
+
+API SPEC (examples)
+
+Create OpenAPI YAML and implement endpoints:
+
+Auth:
+
+POST /api/auth/register
+
+POST /api/auth/login
+
+POST /api/auth/refresh
+
+POST /api/auth/forgot-password
+
+Companies & Users:
+
+GET /api/companies
+
+POST /api/companies
+
+GET /api/users
+
+POST /api/users
+
+Accounts & Transactions:
+
+GET/POST /api/accounts
+
+GET/POST /api/transactions
+
+POST /api/transactions/{id}/void
+
+Invoices:
+
+GET /api/invoices
+
+POST /api/invoices
+
+POST /api/invoices/{id}/email
+
+POST /api/invoices/{id}/pay
+
+Banking:
+
+POST /api/bank/import (CSV)
+
+POST /api/bank/connect (Plaid stub)
+
+POST /api/reconciliation/{account_id}/match
+
+Reports:
+
+GET /api/reports/pnl
+
+GET /api/reports/balance-sheet
+
+GET /api/reports/cashflow
+
+QuickBooks import:
+
+POST /api/import/quickbooks (multipart file) → returns migration log and preview mapping
+
+FRONTEND PAGES (minimum)
+
+Login / Register
+
+Onboarding (create company + initial chart of accounts)
+
+Dashboard (KPIs, charts)
+
+Accounts list + account detail (ledger)
+
+Transactions list + create transaction (journal entry)
+
+Invoices list + invoice create / view / email / pay
+
+Bank import + reconciliation page
+
+Payroll management + payroll runs
+
+Inventory management
+
+Reports (P&L, Balance Sheet, Cash Flow)
+
+Settings (company profile, tax rates, invoice template, integrations)
+
+Use React Router and component-per-page structure.
+
+SEED DATA (demo)
+
+Create scripts/seed.ts to populate:
+
+Company: AccuBooks Demo Co
+
+Admin user: demo@accubooks.com
+ / Demo123!
+
+Chart of accounts (Assets: Cash 1000, AR 1100; Liabilities: AP 2000; Revenue: 4000; Expenses: 5000)
+
+5 customers, 5 vendors
+
+10 transactions (journal entries) balanced
+
+5 demo invoices (some paid, some overdue)
+
+Inventory: 3 SKUs with quantities and costs
+
+TESTS (must include)
+
+Unit tests: transaction balancing, invoice total calculation, account balance updates, auth flows
+
+Integration tests: create invoice → pay invoice → check ledger entries; import CSV bank → auto-match → reconcile
+
+E2E tests: frontend flows for login → create invoice → generate PDF
+
+Use Jest for backend and Playwright for E2E. Run tests on GitHub Actions.
+
+DOCKER & LOCAL DEV
+
+Provide:
+
+Dockerfile for backend
+
+Dockerfile for frontend
+
+docker-compose.yml with services: db (postgres), redis, backend, frontend, pgadmin (optional)
+
+Makefile scripts for common tasks: make dev, make test, make seed, make migrate
+
+Provide Windows PowerShell commands in README, e.g.:
+
+git clone <repo>
+cd accubooks
+docker-compose up --build
+# in a new terminal, run migrations and seed
+docker exec -it accubooks_backend_1 npm run migrate
+docker exec -it accubooks_backend_1 npm run seed
+
+CI / CD (GitHub Actions sample)
+
+ci.yml: run lint, unit tests, build backend and frontend, run integration tests (docker-compose up), and publish artifacts
+
+deploy.yml: push docker images to registry on main branch, trigger deployment (digitalocean/AWS)
+
+DOCUMENTATION & HELP
+
+Generate docs/ with:
+
+Architecture.md (explain each module and data flow)
+
+API.md (OpenAPI + example calls)
+
+AdminGuide.md (how to manage companies, users, backups)
+
+QuickbooksMigration.md (map QuickBooks objects to AccuBooks schema + example CSV/IIF mapping)
+
+README.md with installation + demo credentials
+
+Add inline code comments and JSDoc for major functions
+
+QUICKBOOKS BACKBONE COMPATIBILITY (explicit)
+
+Implement a quickbooks-mapper service that:
+
+Accepts QuickBooks export files (.IIF, .QBO) or exported CSVs
+
+Parses and maps QuickBooks entities (Customers, Vendors, ChartOfAccounts, Invoices, Payments, Journal Entries) to AccuBooks schema
+
+Produces a preview mapping UI to confirm mapping before applying
+
+Writes migration logs and creates migration_logs entries
+
+Provide CLI tool node scripts/migrate-quickbooks.js --file sample.iif --company demo for headless migration
+
+If direct parsing of proprietary formats is impractical, provide thorough mapping docs + CSV templates and UI-assisted import workflows
+
+CODING STYLE & STANDARDS
+
+TypeScript with strict enabled
+
+ESLint rules and Prettier formatting
+
+Well-structured commits and semantic commit messages for sprints
+
+Tests required for any new feature before merge
+
+DELIVERY FORMAT
+
+One GitHub repository accubooks with branches:
+
+main (stable)
+
+develop (integration)
+
+sprint-* branches for each milestone
+
+Create releases for each sprint and tag them
+
+Provide Docker images and docker-compose configs
+
+Include demo credentials and a short video/GIF showing key flows (login, create invoice, run report)
+
+FINAL INSTRUCTIONS FOR THE AGENT
+
+Initialize Git repo and commit initial scaffold.
+
+Implement sprint-1 and push commit with tag sprint-1-complete. Include working migration + seed + README instructions to run locally.
+
+After sprint-1 is merged, continue with subsequent sprints in order.
+
+When running tasks that require secret API keys (Plaid, Stripe), create stubs and document how to replace stubs with real keys in .env. Do NOT store real keys in the repo.
+
+Report progress by creating GitHub issues for each sprint task and update them as tasks are completed.
+
+Write code in modular services and include meaningful unit/integration tests with coverage reports.
