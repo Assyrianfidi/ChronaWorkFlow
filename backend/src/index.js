@@ -4,10 +4,10 @@ try {
   const { validateEnv } = require('./envValidator');
   validateEnv();
 } catch (err) {
-  // If validation fails we abort startup
+  // If validation fails we abort startup by throwing — let the process crash
   // eslint-disable-next-line no-console
   console.error('Environment validation failed - aborting startup.');
-  process.exit(1);
+  throw err;
 }
 const express = require('express');
 const cors = require('cors');
@@ -153,8 +153,11 @@ const server = app.listen(PORT, () => {
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   logger.error(`Error: ${err.message}`);
-  // Close server & exit process
-  server.close(() => process.exit(1));
+  // Close server and rethrow the error so the process terminates and
+  // upstream supervisors can restart it.
+  server.close(() => {
+    throw err;
+  });
 });
 
 // Graceful shutdown
