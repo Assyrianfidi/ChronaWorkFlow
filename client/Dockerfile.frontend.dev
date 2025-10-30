@@ -1,0 +1,32 @@
+FROM node:20-slim
+
+# Set working directory
+WORKDIR /app
+
+# Set environment variables
+ENV NODE_ENV=development\
+    PORT=3000\
+    VITE_API_URL=http://api:5000
+
+# Install system dependencies with version pinning and no recommended packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git=1:2.39.* \
+    python3=3.11.* \
+    make=4.3-* \
+    g++=4:12.2.* \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy package files first to leverage Docker cache
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE ${PORT}
+
+# Start the development server with host binding
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

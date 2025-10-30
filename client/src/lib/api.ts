@@ -5,7 +5,7 @@ export async function apiRequest(
   data?: any
 ): Promise<Response> {
   const token = localStorage.getItem("auth_token");
-  
+
   const headers: HeadersInit = {
     "Content-Type": "application/json",
   };
@@ -40,9 +40,7 @@ export function getCurrentCompanyId(): string {
   const storedUser = localStorage.getItem("auth_user");
   if (storedUser) {
     const user = JSON.parse(storedUser);
-    // For MVP, we'll use a fixed company ID from seed data
-    // In production, this would come from user's currentCompanyId
-    return "demo-company-id";
+    return user.currentCompanyId || "";
   }
   return "";
 }

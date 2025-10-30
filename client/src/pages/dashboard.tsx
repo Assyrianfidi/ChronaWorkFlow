@@ -1,6 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, DollarSign, FileText, Users, AlertCircle } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { useAccounts, useTransactions, useInvoices, useCustomers, type Account, type Invoice, type Transaction } from "@/hooks/use-api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const revenueData = [
   { month: "Jan", revenue: 24500, expenses: 18200 },
@@ -26,6 +28,25 @@ const overdueInvoices = [
 ];
 
 export default function Dashboard() {
+  const { data: accounts, isLoading: accountsLoading } = useAccounts();
+  const { data: transactions, isLoading: transactionsLoading } = useTransactions(undefined, 10);
+  const { data: invoices, isLoading: invoicesLoading } = useInvoices();
+  const { data: customers, isLoading: customersLoading } = useCustomers();
+
+  // Calculate KPIs from real data
+  const revenueAccounts = accounts?.filter((a: Account) => a.type === "revenue") || [];
+  const expenseAccounts = accounts?.filter((a: Account) => a.type === "expense") || [];
+  const assetAccounts = accounts?.filter((a: Account) => a.type === "asset") || [];
+
+  const totalRevenue = revenueAccounts.reduce((sum: number, acc: Account) => sum + parseFloat(acc.balance), 0);
+  const totalExpenses = expenseAccounts.reduce((sum: number, acc: Account) => sum + parseFloat(acc.balance), 0);
+  const totalAssets = assetAccounts.reduce((sum: number, acc: Account) => sum + parseFloat(acc.balance), 0);
+
+  const overdueInvoicesList = invoices?.filter((inv: Invoice) => inv.status === "overdue") || [];
+  const totalOutstanding = overdueInvoicesList.reduce((sum: number, inv: Invoice) => sum + parseFloat(inv.total), 0);
+
+  const recentTransactionsList = transactions?.slice(0, 5) || [];
+
   return (
     <div className="p-6 lg:p-8 space-y-8 max-w-7xl">
       <div>
@@ -41,7 +62,13 @@ export default function Dashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold tabular-nums" data-testid="text-total-revenue">$186,900</div>
+            {accountsLoading ? (
+              <Skeleton className="h-8 w-24 mb-2" />
+            ) : (
+              <div className="text-2xl font-semibold tabular-nums" data-testid="text-total-revenue">
+                ${totalRevenue.toLocaleString()}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
               <TrendingUp className="h-3 w-3 text-chart-2" />
               <span className="text-chart-2">+12.3%</span> from last month
@@ -55,7 +82,13 @@ export default function Dashboard() {
             <TrendingDown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold tabular-nums" data-testid="text-total-expenses">$126,900</div>
+            {accountsLoading ? (
+              <Skeleton className="h-8 w-24 mb-2" />
+            ) : (
+              <div className="text-2xl font-semibold tabular-nums" data-testid="text-total-expenses">
+                ${totalExpenses.toLocaleString()}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
               <TrendingUp className="h-3 w-3 text-destructive" />
               <span className="text-destructive">+5.2%</span> from last month
@@ -69,7 +102,13 @@ export default function Dashboard() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold tabular-nums text-chart-2" data-testid="text-net-profit">$60,000</div>
+            {accountsLoading ? (
+              <Skeleton className="h-8 w-24 mb-2" />
+            ) : (
+              <div className="text-2xl font-semibold tabular-nums text-chart-2" data-testid="text-net-profit">
+                ${(totalRevenue - totalExpenses).toLocaleString()}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
               <TrendingUp className="h-3 w-3 text-chart-2" />
               <span className="text-chart-2">+24.8%</span> from last month
@@ -83,9 +122,15 @@ export default function Dashboard() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold tabular-nums" data-testid="text-outstanding">$13,910</div>
+            {invoicesLoading ? (
+              <Skeleton className="h-8 w-24 mb-2" />
+            ) : (
+              <div className="text-2xl font-semibold tabular-nums" data-testid="text-outstanding">
+                ${totalOutstanding.toLocaleString()}
+              </div>
+            )}
             <p className="text-xs text-muted-foreground mt-1">
-              3 invoices overdue
+              {overdueInvoicesList.length} invoices overdue
             </p>
           </CardContent>
         </Card>
@@ -104,8 +149,8 @@ export default function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="month" className="text-xs" />
                 <YAxis className="text-xs" />
-                <Tooltip 
-                  contentStyle={{ 
+                <Tooltip
+                  contentStyle={{
                     backgroundColor: 'hsl(var(--popover))',
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '6px',
@@ -126,45 +171,63 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentTransactions.map((txn) => (
-                <div key={txn.id} className="flex items-center justify-between" data-testid={`transaction-${txn.id}`}>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{txn.description}</p>
-                    <p className="text-xs text-muted-foreground">{txn.date}</p>
+              {transactionsLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <Skeleton className="h-4 w-48" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                    <Skeleton className="h-4 w-16" />
                   </div>
-                  <span className={`text-sm font-medium tabular-nums ${txn.type === 'revenue' ? 'text-chart-2' : 'text-foreground'}`}>
-                    {txn.amount > 0 ? '+' : ''}{txn.amount.toFixed(2)}
-                  </span>
-                </div>
-              ))}
+                ))
+              ) : recentTransactionsList.length > 0 ? (
+                recentTransactionsList.map((txn: Transaction) => (
+                  <div key={txn.id} className="flex items-center justify-between" data-testid={`transaction-${txn.id}`}>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{txn.description || `Transaction ${txn.transactionNumber}`}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(txn.date).toLocaleDateString()}</p>
+                    </div>
+                    <span className={`text-sm font-medium tabular-nums ${parseFloat(txn.totalAmount) >= 0 ? 'text-chart-2' : 'text-foreground'}`}>
+                      {parseFloat(txn.totalAmount) >= 0 ? '+' : ''}{parseFloat(txn.totalAmount).toFixed(2)}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">No recent transactions</p>
+              )}
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Overdue Invoices Alert */}
-      <Card className="border-destructive/50">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-destructive" />
-            <CardTitle>Overdue Invoices</CardTitle>
-          </div>
-          <CardDescription>These invoices require immediate attention</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {overdueInvoices.map((invoice) => (
-              <div key={invoice.id} className="flex items-center justify-between p-3 rounded-md bg-muted" data-testid={`overdue-invoice-${invoice.id}`}>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{invoice.number} - {invoice.customer}</p>
-                  <p className="text-xs text-destructive">{invoice.daysOverdue} days overdue</p>
+      {overdueInvoicesList.length > 0 && (
+        <Card className="border-destructive/50">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-destructive" />
+              <CardTitle>Overdue Invoices</CardTitle>
+            </div>
+            <CardDescription>These invoices require immediate attention</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {overdueInvoicesList.map((invoice: Invoice) => (
+                <div key={invoice.id} className="flex items-center justify-between p-3 rounded-md bg-muted" data-testid={`overdue-invoice-${invoice.id}`}>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{invoice.invoiceNumber}</p>
+                    <p className="text-xs text-destructive">
+                      {Math.ceil((new Date().getTime() - new Date(invoice.dueDate).getTime()) / (1000 * 60 * 60 * 24))} days overdue
+                    </p>
+                  </div>
+                  <span className="text-sm font-semibold tabular-nums">${parseFloat(invoice.total).toFixed(2)}</span>
                 </div>
-                <span className="text-sm font-semibold tabular-nums">${invoice.amount.toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

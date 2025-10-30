@@ -1,0 +1,108 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: accubooks-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-accubooks}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d accubooks"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: accubooks-redis
+    command: ["redis-server", "--requirepass", "<REDACTED_REDIS_PASSWORD>"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: accubooks-api
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: development
+      PORT: "5000"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "<REDACTED_DB_PASSWORD>"
+      POSTGRES_DB: "accubooks"
+      POSTGRES_HOST: "accubooks-postgres"
+      POSTGRES_PORT: "5432"
+      REDIS_URL: "redis://:<REDACTED_REDIS_PASSWORD>@accubooks-redis:6379"
+      JWT_SECRET: "your_jwt_secret_here"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    working_dir: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.frontend.dev
+    container_name: accubooks-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://api:5000
+      - PORT=3000
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  postgres_data:
+    name: accubooks_postgres_data
+  redis_data:
+    name: accubooks_redis_data
+
+# Environment variables can be set in a .env file
+# DB_USER=your_db_user
+# DB_PASSWORD=your_secure_password
+# DB_NAME=accubooks
+# REDIS_PASSWORD=your_redis_password
+# JWT_SECRET=your_jwt_secret
+# VITE_APP_ENV=development

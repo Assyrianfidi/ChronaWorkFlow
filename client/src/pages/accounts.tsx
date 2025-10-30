@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,92 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-interface Account {
-  id: string;
-  code: string;
-  name: string;
-  type: string;
-  balance: number;
-  children?: Account[];
-  isExpanded?: boolean;
-}
-
-const accountsData: Account[] = [
-  {
-    id: "1",
-    code: "1000",
-    name: "Assets",
-    type: "asset",
-    balance: 125480.50,
-    isExpanded: true,
-    children: [
-      { id: "2", code: "1100", name: "Current Assets", type: "asset", balance: 85240.30, isExpanded: true, children: [
-        { id: "3", code: "1110", name: "Cash", type: "asset", balance: 45200.00 },
-        { id: "4", code: "1120", name: "Accounts Receivable", type: "asset", balance: 18200.00 },
-        { id: "5", code: "1130", name: "Inventory", type: "asset", balance: 21840.30 },
-      ]},
-      { id: "6", code: "1200", name: "Fixed Assets", type: "asset", balance: 40240.20, children: [
-        { id: "7", code: "1210", name: "Equipment", type: "asset", balance: 28500.00 },
-        { id: "8", code: "1220", name: "Furniture", type: "asset", balance: 11740.20 },
-      ]},
-    ],
-  },
-  {
-    id: "9",
-    code: "2000",
-    name: "Liabilities",
-    type: "liability",
-    balance: 35680.80,
-    children: [
-      { id: "10", code: "2100", name: "Current Liabilities", type: "liability", balance: 35680.80, children: [
-        { id: "11", code: "2110", name: "Accounts Payable", type: "liability", balance: 5453.30 },
-        { id: "12", code: "2120", name: "Credit Card", type: "liability", balance: 2840.50 },
-        { id: "13", code: "2130", name: "Taxes Payable", type: "liability", balance: 27387.00 },
-      ]},
-    ],
-  },
-  {
-    id: "14",
-    code: "3000",
-    name: "Equity",
-    type: "equity",
-    balance: 89799.70,
-    children: [
-      { id: "15", code: "3100", name: "Owner's Equity", type: "equity", balance: 50000.00 },
-      { id: "16", code: "3200", name: "Retained Earnings", type: "equity", balance: 39799.70 },
-    ],
-  },
-  {
-    id: "17",
-    code: "4000",
-    name: "Revenue",
-    type: "revenue",
-    balance: 186900.00,
-    children: [
-      { id: "18", code: "4100", name: "Sales Revenue", type: "revenue", balance: 186900.00 },
-    ],
-  },
-  {
-    id: "19",
-    code: "5000",
-    name: "Expenses",
-    type: "expense",
-    balance: 126900.00,
-    children: [
-      { id: "20", code: "5100", name: "Operating Expenses", type: "expense", balance: 98620.00, children: [
-        { id: "21", code: "5110", name: "Salaries & Wages", type: "expense", balance: 72000.00 },
-        { id: "22", code: "5120", name: "Rent", type: "expense", balance: 18000.00 },
-        { id: "23", code: "5130", name: "Utilities", type: "expense", balance: 5200.00 },
-        { id: "24", code: "5140", name: "Office Supplies", type: "expense", balance: 3420.00 },
-      ]},
-      { id: "25", code: "5200", name: "Other Expenses", type: "expense", balance: 28280.00, children: [
-        { id: "26", code: "5210", name: "Marketing", type: "expense", balance: 15600.00 },
-        { id: "27", code: "5220", name: "Professional Services", type: "expense", balance: 12680.00 },
-      ]},
-    ],
-  },
-];
+import { useAccounts, type Account } from "@/hooks/use-api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const typeColors = {
   asset: "default",
@@ -107,9 +23,19 @@ const typeColors = {
   expense: "secondary",
 } as const;
 
+const typeLabels = {
+  asset: "Asset",
+  liability: "Liability",
+  equity: "Equity",
+  revenue: "Revenue",
+  expense: "Expense",
+} as const;
+
 export default function Accounts() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(["1"]));
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const { data: accounts = [], isLoading } = useAccounts();
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedIds);
@@ -121,24 +47,53 @@ export default function Accounts() {
     setExpandedIds(newExpanded);
   };
 
-  const renderAccount = (account: Account, level: number = 0) => {
+  // Build hierarchical structure from flat accounts data
+  const buildHierarchy = (accounts: Account[]): Account[] => {
+    const accountMap = new Map<string, Account & { children: Account[] }>();
+    const rootAccounts: (Account & { children: Account[] })[] = [];
+
+    // Initialize all accounts
+    accounts.forEach(account => {
+      accountMap.set(account.id, { ...account, children: [] });
+    });
+
+    // Build hierarchy
+    accounts.forEach(account => {
+      const accountWithChildren = accountMap.get(account.id)!;
+
+      if (account.parentId) {
+        const parent = accountMap.get(account.parentId);
+        if (parent) {
+          parent.children.push(accountWithChildren);
+        }
+      } else {
+        rootAccounts.push(accountWithChildren);
+      }
+    });
+
+    return rootAccounts;
+  };
+
+  const flatAccounts = buildHierarchy(accounts) as (Account & { children: Account[] })[];
+
+  const renderAccount = (account: Account & { children: Account[] }, level: number = 0) => {
     const hasChildren = account.children && account.children.length > 0;
     const isExpanded = expandedIds.has(account.id);
-    const matchesSearch = searchQuery === "" || 
+    const matchesSearch = searchQuery === "" ||
       account.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       account.code.includes(searchQuery);
 
     if (!matchesSearch && searchQuery !== "") return null;
 
     return (
-      <>
-        <TableRow key={account.id} data-testid={`account-row-${account.id}`}>
+      <React.Fragment key={account.id}>
+        <TableRow data-testid={`account-row-${account.id}`}>
           <TableCell>
             <div className="flex items-center gap-2" style={{ paddingLeft: `${level * 1.5}rem` }}>
               {hasChildren ? (
                 <button
                   onClick={() => toggleExpand(account.id)}
-                  className="hover-elevate active-elevate-2 rounded p-1"
+                  className="hover:bg-accent rounded p-1 transition-colors"
                 >
                   {isExpanded ? (
                     <ChevronDown className="h-4 w-4" />
@@ -159,17 +114,39 @@ export default function Accounts() {
           </TableCell>
           <TableCell>
             <Badge variant={typeColors[account.type as keyof typeof typeColors]}>
-              {account.type}
+              {typeLabels[account.type as keyof typeof typeLabels]}
             </Badge>
           </TableCell>
           <TableCell className={`text-right tabular-nums ${level === 0 ? 'font-semibold' : level === 1 ? 'font-medium' : ''}`}>
-            ${account.balance.toFixed(2)}
+            <span className={
+              account.type === 'revenue' ? 'text-chart-2' :
+              account.type === 'expense' ? 'text-destructive' :
+              account.type === 'asset' ? 'text-chart-1' :
+              account.type === 'liability' ? 'text-destructive' : ''
+            }>
+              ${parseFloat(account.balance).toLocaleString()}
+            </span>
           </TableCell>
         </TableRow>
         {hasChildren && isExpanded && account.children?.map(child => renderAccount(child, level + 1))}
-      </>
+      </React.Fragment>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 lg:p-8 space-y-6 max-w-7xl">
+        <div className="flex items-center justify-between gap-4">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+          <Skeleton className="h-10 w-32" />
+        </div>
+        <Skeleton className="h-96" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6 max-w-7xl">
@@ -193,7 +170,7 @@ export default function Accounts() {
               <Input
                 placeholder="Search accounts..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 className="pl-9"
                 data-testid="input-search-accounts"
               />
@@ -201,19 +178,25 @@ export default function Accounts() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-48">Code</TableHead>
-                <TableHead>Account Name</TableHead>
-                <TableHead className="w-32">Type</TableHead>
-                <TableHead className="text-right w-40">Balance</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {accountsData.map(account => renderAccount(account))}
-            </TableBody>
-          </Table>
+          {flatAccounts.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              {searchQuery ? "No accounts found matching your search." : "No accounts yet. Add your first account to get started."}
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-48">Code</TableHead>
+                  <TableHead>Account Name</TableHead>
+                  <TableHead className="w-32">Type</TableHead>
+                  <TableHead className="text-right w-40">Balance</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {flatAccounts.map(account => renderAccount(account))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

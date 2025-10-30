@@ -1,11 +1,9 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/lib/auth-context";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Mail, Phone, Eye } from "lucide-react";
+import { Plus, Search, Mail, Phone, Eye, Edit, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,38 +12,58 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-interface Customer {
-  id: string;
-  name: string;
-  email: string | null;
-  phone: string | null;
-  address: string | null;
-  contactPerson: string | null;
-  notes: string | null;
-}
+import { useCustomers, useInvoices, type Customer, type Invoice } from "@/hooks/use-api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Customers() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { companyId } = useAuth();
 
-  const { data: customers = [], isLoading } = useQuery<Customer[]>({
-    queryKey: [`/api/customers?companyId=${companyId}`],
-    enabled: !!companyId,
+  const { data: customers = [], isLoading: customersLoading } = useCustomers();
+  const { data: invoices = [], isLoading: invoicesLoading } = useInvoices();
+
+  // Calculate customer balances from invoices
+  const customersWithBalances = customers.map((customer: Customer) => {
+    const customerInvoices = invoices.filter((inv: Invoice) => inv.customerId === customer.id);
+    const totalInvoiced = customerInvoices.reduce((sum: number, inv: Invoice) => sum + parseFloat(inv.total), 0);
+    const totalPaid = customerInvoices.reduce((sum: number, inv: Invoice) => sum + parseFloat(inv.amountPaid), 0);
+    const balance = totalInvoiced - totalPaid;
+
+    return {
+      ...customer,
+      balance: balance,
+      totalInvoiced: totalInvoiced,
+      totalPaid: totalPaid,
+      invoiceCount: customerInvoices.length,
+    };
   });
 
-  const filteredCustomers = customers.filter(customer =>
+  const filteredCustomers = customersWithBalances.filter((customer: Customer & { balance: number; totalInvoiced: number; totalPaid: number; invoiceCount: number }) =>
     customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (customer.email && customer.email.toLowerCase().includes(searchQuery.toLowerCase()))
+    (customer.email && customer.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (customer.phone && customer.phone.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const totalReceivables = 0; // TODO: Calculate from invoices
-  const avgBalance = customers.length > 0 ? totalReceivables / customers.length : 0;
+  const totalReceivables = customersWithBalances.reduce((sum: number, customer: Customer & { balance: number }) => sum + customer.balance, 0);
+  const avgBalance = customersWithBalances.length > 0 ? totalReceivables / customersWithBalances.length : 0;
+
+  const isLoading = customersLoading || invoicesLoading;
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      <div className="p-6 lg:p-8 space-y-6 max-w-7xl">
+        <div className="flex items-center justify-between gap-4">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+          <Skeleton className="h-10 w-32" />
+        </div>
+        <div className="grid gap-6 md:grid-cols-3">
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+        </div>
+        <Skeleton className="h-96" />
       </div>
     );
   }
@@ -73,13 +91,17 @@ export default function Customers() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Receivables</CardTitle>
-            <div className="text-2xl font-semibold tabular-nums" data-testid="text-total-receivables">${totalReceivables.toFixed(2)}</div>
+            <div className="text-2xl font-semibold tabular-nums text-chart-2" data-testid="text-total-receivables">
+              ${totalReceivables.toLocaleString()}
+            </div>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">Average Balance</CardTitle>
-            <div className="text-2xl font-semibold tabular-nums" data-testid="text-avg-balance">${avgBalance.toFixed(2)}</div>
+            <div className="text-2xl font-semibold tabular-nums" data-testid="text-avg-balance">
+              ${avgBalance.toLocaleString()}
+            </div>
           </CardHeader>
         </Card>
       </div>
@@ -93,7 +115,7 @@ export default function Customers() {
               <Input
                 placeholder="Search customers..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 className="pl-9"
                 data-testid="input-search-customers"
               />
@@ -111,11 +133,13 @@ export default function Customers() {
                 <TableRow>
                   <TableHead>Customer Name</TableHead>
                   <TableHead>Contact</TableHead>
+                  <TableHead className="text-right">Balance</TableHead>
+                  <TableHead className="text-right">Invoices</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCustomers.map((customer) => (
+                {filteredCustomers.map((customer: Customer & { balance: number; totalInvoiced: number; totalPaid: number; invoiceCount: number }) => (
                   <TableRow key={customer.id} data-testid={`customer-row-${customer.id}`}>
                     <TableCell className="font-medium">{customer.name}</TableCell>
                     <TableCell>
@@ -132,12 +156,40 @@ export default function Customers() {
                             <span>{customer.phone}</span>
                           </div>
                         )}
+                        {customer.address && (
+                          <div className="text-xs text-muted-foreground truncate max-w-xs">
+                            {customer.address}
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" data-testid={`button-view-customer-${customer.id}`}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                      <div className={`font-semibold tabular-nums ${customer.balance > 0 ? 'text-chart-2' : customer.balance < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                        ${customer.balance.toLocaleString()}
+                      </div>
+                      {customer.balance !== 0 && (
+                        <div className="text-xs text-muted-foreground">
+                          {customer.balance > 0 ? 'Owed to you' : 'Credit balance'}
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant="outline">
+                        {customer.invoiceCount} invoices
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="icon" data-testid={`button-view-customer-${customer.id}`}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" data-testid={`button-edit-customer-${customer.id}`}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" data-testid={`button-delete-customer-${customer.id}`}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

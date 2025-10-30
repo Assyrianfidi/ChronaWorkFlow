@@ -1,6 +1,8 @@
+import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { jobService } from "./jobs/service";
 
 const app = express();
 
@@ -9,6 +11,17 @@ declare module 'http' {
     rawBody: unknown
   }
 }
+// Health check endpoint - must be before other middleware to ensure it's always accessible
+app.get('/api/health', (req, res) => {
+  console.log('Health check endpoint hit');
+  res.json({ status: 'ok', message: 'AccuBooks API is healthy' });
+});
+
+// Root endpoint for basic connectivity test
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'AccuBooks API is running' });
+});
+
 app.use(express.json({
   verify: (req, _res, buf) => {
     req.rawBody = buf;
@@ -77,5 +90,18 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+  });
+
+  // Graceful shutdown
+  process.on('SIGTERM', async () => {
+    log('SIGTERM received, shutting down gracefully');
+    await jobService.shutdown();
+    process.exit(0);
+  });
+
+  process.on('SIGINT', async () => {
+    log('SIGINT received, shutting down gracefully');
+    await jobService.shutdown();
+    process.exit(0);
   });
 })();

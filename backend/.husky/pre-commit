@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Prevent accidental .env commits and run lint + production audit
+if git diff --cached --name-only | grep -E "(^|/)\.env(\.|$)|\.env$" >/dev/null; then
+  echo "Error: Attempt to commit a .env file detected. Aborting commit. Add secrets to your local .env and ensure it's in .gitignore." >&2
+  exit 1
+fi
+
+echo "Running lint..."
+npm run lint || { echo "Lint failed" >&2; exit 1; }
+
+echo "Running npm audit --production..."
+npm audit --production || {
+  echo "Production audit has issues. Please run 'npm audit' and address high/critical vulnerabilities before committing." >&2
+  exit 1
+}
+
+exit 0

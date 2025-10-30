@@ -1,0 +1,213 @@
+{
+  "name": "AccuBooks Status",
+  "description": "Status page for AccuBooks services",
+  "baseUrl": "http://localhost:3002",
+  "theme": "light",
+  "googleAnalyticsId": "UA-XXXXX-Y",
+  "monitors": [
+    {
+      "id": "accubooks-web",
+      "name": "AccuBooks Website",
+      "url": "http://app:5000/health",
+      "method": "GET",
+      "expectedStatusCodes": [200],
+      "followRedirects": true,
+      "timeout": 10000,
+      "interval": 30,
+      "retryInterval": 30,
+      "resendInterval": 0,
+      "maxretries": 3,
+      "upsideDown": false,
+      "notificationIDList": {},
+      "tags": [
+        {
+          "name": "web",
+          "color": "#007bff"
+        }
+      ],
+      "maintenance": false,
+      "active": true
+    },
+    {
+      "id": "accubooks-api",
+      "name": "AccuBooks API",
+      "url": "http://app:5000/api/v1/health",
+      "method": "GET",
+      "expectedStatusCodes": [200],
+      "followRedirects": false,
+      "timeout": 10000,
+      "interval": 30,
+      "retryInterval": 30,
+      "resendInterval": 0,
+      "maxretries": 3,
+      "upsideDown": false,
+      "notificationIDList": {},
+      "tags": [
+        {
+          "name": "api",
+          "color": "#28a745"
+        }
+      ],
+      "maintenance": false,
+      "active": true
+    },
+    {
+      "id": "accubooks-admin",
+      "name": "Admin Portal",
+      "url": "http://app:5000/admin",
+      "method": "GET",
+      "expectedStatusCodes": [200, 301, 302],
+      "followRedirects": true,
+      "timeout": 10000,
+      "interval": 30,
+      "retryInterval": 30,
+      "resendInterval": 0,
+      "maxretries": 3,
+      "upsideDown": false,
+      "notificationIDList": {},
+      "tags": [
+        {
+          "name": "admin",
+          "color": "#dc3545"
+        }
+      ],
+      "maintenance": false,
+      "active": true
+    },
+    {
+      "id": "accubooks-docs",
+      "name": "Documentation Portal",
+      "url": "http://docs:3000",
+      "method": "GET",
+      "expectedStatusCodes": [200, 301, 302],
+      "followRedirects": true,
+      "timeout": 10000,
+      "interval": 60,
+      "retryInterval": 30,
+      "resendInterval": 0,
+      "maxretries": 3,
+      "upsideDown": false,
+      "notificationIDList": {},
+      "tags": [
+        {
+          "name": "docs",
+          "color": "#6f42c1"
+        }
+      ],
+      "maintenance": false,
+      "active": true
+    },
+    {
+      "id": "accubooks-db",
+      "name": "Database (PostgreSQL)",
+      "url": "http://postgres:5432/",
+      "method": "GET",
+      "expectedStatusCodes": [200],
+      "followRedirects": false,
+      "timeout": 10000,
+      "interval": 60,
+      "retryInterval": 30,
+      "resendInterval": 0,
+      "maxretries": 2,
+      "upsideDown": false,
+      "notificationIDList": {},
+      "tags": [
+        {
+          "name": "database",
+          "color": "#17a2b8"
+        }
+      ],
+      "maintenance": false,
+      "active": true
+    },
+    {
+      "id": "accubooks-redis",
+      "name": "Cache (Redis)",
+      "url": "http://redis:6379/",
+      "method": "GET",
+      "expectedStatusCodes": [200],
+      "followRedirects": false,
+      "timeout": 10000,
+      "interval": 60,
+      "retryInterval": 30,
+      "resendInterval": 0,
+      "maxretries": 2,
+      "upsideDown": false,
+      "notificationIDList": {},
+      "tags": [
+        {
+          "name": "cache",
+          "color": "#ffc107"
+        }
+      ],
+      "maintenance": false,
+      "active": true
+    }
+  ],
+  "notification": [],
+  "proxy": [],
+  "docker": {
+    "containers": [
+      {
+        "name": "accubooks-app",
+        "includeLogs": true,
+        "expectedLog": "Server running on port 5000"
+      },
+      {
+        "name": "accubooks-postgres",
+        "includeLogs": true,
+        "expectedLog": "database system is ready to accept connections"
+      },
+      {
+        "name": "accubooks-redis",
+        "includeLogs": true,
+        "expectedLog": "Ready to accept connections"
+      },
+      {
+        "name": "accubooks-nginx",
+        "includeLogs": true,
+        "expectedLog": "start worker process"
+      },
+      {
+        "name": "accubooks-docs",
+        "includeLogs": true,
+        "expectedLog": "Ready - started server"
+      }
+    ]
+  },
+  "maintenance": {
+    "start": null,
+    "end": null,
+    "title": "",
+    "description": ""
+  },
+  "settings": {
+    "title": "AccuBooks Status",
+    "description": "Current status of AccuBooks services and systems",
+    "url": "http://localhost:3002",
+    "slug": "accubooks-status",
+    "color": "#007bff",
+    "logo": "/logo.png",
+    "cover": "/cover.png",
+    "companyName": "AccuBooks",
+    "companyUrl": "http://localhost:3000",
+    "githubRepo": "accubooks/status",
+    "twitterHandle": "@accubooks",
+    "facebookPage": "accubooks",
+    "linkedinCompany": "accubooks",
+    "cache": 30,
+    "uptime": 90,
+    "analyticsGoogle": "UA-XXXXX-Y",
+    "analyticsCloudflare": "",
+    "searchEngineIndexing": false,
+    "monitorList": true,
+    "privacyPolicy": "http://localhost:3000/privacy",
+    "termsOfService": "http://localhost:3000/terms",
+    "footerText": "© 2024 AccuBooks, Inc. All rights reserved.",
+    "showPoweredBy": true,
+    "showTags": true,
+    "showCertificateInfo": false,
+    "showOwnerContact": true,
+    "ownerContact": "admin@accubooks.local"
+  }
+}

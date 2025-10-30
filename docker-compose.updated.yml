@@ -1,0 +1,294 @@
+version: '3.8'
+
+x-common-env: &common-env
+  NODE_ENV: ${NODE_ENV:-development}
+  APP_NAME: ${APP_NAME}
+  APP_VERSION: ${APP_VERSION}
+  APP_URL: ${APP_URL}
+  API_PREFIX: ${API_PREFIX}
+  # Database
+  DB_HOST: ${DB_HOST}
+  DB_PORT: ${DB_PORT}
+  DB_NAME: ${DB_NAME}
+  DB_USER: ${DB_USER}
+  DB_PASSWORD: ${DB_PASSWORD}
+  DATABASE_URL: ${DATABASE_URL}
+  # Redis
+  REDIS_HOST: ${REDIS_HOST}
+  REDIS_PORT: ${REDIS_PORT}
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
+  REDIS_URL: ${REDIS_URL}
+  # JWT
+  JWT_SECRET: ${JWT_SECRET}
+  JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+  JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+  JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN}
+  # CORS
+  CORS_ORIGINS: ${CORS_ORIGINS}
+  CORS_METHODS: ${CORS_METHODS}
+  CORS_ALLOWED_HEADERS: ${CORS_ALLOWED_HEADERS}
+  CORS_CREDENTIALS: ${CORS_CREDENTIALS}
+  # Security
+  RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS}
+  RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS}
+  HELMET_ENABLED: ${HELMET_ENABLED}
+  CSP_ENABLED: ${CSP_ENABLED}
+  HSTS_ENABLED: ${HSTS_ENABLED}
+  XSS_PROTECTION_ENABLED: ${XSS_PROTECTION_ENABLED}
+  NOCACHE_ENABLED: ${NOCACHE_ENABLED}
+  # Email
+  SMTP_HOST: ${SMTP_HOST}
+  SMTP_PORT: ${SMTP_PORT}
+  SMTP_SECURE: ${SMTP_SECURE}
+  SMTP_USER: ${SMTP_USER}
+  SMTP_PASS: ${SMTP_PASS}
+  MAIL_FROM: ${MAIL_FROM}
+  MAIL_NAME: ${MAIL_NAME}
+  # File Uploads
+  UPLOAD_DIR: ${UPLOAD_DIR}
+  MAX_FILE_SIZE: ${MAX_FILE_SIZE}
+  ALLOWED_FILE_TYPES: ${ALLOWED_FILE_TYPES}
+  # Logging
+  LOG_LEVEL: ${LOG_LEVEL}
+  LOG_FILE: ${LOG_FILE}
+  ERROR_LOG_FILE: ${ERROR_LOG_FILE}
+  LOG_FORMAT: ${LOG_FORMAT}
+  LOG_COLORS: ${LOG_COLORS}
+  # Monitoring
+  PROMETHEUS_METRICS_PATH: ${PROMETHEUS_METRICS_PATH}
+  PROMETHEUS_COLLECT_DEFAULT_METRICS: ${PROMETHEUS_COLLECT_DEFAULT_METRICS}
+  PROMETHEUS_REQUEST_DURATION_BUCKETS: ${PROMETHEUS_REQUEST_DURATION_BUCKETS}
+  # Stripe
+  STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+  STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+  STRIPE_WEBHOOK_URL: ${STRIPE_WEBHOOK_URL}
+  STRIPE_PRICE_FREE: ${STRIPE_PRICE_FREE}
+  STRIPE_PRICE_STANDARD: ${STRIPE_PRICE_STANDARD}
+  STRIPE_PRICE_ENTERPRISE: ${STRIPE_PRICE_ENTERPRISE}
+  # Plaid
+  PLAID_CLIENT_ID: ${PLAID_CLIENT_ID}
+  PLAID_SECRET: ${PLAID_SECRET}
+  PLAID_ENV: ${PLAID_ENV}
+  PLAID_PRODUCTS: ${PLAID_PRODUCTS}
+  PLAID_COUNTRY_CODES: ${PLAID_COUNTRY_CODES}
+  PLAID_REDIRECT_URI: ${PLAID_REDIRECT_URI}
+  # Feature Flags
+  FEATURE_MAINTENANCE_MODE: ${FEATURE_MAINTENANCE_MODE}
+  FEATURE_REGISTRATION: ${FEATURE_REGISTRATION}
+  FEATURE_2FA: ${FEATURE_2FA}
+  FEATURE_EMAIL_VERIFICATION: ${FEATURE_EMAIL_VERIFICATION}
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: accubooks-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+
+  # Redis for Caching & Queues
+  redis:
+    image: redis:7-alpine
+    container_name: accubooks-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+
+  # Main Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV}
+        PORT: ${APP_PORT}
+    container_name: accubooks-app
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    environment:
+      <<: *common-env
+      PORT: ${APP_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Background Worker
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: accubooks-worker
+    environment:
+      <<: *common-env
+      NODE_ENV: ${NODE_ENV}
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./logs:/app/logs
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "worker-healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # API Documentation
+  docs:
+    image: swaggerapi/swagger-ui
+    container_name: accubooks-docs
+    ports:
+      - "3001:8080"
+    volumes:
+      - ./docs/swagger.json:/usr/share/nginx/html/swagger.json
+    environment:
+      SPEC_URL: /swagger.json
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+
+  # Status Page
+  status:
+    image: phpdockerio/php-nginx:latest
+    container_name: accubooks-status
+    ports:
+      - "3002:80"
+    volumes:
+      - ./status:/var/www/html
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: accubooks-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - app
+      - docs
+      - status
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: accubooks-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: accubooks-grafana
+    ports:
+      - "3003:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+
+  # Backup Service
+  backup:
+    image: postgres:15-alpine
+    container_name: accubooks-backup
+    volumes:
+      - ./backups:/backups
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - PGPASSWORD=${DB_PASSWORD}
+      - PGUSER=${DB_USER}
+      - PGHOST=postgres
+      - PGPORT=5432
+    entrypoint: |
+      /bin/sh -c 'while true; do 
+        pg_dump -Fc ${DB_NAME} > /backups/accubooks_backup_$$(date +%Y%m%d_%H%M%S).dump; 
+        find /backups -type f -name "*.dump" -mtime +${BACKUP_RETENTION_DAYS:-30} -delete; 
+        sleep 86400; 
+      done'
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  accubooks-network:
+    driver: bridge

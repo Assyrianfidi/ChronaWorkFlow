@@ -3,6 +3,34 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import {
+  getJobQueues,
+  getQueueJobs,
+  pauseQueue,
+  resumeQueue,
+  cleanQueue,
+  removeJob,
+  scheduleRecurringInvoice,
+  schedulePayrollProcessing,
+  scheduleReportGeneration,
+  scheduleBackup,
+  scheduleNotification,
+} from "./routes/jobs";
+
+import { handleStripeWebhook, createPaymentIntent, getPaymentIntent, createStripeInvoice, sendInvoice, refundPayment, getBalance, stripeHealthCheck } from "./routes/stripe";
+import { healthCheck } from "./routes/health";
+
+import {
+  handlePlaidWebhook,
+  createLinkToken,
+  exchangePublicToken,
+  getAccounts,
+  getAccountBalances,
+  syncTransactions,
+  getTransactions,
+  getInstitutions,
+  plaidHealthCheck,
+} from "./routes/plaid";
 
 const JWT_SECRET = process.env.SESSION_SECRET || "dev-secret-change-in-production";
 
@@ -243,13 +271,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/transactions/:id", authenticateToken, async (req, res) => {
+  app.get("/api/transactions/:id/lines", authenticateToken, async (req, res) => {
     try {
-      const data = await storage.getTransactionWithLines(req.params.id);
-      if (!data) {
-        return res.status(404).json({ error: "Transaction not found" });
-      }
-      res.json(data);
+      const lines = await storage.getTransactionLinesByTransaction(req.params.id);
+      res.json(lines);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -530,6 +555,411 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: error.message });
     }
   });
+
+  app.get("/api/reports/cash-flow", authenticateToken, async (req, res) => {
+    try {
+      const companyId = req.query.companyId as string;
+      if (!companyId) {
+        return res.status(400).json({ error: "companyId is required" });
+      }
+
+      // Simple cash flow based on cash account balance changes
+      const accounts = await storage.getAccountsByCompany(companyId);
+      const cashAccount = accounts.find((a) => a.code === "1110" || a.name.toLowerCase().includes("cash"));
+
+      res.json({
+        operatingActivities: {
+          total: cashAccount ? parseFloat(cashAccount.balance) : 0,
+        },
+        investingActivities: {
+          total: 0,
+        },
+        financingActivities: {
+          total: 0,
+        },
+        netChange: cashAccount ? parseFloat(cashAccount.balance) : 0,
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ==================== PAYROLL MODULE ====================
+
+  // Employees
+  app.get("/api/payroll/employees", authenticateToken, async (req, res) => {
+    try {
+      const companyId = req.query.companyId as string;
+      if (!companyId) {
+        return res.status(400).json({ error: "companyId is required" });
+      }
+      const employees = await storage.getEmployeesByCompany(companyId);
+      res.json(employees);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/payroll/employees", authenticateToken, async (req, res) => {
+    try {
+      const employee = await storage.createEmployee(req.body);
+      res.status(201).json(employee);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.patch("/api/payroll/employees/:id", authenticateToken, async (req, res) => {
+    try {
+      const employee = await storage.updateEmployee(req.params.id, req.body);
+      if (!employee) {
+        return res.status(404).json({ error: "Employee not found" });
+      }
+      res.json(employee);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Deductions
+  app.get("/api/payroll/deductions", authenticateToken, async (req, res) => {
+    try {
+      const companyId = req.query.companyId as string;
+      if (!companyId) {
+        return res.status(400).json({ error: "companyId is required" });
+      }
+      const deductions = await storage.getDeductionsByCompany(companyId);
+      res.json(deductions);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/payroll/deductions", authenticateToken, async (req, res) => {
+    try {
+      const deduction = await storage.createDeduction(req.body);
+      res.status(201).json(deduction);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Employee Deductions
+  app.get("/api/payroll/employee-deductions/:employeeId", authenticateToken, async (req, res) => {
+    try {
+      const deductions = await storage.getEmployeeDeductionsByEmployee(req.params.employeeId);
+      res.json(deductions);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/payroll/employee-deductions", authenticateToken, async (req, res) => {
+    try {
+      const deduction = await storage.createEmployeeDeduction(req.body);
+      res.status(201).json(deduction);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Payroll Periods
+  app.get("/api/payroll/periods", authenticateToken, async (req, res) => {
+    try {
+      const companyId = req.query.companyId as string;
+      if (!companyId) {
+        return res.status(400).json({ error: "companyId is required" });
+      }
+      const periods = await storage.getPayrollPeriodsByCompany(companyId);
+      res.json(periods);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/payroll/periods", authenticateToken, async (req, res) => {
+    try {
+      const period = await storage.createPayrollPeriod(req.body);
+      res.status(201).json(period);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Time Entries
+  app.get("/api/payroll/time-entries", authenticateToken, async (req, res) => {
+    try {
+      const employeeId = req.query.employeeId as string;
+      const payrollPeriodId = req.query.payrollPeriodId as string;
+
+      if (employeeId) {
+        const entries = await storage.getTimeEntriesByEmployee(employeeId);
+        return res.json(entries);
+      }
+
+      if (payrollPeriodId) {
+        const entries = await storage.getTimeEntriesByPayrollPeriod(payrollPeriodId);
+        return res.json(entries);
+      }
+
+      return res.status(400).json({ error: "employeeId or payrollPeriodId is required" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/payroll/time-entries", authenticateToken, async (req, res) => {
+    try {
+      const entry = await storage.createTimeEntry(req.body);
+      res.status(201).json(entry);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/payroll/time-entries/:id/approve", authenticateToken, async (req, res) => {
+    try {
+      await storage.approveTimeEntry(req.params.id, (req as any).user.id);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Pay Runs
+  app.get("/api/payroll/pay-runs", authenticateToken, async (req, res) => {
+    try {
+      const companyId = req.query.companyId as string;
+      if (!companyId) {
+        return res.status(400).json({ error: "companyId is required" });
+      }
+      const payRuns = await storage.getPayRunsByCompany(companyId);
+      res.json(payRuns);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/payroll/pay-runs/:id", authenticateToken, async (req, res) => {
+    try {
+      const data = await storage.getPayRunWithDetails(req.params.id);
+      if (!data) {
+        return res.status(404).json({ error: "Pay run not found" });
+      }
+      res.json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/payroll/pay-runs", authenticateToken, async (req, res) => {
+    try {
+      const { payRun, details } = req.body;
+      const newPayRun = await storage.createPayRun(payRun, details);
+      res.status(201).json(newPayRun);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.patch("/api/payroll/pay-runs/:id/status", authenticateToken, async (req, res) => {
+    try {
+      const { status } = req.body;
+      await storage.updatePayRunStatus(req.params.id, status);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Tax Forms
+  app.get("/api/payroll/tax-forms", authenticateToken, async (req, res) => {
+    try {
+      const companyId = req.query.companyId as string;
+      if (!companyId) {
+        return res.status(400).json({ error: "companyId is required" });
+      }
+      const forms = await storage.getTaxFormsByCompany(companyId);
+      res.json(forms);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/payroll/tax-forms", authenticateToken, async (req, res) => {
+    try {
+      const form = await storage.createTaxForm(req.body);
+      res.status(201).json(form);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ==================== INVENTORY MODULE ====================
+
+  // Inventory Items
+  app.get("/api/inventory/items", authenticateToken, async (req, res) => {
+    try {
+      const companyId = req.query.companyId as string;
+      if (!companyId) {
+        return res.status(400).json({ error: "companyId is required" });
+      }
+      const items = await storage.getInventoryItemsByCompany(companyId);
+      res.json(items);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/inventory/items", authenticateToken, async (req, res) => {
+    try {
+      const item = await storage.createInventoryItem(req.body);
+      res.status(201).json(item);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.patch("/api/inventory/items/:id", authenticateToken, async (req, res) => {
+    try {
+      const item = await storage.updateInventoryItem(req.params.id, req.body);
+      if (!item) {
+        return res.status(404).json({ error: "Inventory item not found" });
+      }
+      res.json(item);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.patch("/api/inventory/items/:id/quantity", authenticateToken, async (req, res) => {
+    try {
+      const { quantityChange, reason } = req.body;
+      await storage.updateInventoryQuantity(req.params.id, quantityChange, reason);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Purchase Orders
+  app.get("/api/inventory/purchase-orders", authenticateToken, async (req, res) => {
+    try {
+      const companyId = req.query.companyId as string;
+      if (!companyId) {
+        return res.status(400).json({ error: "companyId is required" });
+      }
+      const orders = await storage.getPurchaseOrdersByCompany(companyId);
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/inventory/purchase-orders/:id", authenticateToken, async (req, res) => {
+    try {
+      const data = await storage.getPurchaseOrderWithItems(req.params.id);
+      if (!data) {
+        return res.status(404).json({ error: "Purchase order not found" });
+      }
+      res.json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/inventory/purchase-orders", authenticateToken, async (req, res) => {
+    try {
+      const { order, items } = req.body;
+      const newOrder = await storage.createPurchaseOrder(order, items);
+      res.status(201).json(newOrder);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.patch("/api/inventory/purchase-orders/:id/status", authenticateToken, async (req, res) => {
+    try {
+      const { status } = req.body;
+      await storage.updatePurchaseOrderStatus(req.params.id, status);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Inventory Adjustments
+  app.get("/api/inventory/adjustments", authenticateToken, async (req, res) => {
+    try {
+      const companyId = req.query.companyId as string;
+      if (!companyId) {
+        return res.status(400).json({ error: "companyId is required" });
+      }
+      const adjustments = await storage.getInventoryAdjustmentsByCompany(companyId);
+      res.json(adjustments);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/inventory/adjustments", authenticateToken, async (req, res) => {
+    try {
+      const adjustment = await storage.createInventoryAdjustment(req.body);
+      res.status(201).json(adjustment);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ==================== JOB MANAGEMENT ====================
+
+  // Job Queue Management
+  app.get("/api/jobs/queues", authenticateToken, getJobQueues);
+  app.get("/api/jobs/queues/:queueName", authenticateToken, getQueueJobs);
+  app.post("/api/jobs/queues/:queueName/pause", authenticateToken, pauseQueue);
+  app.post("/api/jobs/queues/:queueName/resume", authenticateToken, resumeQueue);
+  app.post("/api/jobs/queues/:queueName/clean", authenticateToken, cleanQueue);
+  app.delete("/api/jobs/queues/:queueName/jobs/:jobId", authenticateToken, removeJob);
+
+  // Job Scheduling
+  app.post("/api/jobs/schedule/recurring-invoice", authenticateToken, scheduleRecurringInvoice);
+  app.post("/api/jobs/schedule/payroll-processing", authenticateToken, schedulePayrollProcessing);
+  app.post("/api/jobs/schedule/report-generation", authenticateToken, scheduleReportGeneration);
+  app.post("/api/jobs/schedule/backup", authenticateToken, scheduleBackup);
+  app.post("/api/jobs/schedule/notification", authenticateToken, scheduleNotification);
+
+  // ==================== STRIPE INTEGRATION ====================
+
+  // Stripe webhooks (no authentication required)
+  app.post("/api/stripe/webhooks", handleStripeWebhook);
+
+  // Stripe payment processing
+  app.post("/api/stripe/payment-intent", authenticateToken, createPaymentIntent);
+  app.get("/api/stripe/payment-intent/:paymentIntentId", authenticateToken, getPaymentIntent);
+  app.post("/api/stripe/invoices", authenticateToken, createStripeInvoice);
+  app.post("/api/stripe/invoices/:invoiceId/send", authenticateToken, sendInvoice);
+  app.post("/api/stripe/refunds/:paymentIntentId", authenticateToken, refundPayment);
+  app.get("/api/stripe/balance", authenticateToken, getBalance);
+  app.get("/api/stripe/health", stripeHealthCheck);
+
+  // ==================== PLAID INTEGRATION ====================
+
+  // Plaid webhooks (no authentication required)
+  app.post("/api/plaid/webhooks", handlePlaidWebhook);
+
+  // Plaid OAuth flow
+  app.post("/api/plaid/link-token", authenticateToken, createLinkToken);
+  app.post("/api/plaid/exchange-token", authenticateToken, exchangePublicToken);
+  app.get("/api/plaid/accounts", authenticateToken, getAccounts);
+  app.get("/api/plaid/balances", authenticateToken, getAccountBalances);
+  app.post("/api/plaid/sync-transactions", authenticateToken, syncTransactions);
+  app.get("/api/plaid/transactions", authenticateToken, getTransactions);
+  app.get("/api/plaid/institutions", authenticateToken, getInstitutions);
+  app.get("/api/plaid/health", plaidHealthCheck);
+  
+  // Health check endpoint
+  app.get("/health", healthCheck);
+  app.get("/api/health", healthCheck);
 
   const httpServer = createServer(app);
 

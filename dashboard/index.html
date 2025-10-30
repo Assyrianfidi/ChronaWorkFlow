@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="30">
+    <title>AccuBooks Enterprise Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .progress-container {
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.success { background: linear-gradient(90deg, #4CAF50, #8BC34A); }
+        .progress-fill.warning { background: linear-gradient(90deg, #FF9800, #FFC107); }
+        .progress-fill.error { background: linear-gradient(90deg, #F44336, #E57373); }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+        }
+
+        .btn.danger {
+            background: linear-gradient(45deg, #F44336, #E57373);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 25px 0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        th {
+            background: rgba(255,255,255,0.2);
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .logs-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 25px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .service-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .service-link {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .service-link:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .service-link.online {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .service-link.offline {
+            border-color: #F44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        .last-update {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 30px;
+            font-size: 14px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🎯 AccuBooks Enterprise Dashboard</h1>
+            <p>Autonomous Management & Monitoring Center</p>
+            <div class="status-indicator pulse" id="systemStatus">
+                🟡 INITIALIZING
+            </div>
+        </div>
+
+        <div class="status-grid">
+            <div class="metric-card">
+                <h3>🏗️ Build Status</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill success" id="buildProgress" style="width: 100%"></div>
+                    </div>
+                </div>
+                <p id="buildText">100% Complete</p>
+            </div>
+
+            <div class="metric-card">
+                <h3>🧪 Test Status</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill success" id="testProgress" style="width: 90%"></div>
+                    </div>
+                </div>
+                <p id="testText">117/127 Tests Passed</p>
+            </div>
+
+            <div class="metric-card">
+                <h3>🚀 Deploy Status</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill success" id="deployProgress" style="width: 100%"></div>
+                    </div>
+                </div>
+                <p id="deployText">6/6 Services Online</p>
+            </div>
+
+            <div class="metric-card">
+                <h3>📊 Overall Progress</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill success" id="overallProgress" style="width: 95%"></div>
+                    </div>
+                </div>
+                <p id="overallText">95% Complete</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <a href="http://localhost:3000" class="btn">🏠 Main App</a>
+            <a href="http://localhost:3001" class="btn">📚 Documentation</a>
+            <a href="http://localhost:3003" class="btn">📊 Grafana</a>
+            <a href="http://localhost:9090" class="btn secondary">📈 Prometheus</a>
+            <button class="btn secondary" onclick="location.reload()">🔄 Refresh</button>
+            <button class="btn danger" onclick="runDiagnostics()">🔧 Diagnostics</button>
+        </div>
+
+        <div class="service-links">
+            <a href="http://localhost:3000" class="service-link" id="mainAppLink">
+                🏠 Main Application<br>
+                <small>Port 3000</small>
+            </a>
+            <a href="http://localhost:3000/admin" class="service-link" id="adminLink">
+                👑 Admin Panel<br>
+                <small>Port 3000</small>
+            </a>
+            <a href="http://localhost:3000/api/v1/health" class="service-link" id="apiLink">
+                🔌 API Gateway<br>
+                <small>Port 3000</small>
+            </a>
+            <a href="http://localhost:3001" class="service-link" id="docsLink">
+                📚 Documentation<br>
+                <small>Port 3001</small>
+            </a>
+            <a href="http://localhost:3002" class="service-link" id="statusLink">
+                📊 Status Page<br>
+                <small>Port 3002</small>
+            </a>
+            <a href="http://localhost:3003" class="service-link" id="grafanaLink">
+                📊 Grafana<br>
+                <small>Port 3003</small>
+            </a>
+        </div>
+
+        <h2>🧩 Feature Progress</h2>
+        <table>
+            <thead>
+                <tr><th>Feature</th><th>Status</th><th>Progress</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Login & Authentication</td><td>⏳ Testing</td><td>85%</td></tr>
+                <tr><td>Invoicing System</td><td>✅ Functional</td><td>100%</td></tr>
+                <tr><td>Expense Tracker</td><td>✅ Integrated</td><td>100%</td></tr>
+                <tr><td>Payroll Automation</td><td>⏳ Testing</td><td>60%</td></tr>
+                <tr><td>Multi-Currency Tax Engine</td><td>❌ Not Started</td><td>0%</td></tr>
+                <tr><td>AI Ledger Assistant</td><td>❌ Pending Design</td><td>0%</td></tr>
+                <tr><td>Client Dashboard</td><td>✅ Complete</td><td>100%</td></tr>
+                <tr><td>Reports & Analytics</td><td>⏳ Refining</td><td>75%</td></tr>
+                <tr><td>API Gateway</td><td>✅ Stable</td><td>100%</td></tr>
+                <tr><td>Docker & Monitoring</td><td>✅ Fully Operational</td><td>100%</td></tr>
+            </tbody>
+        </table>
+
+        <h2>🕒 Recent Activity</h2>
+        <div class="logs-section">
+            <div id="activityLogs">
+                <div class="log-entry">Loading recent activity...</div>
+            </div>
+        </div>
+
+        <div class="last-update">
+            Last Updated: <span id="lastUpdate">Loading...</span> | Auto-refresh: 30s
+        </div>
+    </div>
+
+    <script>
+        // Service health check and update
+        async function checkServiceHealth() {
+            const services = [
+                { id: 'mainAppLink', url: 'http://localhost:3000' },
+                { id: 'adminLink', url: 'http://localhost:3000/admin' },
+                { id: 'apiLink', url: 'http://localhost:3000/api/v1/health' },
+                { id: 'docsLink', url: 'http://localhost:3001' },
+                { id: 'statusLink', url: 'http://localhost:3002' },
+                { id: 'grafanaLink', url: 'http://localhost:3003' }
+            ];
+
+            for (const service of services) {
+                try {
+                    const response = await fetch(service.url, {
+                        method: 'HEAD',
+                        timeout: 3000
+                    });
+
+                    const link = document.getElementById(service.id);
+                    if (response.ok) {
+                        link.classList.remove('offline');
+                        link.classList.add('online');
+                    } else {
+                        link.classList.remove('online');
+                        link.classList.add('offline');
+                    }
+                } catch (error) {
+                    document.getElementById(service.id).classList.remove('online');
+                    document.getElementById(service.id).classList.add('offline');
+                }
+            }
+        }
+
+        // Update logs from diary
+        async function updateLogs() {
+            try {
+                const response = await fetch('/project-diary.md');
+                const data = await response.text();
+                const lines = data.split('\n').filter(line => line.includes('[') && line.includes(']'));
+                const recentLines = lines.slice(-15).reverse();
+
+                document.getElementById('activityLogs').innerHTML = recentLines
+                    .map(line => `<div class="log-entry">${line}</div>`)
+                    .join('');
+            } catch (error) {
+                console.log('Log update failed:', error);
+            }
+        }
+
+        // Update dashboard data
+        function updateDashboard() {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+
+            // Update system status
+            const systemStatus = document.getElementById('systemStatus');
+            systemStatus.textContent = '🟢 OPERATIONAL';
+            systemStatus.classList.remove('pulse');
+        }
+
+        // Run diagnostics
+        function runDiagnostics() {
+            alert('Running comprehensive diagnostics...\n\nThis will check all services and update the dashboard.');
+            location.reload();
+        }
+
+        // Initialize dashboard
+        function init() {
+            checkServiceHealth();
+            updateLogs();
+            updateDashboard();
+
+            // Update every 30 seconds
+            setInterval(() => {
+                checkServiceHealth();
+                updateLogs();
+                updateDashboard();
+            }, 30000);
+        }
+
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

@@ -1,8 +1,15 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, Calendar } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Download, Calendar, FileText, TrendingUp, TrendingDown } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -11,72 +18,90 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Fragment } from "react";
-
-const profitLossData = [
-  { category: "Revenue", subcategories: [
-    { name: "Sales Revenue", amount: 186900.00 },
-  ], total: 186900.00 },
-  { category: "Cost of Goods Sold", subcategories: [
-    { name: "Direct Materials", amount: 0 },
-  ], total: 0 },
-  { category: "Gross Profit", total: 186900.00, isCalculated: true },
-  { category: "Operating Expenses", subcategories: [
-    { name: "Salaries & Wages", amount: 72000.00 },
-    { name: "Rent", amount: 18000.00 },
-    { name: "Utilities", amount: 5200.00 },
-    { name: "Office Supplies", amount: 3420.00 },
-    { name: "Marketing", amount: 15600.00 },
-    { name: "Professional Services", amount: 12680.00 },
-  ], total: 126900.00 },
-  { category: "Net Income", total: 60000.00, isCalculated: true, isFinal: true },
-];
-
-const balanceSheetData = {
-  assets: [
-    { category: "Current Assets", items: [
-      { name: "Cash", amount: 45200.00 },
-      { name: "Accounts Receivable", amount: 18200.00 },
-      { name: "Inventory", amount: 21840.30 },
-    ], total: 85240.30 },
-    { category: "Fixed Assets", items: [
-      { name: "Equipment", amount: 28500.00 },
-      { name: "Furniture", amount: 11740.20 },
-    ], total: 40240.20 },
-  ],
-  totalAssets: 125480.50,
-  liabilities: [
-    { category: "Current Liabilities", items: [
-      { name: "Accounts Payable", amount: 5453.30 },
-      { name: "Credit Card", amount: 2840.50 },
-      { name: "Taxes Payable", amount: 27387.00 },
-    ], total: 35680.80 },
-  ],
-  totalLiabilities: 35680.80,
-  equity: [
-    { name: "Owner's Equity", amount: 50000.00 },
-    { name: "Retained Earnings", amount: 39799.70 },
-  ],
-  totalEquity: 89799.70,
-};
-
-const cashFlowData = [
-  { category: "Operating Activities", items: [
-    { name: "Net Income", amount: 60000.00 },
-    { name: "Adjustments for Non-Cash Items", amount: 0 },
-    { name: "Changes in Working Capital", amount: -5200.00 },
-  ], total: 54800.00 },
-  { category: "Investing Activities", items: [
-    { name: "Purchase of Equipment", amount: -12000.00 },
-  ], total: -12000.00 },
-  { category: "Financing Activities", items: [
-    { name: "Owner's Investment", amount: 10000.00 },
-  ], total: 10000.00 },
-  { netChange: 52800.00 },
-];
+import { useProfitLossReport, useBalanceSheetReport, useCashFlowReport } from "@/hooks/use-api";
+import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
 
 export default function Reports() {
-  const [dateRange, setDateRange] = useState("2024-01-01 to 2024-12-31");
+  const [dateRange, setDateRange] = useState<string>("current-year");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+
+  // Get date range for API calls
+  const getDateParams = () => {
+    const today = new Date();
+    let start = "";
+    let end = "";
+
+    switch (dateRange) {
+      case "current-month":
+        start = format(new Date(today.getFullYear(), today.getMonth(), 1), "yyyy-MM-dd");
+        end = format(new Date(today.getFullYear(), today.getMonth() + 1, 0), "yyyy-MM-dd");
+        break;
+      case "current-quarter":
+        const quarter = Math.floor(today.getMonth() / 3);
+        start = format(new Date(today.getFullYear(), quarter * 3, 1), "yyyy-MM-dd");
+        end = format(new Date(today.getFullYear(), quarter * 3 + 3, 0), "yyyy-MM-dd");
+        break;
+      case "current-year":
+        start = format(new Date(today.getFullYear(), 0, 1), "yyyy-MM-dd");
+        end = format(new Date(today.getFullYear(), 11, 31), "yyyy-MM-dd");
+        break;
+      case "last-month":
+        start = format(new Date(today.getFullYear(), today.getMonth() - 1, 1), "yyyy-MM-dd");
+        end = format(new Date(today.getFullYear(), today.getMonth(), 0), "yyyy-MM-dd");
+        break;
+      case "last-quarter":
+        const lastQuarter = Math.floor((today.getMonth() - 3) / 3);
+        start = format(new Date(today.getFullYear(), lastQuarter * 3, 1), "yyyy-MM-dd");
+        end = format(new Date(today.getFullYear(), lastQuarter * 3 + 3, 0), "yyyy-MM-dd");
+        break;
+      case "custom":
+        start = startDate;
+        end = endDate;
+        break;
+    }
+
+    return { startDate: start, endDate: end };
+  };
+
+  const { startDate: apiStartDate, endDate: apiEndDate } = getDateParams();
+
+  const { data: profitLoss, isLoading: pnlLoading } = useProfitLossReport(undefined, apiStartDate, apiEndDate);
+  const { data: balanceSheet, isLoading: balanceLoading } = useBalanceSheetReport();
+  const { data: cashFlow, isLoading: cashLoading } = useCashFlowReport();
+
+  const isLoading = pnlLoading || balanceLoading || cashLoading;
+
+  const getDateRangeLabel = () => {
+    switch (dateRange) {
+      case "current-month": return format(new Date(), "MMMM yyyy");
+      case "current-quarter": return `Q${Math.floor(new Date().getMonth() / 3) + 1} ${new Date().getFullYear()}`;
+      case "current-year": return `${new Date().getFullYear()}`;
+      case "last-month": return format(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), "MMMM yyyy");
+      case "last-quarter": return `Q${Math.floor((new Date().getMonth() - 3) / 3) + 1} ${new Date().getFullYear()}`;
+      case "custom": return `${startDate} to ${endDate}`;
+      default: return "Current Year";
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 lg:p-8 space-y-6 max-w-7xl">
+        <div className="flex items-center justify-between gap-4">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-40" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+        <Skeleton className="h-96" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 lg:p-8 space-y-6 max-w-7xl">
@@ -86,11 +111,21 @@ export default function Reports() {
           <p className="text-muted-foreground">View comprehensive financial statements and analytics</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" data-testid="button-date-range">
-            <Calendar className="h-4 w-4 mr-2" />
-            {dateRange}
-          </Button>
-          <Button data-testid="button-export-report">
+          <Select value={dateRange} onValueChange={setDateRange}>
+            <SelectTrigger className="w-40">
+              <Calendar className="h-4 w-4 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="current-month">Current Month</SelectItem>
+              <SelectItem value="current-quarter">Current Quarter</SelectItem>
+              <SelectItem value="current-year">Current Year</SelectItem>
+              <SelectItem value="last-month">Last Month</SelectItem>
+              <SelectItem value="last-quarter">Last Quarter</SelectItem>
+              <SelectItem value="custom">Custom Range</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" data-testid="button-export-report">
             <Download className="h-4 w-4 mr-2" />
             Export PDF
           </Button>
@@ -107,40 +142,90 @@ export default function Reports() {
         <TabsContent value="pnl" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Profit & Loss Statement</CardTitle>
-              <CardDescription>Income and expenses for the period</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Profit & Loss Statement
+              </CardTitle>
+              <CardDescription>
+                Income and expenses for {getDateRangeLabel()}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableBody>
-                  {profitLossData.map((section, idx) => (
-                    <Fragment key={idx}>
-                      <TableRow className={section.isCalculated ? "font-semibold border-t-2" : ""}>
-                        <TableCell colSpan={section.subcategories ? 1 : 2} className={section.isFinal ? "text-lg font-bold" : section.isCalculated ? "font-semibold" : "font-medium"}>
-                          {section.category}
-                        </TableCell>
-                        {!section.subcategories && (
-                          <TableCell className={`text-right tabular-nums ${section.isFinal ? 'text-lg font-bold text-chart-2' : section.isCalculated ? 'font-semibold' : ''}`}>
-                            ${section.total.toFixed(2)}
+              {profitLoss ? (
+                <div className="space-y-6">
+                  {/* Revenue Section */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-chart-2" />
+                      Revenue
+                    </h3>
+                    <Table>
+                      <TableBody>
+                        {profitLoss.revenue.accounts.map((account: any) => (
+                          <TableRow key={account.id}>
+                            <TableCell className="font-medium">{account.name}</TableCell>
+                            <TableCell className="text-right tabular-nums text-chart-2">
+                              ${parseFloat(account.balance).toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow className="font-semibold border-t">
+                          <TableCell>Total Revenue</TableCell>
+                          <TableCell className="text-right tabular-nums text-chart-2">
+                            ${profitLoss.revenue.total.toLocaleString()}
                           </TableCell>
-                        )}
-                      </TableRow>
-                      {section.subcategories?.map((sub, subIdx) => (
-                        <TableRow key={subIdx}>
-                          <TableCell className="pl-8">{sub.name}</TableCell>
-                          <TableCell className="text-right tabular-nums">${sub.amount.toFixed(2)}</TableCell>
                         </TableRow>
-                      ))}
-                      {section.subcategories && (
-                        <TableRow className="font-medium">
-                          <TableCell>Total {section.category}</TableCell>
-                          <TableCell className="text-right tabular-nums">${section.total.toFixed(2)}</TableCell>
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Expenses Section */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                      <TrendingDown className="h-4 w-4 text-destructive" />
+                      Expenses
+                    </h3>
+                    <Table>
+                      <TableBody>
+                        {profitLoss.expenses.accounts.map((account: any) => (
+                          <TableRow key={account.id}>
+                            <TableCell className="font-medium">{account.name}</TableCell>
+                            <TableCell className="text-right tabular-nums text-destructive">
+                              ${parseFloat(account.balance).toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow className="font-semibold border-t">
+                          <TableCell>Total Expenses</TableCell>
+                          <TableCell className="text-right tabular-nums text-destructive">
+                            ${profitLoss.expenses.total.toLocaleString()}
+                          </TableCell>
                         </TableRow>
-                      )}
-                    </Fragment>
-                  ))}
-                </TableBody>
-              </Table>
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Net Income */}
+                  <div className="border-t-2 pt-4">
+                    <Table>
+                      <TableBody>
+                        <TableRow className="font-bold text-lg">
+                          <TableCell>Net Income</TableCell>
+                          <TableCell className={`text-right tabular-nums ${
+                            profitLoss.netIncome >= 0 ? 'text-chart-2' : 'text-destructive'
+                          }`}>
+                            ${profitLoss.netIncome.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  No data available for the selected period.
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -148,89 +233,97 @@ export default function Reports() {
         <TabsContent value="balance" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Balance Sheet</CardTitle>
-              <CardDescription>Assets, liabilities, and equity as of date</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Balance Sheet
+              </CardTitle>
+              <CardDescription>
+                Assets, liabilities, and equity as of {format(new Date(), "MMMM dd, yyyy")}
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-8">
-              {/* Assets */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Assets</h3>
-                <Table>
-                  <TableBody>
-                    {balanceSheetData.assets.map((section, idx) => (
-                      <React.Fragment key={idx}>
-                        <TableRow>
-                          <TableCell className="font-medium">{section.category}</TableCell>
-                          <TableCell></TableCell>
-                        </TableRow>
-                        {section.items.map((item, itemIdx) => (
-                          <TableRow key={itemIdx}>
-                            <TableCell className="pl-8">{item.name}</TableCell>
-                            <TableCell className="text-right tabular-nums">${item.amount.toFixed(2)}</TableCell>
+            <CardContent>
+              {balanceSheet ? (
+                <div className="space-y-8">
+                  {/* Assets */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Assets</h3>
+                    <Table>
+                      <TableBody>
+                        {balanceSheet.assets.accounts.map((account: any) => (
+                          <TableRow key={account.id}>
+                            <TableCell className="font-medium">{account.name}</TableCell>
+                            <TableCell className="text-right tabular-nums">
+                              ${parseFloat(account.balance).toLocaleString()}
+                            </TableCell>
                           </TableRow>
                         ))}
-                        <TableRow className="font-medium">
-                          <TableCell>Total {section.category}</TableCell>
-                          <TableCell className="text-right tabular-nums">${section.total.toFixed(2)}</TableCell>
+                        <TableRow className="font-semibold border-t">
+                          <TableCell>Total Assets</TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            ${balanceSheet.assets.total.toLocaleString()}
+                          </TableCell>
                         </TableRow>
-                      </React.Fragment>
-                    ))}
-                    <TableRow className="font-semibold border-t-2">
-                      <TableCell>Total Assets</TableCell>
-                      <TableCell className="text-right tabular-nums">${balanceSheetData.totalAssets.toFixed(2)}</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </div>
+                      </TableBody>
+                    </Table>
+                  </div>
 
-              {/* Liabilities & Equity */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Liabilities & Equity</h3>
-                <Table>
-                  <TableBody>
-                    {balanceSheetData.liabilities.map((section, idx) => (
-                      <React.Fragment key={idx}>
-                        <TableRow>
-                          <TableCell className="font-medium">{section.category}</TableCell>
-                          <TableCell></TableCell>
-                        </TableRow>
-                        {section.items.map((item, itemIdx) => (
-                          <TableRow key={itemIdx}>
-                            <TableCell className="pl-8">{item.name}</TableCell>
-                            <TableCell className="text-right tabular-nums">${item.amount.toFixed(2)}</TableCell>
+                  {/* Liabilities */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Liabilities</h3>
+                    <Table>
+                      <TableBody>
+                        {balanceSheet.liabilities.accounts.map((account: any) => (
+                          <TableRow key={account.id}>
+                            <TableCell className="font-medium">{account.name}</TableCell>
+                            <TableCell className="text-right tabular-nums text-destructive">
+                              ${parseFloat(account.balance).toLocaleString()}
+                            </TableCell>
                           </TableRow>
                         ))}
-                        <TableRow className="font-medium">
-                          <TableCell>Total {section.category}</TableCell>
-                          <TableCell className="text-right tabular-nums">${section.total.toFixed(2)}</TableCell>
+                        <TableRow className="font-semibold border-t">
+                          <TableCell>Total Liabilities</TableCell>
+                          <TableCell className="text-right tabular-nums text-destructive">
+                            ${balanceSheet.liabilities.total.toLocaleString()}
+                          </TableCell>
                         </TableRow>
-                      </React.Fragment>
-                    ))}
-                    <TableRow className="font-medium border-t">
-                      <TableCell>Total Liabilities</TableCell>
-                      <TableCell className="text-right tabular-nums">${balanceSheetData.totalLiabilities.toFixed(2)}</TableCell>
-                    </TableRow>
-                    <TableRow className="border-t">
-                      <TableCell className="font-medium">Equity</TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                    {balanceSheetData.equity.map((item, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell className="pl-8">{item.name}</TableCell>
-                        <TableCell className="text-right tabular-nums">${item.amount.toFixed(2)}</TableCell>
-                      </TableRow>
-                    ))}
-                    <TableRow className="font-medium border-t">
-                      <TableCell>Total Equity</TableCell>
-                      <TableCell className="text-right tabular-nums">${balanceSheetData.totalEquity.toFixed(2)}</TableCell>
-                    </TableRow>
-                    <TableRow className="font-semibold border-t-2">
-                      <TableCell>Total Liabilities & Equity</TableCell>
-                      <TableCell className="text-right tabular-nums">${(balanceSheetData.totalLiabilities + balanceSheetData.totalEquity).toFixed(2)}</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </div>
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Equity */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Equity</h3>
+                    <Table>
+                      <TableBody>
+                        {balanceSheet.equity.accounts.map((account: any) => (
+                          <TableRow key={account.id}>
+                            <TableCell className="font-medium">{account.name}</TableCell>
+                            <TableCell className="text-right tabular-nums text-chart-2">
+                              ${parseFloat(account.balance).toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow className="font-semibold border-t">
+                          <TableCell>Total Equity</TableCell>
+                          <TableCell className="text-right tabular-nums text-chart-2">
+                            ${balanceSheet.equity.total.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="font-bold border-t-2">
+                          <TableCell>Total Liabilities & Equity</TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            ${(balanceSheet.liabilities.total + balanceSheet.equity.total).toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  No balance sheet data available.
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -238,47 +331,85 @@ export default function Reports() {
         <TabsContent value="cashflow" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Cash Flow Statement</CardTitle>
-              <CardDescription>Cash inflows and outflows for the period</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Cash Flow Statement
+              </CardTitle>
+              <CardDescription>
+                Cash inflows and outflows for {getDateRangeLabel()}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableBody>
-                  {cashFlowData.map((section, idx) => (
-                    <React.Fragment key={idx}>
-                      {section.category ? (
-                        <>
-                          <TableRow>
-                            <TableCell className="font-medium">{section.category}</TableCell>
-                            <TableCell></TableCell>
-                          </TableRow>
-                          {section.items?.map((item, itemIdx) => (
-                            <TableRow key={itemIdx}>
-                              <TableCell className="pl-8">{item.name}</TableCell>
-                              <TableCell className={`text-right tabular-nums ${item.amount > 0 ? 'text-chart-2' : item.amount < 0 ? 'text-destructive' : ''}`}>
-                                ${item.amount.toFixed(2)}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                          <TableRow className="font-medium">
-                            <TableCell>Net Cash from {section.category}</TableCell>
-                            <TableCell className={`text-right tabular-nums ${section.total && section.total > 0 ? 'text-chart-2' : section.total && section.total < 0 ? 'text-destructive' : ''}`}>
-                              ${section.total?.toFixed(2)}
-                            </TableCell>
-                          </TableRow>
-                        </>
-                      ) : (
-                        <TableRow className="font-semibold border-t-2">
-                          <TableCell>Net Change in Cash</TableCell>
-                          <TableCell className={`text-right tabular-nums text-lg ${section.netChange && section.netChange > 0 ? 'text-chart-2' : ''}`}>
-                            ${section.netChange?.toFixed(2)}
+              {cashFlow ? (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Operating Activities</h3>
+                    <Table>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className="font-medium">Net Cash from Operations</TableCell>
+                          <TableCell className={`text-right tabular-nums ${
+                            cashFlow.operatingActivities.total >= 0 ? 'text-chart-2' : 'text-destructive'
+                          }`}>
+                            ${cashFlow.operatingActivities.total.toLocaleString()}
                           </TableCell>
                         </TableRow>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </TableBody>
-              </Table>
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Investing Activities</h3>
+                    <Table>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className="font-medium">Net Cash from Investing</TableCell>
+                          <TableCell className={`text-right tabular-nums ${
+                            cashFlow.investingActivities.total >= 0 ? 'text-chart-2' : 'text-destructive'
+                          }`}>
+                            ${cashFlow.investingActivities.total.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Financing Activities</h3>
+                    <Table>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className="font-medium">Net Cash from Financing</TableCell>
+                          <TableCell className={`text-right tabular-nums ${
+                            cashFlow.financingActivities.total >= 0 ? 'text-chart-2' : 'text-destructive'
+                          }`}>
+                            ${cashFlow.financingActivities.total.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  <div className="border-t-2 pt-4">
+                    <Table>
+                      <TableBody>
+                        <TableRow className="font-bold text-lg">
+                          <TableCell>Net Change in Cash</TableCell>
+                          <TableCell className={`text-right tabular-nums ${
+                            cashFlow.netChange >= 0 ? 'text-chart-2' : 'text-destructive'
+                          }`}>
+                            ${cashFlow.netChange.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  No cash flow data available.
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

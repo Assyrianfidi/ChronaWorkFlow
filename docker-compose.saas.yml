@@ -1,0 +1,260 @@
+services:
+  # Reverse Proxy & Load Balancer
+  nginx:
+    image: nginx:1.24-alpine
+    ports:
+      - "80:80"
+      - "3001:3001"  # Docs
+      - "3002:3002"  # Status
+      - "3003:3003"  # Grafana
+      - "9090:9090"  # Prometheus
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled:ro
+      - ./nginx/sites-available:/etc/nginx/sites-available:ro
+      - ./dist:/usr/share/nginx/html:ro  # Mount frontend build
+    depends_on:
+      - app
+      - docs
+      - status
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Main Application (Multi-tenant)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.saas
+      args:
+        - NODE_ENV=production
+        - DATABASE_URL=${DATABASE_URL}
+        - REDIS_URL=${REDIS_URL}
+        - PORT=${PORT}
+        - JWT_SECRET=your_local_jwt_secret_minimum_32_characters_long_for_development
+        - FRONTEND_URL=${FRONTEND_URL}
+        - ADMIN_URL=${ADMIN_URL}
+        - DOCS_URL=${DOCS_URL}
+        - STATUS_URL=${STATUS_URL}
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - PORT=${PORT}
+      - JWT_SECRET=your_local_jwt_secret_minimum_32_characters_long_for_development
+      - FRONTEND_URL=${FRONTEND_URL}
+      - ADMIN_URL=${ADMIN_URL}
+      - DOCS_URL=${DOCS_URL}
+      - STATUS_URL=${STATUS_URL}
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+    ports:
+      - "${PORT}:${PORT}"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:${PORT}/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Documentation Portal
+  docs:
+    build:
+      context: ./docs
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"  # Changed from "3000" to "3001:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./docs/content:/app/content:ro
+      - ./docs/public:/app/public:ro
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Status Page
+  status:
+    build:
+      context: ./status
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3000"  # Changed from "3000" to "3002:3000"
+    environment:
+      - STATUS_TOKEN=${STATUS_TOKEN}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    env_file:
+      - .env
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-saas-db.sql:/docker-entrypoint-initdb.d/01-init-saas-db.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - accubooks-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis Cache & Sessions
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+    ports:
+      - "6379:6379"
+
+  # Background Job Processor
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+      args:
+        - NODE_ENV=production
+        - DATABASE_URL=${DATABASE_URL}
+        - REDIS_URL=${REDIS_URL}
+        - JWT_SECRET=your_local_jwt_secret_minimum_32_characters_long_for_development
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - JWT_SECRET=your_local_jwt_secret_minimum_32_characters_long_for_development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Worker operational'); process.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      replicas: 2
+
+  # Database Backup Service - Windows Compatible
+  backup:
+    image: postgres:15-alpine
+    command:
+      - sh
+      - -c
+      - |
+        apk add --no-cache bash coreutils
+        while true; do
+          TIMESTAMP=$$(date -u +%Y%m%d_%H%M%S)
+          pg_dump -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} > /backups/backup_$${TIMESTAMP}.sql 2>/dev/null || echo "Backup failed at $$(date)"
+          sleep 86400
+        done
+    environment:
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ./backups:/backups
+    depends_on:
+      - postgres
+    networks:
+      - accubooks-network
+    restart: unless-stopped
+
+  # Monitoring & Alerting
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3003:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  accubooks-network:
+    driver: bridge

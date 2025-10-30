@@ -1,0 +1,216 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model with authentication
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  firstName String
+  lastName  String
+  role      Role      @default(BUSINESS_USER)
+  isActive  Boolean   @default(true)
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  ownedBusinesses     Business[]       @relation("BusinessOwnership")
+  businessMemberships BusinessMember[]
+  refreshTokens       RefreshToken[]
+
+  @@map("users")
+}
+
+// Business/Organization model
+model Business {
+  id                    String                 @id @default(uuid())
+  name                  String
+  description           String?
+  email                 String
+  phone                 String?
+  address               String?
+  city                  String?
+  country               String?
+  postalCode            String?
+  taxId                 String?
+  isActive              Boolean                @default(true)
+  type                  String?
+  industry              String?
+  owner                 User                   @relation("BusinessOwnership", fields: [ownerId], references: [id])
+  ownerId               String
+  members               BusinessMember[]
+  clients               Client[]
+  invoices              Invoice[]
+  reconciliationReports ReconciliationReport[]
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  @@map("businesses")
+}
+
+// Business Member (join table with role)
+model BusinessMember {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  business   Business @relation(fields: [businessId], references: [id])
+  businessId String
+  role       String   @default("member") // owner | admin | accountant | member
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, businessId])
+  @@map("business_members")
+}
+
+// Client model
+model Client {
+  id         String   @id @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  address    String?
+  city       String?
+  country    String?
+  postalCode String?
+  taxId      String?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  business   Business  @relation(fields: [businessId], references: [id])
+  businessId String
+  invoices   Invoice[]
+
+  @@map("clients")
+}
+
+// Invoice model
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime
+  status        InvoiceStatus @default(DRAFT)
+  notes         String?
+  subtotal      Decimal       @default(0)
+  taxAmount     Decimal       @default(0)
+  total         Decimal       @default(0)
+  currency      String        @default("USD")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  business   Business      @relation(fields: [businessId], references: [id])
+  businessId String
+  client     Client        @relation(fields: [clientId], references: [id])
+  clientId   String
+  items      InvoiceItem[]
+  payments   Payment[]
+
+  @@map("invoices")
+}
+
+// Invoice items
+model InvoiceItem {
+  id          String  @id @default(uuid())
+  description String
+  quantity    Decimal @default(1)
+  unitPrice   Decimal
+  amount      Decimal
+  taxRate     Decimal @default(0)
+  taxAmount   Decimal @default(0)
+  total       Decimal
+
+  // Relations
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String
+
+  @@map("invoice_items")
+}
+
+// Payments
+model Payment {
+  id            String        @id @default(uuid())
+  amount        Decimal
+  paymentDate   DateTime      @default(now())
+  paymentMethod PaymentMethod
+  reference     String?
+  notes         String?
+
+  // Relations
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String
+
+  @@map("payments")
+}
+
+// Refresh tokens for JWT
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+// Enums
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  ACCOUNTANT
+  BUSINESS_USER
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  BANK_TRANSFER
+  CHECK
+  OTHER
+}
+
+// Reconciliation report stored after each run
+model ReconciliationReport {
+  id                 String   @id @default(uuid())
+  businessId         String
+  reportDate         DateTime @default(now())
+  fromDate           DateTime
+  toDate             DateTime
+  status             String   @default("COMPLETED")
+  totalInvoices      Int      @default(0)
+  totalPayments      Int      @default(0)
+  totalInvoiceAmount Float?
+  totalPaymentAmount Float?
+  discrepancies      Int      @default(0)
+  summary            Json?
+  createdBy          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@map("reconciliation_reports")
+}
