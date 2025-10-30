@@ -15,6 +15,10 @@ export class MailService {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
+      // Nodemailer v7 requires additional options for modern SMTP servers
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
   }
 
