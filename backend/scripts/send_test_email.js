@@ -1,6 +1,5 @@
-﻿import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-dotenv.config();
+﻿const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 async function main() {
   const testAccount = await nodemailer.createTestAccount();
@@ -15,7 +14,7 @@ async function main() {
     from: 'verify@example.com',
     to: 'test@recipient.com',
     subject: 'Ethereal Test Email',
-    text: 'Hello from Phase 3 verification!',
+    text: 'Hello from Phase 3 verification (CommonJS)!',
   });
 
   console.log('Test email sent: %s', info.messageId);
