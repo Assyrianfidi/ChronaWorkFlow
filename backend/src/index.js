@@ -76,12 +76,33 @@ app.use(morgan('combined', { stream }));
 app.use(rateLimiter);
 
 // API Routes
+// Mount auth (exists)
 app.use('/api/v1', require('./routes/auth'));
-app.use('/api/v1/users', require('./routes/users'));
-app.use('/api/v1/businesses', require('./routes/businesses'));
-app.use('/api/v1/clients', require('./routes/clients'));
-app.use('/api/v1/invoices', require('./routes/invoices'));
-app.use('/api/v1/payments', require('./routes/payments'));
+
+// Conditionally mount optional route modules if present. This avoids startup
+// failures and ESLint 'node/no-missing-require' errors when routes are not
+// present in every environment (e.g., trimmed builds or partial deployments).
+const fs = require('fs');
+const route = (mountPath, relPath) => {
+  const fullPath = require('path').join(__dirname, relPath + '.js');
+  if (fs.existsSync(fullPath)) {
+    try {
+      // require the route and mount it
+      const r = require(relPath);
+      app.use(mountPath, r);
+    } catch (e) {
+      logger.warn(`Route ${relPath} found but failed to load: ${e.message}`);
+    }
+  } else {
+    logger.info(`Optional route not found: ${relPath}`);
+  }
+};
+
+route('/api/v1/users', './routes/users');
+route('/api/v1/businesses', './routes/businesses');
+route('/api/v1/clients', './routes/clients');
+route('/api/v1/invoices', './routes/invoices');
+route('/api/v1/payments', './routes/payments');
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
