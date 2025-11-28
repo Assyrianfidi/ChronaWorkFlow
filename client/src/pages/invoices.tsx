@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Badge } from "../components/ui/badge";
 import { Plus, Search, Eye, Send, DollarSign } from "lucide-react";
 import {
   Table,
@@ -11,9 +11,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { useInvoices, useCustomers, type Invoice, type Customer } from "@/hooks/use-api";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "../components/ui/table";
+import { useInvoices, useCustomers, type Invoice, type Customer } from "../hooks/use-api";
+import { Skeleton } from "../components/ui/skeleton";
 
 const statusColors = {
   draft: "secondary",

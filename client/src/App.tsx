@@ -1,93 +1,100 @@
-import { useState, useEffect } from 'react';
-import './App.css';
-
-interface ApiResponse {
-  message: string;
-  status?: string;
-}
+import { RouterProvider } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useAuthStore } from './store/auth-store';
+import { ThemeProvider } from './components/ThemeProvider';
+import { Layout } from './components/Layout';
+import router from './routes';
+import ErrorBoundary from './components/ErrorBoundary';
+import { ToastContainer } from './components/ToastContainer';
+import { AdaptiveLayoutEngine } from './components/adaptive/AdaptiveLayoutEngine';
+import { UserExperienceModeProvider } from './components/adaptive/UserExperienceMode.tsx';
+import { UIPerformanceEngine } from './components/adaptive/UI-Performance-Engine.tsx';
+import { NotificationSystem } from './components/adaptive/NotificationSystem';
+import { AccessibilityProvider } from './components/adaptive/AccessibilityModes';
+import { InteractionEngine } from './components/interaction/InteractionEngine.tsx';
+import { WorkflowManager } from './components/interaction/WorkflowManager.tsx';
+import { PredictiveAssistant } from './components/interaction/PredictiveAssistant.tsx';
+import { ErrorRecoveryUI } from './components/interaction/ErrorRecoveryUI.tsx';
+import { AnalyticsEngine } from './components/analytics/AnalyticsEngine';
+import { BusinessIntelligence } from './components/analytics/BusinessIntelligence';
+import { AutomationEngine } from './components/automation/AutomationEngine';
+import { EnterpriseAPIGateway } from './components/integration/EnterpriseAPIGateway';
+import { GraphQLServer } from './components/integration/GraphQLServer';
+import { ThirdPartyIntegrations } from './components/integration/ThirdPartyIntegrations';
+import { WebhookManager } from './components/integration/WebhookManager';
+import './styles/globals.css';
 
 // Extend the ImportMeta interface to include Vite's env variables
-declare global {
-  interface ImportMeta {
-    env: {
-      VITE_API_URL?: string;
-    };
-  }
+interface ImportMetaEnv {
+  VITE_API_URL?: string;
+}
+
+interface ImportMeta {
+  env: ImportMetaEnv;
 }
 
 function App() {
-  const [apiStatus, setApiStatus] = useState<string>('Checking API...');
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
 
   useEffect(() => {
-    const checkApi = async () => {
+    // Check if user is already authenticated on initial load
+    checkAuth();
+
+    // Check API health
+    const checkApiHealth = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         const response = await fetch(`${apiUrl}/api/health`);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data: ApiResponse = await response.json();
-        setApiStatus(data.message || 'API is running');
+        console.log('API Health Status:', response.status);
       } catch (error) {
-        console.error('API connection error:', error);
-        setApiStatus(`Error: ${error instanceof Error ? error.message : 'Failed to connect to API'}`);
-      } finally {
-        setIsLoading(false);
+        console.error('API Health Check Failed:', error);
       }
     };
 
-    checkApi();
-  }, []);
+    checkApiHealth();
+  }, [checkAuth]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="max-w-2xl w-full bg-white rounded-lg shadow-md p-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Welcome to AccuBooks</h1>
-        {isLoading ? (
-          <div className="flex justify-center items-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : (
-          <>
-            <div className="mb-8">
-              <div className="text-lg text-gray-600 mb-2">
-                {apiStatus}
-              </div>
-              <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden mt-2">
-                <div
-                  className={`h-full ${apiStatus.includes('running') ? 'bg-green-500' : 'bg-red-500'} transition-all duration-500`}
-                  style={{ width: apiStatus.includes('running') ? '100%' : '50%' }}>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-700">Getting Started</h2>
-              <p className="text-gray-600">
-                The AccuBooks application is now running in development mode.
-              </p>
-              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-left">
-                <p className="font-medium text-blue-700">Next Steps:</p>
-                <ul className="list-disc list-inside mt-2 text-blue-600 space-y-1">
-                  <li>Check the browser console for any errors</li>
-                  <li>Review the API documentation for available endpoints</li>
-                  <li>Start building your frontend components</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <p className="text-sm text-gray-500">
-                Need help? Check out the documentation or contact support.
-              </p>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+    <WebhookManager>
+      <ThirdPartyIntegrations>
+        <GraphQLServer>
+          <EnterpriseAPIGateway>
+            <AutomationEngine>
+              <BusinessIntelligence>
+                <AnalyticsEngine>
+                  <ErrorRecoveryUI>
+                    <PredictiveAssistant>
+                      <WorkflowManager>
+                        <InteractionEngine>
+                          <AccessibilityProvider>
+                            <NotificationSystem>
+                              <UIPerformanceEngine>
+                                <AdaptiveLayoutEngine>
+                                  <UserExperienceModeProvider>
+                                    <ThemeProvider>
+                                      <ErrorBoundary>
+                                        <Layout>
+                                          <RouterProvider router={router} />
+                                        </Layout>
+                                        <ToastContainer />
+                                      </ErrorBoundary>
+                                    </ThemeProvider>
+                                  </UserExperienceModeProvider>
+                                </AdaptiveLayoutEngine>
+                              </UIPerformanceEngine>
+                            </NotificationSystem>
+                          </AccessibilityProvider>
+                        </InteractionEngine>
+                      </WorkflowManager>
+                    </PredictiveAssistant>
+                  </ErrorRecoveryUI>
+                </AnalyticsEngine>
+              </BusinessIntelligence>
+            </AutomationEngine>
+          </EnterpriseAPIGateway>
+        </GraphQLServer>
+      </ThirdPartyIntegrations>
+    </WebhookManager>
   );
 }
 

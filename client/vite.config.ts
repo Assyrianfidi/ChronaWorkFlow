@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -18,7 +19,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, './src')
     },
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
   },
@@ -26,6 +27,7 @@ export default defineConfig({
     port: 3000,
     strictPort: true,
     host: '0.0.0.0',
+    open: true,
     hmr: {
       host: 'localhost',
       port: 3000,
@@ -49,6 +51,7 @@ export default defineConfig({
     sourcemap: true,
     minify: 'esbuild',
     rollupOptions: {
+      external: [],
       output: {
         manualChunks: {
           react: ['react', 'react-dom'],

@@ -1,0 +1,36 @@
+Storybook default cleanup - 2025-11-28T03:36:13.066Z
+
+[2025-11-28T03:36:13.094Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\accessibility\AccessibilityContext.stories.tsx
+[2025-11-28T03:36:13.105Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\accessibility\RealTimeAccessibilityMonitor.stories.tsx
+[2025-11-28T03:36:13.107Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\accessibility\ScreenReaderEnhancements.stories.tsx
+[2025-11-28T03:36:13.110Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\accessibility\VisualModeEngine.stories.tsx
+[2025-11-28T03:36:13.112Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\accessibility\VoiceCommandEngine.stories.tsx
+[2025-11-28T03:36:13.115Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\accounts\AccountsTable.stories.tsx
+[2025-11-28T03:36:13.117Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\adaptive\AdaptiveLayoutEngine.stories.tsx
+[2025-11-28T03:36:13.119Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\adaptive\DashboardComponents.stories.tsx
+[2025-11-28T03:36:13.121Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\adaptive\NotificationSystem.stories.tsx
+[2025-11-28T03:36:13.123Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\adaptive\UserExperienceMode.stories.tsx
+[2025-11-28T03:36:13.126Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ErrorBoundary.stories.tsx
+[2025-11-28T03:36:13.128Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\forms\ReportForm.stories.tsx
+[2025-11-28T03:36:13.130Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\Layout.stories.tsx
+[2025-11-28T03:36:13.132Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ProtectedRoute.stories.tsx
+[2025-11-28T03:36:13.134Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\reports\ReportList.stories.tsx
+[2025-11-28T03:36:13.136Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\reports\ReportView.stories.tsx
+[2025-11-28T03:36:13.138Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ThemeProvider.stories.tsx
+[2025-11-28T03:36:13.140Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ToastContainer.stories.tsx
+[2025-11-28T03:36:13.143Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\accordion.stories.tsx
+[2025-11-28T03:36:13.145Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\alert.stories.tsx
+[2025-11-28T03:36:13.147Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\avatar.stories.tsx
+[2025-11-28T03:36:13.149Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\badge.stories.tsx
+[2025-11-28T03:36:13.151Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\button.stories.tsx
+[2025-11-28T03:36:13.152Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\card.stories.tsx
+[2025-11-28T03:36:13.154Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\checkbox.stories.tsx
+[2025-11-28T03:36:13.157Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\DataTable.stories.tsx
+[2025-11-28T03:36:13.158Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\dialog.stories.tsx
+[2025-11-28T03:36:13.160Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\dropdown-menu.stories.tsx
+[2025-11-28T03:36:13.162Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\EnterpriseButton.stories.tsx
+[2025-11-28T03:36:13.164Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\EnterpriseInput.stories.tsx
+[2025-11-28T03:36:13.166Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\EnterpriseKPICard.stories.tsx
+[2025-11-28T03:36:13.168Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\input.stories.tsx
+[2025-11-28T03:36:13.170Z] ✅ Removed duplicate default export from C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\src\components\ui\RichTextEditor.stories.tsx
+[2025-11-28T03:36:13.171Z] Cleanup complete. Files updated: 33

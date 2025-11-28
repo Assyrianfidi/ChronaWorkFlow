@@ -2,15 +2,16 @@ import { QueryClient } from '@tanstack/react-query';
 
 // API request utility function
 export async function apiRequest<T = any>(
-  method: string,
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   endpoint: string,
   data?: any
 ): Promise<T> {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+  // Use VITE_API_URL from environment variables or default to empty string
+  const baseUrl = import.meta.env.VITE_API_URL || '';
   const url = `${baseUrl}${endpoint}`;
   const token = localStorage.getItem('auth_token');
 
-  const headers: Record<string, string> = {
+  const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };
 
@@ -21,6 +22,7 @@ export async function apiRequest<T = any>(
   const options: RequestInit = {
     method,
     headers,
+    credentials: 'include', // Include credentials (cookies) with the request
   };
 
   if (data && (method === 'POST' || method === 'PATCH' || method === 'PUT')) {
@@ -29,34 +31,46 @@ export async function apiRequest<T = any>(
 
   const response = await fetch(url, options);
 
+  // Handle 401 Unauthorized - clear auth and redirect to login
   if (response.status === 401) {
-    // Unauthorized - clear auth and redirect to login
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
     window.location.href = '/login';
     throw new Error('Unauthorized');
   }
 
+  // Handle other error status codes
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || 'An error occurred');
+    const errorData = await response.json().catch(() => ({
+      message: `API request failed with status ${response.status}`,
+    }));
+    throw new Error(errorData.message || 'API request failed');
   }
 
-  // For 204 No Content responses
+  // Handle empty responses (e.g., for 204 No Content)
   if (response.status === 204) {
-    return undefined as unknown as T;
+    return undefined as T;
   }
 
-  return response.json();
+  // Try to parse the response as JSON, fall back to text if not JSON
+  try {
+    return await response.json();
+  } catch (error) {
+    return await response.text() as unknown as T;
+  }
 }
 
 // Helper function for common HTTP methods
 export const api = {
-  get: <T = any>(endpoint: string) => apiRequest<T>('GET', endpoint),
-  post: <T = any>(endpoint: string, data?: any) => apiRequest<T>('POST', endpoint, data),
-  put: <T = any>(endpoint: string, data?: any) => apiRequest<T>('PUT', endpoint, data),
-  patch: <T = any>(endpoint: string, data?: any) => apiRequest<T>('PATCH', endpoint, data),
-  delete: <T = any>(endpoint: string) => apiRequest<T>('DELETE', endpoint),
+  get: <T = any>(endpoint: string): Promise<T> => apiRequest<T>('GET', endpoint),
+  post: <T = any, D = any>(endpoint: string, data?: D): Promise<T> =>
+    apiRequest<T>('POST', endpoint, data),
+  put: <T = any, D = any>(endpoint: string, data?: D): Promise<T> =>
+    apiRequest<T>('PUT', endpoint, data),
+  patch: <T = any, D = any>(endpoint: string, data?: D): Promise<T> =>
+    apiRequest<T>('PATCH', endpoint, data),
+  delete: <T = any>(endpoint: string): Promise<T> =>
+    apiRequest<T>('DELETE', endpoint),
 };
 
 // Query client configuration

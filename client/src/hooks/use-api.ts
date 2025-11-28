@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, QueryClient, UseQueryOptions, UseMutationOptions } from "@tanstack/react-query";
 import { apiRequest } from "./queryClient";
-import { getCurrentCompanyId } from "@/lib/api";
+import { getCurrentCompanyId } from "../lib/api";
 
 export interface User {
   id: string;
@@ -23,6 +23,7 @@ export interface Company {
   address?: string;
   taxId?: string;
   currency: string;
+  fiscalYearEnd?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -51,7 +52,7 @@ export interface Customer {
   contactPerson?: string;
   taxId?: string;
   notes?: string;
-  balance: string;
+  balance: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

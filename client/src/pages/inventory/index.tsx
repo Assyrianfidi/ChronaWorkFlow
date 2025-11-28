@@ -1,105 +1,280 @@
-import { useState } from 'react';
-import { useInventoryItems, useCreateInventoryItem } from '@/hooks/use-api';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Search, AlertTriangle, Package, TrendingUp } from 'lucide-react';
+'use client';
 
-interface InventoryItem {
-  id: string;
-  sku: string;
-  name: string;
-  description?: string;
-  category?: string;
-  unitCost: string;
-  unitPrice: string;
-  quantityOnHand: string;
-  quantityReserved: string;
-  quantityAvailable: string;
-  reorderPoint: string;
-  reorderQuantity: string;
-  supplierId?: string;
-  isActive: boolean;
-  trackInventory: boolean;
-}
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useDebounce } from 'use-debounce';
+import {
+  useInventoryItems,
+  useInventoryStats,
+  useCreateInventoryItem,
+  useUpdateInventoryItem,
+  useDeleteInventoryItem,
+  useBulkUpdateInventoryItems,
+  useExportInventory,
+  type InventoryQueryOptions,
+} from '../hooks/use-inventory';
+type SortDirection = 'asc' | 'desc';
+import type {
+  InventoryItem,
+  InventoryStats,
+  InventoryStatus,
+  InventoryResponse,
+  InventoryFilterOptions,
+  BulkUpdatePayload,
+  ExportOptions
+} from '../types/inventory';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Badge } from '../components/ui/badge';
+import {
+  Plus,
+  Search,
+  AlertTriangle,
+  Package,
+  TrendingUp,
+  X,
+  Filter,
+  ArrowUpDown,
+  MoreHorizontal,
+  ChevronDown,
+  ChevronRight,
+  Download,
+  FileText,
+  FileSpreadsheet,
+  FileType2
+} from 'lucide-react';
+import { InventoryTable } from '../components/inventory/InventoryTable';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuGroup
+} from '../components/ui/dropdown-menu';
+import { Checkbox } from '../components/ui/checkbox';
+import { Label } from '../components/ui/label';
+import { toast } from '../components/ui/use-toast';
+
+// Utility functions for inventory calculations
+const getLowStockItems = (items: InventoryItem[]): InventoryItem[] =>
+  items.filter(item => item.quantityOnHand > 0 && item.quantityOnHand <= (item.reorderPoint || 0));
+
+const getOutOfStockItems = (items: InventoryItem[]): InventoryItem[] =>
+  items.filter(item => item.quantityOnHand <= 0);
+
+const getInventoryValue = (items: InventoryItem[]): number =>
+  items.reduce((sum, item) => sum + (item.quantityOnHand * (item.unitCost || 0)), 0);
+
+const getInventoryStatus = (item: InventoryItem): InventoryStatus => {
+  if (item.quantityOnHand <= 0) return 'out_of_stock';
+  if (item.quantityOnHand <= (item.reorderPoint || 0)) return 'low_stock';
+  return 'in_stock';
+};
+
+
+const DEFAULT_PAGE_SIZE = 20;
 
 export default function InventoryPage() {
-  const { data: items = [], isLoading, error } = useInventoryItems();
-  const createItem = useCreateInventoryItem();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-
-  // Get unique categories
-  const categories = Array.from(new Set(items.map((item: InventoryItem) => item.category).filter(Boolean)));
-
-  // Filter items based on search and category
-  const filteredItems = items.filter((item: InventoryItem) => {
-    const matchesSearch = searchTerm === '' ||
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.sku.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
-
-    return matchesSearch && matchesCategory;
+  const router = useRouter();
+  const [filters, setFilters] = useState({
+    searchTerm: '',
+    selectedCategory: undefined as string | undefined,
+    statusFilter: undefined as InventoryStatus | undefined,
+    sortBy: 'name',
+    sortOrder: 'asc' as SortDirection,
+    page: 1,
   });
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const debouncedSearch = useDebounce(filters.searchTerm, 300);
 
-  // Calculate inventory stats
-  const totalValue = items.reduce((sum: number, item: InventoryItem) =>
-    sum + (parseFloat(item.quantityOnHand) * parseFloat(item.unitCost)), 0);
+  // Query options for inventory items
+  const queryOptions: InventoryQueryOptions = useMemo(() => ({
+    search: filters.searchTerm,
+    categories: filters.selectedCategory ? [filters.selectedCategory] : [],
+    status: filters.statusFilter,
+    sortBy: filters.sortBy,
+    sortDirection: filters.sortOrder,
+    page: filters.page,
+    pageSize: DEFAULT_PAGE_SIZE,
+  }), [filters]);
 
-  const lowStockItems = items.filter((item: InventoryItem) =>
-    parseFloat(item.quantityOnHand) <= parseFloat(item.reorderPoint));
+  // Stats query options
+  const statsQueryOptions: Omit<InventoryQueryOptions, 'sortBy' | 'page' | 'sortDirection' | 'pageSize'> = useMemo(() => ({
+    search: filters.searchTerm,
+    categories: filters.selectedCategory ? [filters.selectedCategory] : [],
+    status: filters.statusFilter,
+  }), [filters.searchTerm, filters.selectedCategory, filters.statusFilter]);
 
-  const outOfStockItems = items.filter((item: InventoryItem) =>
-    parseFloat(item.quantityOnHand) === 0);
+  // Fetch inventory data using hooks
+  const {
+    data: inventoryItems = [],
+    isLoading: isLoadingItems,
+    isError: itemsError,
+    refetch: refetchItems
+  } = useInventoryItems(queryOptions);
 
-  const handleCreateItem = async () => {
-    console.log('Creating new inventory item...');
-  };
+  // Fetch inventory stats using hooks
+  const {
+    data: calculatedStats = {
+      totalItems: 0,
+      totalValue: 0,
+      lowStockCount: 0,
+      outOfStockCount: 0,
+      categories: [],
+      lastUpdated: new Date().toISOString(),
+    },
+    isLoading: isLoadingStats,
+    isError: statsError
+  } = useInventoryStats(statsQueryOptions);
 
-  const getStockStatus = (item: InventoryItem) => {
-    const quantity = parseFloat(item.quantityOnHand);
-    const reorderPoint = parseFloat(item.reorderPoint);
+  // Calculate derived data
+  const totalValue = useMemo(() =>
+    inventoryItems.reduce((sum: number, item: InventoryItem) => sum + (item.quantityOnHand * item.unitCost), 0),
+    [inventoryItems]
+  );
 
-    if (quantity === 0) {
-      return { status: 'Out of Stock', variant: 'destructive' as const };
+  const lowStockItems = useMemo(
+    () => inventoryItems.filter((item: InventoryItem) => item.quantityOnHand < item.reorderPoint),
+    [inventoryItems]
+  );
+
+  const outOfStockItems = useMemo(
+    () => inventoryItems.filter((item: InventoryItem) => item.quantityOnHand === 0),
+    [inventoryItems]
+  );
+
+  // Event handlers
+  const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters(prev => ({ ...prev, searchTerm: e.target.value }));
+  }, []);
+
+  const handleStatusChange = useCallback((status: InventoryStatus | undefined) => {
+    setFilters(prev => ({ ...prev, statusFilter: status }));
+  }, []);
+
+  const handleSort = useCallback((column: string) => {
+    setFilters(prev => ({
+      ...prev,
+      sortBy: column,
+      sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc'
+    }));
+  }, []);
+
+  const handleSelectItem = useCallback((id: string, isSelected: boolean) => {
+    setSelectedIds(prev => {
+      const newSelection = new Set(prev);
+      if (isSelected) {
+        newSelection.add(id);
+      } else {
+        newSelection.delete(id);
+      }
+      return newSelection;
+    });
+  }, []);
+
+  const handleSelectAll = useCallback((checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(inventoryItems.map(item => item.id)));
+    } else {
+      setSelectedIds(new Set());
     }
-    if (quantity <= reorderPoint) {
-      return { status: 'Low Stock', variant: 'secondary' as const };
-    }
-    return { status: 'In Stock', variant: 'default' as const };
-  };
+  }, [inventoryItems]);
 
-  if (error) {
-    return (
-      <div className="container mx-auto py-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-red-600">Error Loading Inventory Data</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>There was an error loading the inventory data. Please try again later.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const handleToggleRow = useCallback((id: string) => {
+    setExpandedRows(prev => {
+      const newExpanded = new Set(prev);
+      if (newExpanded.has(id)) {
+        newExpanded.delete(id);
+      } else {
+        newExpanded.add(id);
+      }
+      return newExpanded;
+    });
+  }, []);
+
+  const handleToggleSelection = useCallback((id: string) => {
+    setSelectedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
+  }, []);
+
+  const handleCategoryChange = useCallback((category: string | undefined) => {
+    setFilters(prev => ({ ...prev, selectedCategory: category }));
+  }, []);
+
+  const handleAdjustStock = useCallback((item: any) => {
+    console.log('Adjust stock for:', item);
+  }, []);
+
+  // Toggle row expansion
+  const toggleRowExpand = useCallback((id: string) => {
+    setExpandedRows(prev => {
+      const newExpanded = new Set(prev);
+      if (newExpanded.has(id)) {
+        newExpanded.delete(id);
+      } else {
+        newExpanded.add(id);
+      }
+      return newExpanded;
+    });
+  }, []);
+
+  // Handle bulk actions
+  const handleBulkAction = useCallback((action: 'activate' | 'deactivate' | 'export' | 'delete') => {
+    if (selectedIds.size === 0) return;
+
+    switch (action) {
+      case 'activate':
+        // Implement bulk activate
+        console.log('Activate items:', Array.from(selectedIds));
+        break;
+      case 'deactivate':
+        // Implement bulk deactivate
+        console.log('Deactivate items:', Array.from(selectedIds));
+        break;
+      case 'export':
+        // Implement bulk export
+        console.log('Export items:', Array.from(selectedIds));
+        break;
+      case 'delete':
+        // Implement bulk delete
+        if (confirm(`Are you sure you want to delete ${selectedIds.size} items?`)) {
+          console.log('Delete items:', Array.from(selectedIds));
+        }
+        break;
+    }
+  }, [selectedIds]);
 
   return (
     <div className="container mx-auto py-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Inventory Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Inventory</h1>
           <p className="text-muted-foreground">
-            Track inventory items, stock levels, and purchase orders
+            Manage your inventory items, stock levels, and purchase orders
           </p>
         </div>
-        <Button onClick={handleCreateItem}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Item
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button onClick={() => router.push('/inventory/new')}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Item
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -110,7 +285,7 @@ export default function InventoryPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{items.length}</div>
+            <div className="text-2xl font-bold">{calculatedStats.totalItems}</div>
             <p className="text-xs text-muted-foreground">
               Items in inventory
             </p>
@@ -123,7 +298,9 @@ export default function InventoryPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">
+              ${calculatedStats.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </div>
             <p className="text-xs text-muted-foreground">
               Current inventory value
             </p>
@@ -132,11 +309,11 @@ export default function InventoryPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Low Stock Items</CardTitle>
+            <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{lowStockItems.length}</div>
+            <div className="text-2xl font-bold">{calculatedStats.lowStockCount}</div>
             <p className="text-xs text-muted-foreground">
               Items below reorder point
             </p>
@@ -146,9 +323,12 @@ export default function InventoryPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Out of Stock</CardTitle>
+            <X className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{outOfStockItems.length}</div>
+            <div className="text-2xl font-bold">
+              {calculatedStats.outOfStockCount}
+            </div>
             <p className="text-xs text-muted-foreground">
               Items with zero quantity
             </p>
@@ -156,111 +336,180 @@ export default function InventoryPage() {
         </Card>
       </div>
 
-      {/* Inventory Items */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Inventory Items</CardTitle>
-          <CardDescription>
-            Manage your inventory items and track stock levels
-          </CardDescription>
+      {/* Filters and Actions */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="relative w-full md:w-auto">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search items..."
+            value={filters.searchTerm}
+            onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
+            className="pl-10 w-full md:w-[300px]"
+          />
+        </div>
 
-          {/* Filters */}
-          <div className="flex items-center space-x-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search items..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-3 py-2 border border-input bg-background rounded-md"
-            >
-              <option value="all">All Categories</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredItems.map((item: InventoryItem) => {
-                const stockStatus = getStockStatus(item);
-                return (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-medium">{item.name}</h3>
-                        <Badge variant={stockStatus.variant}>{stockStatus.status}</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">SKU: {item.sku}</p>
-                      {item.description && (
-                        <p className="text-sm text-muted-foreground">{item.description}</p>
-                      )}
-                      {item.category && (
-                        <Badge variant="outline">{item.category}</Badge>
-                      )}
-                    </div>
-
-                    <div className="text-center">
-                      <p className="text-sm font-medium">Quantity</p>
-                      <p className="text-2xl font-bold">{item.quantityOnHand}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Available: {item.quantityAvailable}
-                      </p>
-                    </div>
-
-                    <div className="text-right">
-                      <p className="text-sm font-medium">Unit Price</p>
-                      <p className="text-lg font-bold">${parseFloat(item.unitPrice).toFixed(2)}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Cost: ${parseFloat(item.unitCost).toFixed(2)}
-                      </p>
-                    </div>
-
-                    <div className="text-right">
-                      <p className="text-sm font-medium">Total Value</p>
-                      <p className="text-lg font-bold">
-                        ${(parseFloat(item.quantityOnHand) * parseFloat(item.unitPrice)).toFixed(2)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Reorder at: {item.reorderPoint}
-                      </p>
-                    </div>
-
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        Adjust Stock
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {filteredItems.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  No inventory items found matching your criteria.
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                <span>Filters</span>
+                {filters.statusFilter && (
+                  <span className="ml-1">(1)</span>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>Status</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="filter-in-stock"
+                    checked={filters.statusFilter === 'in_stock'}
+                    onCheckedChange={(checked) => {
+                      setFilters(prev => ({
+                        ...prev,
+                        statusFilter: checked ? 'in_stock' : undefined,
+                      }));
+                    }}
+                  />
+                  <Label htmlFor="filter-in-stock" className="cursor-pointer">
+                    In Stock
+                  </Label>
                 </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="filter-low-stock"
+                    checked={filters.statusFilter === 'low_stock'}
+                    onCheckedChange={(checked) => {
+                      setFilters(prev => ({
+                        ...prev,
+                        statusFilter: checked ? 'low_stock' : undefined,
+                      }));
+                    }}
+                  />
+                  <Label htmlFor="filter-low-stock" className="cursor-pointer">
+                    Low Stock
+                  </Label>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="filter-out-of-stock"
+                    checked={filters.statusFilter === 'out_of_stock'}
+                    onCheckedChange={(checked) => {
+                      setFilters(prev => ({
+                        ...prev,
+                        statusFilter: checked ? 'out_of_stock' : undefined,
+                      }));
+                    }}
+                  />
+                  <Label htmlFor="filter-out-of-stock" className="cursor-pointer">
+                    Out of Stock
+                  </Label>
+                </div>
+              </DropdownMenuItem>
+              {calculatedStats.categories.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Categories</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {calculatedStats.categories.map((category: string | undefined) => (
+                    <DropdownMenuItem
+                      key={category || 'uncategorized'}
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setFilters(prev => ({
+                          ...prev,
+                          selectedCategory: prev.selectedCategory === category ? undefined : category,
+                        }));
+                      }}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`category-${category || 'uncategorized'}`}
+                          checked={filters.selectedCategory === category}
+                          onCheckedChange={() => {}}
+                        />
+                        <Label htmlFor={`category-${category || 'uncategorized'}`} className="cursor-pointer">
+                          {category || 'Uncategorized'}
+                        </Label>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </>
               )}
-            </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive"
+                onSelect={() => {
+                  setFilters(prev => ({
+                    ...prev,
+                    searchTerm: '',
+                    selectedCategory: undefined,
+                    statusFilter: undefined,
+                    sortBy: 'name',
+                    sortOrder: 'asc',
+                    page: 1,
+                  }));
+                }}
+              >
+                Clear all filters
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {selectedIds.size > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="ml-auto">
+                  {selectedIds.size} selected
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Bulk Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => handleBulkAction('activate')}>
+                  Activate
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleBulkAction('deactivate')}>
+                  Deactivate
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => handleBulkAction('export')}>
+                  Export
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onSelect={() => handleBulkAction('delete')}
+                >
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
+        </div>
+      </div>
+
+      {/* Inventory Table */}
+      <Card>
+        <CardContent className="p-0">
+          <InventoryTable
+            items={inventoryItems}
+            isLoading={isLoadingItems}
+            selectedItems={Array.from(selectedIds)}
+            onSelectItem={(id: string, selected: boolean) => handleToggleSelection(id)}
+            onSelectAll={(selected: boolean) => selected ? inventoryItems.forEach((item: any) => selectedIds.add(item.id)) : selectedIds.clear()}
+            onToggleExpand={toggleRowExpand}
+            onSort={(field: string, order: 'asc' | 'desc') => handleSort(field)}
+            onEdit={(item: any) => console.log('Edit item:', item)}
+            onDelete={(item: any) => console.log('Delete item:', item)}
+          />
         </CardContent>
       </Card>
     </div>

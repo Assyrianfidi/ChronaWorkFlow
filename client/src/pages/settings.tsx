@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Switch } from "../components/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "../components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -19,12 +19,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "../components/ui/dialog";
 import { Building2, User, CreditCard, Bell, Shield, Users, Database, Globe, Zap } from "lucide-react";
-import { useCompanies, useCreateCompany, useUpdateCompany, useUsers } from "@/hooks/use-api";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/lib/auth-context";
+import { useCompanies, useCreateCompany, useUpdateCompany, useUsers } from "../hooks/use-api";
+import { format } from 'date-fns';
+import { Skeleton } from "../components/ui/skeleton";
+import { useToast } from "../hooks/use-toast";
+import { useAuthStore } from "../store/auth-store";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("company");
@@ -57,7 +58,7 @@ export default function Settings() {
   });
 
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const { data: companies = [], isLoading: companiesLoading } = useCompanies();
   const { data: users = [] } = useUsers();
   const createCompanyMutation = useCreateCompany();

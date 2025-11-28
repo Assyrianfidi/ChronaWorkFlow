@@ -1,0 +1,71 @@
+{
+  "node_modules_present": true,
+  "tests": {
+    "total_files": 31,
+    "last_run": {
+      "files_failed": 20,
+      "files_passed": 11,
+      "tests_failed": 44,
+      "tests_passed": 129
+    },
+    "notable_failure_clusters": [
+      {
+        "area": "auth/register",
+        "files": [
+          "src/app/auth/register/__tests__/RegisterPage.test.tsx"
+        ],
+        "issues": [
+          "Ambiguous label selector for password fields",
+          "Loading-state expectations not matching component behavior",
+          "Mock usage assertions not wired to actual mock implementation"
+        ],
+        "status": "issues"
+      },
+      {
+        "area": "auth/reset-password",
+        "files": [
+          "src/app/auth/reset-password/__tests__/ResetPasswordPage.test.tsx",
+          "src/app/auth/reset-password/__tests__/ResetPasswordPage.basic.test.tsx"
+        ],
+        "issues": [
+          "Token / invalid-link behavior previously mismatched between tests and component",
+          "Auth store mocking required selector-safe pattern"
+        ],
+        "status": "partially_fixed"
+      },
+      {
+        "area": "auth/forgot-password",
+        "files": [
+          "src/app/auth/forgot-password/__tests__/ForgotPasswordPage.stable.test.tsx"
+        ],
+        "issues": [
+          "Incorrect relative import to auth-store",
+          "Auth store mocking required selector-safe pattern"
+        ],
+        "status": "fixed"
+      },
+      {
+        "area": "auth/login",
+        "files": [
+          "src/app/auth/login/__tests__/page.test.tsx"
+        ],
+        "issues": [
+          "Auth store state updates not flowing through selector-based mock before fix",
+          "Redirect-on-auth test required stateful mock"
+        ],
+        "status": "fixed"
+      }
+    ]
+  },
+  "configs": {
+    "package_json": "package.json",
+    "tsconfig": "tsconfig.json",
+    "vitest_config": "vitest.config.ts",
+    "env_files": [".env", ".env.local", ".env.example"]
+  },
+  "status_flags": {
+    "tests_green": false,
+    "typecheck_ran": false,
+    "build_ran": false
+  }
+}

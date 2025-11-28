@@ -1,0 +1,21 @@
+﻿accubooks-frontend@0.0.0 C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client
+Γö£ΓöÇΓö¼ @storybook/builder-vite@8.6.14
+Γöé ΓööΓöÇΓöÇ vite@5.4.21 deduped
+Γö£ΓöÇΓö¼ @storybook/react-vite@8.6.14
+Γöé Γö£ΓöÇΓö¼ @joshwooding/vite-plugin-react-docgen-typescript@0.5.0
+Γöé Γöé ΓööΓöÇΓöÇ vite@5.4.21 deduped
+Γöé ΓööΓöÇΓöÇ vite@5.4.21 deduped
+Γö£ΓöÇΓö¼ @vitejs/plugin-react@4.7.0
+Γöé ΓööΓöÇΓöÇ vite@5.4.21 deduped
+Γö£ΓöÇΓö¼ @vitest/browser-playwright@4.0.13
+Γöé ΓööΓöÇΓö¼ @vitest/mocker@4.0.13
+Γöé   ΓööΓöÇΓöÇ vite@5.4.21 deduped invalid: "^6.0.0 || ^7.0.0-0" from node_modules/@vitest/browser-playwright/node_modules/@vitest/mocker
+Γö£ΓöÇΓö¼ @vitest/browser@4.0.13
+Γöé ΓööΓöÇΓö¼ @vitest/mocker@4.0.13
+Γöé   ΓööΓöÇΓöÇ vite@5.4.21 deduped invalid: "^6.0.0 || ^7.0.0-0" from node_modules/@vitest/browser-playwright/node_modules/@vitest/mocker, "^6.0.0 || ^7.0.0-0" from node_modules/@vitest/browser/node_modules/@vitest/mocker
+Γö£ΓöÇΓöÇ vite@5.4.21
+ΓööΓöÇΓö¼ vitest@4.0.13
+  Γö£ΓöÇΓö¼ @vitest/mocker@4.0.13
+  Γöé ΓööΓöÇΓöÇ vite@7.2.4 deduped
+  ΓööΓöÇΓöÇ vite@7.2.4
+

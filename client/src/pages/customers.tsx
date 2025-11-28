@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Badge } from "../components/ui/badge";
 import { Plus, Search, Mail, Phone, Eye, Edit, Trash2 } from "lucide-react";
 import {
   Table,
@@ -11,9 +11,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { useCustomers, useInvoices, type Customer, type Invoice } from "@/hooks/use-api";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "../components/ui/table";
+import { useCustomers, useInvoices, type Customer, type Invoice } from "../hooks/use-api";
+import { Skeleton } from "../components/ui/skeleton";
 
 export default function Customers() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,10 +22,17 @@ export default function Customers() {
   const { data: invoices = [], isLoading: invoicesLoading } = useInvoices();
 
   // Calculate customer balances from invoices
-  const customersWithBalances = customers.map((customer: Customer) => {
-    const customerInvoices = invoices.filter((inv: Invoice) => inv.customerId === customer.id);
-    const totalInvoiced = customerInvoices.reduce((sum: number, inv: Invoice) => sum + parseFloat(inv.total), 0);
-    const totalPaid = customerInvoices.reduce((sum: number, inv: Invoice) => sum + parseFloat(inv.amountPaid), 0);
+  interface CustomerWithBalance extends Customer {
+    balance: number;
+    totalInvoiced: number;
+    totalPaid: number;
+    invoiceCount: number;
+  }
+
+  const customersWithBalances: CustomerWithBalance[] = customers.map((customer) => {
+    const customerInvoices = invoices.filter((inv) => inv.customerId === customer.id);
+    const totalInvoiced = customerInvoices.reduce((sum, inv) => sum + parseFloat(inv.total || '0'), 0);
+    const totalPaid = customerInvoices.reduce((sum, inv) => sum + parseFloat(inv.amountPaid || '0'), 0);
     const balance = totalInvoiced - totalPaid;
 
     return {
@@ -37,13 +44,13 @@ export default function Customers() {
     };
   });
 
-  const filteredCustomers = customersWithBalances.filter((customer: Customer & { balance: number; totalInvoiced: number; totalPaid: number; invoiceCount: number }) =>
+  const filteredCustomers = customersWithBalances.filter((customer) =>
     customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (customer.email && customer.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
     (customer.phone && customer.phone.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const totalReceivables = customersWithBalances.reduce((sum: number, customer: Customer & { balance: number }) => sum + customer.balance, 0);
+  const totalReceivables = customersWithBalances.reduce((sum, customer) => sum + customer.balance, 0);
   const avgBalance = customersWithBalances.length > 0 ? totalReceivables / customersWithBalances.length : 0;
 
   const isLoading = customersLoading || invoicesLoading;
@@ -139,7 +146,7 @@ export default function Customers() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCustomers.map((customer: Customer & { balance: number; totalInvoiced: number; totalPaid: number; invoiceCount: number }) => (
+                {filteredCustomers.map((customer) => (
                   <TableRow key={customer.id} data-testid={`customer-row-${customer.id}`}>
                     <TableCell className="font-medium">{customer.name}</TableCell>
                     <TableCell>
@@ -165,7 +172,7 @@ export default function Customers() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className={`font-semibold tabular-nums ${customer.balance > 0 ? 'text-chart-2' : customer.balance < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                        ${customer.balance.toLocaleString()}
+                        {customer.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </div>
                       {customer.balance !== 0 && (
                         <div className="text-xs text-muted-foreground">

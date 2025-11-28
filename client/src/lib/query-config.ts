@@ -9,7 +9,7 @@ export const createQueryClient = (): QueryClient => {
         staleTime: parseInt(process.env.REACT_QUERY_STALE_TIME || '300000'), // 5 minutes
 
         // Cache time - how long unused data stays in cache
-        cacheTime: parseInt(process.env.REACT_QUERY_CACHE_TIME || '900000'), // 15 minutes
+        gcTime: parseInt(process.env.REACT_QUERY_CACHE_TIME || '900000'), // 15 minutes
 
         // Retry configuration for failed requests
         retry: (failureCount, error: any) => {

@@ -1,204 +1,334 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Search, ChevronRight, ChevronDown } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useAccounts, type Account } from "@/hooks/use-api";
-import { Skeleton } from "@/components/ui/skeleton";
+import React, { useState, useMemo, useCallback } from 'react'
+import { 
+  EnterpriseButton, 
+  EnterpriseDataTable, 
+  EnterpriseKPICard
+} from '../components/ui'
+import { 
+  Plus, 
+  Search, 
+  Filter,
+  Download,
+  Edit,
+  Trash2,
+  Eye,
+  Calculator,
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  ArrowDownRight
+} from 'lucide-react'
+import { useAccounts } from '../hooks/use-api'
+import { cn } from '../lib/utils'
+import type { Account, AccountType } from '../types/accounts'
 
-const typeColors = {
-  asset: "default",
-  liability: "destructive",
-  equity: "secondary",
-  revenue: "default",
-  expense: "secondary",
-} as const;
-
-const typeLabels = {
-  asset: "Asset",
-  liability: "Liability",
-  equity: "Equity",
-  revenue: "Revenue",
-  expense: "Expense",
-} as const;
+// Mock data for demonstration
+const mockAccounts: Account[] = [
+  {
+    id: '1',
+    code: '1000',
+    name: 'Cash and Cash Equivalents',
+    type: 'asset',
+    balance: '125000',
+    description: 'Physical cash and bank accounts',
+    parentId: undefined,
+    companyId: 'default-company-id',
+    isActive: true,
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-15'
+  },
+  {
+    id: '2',
+    code: '1100',
+    name: 'Accounts Receivable',
+    type: 'asset',
+    balance: '45000',
+    description: 'Money owed by customers',
+    parentId: undefined,
+    companyId: 'default-company-id',
+    isActive: true,
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-15'
+  },
+  {
+    id: '3',
+    code: '2000',
+    name: 'Accounts Payable',
+    type: 'liability',
+    balance: '-32000',
+    description: 'Money owed to suppliers',
+    parentId: undefined,
+    companyId: 'default-company-id',
+    isActive: true,
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-15'
+  },
+  {
+    id: '4',
+    code: '4000',
+    name: 'Revenue',
+    type: 'revenue',
+    balance: '285000',
+    description: 'Sales and service revenue',
+    parentId: undefined,
+    companyId: 'default-company-id',
+    isActive: true,
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-15'
+  },
+  {
+    id: '5',
+    code: '5000',
+    name: 'Operating Expenses',
+    type: 'expense',
+    balance: '-185000',
+    description: 'Day-to-day business expenses',
+    parentId: undefined,
+    companyId: 'default-company-id',
+    isActive: true,
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-15'
+  }
+]
 
 export default function Accounts() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedAccounts, setSelectedAccounts] = useState<Account[]>([])
+  const [showFilters, setShowFilters] = useState(false)
+  const { data: accounts = mockAccounts, isLoading } = useAccounts('default-company-id')
 
-  const { data: accounts = [], isLoading } = useAccounts();
+  // Calculate summary statistics
+  const totalAssets = accounts.filter(acc => acc.type === 'asset').reduce((sum, acc) => sum + parseFloat(acc.balance), 0)
+  const totalLiabilities = Math.abs(accounts.filter(acc => acc.type === 'liability').reduce((sum, acc) => sum + parseFloat(acc.balance), 0))
+  const totalRevenue = accounts.filter(acc => acc.type === 'revenue').reduce((sum, acc) => sum + parseFloat(acc.balance), 0)
+  const totalExpenses = Math.abs(accounts.filter(acc => acc.type === 'expense').reduce((sum, acc) => sum + parseFloat(acc.balance), 0))
 
-  const toggleExpand = (id: string) => {
-    const newExpanded = new Set(expandedIds);
-    if (newExpanded.has(id)) {
-      newExpanded.delete(id);
-    } else {
-      newExpanded.add(id);
-    }
-    setExpandedIds(newExpanded);
-  };
-
-  // Build hierarchical structure from flat accounts data
-  const buildHierarchy = (accounts: Account[]): Account[] => {
-    const accountMap = new Map<string, Account & { children: Account[] }>();
-    const rootAccounts: (Account & { children: Account[] })[] = [];
-
-    // Initialize all accounts
-    accounts.forEach(account => {
-      accountMap.set(account.id, { ...account, children: [] });
-    });
-
-    // Build hierarchy
-    accounts.forEach(account => {
-      const accountWithChildren = accountMap.get(account.id)!;
-
-      if (account.parentId) {
-        const parent = accountMap.get(account.parentId);
-        if (parent) {
-          parent.children.push(accountWithChildren);
-        }
-      } else {
-        rootAccounts.push(accountWithChildren);
-      }
-    });
-
-    return rootAccounts;
-  };
-
-  const flatAccounts = buildHierarchy(accounts) as (Account & { children: Account[] })[];
-
-  const renderAccount = (account: Account & { children: Account[] }, level: number = 0) => {
-    const hasChildren = account.children && account.children.length > 0;
-    const isExpanded = expandedIds.has(account.id);
-    const matchesSearch = searchQuery === "" ||
-      account.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      account.code.includes(searchQuery);
-
-    if (!matchesSearch && searchQuery !== "") return null;
-
-    return (
-      <React.Fragment key={account.id}>
-        <TableRow data-testid={`account-row-${account.id}`}>
-          <TableCell>
-            <div className="flex items-center gap-2" style={{ paddingLeft: `${level * 1.5}rem` }}>
-              {hasChildren ? (
-                <button
-                  onClick={() => toggleExpand(account.id)}
-                  className="hover:bg-accent rounded p-1 transition-colors"
-                >
-                  {isExpanded ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  )}
-                </button>
-              ) : (
-                <span className="w-6" />
-              )}
-              <span className={`${level === 0 ? 'font-semibold' : level === 1 ? 'font-medium' : ''}`}>
-                {account.code}
-              </span>
-            </div>
-          </TableCell>
-          <TableCell className={`${level === 0 ? 'font-semibold' : level === 1 ? 'font-medium' : ''}`}>
-            {account.name}
-          </TableCell>
-          <TableCell>
-            <Badge variant={typeColors[account.type as keyof typeof typeColors]}>
-              {typeLabels[account.type as keyof typeof typeLabels]}
-            </Badge>
-          </TableCell>
-          <TableCell className={`text-right tabular-nums ${level === 0 ? 'font-semibold' : level === 1 ? 'font-medium' : ''}`}>
-            <span className={
-              account.type === 'revenue' ? 'text-chart-2' :
-              account.type === 'expense' ? 'text-destructive' :
-              account.type === 'asset' ? 'text-chart-1' :
-              account.type === 'liability' ? 'text-destructive' : ''
-            }>
-              ${parseFloat(account.balance).toLocaleString()}
-            </span>
-          </TableCell>
-        </TableRow>
-        {hasChildren && isExpanded && account.children?.map(child => renderAccount(child, level + 1))}
-      </React.Fragment>
-    );
-  };
-
-  if (isLoading) {
-    return (
-      <div className="p-6 lg:p-8 space-y-6 max-w-7xl">
-        <div className="flex items-center justify-between gap-4">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-4 w-96" />
-          </div>
-          <Skeleton className="h-10 w-32" />
-        </div>
-        <Skeleton className="h-96" />
-      </div>
-    );
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount)
   }
 
-  return (
-    <div className="p-6 lg:p-8 space-y-6 max-w-7xl">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold mb-2">Chart of Accounts</h1>
-          <p className="text-muted-foreground">Manage your company's account structure</p>
+  // Get account type color
+  const getAccountTypeColor = (type: AccountType) => {
+    switch (type) {
+      case 'asset': return 'bg-blue-100 text-blue-800'
+      case 'liability': return 'bg-red-100 text-red-800'
+      case 'equity': return 'bg-green-100 text-green-800'
+      case 'revenue': return 'bg-emerald-100 text-emerald-800'
+      case 'expense': return 'bg-orange-100 text-orange-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  // Table columns
+  const columns = [
+    {
+      key: 'name',
+      label: 'Account Name',
+      sortable: true,
+      filterable: true,
+      render: (value: string, row: Account) => (
+        <div className="flex items-center gap-3">
+          <div className={cn(
+            "w-8 h-8 rounded-lg flex items-center justify-center",
+            row.type === 'asset' ? 'bg-blue-100 text-blue-600' :
+            row.type === 'liability' ? 'bg-red-100 text-red-600' :
+            row.type === 'equity' ? 'bg-green-100 text-green-600' :
+            row.type === 'revenue' ? 'bg-emerald-100 text-emerald-600' :
+            'bg-orange-100 text-orange-600'
+          )}>
+            <Calculator className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="font-medium text-gray-900">{value}</p>
+            <p className="text-xs text-gray-500">{row.description}</p>
+          </div>
         </div>
-        <Button data-testid="button-create-account">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Account
-        </Button>
+      )
+    },
+    {
+      key: 'type',
+      label: 'Type',
+      sortable: true,
+      filterable: true,
+      render: (value: AccountType) => (
+        <span className={cn(
+          "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+          getAccountTypeColor(value)
+        )}>
+          {value.charAt(0).toUpperCase() + value.slice(1)}
+        </span>
+      )
+    },
+    {
+      key: 'balance',
+      label: 'Balance',
+      sortable: true,
+      align: 'right' as const,
+      render: (value: number) => (
+        <div className="text-right">
+          <p className={cn(
+            "font-medium",
+            value >= 0 ? "text-green-600" : "text-red-600"
+          )}>
+            {formatCurrency(Math.abs(value))}
+          </p>
+          {value < 0 && (
+            <p className="text-xs text-gray-500">Credit</p>
+          )}
+        </div>
+      )
+    },
+    {
+      key: 'currency',
+      label: 'Currency',
+      sortable: true,
+      filterable: true,
+      render: (value: string) => (
+        <span className="inline-flex items-center gap-1">
+          <DollarSign className="w-4 h-4" />
+          {value}
+        </span>
+      )
+    },
+    {
+      key: 'updatedAt',
+      label: 'Last Updated',
+      sortable: true,
+      render: (value: string) => (
+        <span className="text-sm text-gray-600">
+          {new Date(value).toLocaleDateString()}
+        </span>
+      )
+    }
+  ]
+
+  // Table actions
+  const actions = [
+    {
+      label: 'View',
+      icon: <Eye className="w-4 h-4" />,
+      onClick: (account: Account) => console.log('View account:', account),
+      variant: 'ghost' as const
+    },
+    {
+      label: 'Edit',
+      icon: <Edit className="w-4 h-4" />,
+      onClick: (account: Account) => console.log('Edit account:', account),
+      variant: 'ghost' as const
+    },
+    {
+      label: 'Delete',
+      icon: <Trash2 className="w-4 h-4" />,
+      onClick: (account: Account) => console.log('Delete account:', account),
+      variant: 'danger' as const
+    }
+  ]
+
+  // Bulk actions
+  const bulkActions = [
+    {
+      label: 'Export Selected',
+      icon: <Download className="w-4 h-4" />,
+      onClick: (selectedAccounts: Account[]) => console.log('Export accounts:', selectedAccounts),
+      variant: 'secondary' as const
+    },
+    {
+      label: 'Delete Selected',
+      icon: <Trash2 className="w-4 h-4" />,
+      onClick: (selectedAccounts: Account[]) => console.log('Delete accounts:', selectedAccounts),
+      variant: 'danger' as const
+    }
+  ]
+
+  return (
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Accounts</h1>
+          <p className="text-gray-600">Manage your chart of accounts and financial accounts</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <EnterpriseButton variant="ghost" icon={<Download className="w-4 h-4" />}>
+            Export All
+          </EnterpriseButton>
+          <EnterpriseButton variant="primary" icon={<Plus className="w-4 h-4" />}>
+            New Account
+          </EnterpriseButton>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between gap-4">
-            <CardTitle>Account Hierarchy</CardTitle>
-            <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search accounts..."
-                value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                className="pl-9"
-                data-testid="input-search-accounts"
-              />
-            </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <EnterpriseKPICard
+          title="Total Assets"
+          value={formatCurrency(totalAssets)}
+          change={8.5}
+          changeType="increase"
+          icon={<TrendingUp className="w-5 h-5" />}
+          color="primary"
+        />
+        <EnterpriseKPICard
+          title="Total Liabilities"
+          value={formatCurrency(totalLiabilities)}
+          change={-3.2}
+          changeType="decrease"
+          icon={<TrendingDown className="w-5 h-5" />}
+          color="danger"
+        />
+        <EnterpriseKPICard
+          title="Total Revenue"
+          value={formatCurrency(totalRevenue)}
+          change={12.7}
+          changeType="increase"
+          icon={<ArrowUpRight className="w-5 h-5" />}
+          color="success"
+        />
+        <EnterpriseKPICard
+          title="Total Expenses"
+          value={formatCurrency(totalExpenses)}
+          change={5.1}
+          changeType="increase"
+          icon={<ArrowDownRight className="w-5 h-5" />}
+          color="warning"
+        />
+      </div>
+
+      {/* Accounts Table */}
+      <EnterpriseDataTable
+        data={accounts}
+        columns={columns}
+        loading={isLoading}
+        searchable={true}
+        filterable={true}
+        sortable={true}
+        selectable={true}
+        paginated={true}
+        pageSize={25}
+        actions={actions}
+        bulkActions={bulkActions}
+        exportOptions={{ csv: true, pdf: true, excel: true }}
+        onSelectionChange={setSelectedAccounts}
+        onSearch={setSearchQuery}
+        className="shadow-lg"
+        emptyState={
+          <div className="text-center py-12">
+            <Calculator className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No accounts found</h3>
+            <p className="text-gray-600 mb-4">Get started by creating your first account</p>
+            <EnterpriseButton variant="primary" icon={<Plus className="w-4 h-4" />}>
+              Create Account
+            </EnterpriseButton>
           </div>
-        </CardHeader>
-        <CardContent>
-          {flatAccounts.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              {searchQuery ? "No accounts found matching your search." : "No accounts yet. Add your first account to get started."}
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-48">Code</TableHead>
-                  <TableHead>Account Name</TableHead>
-                  <TableHead className="w-32">Type</TableHead>
-                  <TableHead className="text-right w-40">Balance</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {flatAccounts.map(account => renderAccount(account))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+        }
+      />
     </div>
-  );
+  )
 }

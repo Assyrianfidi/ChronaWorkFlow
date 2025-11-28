@@ -21,7 +21,7 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
-} from "@/components/ui/sidebar";
+} from "../components/ui/sidebar";
 import { Link, useLocation } from "wouter";
 
 const mainMenuItems = [
