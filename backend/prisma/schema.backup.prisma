@@ -1,0 +1,812 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+  engineType      = "wasm"
+  binaryTargets   = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  VIEWED
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  BANK_TRANSFER
+  CHECK
+  PAYPAL
+  STRIPE
+  OTHER
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+  ADJUSTMENT
+  OPENING_BALANCE
+  PAYMENT
+  RECEIPT
+  JOURNAL
+}
+
+enum TransactionStatus {
+  DRAFT
+  POSTED
+  VOIDED
+  RECONCILED
+}
+
+// ========== Users & Authentication ==========
+model User {
+  id                String        @id @default(uuid())
+  email             String        @unique
+  password          String
+  firstName         String
+  lastName          String
+  phone             String?
+  avatar            String?
+  role              Role          @relation(fields: [roleId], references: [id])
+  roleId            String
+  status            UserStatus    @default(ACTIVE)
+  lastLogin         DateTime?
+  emailVerified     Boolean       @default(false)
+  verificationToken String?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  // Relations
+  refreshTokens     RefreshToken[]
+  auditLogs         AuditLog[]
+  createdInvoices   Invoice[]     @relation("CreatedInvoices")
+  updatedInvoices   Invoice[]     @relation("UpdatedInvoices")
+  
+  @@map("users")
+}
+
+model Role {
+  id           String       @id @default(uuid())
+  name         String       @unique
+  description  String?
+  permissions  Permission[] @relation("RolePermissions")
+  users        User[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  roles       Role[]   @relation("RolePermissions")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("permissions")
+}
+
+model RefreshToken {
+  id           String   @id @default(uuid())
+  token        String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  
+  @@map("refresh_tokens")
+}
+
+// ========== Customers & Vendors ==========
+model Customer {
+  id           String     @id @default(uuid())
+  name         String
+  email        String?
+  phone        String?
+  taxId        String?
+  address      String?
+  city         String?
+  state        String?
+  postalCode   String?
+  country      String?
+  isActive     Boolean    @default(true)
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  // Relations
+  invoices     Invoice[]
+  payments     Payment[]
+  
+  @@map("customers")
+}
+
+model Vendor {
+  id           String     @id @default(uuid())
+  name         String
+  email        String?
+  phone        String?
+  taxId        String?
+  address      String?
+  city         String?
+  state        String?
+  postalCode   String?
+  country      String?
+  isActive     Boolean    @default(true)
+  notes        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  // Relations
+  bills        Bill[]
+  payments     VendorPayment[]
+  
+  @@map("vendors")
+}
+
+// ========== Products & Services ==========
+model Product {
+  id           String       @id @default(uuid())
+  sku          String       @unique
+  name         String
+  description  String?
+  category     Category?    @relation(fields: [categoryId], references: [id])
+  categoryId   String?
+  price        Decimal      @default(0)
+  cost         Decimal      @default(0)
+  quantity     Int          @default(0)
+  reorderPoint Int          @default(10)
+  taxRate      Decimal      @default(0)
+  isActive     Boolean      @default(true)
+  imageUrl     String?
+  barcode      String?
+  unit         String?      @default("pcs")
+  
+  // Relations
+  invoiceItems InvoiceItem[]
+  billItems    BillItem[]
+  
+  @@map("products")
+}
+
+model Service {
+  id           String       @id @default(uuid())
+  sku          String       @unique
+  name         String
+  description  String?
+  category     Category?    @relation(fields: [categoryId], references: [id])
+  categoryId   String?
+  rate         Decimal      @default(0)
+  taxRate      Decimal      @default(0)
+  isActive     Boolean      @default(true)
+  
+  // Relations
+  invoiceItems InvoiceItem[]
+  billItems    BillItem[]
+  
+  @@map("services")
+}
+
+model Category {
+  id           String     @id @default(uuid())
+  name         String
+  description  String?
+  parent       Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  parentId     String?
+  children     Category[] @relation("CategoryHierarchy")
+  type         CategoryType @default(PRODUCT)
+  
+  // Relations
+  products     Product[]
+  services     Service[]
+  
+  @@map("categories")
+}
+
+// ========== Invoicing & Billing ==========
+model Invoice {
+  id             String        @id @default(uuid())
+  invoiceNumber  String        @unique
+  customer       Customer      @relation(fields: [customerId], references: [id])
+  customerId     String
+  issueDate      DateTime      @default(now())
+  dueDate        DateTime
+  status         InvoiceStatus @default(DRAFT)
+  subtotal       Decimal       @default(0)
+  taxAmount      Decimal       @default(0)
+  discount       Decimal       @default(0)
+  total          Decimal       @default(0)
+  notes          String?
+  terms          String?
+  
+  // Relations
+  items          InvoiceItem[]
+  payments       Payment[]
+  
+  // Metadata
+  createdBy      User          @relation("CreatedInvoices", fields: [createdById], references: [id])
+  createdById    String
+  updatedBy      User?         @relation("UpdatedInvoices", fields: [updatedById], references: [id])
+  updatedById    String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id           String   @id @default(uuid())
+  invoice      Invoice  @relation(fields: [invoiceId], references: [id])
+  invoiceId    String
+  product      Product? @relation(fields: [productId], references: [id])
+  productId    String?
+  service      Service? @relation(fields: [serviceId], references: [id])
+  serviceId    String?
+  description  String
+  quantity     Decimal  @default(1)
+  unitPrice    Decimal  @default(0)
+  taxRate      Decimal  @default(0)
+  discount     Decimal  @default(0)
+  total        Decimal  @default(0)
+  
+  @@map("invoice_items")
+}
+
+model Bill {
+  id             String     @id @default(uuid())
+  billNumber     String     @unique
+  vendor         Vendor     @relation(fields: [vendorId], references: [id])
+  vendorId       String
+  issueDate      DateTime   @default(now())
+  dueDate        DateTime
+  status         BillStatus @default(DRAFT)
+  subtotal       Decimal    @default(0)
+  taxAmount      Decimal    @default(0)
+  discount       Decimal    @default(0)
+  total          Decimal    @default(0)
+  notes          String?
+  terms          String?
+  
+  // Relations
+  items          BillItem[]
+  payments       VendorPayment[]
+  
+  // Metadata
+  createdBy      User       @relation(fields: [createdById], references: [id])
+  createdById    String
+  updatedBy      User?      @relation(fields: [updatedById], references: [id])
+  updatedById    String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  
+  @@map("bills")
+}
+
+model BillItem {
+  id           String   @id @default(uuid())
+  bill         Bill     @relation(fields: [billId], references: [id])
+  billId       String
+  product      Product? @relation(fields: [productId], references: [id])
+  productId    String?
+  service      Service? @relation(fields: [serviceId], references: [id])
+  serviceId    String?
+  description  String
+  quantity     Decimal  @default(1)
+  unitPrice    Decimal  @default(0)
+  taxRate      Decimal  @default(0)
+  discount     Decimal  @default(0)
+  total        Decimal  @default(0)
+  
+  @@map("bill_items")
+}
+
+// ========== Payments ==========
+model Payment {
+  id           String        @id @default(uuid())
+  invoice      Invoice       @relation(fields: [invoiceId], references: [id])
+  invoiceId    String
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  customerId   String
+  amount       Decimal       @default(0)
+  paymentDate  DateTime      @default(now())
+  method       PaymentMethod
+  reference    String?
+  notes        String?
+  
+  // Metadata
+  createdBy    User          @relation(fields: [createdById], references: [id])
+  createdById  String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  
+  @@map("payments")
+}
+
+model VendorPayment {
+  id           String        @id @default(uuid())
+  bill         Bill          @relation(fields: [billId], references: [id])
+  billId       String
+  vendor       Vendor        @relation(fields: [vendorId], references: [id])
+  vendorId     String
+  amount       Decimal       @default(0)
+  paymentDate  DateTime      @default(now())
+  method       PaymentMethod
+  reference    String?
+  notes        String?
+  
+  // Metadata
+  createdBy    User          @relation(fields: [createdById], references: [id])
+  createdById  String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  
+  @@map("vendor_payments")
+}
+
+// ========== Accounting ==========
+model Account {
+  id           String        @id @default(uuid())
+  name         String
+  code         String        @unique
+  type         AccountType
+  parent       Account?      @relation("AccountHierarchy", fields: [parentId], references: [id])
+  parentId     String?
+  children     Account[]     @relation("AccountHierarchy")
+  balance      Decimal       @default(0)
+  isActive     Boolean       @default(true)
+  description  String?
+  
+  // Relations
+  transactions Transaction[]
+  
+  @@map("accounts")
+}
+
+model Transaction {
+  id              String        @id @default(uuid())
+  transactionDate DateTime      @default(now())
+  reference       String?
+  description     String
+  amount          Decimal       @default(0)
+  type            TransactionType
+  status          TransactionStatus @default(PENDING)
+  
+  // Relations
+  entries         LedgerEntry[]
+  
+  // Metadata
+  createdBy       User          @relation(fields: [createdById], references: [id])
+  createdById     String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@map("transactions")
+}
+
+model LedgerEntry {
+  id            String     @id @default(uuid())
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId String
+  account       Account    @relation(fields: [accountId], references: [id])
+  accountId     String
+  debit         Decimal    @default(0)
+  credit        Decimal    @default(0)
+  description   String?
+  
+  @@map("ledger_entries")
+}
+
+// ========== Bank & Cash ==========
+model BankAccount {
+  id             String        @id @default(uuid())
+  name           String
+  accountNumber  String
+  bankName       String
+  currency       String        @default("USD")
+  openingBalance Decimal       @default(0)
+  currentBalance Decimal       @default(0)
+  isActive       Boolean       @default(true)
+  
+  // Relations
+  transactions   BankTransaction[]
+  
+  // Metadata
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  
+  @@map("bank_accounts")
+}
+
+model BankTransaction {
+  id             String      @id @default(uuid())
+  bankAccount    BankAccount @relation(fields: [bankAccountId], references: [id])
+  bankAccountId  String
+  type           BankTransactionType
+  amount         Decimal     @default(0)
+  date           DateTime    @default(now())
+  reference      String?
+  description    String?
+  
+  // Relations
+  payment        Payment?
+  vendorPayment  VendorPayment?
+  
+  // Metadata
+  createdBy      User        @relation(fields: [createdById], references: [id])
+  createdById    String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  
+  @@map("bank_transactions")
+}
+
+// ========== Reports & Analytics ==========
+model Report {
+  id           String       @id @default(uuid())
+  name         String
+  type         ReportType
+  parameters   Json
+  fileUrl      String?
+  status       ReportStatus @default(PENDING)
+  
+  // Metadata
+  generatedBy  User         @relation(fields: [generatedById], references: [id])
+  generatedById String
+  createdAt    DateTime     @default(now())
+  
+  @@map("reports")
+}
+
+// ========== Audit & Security ==========
+model AuditLog {
+  id          String      @id @default(uuid())
+  user        User?       @relation(fields: [userId], references: [id])
+  userId      String?
+  action      String
+  entity      String
+  entityId    String?
+  oldValue    Json?
+  newValue    Json?
+  ipAddress   String?
+  userAgent   String?
+  timestamp   DateTime    @default(now())
+  
+  @@map("audit_logs")
+}
+
+model Secret {
+  id              String      @id @default(uuid())
+  key             String      @unique
+  encryptedValue  String
+  description     String?
+  environment     String      @default("development")
+  lastRotatedAt   DateTime?
+  expiresAt       DateTime?
+  
+  // Metadata
+  createdBy       User        @relation(fields: [createdById], references: [id])
+  createdById     String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@map("secrets")
+}
+
+// ========== Enums ==========
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  VIEWED
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum BillStatus {
+  DRAFT
+  RECEIVED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  BANK_TRANSFER
+  CHECK
+  PAYPAL
+  STRIPE
+  OTHER
+}
+
+enum CategoryType {
+  PRODUCT
+  SERVICE
+  EXPENSE
+  INCOME
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+  ADJUSTMENT
+  OPENING_BALANCE
+  PAYMENT
+  RECEIPT
+  JOURNAL
+}
+
+enum TransactionStatus {
+  DRAFT
+  POSTED
+  VOIDED
+  RECONCILED
+}
+
+enum BankTransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+  FEE
+  INTEREST
+  PAYMENT
+  RECEIPT
+  ADJUSTMENT
+}
+
+enum ReportType {
+  PROFIT_LOSS
+  BALANCE_SHEET
+  CASH_FLOW
+  AGING_SUMMARY
+  SALES_TAX
+  GENERAL_LEDGER
+  TRIAL_BALANCE
+  CUSTOM
+}
+
+enum ReportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+// ========== Indexes ==========
+// Add indexes for better query performance
+@@index([email], name: "user_email_idx")
+@@index([customerId], name: "invoice_customer_idx")
+@@index([vendorId], name: "bill_vendor_idx")
+@@index([invoiceId], name: "payment_invoice_idx")
+@@index([billId], name: "vendor_payment_bill_idx")
+@@index([accountId], name: "ledger_entry_account_idx")
+@@index([transactionId], name: "ledger_entry_transaction_idx")
+@@index([bankAccountId], name: "bank_transaction_account_idx")
+  industry              String?
+  owner                 User                   @relation("BusinessOwnership", fields: [ownerId], references: [id])
+  ownerId               String
+  members               BusinessMember[]
+  clients               Client[]
+  invoices              Invoice[]
+  reconciliationReports ReconciliationReport[]
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  @@map("businesses")
+}
+
+// Business Member (join table with role)
+model BusinessMember {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  business   Business @relation(fields: [businessId], references: [id])
+  businessId String
+  role       String   @default("member") // owner | admin | accountant | member
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, businessId])
+  @@map("business_members")
+}
+
+// Client model
+model Client {
+  id         String   @id @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  address    String?
+  city       String?
+  country    String?
+  postalCode String?
+  taxId      String?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  business   Business  @relation(fields: [businessId], references: [id])
+  businessId String
+  invoices   Invoice[]
+
+  @@map("clients")
+}
+
+// Invoice model
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime
+  status        InvoiceStatus @default(DRAFT)
+  notes         String?
+  subtotal      Decimal       @default(0)
+  taxAmount     Decimal       @default(0)
+  total         Decimal       @default(0)
+  currency      String        @default("USD")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  business   Business      @relation(fields: [businessId], references: [id])
+  businessId String
+  client     Client        @relation(fields: [clientId], references: [id])
+  clientId   String
+  items      InvoiceItem[]
+  payments   Payment[]
+
+  @@map("invoices")
+}
+
+// Invoice items
+model InvoiceItem {
+  id          String  @id @default(uuid())
+  description String
+  quantity    Decimal @default(1)
+  unitPrice   Decimal
+  amount      Decimal
+  taxRate     Decimal @default(0)
+  taxAmount   Decimal @default(0)
+  total       Decimal
+
+  // Relations
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String
+
+  @@map("invoice_items")
+}
+
+// Payments
+model Payment {
+  id            String        @id @default(uuid())
+  amount        Decimal
+  paymentDate   DateTime      @default(now())
+  paymentMethod PaymentMethod
+  reference     String?
+  notes         String?
+
+  // Relations
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String
+
+  @@map("payments")
+}
+
+// Refresh tokens for JWT
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+// Enums
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  ACCOUNTANT
+  BUSINESS_USER
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  BANK_TRANSFER
+  CHECK
+  OTHER
+}
+
+// Reconciliation report stored after each run
+model ReconciliationReport {
+  id                 String   @id @default(uuid())
+  businessId         String
+  reportDate         DateTime @default(now())
+  fromDate           DateTime
+  toDate             DateTime
+  status             String   @default("COMPLETED")
+  totalInvoices      Int      @default(0)
+  totalPayments      Int      @default(0)
+  totalInvoiceAmount Float?
+  totalPaymentAmount Float?
+  discrepancies      Int      @default(0)
+  summary            Json?
+  createdBy          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@map("reconciliation_reports")
+}

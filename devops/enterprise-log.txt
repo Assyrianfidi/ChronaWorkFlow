@@ -6,3 +6,4 @@
 [2025-11-26T23:48:03.5282282-08:00] Running Storybook HEAD probe
 [2025-11-26T23:48:21.2611745-08:00] Phase 1 artifacts captured (npm list errors recorded, audit snapshot, Storybook probe)
 [2025-11-26T23:58:49.9527447-08:00] Added stub for security/scripts/scan-secrets.mjs to unblock pre-commit
+[2025-11-27T10:52:32.9384202-08:00] Phase 2 start (Soft enforcement)

@@ -1,0 +1,16 @@
+import { beforeAll, afterEach, afterAll } from '@jest/globals';
+import { prisma } from '../../prisma';
+
+beforeAll(async () => {
+  // Initialize test database
+});
+
+afterEach(async () => {
+  // Clean database between tests
+  await prisma.$executeRaw`TRUNCATE TABLE \"ReconciliationReport\" CASCADE;`;
+});
+
+afterAll(async () => {
+  // Disconnect Prisma
+  await prisma.$disconnect();
+});

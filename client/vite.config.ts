@@ -46,6 +46,7 @@ export default defineConfig({
     strictPort: true,
   },
   build: {
+    chunkSizeWarningLimit: 1000,
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: true,
@@ -54,7 +55,11 @@ export default defineConfig({
       external: [],
       output: {
         manualChunks: {
-          react: ['react', 'react-dom'],
+          react: ['react', 'react-dom', 'react-router-dom'],
+          charts: ['recharts', 'chart.js'],
+          auth: ['next-auth', '@auth0/nextjs-auth0'],
+          ui: ['@radix-ui/react-*'],
+          query: ['@tanstack/react-query'],
           vendor: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
         },
       },

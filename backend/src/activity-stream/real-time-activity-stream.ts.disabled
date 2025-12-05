@@ -1,0 +1,1074 @@
+/**
+ * Real-Time Activity Stream Engine
+ * Comprehensive activity tracking, streaming, and notification system
+ */
+
+import { PrismaClient } from '@prisma/client';
+import { Logger } from '../utils/logger.js';
+import { EventBus } from '../events/event-bus';
+import { WebSocketServer, WebSocketMessage } from '../websocket/websocket-server';
+import { CacheManager } from '../cache/cache-manager';
+
+export interface ActivityEvent {
+  id: string;
+  type: string;
+  category: 'transaction' | 'account' | 'invoice' | 'bill' | 'report' | 'user' | 'system' | 'security';
+  action: 'create' | 'update' | 'delete' | 'view' | 'export' | 'import' | 'login' | 'logout';
+  userId: string;
+  userRole: string;
+  entityId?: string;
+  entityType?: string;
+  entityName?: string;
+  description: string;
+  metadata?: Record<string, any>;
+  timestamp: Date;
+  ipAddress?: string;
+  userAgent?: string;
+  sessionId?: string;
+  importance: 'low' | 'medium' | 'high' | 'critical';
+  visibility: 'private' | 'team' | 'organization' | 'public';
+  tags?: string[];
+}
+
+export interface ActivityFilter {
+  userId?: string;
+  userRole?: string;
+  category?: string;
+  action?: string;
+  entityType?: string;
+  importance?: string;
+  visibility?: string;
+  tags?: string[];
+  dateFrom?: Date;
+  dateTo?: Date;
+  search?: string;
+  limit?: number;
+  offset?: number;
+  sortBy?: 'timestamp' | 'importance' | 'category';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface ActivityStream {
+  id: string;
+  name: string;
+  description: string;
+  filters: ActivityFilter;
+  subscribers: string[]; // User IDs
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ActivityNotification {
+  id: string;
+  userId: string;
+  type: 'email' | 'push' | 'sms' | 'in-app';
+  template: string;
+  data: Record<string, any>;
+  scheduledAt?: Date;
+  sentAt?: Date;
+  status: 'pending' | 'sent' | 'failed' | 'cancelled';
+  retryCount: number;
+  maxRetries: number;
+}
+
+export interface ActivityAggregation {
+  timeWindow: 'hour' | 'day' | 'week' | 'month';
+  metrics: {
+    totalActivities: number;
+    byCategory: Record<string, number>;
+    byAction: Record<string, number>;
+    byUser: Record<string, number>;
+    byImportance: Record<string, number>;
+    topEntities: Array<{
+      entityId: string;
+      entityType: string;
+      count: number;
+    }>;
+  };
+  trends: {
+    volume: number;
+    growth: number;
+    peakHours: number[];
+  };
+  timestamp: Date;
+}
+
+export class RealTimeActivityStreamEngine {
+  private prisma: PrismaClient;
+  private logger: any;
+  private eventBus: EventBus;
+  private wsServer: WebSocketServer;
+  private cache: CacheManager;
+  private activeStreams: Map<string, ActivityStream> = new Map();
+  private notificationQueue: ActivityNotification[] = [];
+  private aggregationCache: Map<string, ActivityAggregation> = new Map();
+
+  constructor() {
+    this.prisma = new PrismaClient();
+    this.logger = new Logger();
+    this.eventBus = new EventBus();
+    this.wsServer = new WebSocketServer();
+    this.cache = new CacheManager();
+    this.initializeEventListeners();
+    this.startNotificationProcessor();
+    this.startAggregationProcessor();
+  }
+
+  /**
+   * Initialize event listeners for activity tracking
+   */
+  private initializeEventListeners(): void {
+    // Listen to all system events
+    this.eventBus.on('*', async (event: any) => {
+      await this.captureActivity(event);
+    });
+
+    // Listen for user authentication events
+    this.eventBus.on('user.login', async (event: any) => {
+      await this.captureActivity({
+        type: 'user_authentication',
+        category: 'user',
+        action: 'login',
+        userId: event.userId,
+        userRole: event.userRole,
+        description: `User ${event.username} logged in`,
+        metadata: event,
+        timestamp: new Date(),
+        importance: 'medium',
+        visibility: 'private'
+      });
+    });
+
+    this.eventBus.on('user.logout', async (event: any) => {
+      await this.captureActivity({
+        type: 'user_authentication',
+        category: 'user',
+        action: 'logout',
+        userId: event.userId,
+        userRole: event.userRole,
+        description: `User ${event.username} logged out`,
+        metadata: event,
+        timestamp: new Date(),
+        importance: 'low',
+        visibility: 'private'
+      });
+    });
+
+    // Listen for security events
+    this.eventBus.on('security.breach_attempt', async (event: any) => {
+      await this.captureActivity({
+        type: 'security_incident',
+        category: 'security',
+        action: 'create',
+        userId: event.userId || 'system',
+        userRole: 'system',
+        description: `Security breach attempt detected: ${event.description}`,
+        entityId: event.id,
+        entityType: 'security_incident',
+        entityName: event.description,
+        metadata: event,
+        timestamp: new Date(),
+        importance: 'critical',
+        visibility: 'organization',
+        tags: ['security', 'alert']
+      });
+    });
+  }
+
+  /**
+   * Capture activity from system events
+   */
+  private async captureActivity(event: any): Promise<void> {
+    try {
+      // Skip activity stream events to prevent infinite loops
+      if (event.type?.startsWith('activity.')) return;
+
+      const activityEvent = await this.transformEventToActivity(event);
+      if (!activityEvent) return;
+
+      // Store activity
+      await this.storeActivity(activityEvent);
+
+      // Process real-time streaming
+      await this.processRealTimeStream(activityEvent);
+
+      // Trigger notifications
+      await this.processNotifications(activityEvent);
+
+      // Update aggregations
+      await this.updateAggregations(activityEvent);
+
+    } catch (error) {
+      this.logger.error('Failed to process activity event', error);
+    }
+  }
+
+  /**
+   * Transform system event to activity event
+   */
+  private async transformEventToActivity(event: any): Promise<ActivityEvent | null> {
+    if (!event.type || !event.userId) return null;
+
+    const category = this.determineCategory(event.type);
+    const action = this.determineAction(event.type);
+    const importance = this.determineImportance(event);
+    const visibility = this.determineVisibility(event, category);
+
+    return {
+      id: this.generateActivityId(),
+      type: event.type,
+      category,
+      action,
+      userId: event.userId,
+      userRole: event.userRole || 'user',
+      entityId: event.entityId,
+      entityType: event.entityType,
+      entityName: event.entityName,
+      description: this.generateDescription(event),
+      metadata: event.data || {},
+      timestamp: event.timestamp || new Date(),
+      ipAddress: event.ipAddress,
+      userAgent: event.userAgent,
+      sessionId: event.sessionId,
+      importance,
+      visibility,
+      tags: this.generateTags(event, category)
+    };
+  }
+
+  /**
+   * Determine activity category
+   */
+  private determineCategory(eventType: string): ActivityEvent['category'] {
+    if (eventType.includes('transaction')) return 'transaction';
+    if (eventType.includes('account')) return 'account';
+    if (eventType.includes('invoice')) return 'invoice';
+    if (eventType.includes('bill')) return 'bill';
+    if (eventType.includes('report')) return 'report';
+    if (eventType.includes('user')) return 'user';
+    if (eventType.includes('security')) return 'security';
+    return 'system';
+  }
+
+  /**
+   * Determine activity action
+   */
+  private determineAction(eventType: string): ActivityEvent['action'] {
+    if (eventType.includes('create')) return 'create';
+    if (eventType.includes('update')) return 'update';
+    if (eventType.includes('delete')) return 'delete';
+    if (eventType.includes('view')) return 'view';
+    if (eventType.includes('export')) return 'export';
+    if (eventType.includes('import')) return 'import';
+    if (eventType.includes('login')) return 'login';
+    if (eventType.includes('logout')) return 'logout';
+    return 'update';
+  }
+
+  /**
+   * Determine activity importance
+   */
+  private determineImportance(event: any): ActivityEvent['importance'] {
+    // Security events are critical
+    if (event.type?.includes('security')) return 'critical';
+    
+    // High-value transactions are high importance
+    if (event.data?.amount && event.data.amount > 10000) return 'high';
+    
+    // User authentication is medium importance
+    if (event.type?.includes('user')) return 'medium';
+    
+    // Regular operations are low importance
+    return 'low';
+  }
+
+  /**
+   * Determine activity visibility
+   */
+  private determineVisibility(event: any, category: ActivityEvent['category']): ActivityEvent['visibility'] {
+    // Security events are organization-wide
+    if (category === 'security') return 'organization';
+    
+    // User events are private
+    if (category === 'user') return 'private';
+    
+    // Financial events are team-visible
+    if (['transaction', 'invoice', 'bill'].includes(category)) return 'team';
+    
+    // Reports are organization-visible
+    if (category === 'report') return 'organization';
+    
+    return 'private';
+  }
+
+  /**
+   * Generate activity description
+   */
+  private generateDescription(event: any): string {
+    const templates: Record<string, string> = {
+      'transaction.created': 'Created transaction for {amount}',
+      'transaction.updated': 'Updated transaction {transactionId}',
+      'invoice.created': 'Created invoice {invoiceNumber} for {customer}',
+      'bill.created': 'Created bill from {vendor}',
+      'account.updated': 'Updated account {accountName}',
+      'report.generated': 'Generated {reportType} report',
+      'user.login': 'User logged in',
+      'security.breach_attempt': 'Security breach attempt detected'
+    };
+
+    const template = templates[event.type] || 'Performed {action} on {entityType}';
+    return this.interpolateTemplate(template, event.data || {});
+  }
+
+  /**
+   * Generate activity tags
+   */
+  private generateTags(event: any, category: string): string[] {
+    const tags = [category];
+    
+    if (event.data?.amount) tags.push('financial');
+    if (event.type?.includes('security')) tags.push('security', 'alert');
+    if (event.type?.includes('report')) tags.push('reporting');
+    if (event.userRole === 'admin') tags.push('admin');
+    
+    return tags;
+  }
+
+  /**
+   * Interpolate template with data
+   */
+  private interpolateTemplate(template: string, data: Record<string, any>): string {
+    return template.replace(/\{(\w+)\}/g, (match, key) => {
+      return data[key] || match;
+    });
+  }
+
+  /**
+   * Store activity in database
+   */
+  private async storeActivity(activity: ActivityEvent): Promise<void> {
+    // TODO: Implement when activity schema is available
+    // await this.prisma.activity.create({
+    //   data: {
+    //     id: activity.id,
+    //     type: activity.type,
+    //     action: activity.action,
+    //     userId: activity.userId,
+    //     userName: activity.userRole,
+    //     description: activity.description,
+    //     metadata: activity.metadata,
+    //     timestamp: activity.timestamp
+    //   }
+    // });
+    
+    // For now, just log the activity
+    this.logger.info('Activity captured', activity);
+  }
+
+  /**
+   * Process real-time streaming
+   */
+  private async processRealTimeStream(activity: ActivityEvent): Promise<void> {
+    // Find relevant streams
+    const relevantStreams = Array.from(this.activeStreams.values())
+      .filter(stream => this.isActivityRelevantToStream(activity, stream));
+
+    // Broadcast to stream subscribers
+    for (const stream of relevantStreams) {
+      await this.broadcastToStream(stream, activity);
+    }
+
+    // Broadcast to user's personal stream
+    await this.broadcastToUser(activity.userId, activity);
+
+    // Broadcast to role-based streams
+    if (activity.userRole) {
+      await this.broadcastToRole(activity.userRole, activity);
+    }
+  }
+
+  /**
+   * Check if activity is relevant to stream
+   */
+  private isActivityRelevantToStream(activity: ActivityEvent, stream: ActivityStream): boolean {
+    const filters = stream.filters;
+
+    // Check category filter
+    if (filters.category && activity.category !== filters.category) return false;
+
+    // Check action filter
+    if (filters.action && activity.action !== filters.action) return false;
+
+    // Check importance filter
+    if (filters.importance && activity.importance !== filters.importance) return false;
+
+    // Check visibility filter
+    if (filters.visibility && activity.visibility !== filters.visibility) return false;
+
+    // Check date range
+    if (filters.dateFrom && activity.timestamp < filters.dateFrom) return false;
+    if (filters.dateTo && activity.timestamp > filters.dateTo) return false;
+
+    // Check tags
+    if (filters.tags && filters.tags.length > 0) {
+      const hasMatchingTag = filters.tags.some(tag => 
+        activity.tags?.includes(tag)
+      );
+      if (!hasMatchingTag) return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Broadcast activity to stream subscribers
+   */
+  private async broadcastToStream(stream: ActivityStream, activity: ActivityEvent): Promise<void> {
+    const message: WebSocketMessage = {
+      type: 'activity_stream',
+      data: {
+        streamId: stream.id,
+        activity: this.sanitizeActivity(activity)
+      },
+      timestamp: Date.now()
+    };
+
+    for (const userId of stream.subscribers) {
+      this.wsServer.sendToUser(userId, message);
+    }
+  }
+
+  /**
+   * Broadcast activity to user
+   */
+  private async broadcastToUser(userId: string, activity: ActivityEvent): Promise<void> {
+    const message: WebSocketMessage = {
+      type: 'user_activity',
+      data: {
+        activity: this.sanitizeActivity(activity)
+      },
+      timestamp: Date.now()
+    };
+
+    this.wsServer.sendToUser(userId, message);
+  }
+
+  /**
+   * Broadcast activity to role
+   */
+  private async broadcastToRole(role: string, activity: ActivityEvent): Promise<void> {
+    const message: WebSocketMessage = {
+      type: 'role_activity',
+      data: {
+        role,
+        activity: this.sanitizeActivity(activity)
+      },
+      timestamp: Date.now()
+    };
+
+    this.wsServer.broadcastToRole(role, message);
+  }
+
+  /**
+   * Sanitize activity for client consumption
+   */
+  private sanitizeActivity(activity: ActivityEvent): any {
+    return {
+      id: activity.id,
+      type: activity.type,
+      category: activity.category,
+      action: activity.action,
+      userId: activity.userId,
+      userRole: activity.userRole,
+      entityId: activity.entityId,
+      entityType: activity.entityType,
+      entityName: activity.entityName,
+      description: activity.description,
+      timestamp: activity.timestamp,
+      importance: activity.importance,
+      visibility: activity.visibility,
+      tags: activity.tags
+    };
+  }
+
+  /**
+   * Process notifications for activity
+   */
+  private async processNotifications(activity: ActivityEvent): Promise<void> {
+    // Get notification preferences for relevant users
+    const notificationRules = await this.getNotificationRules(activity);
+
+    for (const rule of notificationRules) {
+      const notification = await this.createNotification(activity, rule);
+      if (notification) {
+        this.notificationQueue.push(notification);
+      }
+    }
+  }
+  }
+
+  /**
+   * Create notification from activity and rule
+   */
+  private async createNotification(activity: ActivityEvent, rule: any): Promise<ActivityNotification | null> {
+    // Check if notification should be sent based on importance
+    if (rule.minImportance && this.compareImportance(activity.importance, rule.minImportance) < 0) {
+      return null;
+    }
+
+    // Check if user is subscribed to this type of notification
+    if (rule.categories && !rule.categories.includes(activity.category)) {
+      return null;
+    }
+
+    return {
+      id: this.generateNotificationId(),
+      userId: rule.userId || activity.userId,
+      type: rule.type || 'in-app',
+      template: rule.template || 'default',
+      data: {
+        activity,
+        rule,
+        timestamp: new Date()
+      },
+      scheduledAt: rule.delay ? new Date(Date.now() + rule.delay) : new Date(),
+      status: 'pending',
+      retryCount: 0,
+      maxRetries: rule.maxRetries || 3
+    };
+  }
+
+  /**
+   * Get notification rules for activity
+   */
+  private async getNotificationRules(activity: ActivityEvent): Promise<any[]> {
+    // TODO: Implement when notification schema is available
+    // const userPreferences = await this.prisma.notificationPreference.findMany({
+    //   where: {
+    //     userId: activity.userId,
+    //     isActive: true
+    //   }
+    // });
+
+    // const roleRules = await this.prisma.notificationRule.findMany({
+    //   where: {
+    //     userRole: activity.userRole,
+    //     isActive: true
+    //   }
+    // });
+
+    // For now, return empty array
+    return [];
+  }
+
+  /**
+   * Compare importance levels
+   */
+  private compareImportance(a: string, b: string): number {
+    const levels = { low: 1, medium: 2, high: 3, critical: 4 };
+    return levels[a as keyof typeof levels] - levels[b as keyof typeof levels];
+  }
+
+  /**
+   * Start notification processor
+   */
+  private startNotificationProcessor(): void {
+    setInterval(async () => {
+      await this.processNotificationQueue();
+    }, 5000); // Process every 5 seconds
+  }
+
+  /**
+   * Process notification queue
+   */
+  private async processNotificationQueue(): Promise<void> {
+    const notificationsToSend = this.notificationQueue.filter(n => 
+      n.status === 'pending' && 
+      (!n.scheduledAt || n.scheduledAt <= new Date())
+    );
+
+    for (const notification of notificationsToSend) {
+      try {
+        await this.sendNotification(notification);
+        notification.status = 'sent';
+        notification.sentAt = new Date();
+      } catch (error) {
+        notification.retryCount++;
+        if (notification.retryCount >= notification.maxRetries) {
+          notification.status = 'failed';
+        } else {
+          // Schedule retry with exponential backoff
+          notification.scheduledAt = new Date(
+            Date.now() + Math.pow(2, notification.retryCount) * 60000
+          );
+        }
+      }
+    }
+
+    // Update notification status in database
+    await this.updateNotificationStatus(notificationsToSend);
+  }
+
+  /**
+   * Send notification
+   */
+  private async sendNotification(notification: ActivityNotification): Promise<void> {
+    switch (notification.type) {
+      case 'email':
+        await this.sendEmailNotification(notification);
+        break;
+      case 'push':
+        await this.sendPushNotification(notification);
+        break;
+      case 'sms':
+        await this.sendSMSNotification(notification);
+        break;
+      case 'in-app':
+        await this.sendInAppNotification(notification);
+        break;
+      default:
+        throw new Error(`Unknown notification type: ${notification.type}`);
+    }
+  }
+
+  /**
+   * Send email notification
+   */
+  private async sendEmailNotification(notification: ActivityNotification): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: notification.userId }
+    });
+
+    if (!user || !user.email) return;
+
+    // Implement email sending logic
+    this.logger.info(`Email notification sent to ${user.email}`, {
+      notificationId: notification.id
+    });
+  }
+
+  /**
+   * Send push notification
+   */
+  private async sendPushNotification(notification: ActivityNotification): Promise<void> {
+    // Implement push notification logic
+    this.logger.info(`Push notification sent to user ${notification.userId}`, {
+      notificationId: notification.id
+    });
+  }
+
+  /**
+   * Send SMS notification
+   */
+  private async sendSMSNotification(notification: ActivityNotification): Promise<void> {
+    // Implement SMS sending logic
+    this.logger.info(`SMS notification sent to user ${notification.userId}`, {
+      notificationId: notification.id
+    });
+  }
+
+  /**
+   * Send in-app notification
+   */
+  private async sendInAppNotification(notification: ActivityNotification): Promise<void> {
+    // TODO: Implement when notification schema is available
+    // await this.prisma.notification.create({
+    //   data: {
+    //     userId: notification.userId,
+    //     type: 'activity',
+    //     title: 'New Activity',
+    //     message: notification.data.activity.description,
+    //     data: notification.data,
+    //     read: false,
+    //     createdAt: new Date()
+    //   }
+    // });
+
+    // Send real-time notification
+    this.wsServer.sendToUser(notification.userId, {
+      type: 'notification',
+      notification: {
+        id: notification.id,
+        title: 'New Activity',
+        message: notification.data.activity.description,
+        timestamp: new Date()
+      }
+    });
+  }
+
+  /**
+   * Update notification status
+   */
+  private async updateNotificationStatus(notifications: ActivityNotification[]): Promise<void> {
+    // TODO: Implement when activityNotification schema is available
+    // for (const notification of notifications) {
+    //   await this.prisma.activityNotification.update({
+    //     where: { id: notification.id },
+    //     data: {
+    //       status: notification.status,
+    //       sentAt: notification.sentAt,
+    //       retryCount: notification.retryCount
+    //     }
+    //   });
+    // }
+    
+    // For now, just log the update
+    this.logger.info(`Updated ${notifications.length} notification statuses`);
+  }
+
+  /**
+   * Update aggregations
+   */
+  private async updateAggregations(activity: ActivityEvent): Promise<void> {
+    // Update real-time aggregations
+    const hourKey = this.getAggregationKey('hour', activity.timestamp);
+    const dayKey = this.getAggregationKey('day', activity.timestamp);
+    const weekKey = this.getAggregationKey('week', activity.timestamp);
+    const monthKey = this.getAggregationKey('month', activity.timestamp);
+
+    for (const key of [hourKey, dayKey, weekKey, monthKey]) {
+      await this.updateAggregation(key, activity);
+    }
+  }
+
+  /**
+   * Get aggregation key
+   */
+  private getAggregationKey(window: string, timestamp: Date): string {
+    const date = new Date(timestamp);
+    
+    switch (window) {
+      case 'hour':
+        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}`;
+      case 'day':
+        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      case 'week':
+        const weekStart = new Date(date);
+        weekStart.setDate(date.getDate() - date.getDay());
+        return `${weekStart.getFullYear()}-W${Math.ceil(weekStart.getDate() / 7)}`;
+      case 'month':
+        return `${date.getFullYear()}-${date.getMonth()}`;
+      default:
+        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    }
+  }
+
+  /**
+   * Update aggregation
+   */
+  private async updateAggregation(key: string, activity: ActivityEvent): Promise<void> {
+    let aggregation = this.aggregationCache.get(key);
+    
+    if (!aggregation) {
+      aggregation = await this.initializeAggregation(key);
+    }
+
+    // Update metrics
+    aggregation.metrics.totalActivities++;
+    
+    // Update category counts
+    const categoryCount = aggregation.metrics.byCategory[activity.category] || 0;
+    aggregation.metrics.byCategory[activity.category] = categoryCount + 1;
+    
+    // Update action counts
+    const actionCount = aggregation.metrics.byAction[activity.action] || 0;
+    aggregation.metrics.byAction[activity.action] = actionCount + 1;
+    
+    // Update user counts
+    const userCount = aggregation.metrics.byUser[activity.userId] || 0;
+    aggregation.metrics.byUser[activity.userId] = userCount + 1;
+    
+    // Update importance counts
+    const importanceCount = aggregation.metrics.byImportance[activity.importance] || 0;
+    aggregation.metrics.byImportance[activity.importance] = importanceCount + 1;
+    
+    // Update top entities
+    if (activity.entityId) {
+      const existingEntity = aggregation.metrics.topEntities.find(
+        e => e.entityId === activity.entityId
+      );
+      
+      if (existingEntity) {
+        existingEntity.count++;
+      } else {
+        aggregation.metrics.topEntities.push({
+          entityId: activity.entityId!,
+          entityType: activity.entityType!,
+          count: 1
+        });
+      }
+      
+      // Keep only top 10 entities
+      aggregation.metrics.topEntities.sort((a, b) => b.count - a.count);
+      aggregation.metrics.topEntities = aggregation.metrics.topEntities.slice(0, 10);
+    }
+
+    // Cache updated aggregation
+    this.aggregationCache.set(key, aggregation);
+  }
+
+  /**
+   * Initialize aggregation
+   */
+  private async initializeAggregation(key: string): Promise<ActivityAggregation> {
+    return {
+      timeWindow: 'hour', // Default, will be overridden based on key format
+      metrics: {
+        totalActivities: 0,
+        byCategory: {},
+        byAction: {},
+        byUser: {},
+        byImportance: {},
+        topEntities: []
+      },
+      trends: {
+        volume: 0,
+        growth: 0,
+        peakHours: []
+      },
+      timestamp: new Date()
+    };
+  }
+
+  /**
+   * Start aggregation processor
+   */
+  private startAggregationProcessor(): void {
+    setInterval(async () => {
+      await this.processAggregations();
+    }, 60000); // Process every minute
+  }
+
+  /**
+   * Process aggregations
+   */
+  private async processAggregations(): Promise<void> {
+    // TODO: Implement when activityAggregation schema is available
+    // Persist aggregations to database
+    // for (const [key, aggregation] of this.aggregationCache) {
+    //   try {
+    //     await this.prisma.activityAggregation.upsert({
+    //       where: { key },
+    //       update: {
+    //         metrics: aggregation.metrics,
+    //         trends: aggregation.trends,
+    //         timestamp: aggregation.timestamp
+    //       },
+    //       create: {
+    //         key,
+    //         timeWindow: aggregation.timeWindow,
+    //         metrics: aggregation.metrics,
+    //         trends: aggregation.trends,
+    //         timestamp: aggregation.timestamp
+    //       }
+    //     });
+    //   } catch (error) {
+    //     this.logger.error(`Failed to persist aggregation ${key}`, error);
+    //   }
+    // }
+    
+    // For now, just log the aggregation processing
+    this.logger.info(`Processed ${this.aggregationCache.size} aggregations`);
+    
+    // Clean old aggregations from cache
+    this.cleanupAggregationCache();
+  }
+
+  /**
+   * Clean up old aggregations from cache
+   */
+  private cleanupAggregationCache(): void {
+    const cutoffTime = Date.now() - (24 * 60 * 60 * 1000); // 24 hours ago
+    
+    for (const [key, aggregation] of this.aggregationCache) {
+      if (aggregation.timestamp.getTime() < cutoffTime) {
+        this.aggregationCache.delete(key);
+      }
+    }
+  }
+
+  /**
+   * Query activities with filters
+   */
+  async queryActivities(filter: ActivityFilter): Promise<ActivityEvent[]> {
+    const whereClause: any = {};
+
+    // Apply filters
+    if (filter.userId) whereClause.userId = filter.userId;
+    if (filter.userRole) whereClause.userRole = filter.userRole;
+    if (filter.category) whereClause.category = filter.category;
+    if (filter.action) whereClause.action = filter.action;
+    if (filter.entityType) whereClause.entityType = filter.entityType;
+    if (filter.importance) whereClause.importance = filter.importance;
+    if (filter.visibility) whereClause.visibility = filter.visibility;
+    
+    if (filter.dateFrom || filter.dateTo) {
+      whereClause.timestamp = {};
+      if (filter.dateFrom) whereClause.timestamp.gte = filter.dateFrom;
+      if (filter.dateTo) whereClause.timestamp.lte = filter.dateTo;
+    }
+    
+    if (filter.tags && filter.tags.length > 0) {
+      whereClause.tags = {
+        hasSome: filter.tags
+      };
+    }
+    
+    if (filter.search) {
+      whereClause.OR = [
+        { description: { contains: filter.search, mode: 'insensitive' } },
+        { entityName: { contains: filter.search, mode: 'insensitive' } }
+      ];
+    }
+
+    // Apply sorting
+    const orderBy: any = {};
+    if (filter.sortBy) {
+      orderBy[filter.sortBy] = filter.sortOrder || 'desc';
+    } else {
+      orderBy.timestamp = 'desc';
+    }
+
+    // TODO: Implement when activity schema is available
+    // const activities = await this.prisma.activity.findMany({
+    //   where: whereClause,
+    //   orderBy,
+    //   take: filter.limit || 50,
+    //   skip: filter.offset || 0,
+    //   include: {
+    //     user: {
+    //       select: {
+    //         id: true,
+    //         name: true,
+    //         email: true
+    //       }
+    //     }
+    //   }
+    // });
+
+    // For now, return empty array
+    const activities: any[] = [];
+
+    return activities.map((activity: any) => ({
+      ...activity,
+      metadata: activity.metadata as Record<string, any>,
+      tags: activity.tags as string[]
+    }));
+  }
+
+  /**
+   * Create activity stream
+   */
+  async createStream(data: {
+    name: string;
+    description: string;
+    filters: ActivityFilter;
+    subscribers: string[];
+  }): Promise<ActivityStream> {
+    const stream: ActivityStream = {
+      id: this.generateStreamId(),
+      name: data.name,
+      description: data.description,
+      filters: data.filters,
+      subscribers: data.subscribers,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    // Store in database
+    // TODO: Implement when activityStream schema is available
+    // await this.prisma.activityStream.create({
+    //   data: {
+    //     id: stream.id,
+    //     name: stream.name,
+    //     description: stream.description,
+    //     filters: stream.filters,
+    //     subscribers: stream.subscribers,
+    //     isActive: stream.isActive,
+    //     createdAt: stream.createdAt,
+    //     updatedAt: stream.updatedAt
+    //   }
+    // });
+
+    // Add to active streams
+    this.activeStreams.set(stream.id, stream);
+
+    return stream;
+  }
+
+  /**
+   * Get activity aggregations
+   */
+  async getAggregations(timeWindow: string, limit: number = 10): Promise<ActivityAggregation[]> {
+    // TODO: Implement when activityAggregation schema is available
+    // const aggregations = await this.prisma.activityAggregation.findMany({
+    //   where: { timeWindow },
+    //   orderBy: { timestamp: 'desc' },
+    //   take: limit
+    // });
+
+    // For now, return empty array
+    const aggregations: any[] = [];
+
+    return aggregations.map((aggregation: any) => ({
+      ...aggregation,
+      metrics: aggregation.metrics as any,
+      trends: aggregation.trends as any
+    }));
+  }
+
+  /**
+   * Get user activity summary
+   */
+  async getUserActivitySummary(userId: string, days: number = 30): Promise<any> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // TODO: Implement when activity schema is available
+    // const summary = await this.prisma.activity.groupBy({
+    //   by: ['category', 'action', 'importance'],
+    //   where: {
+    //     userId,
+    //     timestamp: { gte: startDate }
+    //   },
+    //   _count: true
+    // });
+
+    // For now, return empty summary
+    const summary: any[] = [];
+
+    return {
+      totalActivities: summary.reduce((sum: number, item: any) => sum + item._count, 0),
+      byCategory: summary.reduce((acc: Record<string, number>, item: any) => {
+        acc[item.category] = (acc[item.category] || 0) + item._count;
+        return acc;
+      }, {} as Record<string, number>),
+      byAction: summary.reduce((acc: Record<string, number>, item: any) => {
+        acc[item.action] = (acc[item.action] || 0) + item._count;
+        return acc;
+      }, {} as Record<string, number>),
+      byImportance: summary.reduce((acc: Record<string, number>, item: any) => {
+        acc[item.importance] = (acc[item.importance] || 0) + item._count;
+        return acc;
+      }, {} as Record<string, number>)
+    };
+  }
+
+  // Helper methods
+
+  private generateActivityId(): string {
+    return `activity_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  private generateNotificationId(): string {
+    return `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  private generateStreamId(): string {
+    return `stream_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+}
+
+export default RealTimeActivityStreamEngine;

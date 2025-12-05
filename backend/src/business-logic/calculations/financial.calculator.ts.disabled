@@ -1,0 +1,462 @@
+import { ApiError, ErrorCodes } from '../../utils/errorHandler.js';
+
+/**
+ * Financial calculations engine
+ * Handles all monetary calculations with proper precision and rounding
+ */
+
+export interface ExchangeRate {
+  fromCurrency: string;
+  toCurrency: string;
+  rate: number;
+  timestamp: Date;
+}
+
+export interface TaxCalculation {
+  amount: number;
+  taxRate: number;
+  taxAmount: number;
+  totalAmount: number;
+  taxType: string;
+}
+
+export interface InterestCalculation {
+  principal: number;
+  rate: number;
+  period: number; // in days
+  interestAmount: number;
+  totalAmount: number;
+}
+
+export interface BalanceSummary {
+  accountBalance: number;
+  availableBalance: number;
+  pendingDebits: number;
+  pendingCredits: number;
+  holdAmount: number;
+}
+
+export class FinancialCalculator {
+  /**
+   * Convert amount between currencies with exchange rate
+   */
+  static convertCurrency(
+    amount: number,
+    fromCurrency: string,
+    toCurrency: string,
+    exchangeRate: number
+  ): number {
+    if (amount < 0) {
+      throw new ApiError(
+        'Cannot convert negative amounts',
+        400,
+        ErrorCodes.VALIDATION_ERROR
+      );
+    }
+
+    if (exchangeRate <= 0) {
+      throw new ApiError(
+        'Exchange rate must be positive',
+        400,
+        ErrorCodes.VALIDATION_ERROR
+      );
+    }
+
+    // Convert and round to appropriate precision
+    const convertedAmount = amount * exchangeRate;
+    const precision = this.getCurrencyPrecision(toCurrency);
+    return this.roundToPrecision(convertedAmount, precision);
+  }
+
+  /**
+   * Calculate tax amount
+   */
+  static calculateTax(amount: number, taxRate: number, taxType: string = 'STANDARD'): TaxCalculation {
+    if (amount < 0) {
+      throw new ApiError(
+        'Cannot calculate tax on negative amount',
+        400,
+        ErrorCodes.VALIDATION_ERROR
+      );
+    }
+
+    if (taxRate < 0 || taxRate > 1) {
+      throw new ApiError(
+        'Tax rate must be between 0 and 1 (0-100%)',
+        400,
+        ErrorCodes.VALIDATION_ERROR
+      );
+    }
+
+    const taxAmount = this.roundToPrecision(amount * taxRate, 2);
+    const totalAmount = this.roundToPrecision(amount + taxAmount, 2);
+
+    return {
+      amount,
+      taxRate,
+      taxAmount,
+      totalAmount,
+      taxType
+    };
+  }
+
+  /**
+   * Calculate compound interest
+   */
+  static calculateInterest(
+    principal: number,
+    annualRate: number,
+    days: number,
+    compoundingFrequency: 'daily' | 'monthly' | 'quarterly' | 'annually' = 'daily'
+  ): InterestCalculation {
+    if (principal < 0) {
+      throw new ApiError(
+        'Principal cannot be negative',
+        400,
+        ErrorCodes.VALIDATION_ERROR
+      );
+    }
+
+    if (annualRate < 0) {
+      throw new ApiError(
+        'Interest rate cannot be negative',
+        400,
+        ErrorCodes.VALIDATION_ERROR
+      );
+    }
+
+    if (days < 0) {
+      throw new ApiError(
+        'Period cannot be negative',
+        400,
+        ErrorCodes.VALIDATION_ERROR
+      );
+    }
+
+    const periodsPerYear = {
+      daily: 365,
+      monthly: 12,
+      quarterly: 4,
+      annually: 1
+    }[compoundingFrequency];
+
+    const totalPeriods = days / 365 * periodsPerYear;
+    const ratePerPeriod = annualRate / periodsPerYear;
+
+    // Compound interest formula: A = P(1 + r/n)^(nt)
+    const totalAmount = principal * Math.pow(1 + ratePerPeriod, totalPeriods);
+    const interestAmount = totalAmount - principal;
+
+    return {
+      principal,
+      rate: annualRate,
+      period: days,
+      interestAmount: this.roundToPrecision(interestAmount, 2),
+      totalAmount: this.roundToPrecision(totalAmount, 2)
+    };
+  }
+
+  /**
+   * Calculate simple interest
+   */
+  static calculateSimpleInterest(
+    principal: number,
+    annualRate: number,
+    days: number
+  ): InterestCalculation {
+    if (principal < 0 || annualRate < 0 || days < 0) {
+      throw new ApiError(
+        'Interest calculation parameters cannot be negative',
+        400,
+        ErrorCodes.VALIDATION_ERROR
+      );
+    }
+
+    // Simple interest: I = P * r * t
+    const interestAmount = principal * annualRate * (days / 365);
+    const totalAmount = principal + interestAmount;
+
+    return {
+      principal,
+      rate: annualRate,
+      period: days,
+      interestAmount: this.roundToPrecision(interestAmount, 2),
+      totalAmount: this.roundToPrecision(totalAmount, 2)
+    };
+  }
+
+  /**
+   * Calculate account balance summary
+   */
+  static calculateBalanceSummary(
+    accountBalance: number,
+    pendingDebits: number = 0,
+    pendingCredits: number = 0,
+    holdAmount: number = 0
+  ): BalanceSummary {
+    const availableBalance = accountBalance - pendingDebits - holdAmount + pendingCredits;
+
+    return {
+      accountBalance,
+      availableBalance,
+      pendingDebits,
+      pendingCredits,
+      holdAmount
+    };
+  }
+
+  /**
+   * Calculate transaction fees
+   */
+  static calculateTransactionFee(
+    amount: number,
+    feeStructure: {
+      fixedFee?: number;
+      percentageFee?: number;
+      minFee?: number;
+      maxFee?: number;
+    }
+  ): number {
+    let fee = 0;
+
+    // Add fixed fee
+    if (feeStructure.fixedFee) {
+      fee += feeStructure.fixedFee;
+    }
+
+    // Add percentage fee
+    if (feeStructure.percentageFee) {
+      fee += amount * feeStructure.percentageFee;
+    }
+
+    // Apply minimum fee
+    if (feeStructure.minFee && fee < feeStructure.minFee) {
+      fee = feeStructure.minFee;
+    }
+
+    // Apply maximum fee
+    if (feeStructure.maxFee && fee > feeStructure.maxFee) {
+      fee = feeStructure.maxFee;
+    }
+
+    return this.roundToPrecision(fee, 2);
+  }
+
+  /**
+   * Calculate currency conversion with spread
+   */
+  static calculateConversionWithSpread(
+    amount: number,
+    baseRate: number,
+    spreadPercentage: number = 0.01 // Default 1% spread
+  ): { buyRate: number; sellRate: number; convertedAmount: number } {
+    const buyRate = baseRate * (1 - spreadPercentage / 2);
+    const sellRate = baseRate * (1 + spreadPercentage / 2);
+    const convertedAmount = amount * sellRate;
+
+    return {
+      buyRate: this.roundToPrecision(buyRate, 6),
+      sellRate: this.roundToPrecision(sellRate, 6),
+      convertedAmount: this.roundToPrecision(convertedAmount, 2)
+    };
+  }
+
+  /**
+   * Calculate monthly payment for loan
+   */
+  static calculateMonthlyPayment(
+    principal: number,
+    annualRate: number,
+    months: number
+  ): { monthlyPayment: number; totalPayment: number; totalInterest: number } {
+    if (principal <= 0 || annualRate < 0 || months <= 0) {
+      throw new ApiError(
+        'Invalid loan parameters',
+        400,
+        ErrorCodes.VALIDATION_ERROR
+      );
+    }
+
+    const monthlyRate = annualRate / 12;
+    let monthlyPayment: number;
+
+    if (monthlyRate === 0) {
+      // No interest case
+      monthlyPayment = principal / months;
+    } else {
+      // Standard loan payment formula
+      monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) /
+                     (Math.pow(1 + monthlyRate, months) - 1);
+    }
+
+    const totalPayment = monthlyPayment * months;
+    const totalInterest = totalPayment - principal;
+
+    return {
+      monthlyPayment: this.roundToPrecision(monthlyPayment, 2),
+      totalPayment: this.roundToPrecision(totalPayment, 2),
+      totalInterest: this.roundToPrecision(totalInterest, 2)
+    };
+  }
+
+  /**
+   * Calculate amortization schedule
+   */
+  static calculateAmortizationSchedule(
+    principal: number,
+    annualRate: number,
+    months: number
+  ): Array<{
+    month: number;
+    payment: number;
+    principal: number;
+    interest: number;
+    balance: number;
+  }> {
+    const { monthlyPayment } = this.calculateMonthlyPayment(principal, annualRate, months);
+    const monthlyRate = annualRate / 12;
+    let balance = principal;
+    const schedule = [];
+
+    for (let month = 1; month <= months; month++) {
+      const interestPayment = balance * monthlyRate;
+      const principalPayment = monthlyPayment - interestPayment;
+      balance -= principalPayment;
+
+      schedule.push({
+        month,
+        payment: monthlyPayment,
+        principal: principalPayment,
+        interest: interestPayment,
+        balance: Math.max(0, balance)
+      });
+    }
+
+    return schedule;
+  }
+
+  /**
+   * Calculate net present value (NPV)
+   */
+  static calculateNPV(cashFlows: number[], discountRate: number): number {
+    let npv = 0;
+    
+    for (let i = 0; i < cashFlows.length; i++) {
+      npv += cashFlows[i] / Math.pow(1 + discountRate, i);
+    }
+
+    return this.roundToPrecision(npv, 2);
+  }
+
+  /**
+   * Calculate internal rate of return (IRR) using Newton-Raphson method
+   */
+  static calculateIRR(cashFlows: number[], guess: number = 0.1): number {
+    const maxIterations = 100;
+    const tolerance = 1e-6;
+    let rate = guess;
+
+    // Check for invalid cash flows
+    if (cashFlows.length === 0 || cashFlows.every(cf => cf === 0)) {
+      throw new ApiError(
+        'IRR calculation failed to converge',
+        400,
+        ErrorCodes.VALIDATION_ERROR
+      );
+    }
+
+    for (let i = 0; i < maxIterations; i++) {
+      let npv = 0;
+      let dnpv = 0;
+
+      for (let j = 0; j < cashFlows.length; j++) {
+        npv += cashFlows[j] / Math.pow(1 + rate, j);
+        dnpv += -j * cashFlows[j] / Math.pow(1 + rate, j + 1);
+      }
+
+      if (Math.abs(npv) < tolerance) {
+        return this.roundToPrecision(rate, 6);
+      }
+
+      // Avoid division by zero
+      if (Math.abs(dnpv) < tolerance) {
+        break;
+      }
+
+      rate = rate - npv / dnpv;
+    }
+
+    throw new ApiError(
+      'IRR calculation failed to converge',
+      400,
+      ErrorCodes.CALCULATION_ERROR
+    );
+  }
+
+  /**
+   * Helper methods
+   */
+  private static roundToPrecision(value: number, precision: number): number {
+    const factor = Math.pow(10, precision);
+    return Math.round(value * factor) / factor;
+  }
+
+  private static getCurrencyPrecision(currency: string): number {
+    const precisions: Record<string, number> = {
+      'USD': 2,
+      'EUR': 2,
+      'GBP': 2,
+      'JPY': 0,
+      'CHF': 2,
+      'CAD': 2,
+      'AUD': 2,
+      'CNY': 2,
+      'INR': 2,
+      'BTC': 8
+    };
+
+    // Use hasOwnProperty to check if the currency exists, since 0 is falsy
+    return precisions.hasOwnProperty(currency) ? precisions[currency] : 2;
+  }
+}
+
+/**
+ * Pre-built calculation functions
+ */
+export const FinancialCalculations = {
+  // Standard currency conversion
+  convertCurrency: (
+    amount: number,
+    fromCurrency: string,
+    toCurrency: string,
+    exchangeRate: number
+  ) => FinancialCalculator.convertCurrency(amount, fromCurrency, toCurrency, exchangeRate),
+
+  // Calculate transaction total with fees
+  calculateTotalWithFees: (
+    amount: number,
+    feeStructure: { fixedFee?: number; percentageFee?: number; minFee?: number; maxFee?: number }
+  ) => {
+    const fee = FinancialCalculator.calculateTransactionFee(amount, feeStructure);
+    return {
+      subtotal: amount,
+      fee,
+      total: amount + fee
+    };
+  },
+
+  // Calculate loan details
+  calculateLoanDetails: (
+    principal: number,
+    annualRate: number,
+    months: number
+  ) => {
+    const paymentDetails = FinancialCalculator.calculateMonthlyPayment(principal, annualRate, months);
+    const schedule = FinancialCalculator.calculateAmortizationSchedule(principal, annualRate, months);
+    
+    return {
+      ...paymentDetails,
+      schedule
+    };
+  }
+};

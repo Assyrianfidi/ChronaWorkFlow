@@ -1,16 +1,52 @@
 import { defineConfig } from 'vitest/config';
 import path from 'path';
-
+import { fileURLToPath } from 'node:url';
+import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import { playwright } from '@vitest/browser-playwright';
+const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
     setupFiles: ['./server/test/setup.ts'],
+    include: ['**/*.test.ts', '**/*.test.tsx'],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.storybook/**', '**/.trunk/**',
+    // Exclude .trunk directory from tests
+    '**/cypress/**',
+    // Exclude cypress tests
+    '**/e2e/**' // Exclude e2e tests
+    ],
+    testTimeout: 30000 // Increase timeout for tests
+    ,
+    projects: [{
+      extends: true,
+      plugins: [
+      // The plugin will run tests for the stories defined in your Storybook config
+      // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
+      storybookTest({
+        configDir: path.join(dirname, '.storybook')
+      })],
+      test: {
+        name: 'storybook',
+        browser: {
+          enabled: true,
+          headless: true,
+          provider: playwright({}),
+          instances: [{
+            browser: 'chromium'
+          }]
+        },
+        setupFiles: ['frontend/.storybook/vitest.setup.ts']
+      }
+    }]
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './server'),
-      '@shared': path.resolve(__dirname, './shared'),
-    },
+      '@shared': path.resolve(__dirname, './shared')
+    }
   },
+  esbuild: {
+    target: 'es2020' // Match your target environment
+  }
 });

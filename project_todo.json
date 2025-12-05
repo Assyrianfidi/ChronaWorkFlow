@@ -1,0 +1,247 @@
+{
+  "todos": [
+    {
+      "id": "backend-docker-deployment",
+      "content": "Backend Docker Container Deployment",
+      "status": "completed",
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": "container-cleanup",
+          "content": "Stop conflicting containers and free ports 3000-3002",
+          "status": "completed"
+        },
+        {
+          "id": "env-fix",
+          "content": "Fix DATABASE_URL and JWT_SECRET in .env file",
+          "status": "completed"
+        },
+        {
+          "id": "docker-build",
+          "content": "Build accubooks-backend:simple image successfully",
+          "status": "completed"
+        },
+        {
+          "id": "container-run",
+          "content": "Deploy container on port 3001 with database connectivity",
+          "status": "completed"
+        },
+        {
+          "id": "health-verify",
+          "content": "Verify /api/health endpoint returns 200 OK",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "env-setup",
+      "content": "Phase 1: Project Environment Setup",
+      "status": "completed",
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": "env-req",
+          "content": "Verify Node.js, npm, Docker, and Git versions",
+          "status": "completed"
+        },
+        {
+          "id": "env-structure",
+          "content": "Confirm client, backend, prisma, scripts folders and key entry files",
+          "status": "completed"
+        },
+        {
+          "id": "env-files",
+          "content": "Ensure backend/.env and client/.env contain required variables",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "database-setup",
+      "content": "Phase 2: Database Setup (PostgreSQL + Redis)",
+      "status": "completed",
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": "db-postgres",
+          "content": "Start PostgreSQL container and create accubooks_dev",
+          "status": "completed"
+        },
+        {
+          "id": "db-prisma",
+          "content": "Run Prisma migrations and generate client",
+          "status": "completed"
+        },
+        {
+          "id": "db-redis",
+          "content": "Start Redis container and verify with ping",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "backend-dev",
+      "content": "Phase 3: Backend Development",
+      "status": "completed",
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": "backend-deps",
+          "content": "Install backend dependencies and verify package.json",
+          "status": "completed"
+        },
+        {
+          "id": "backend-server",
+          "content": "Ensure Express app.ts/server.ts exist and load correctly",
+          "status": "completed"
+        },
+        {
+          "id": "backend-modules",
+          "content": "Implement Users/Auth/Transactions/Accounts modules with Prisma",
+          "status": "completed"
+        },
+        {
+          "id": "backend-tests",
+          "content": "Add/verify Vitest/Jest tests for backend",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "frontend-dev",
+      "content": "Phase 4: Frontend Development",
+      "status": "completed",
+      "priority": "high",
+      "subtasks": [
+        {
+          "id": "frontend-deps",
+          "content": "Install frontend dependencies and verify package.json",
+          "status": "completed"
+        },
+        {
+          "id": "frontend-config",
+          "content": "Ensure Vite/TypeScript config and router setup",
+          "status": "completed"
+        },
+        {
+          "id": "frontend-api",
+          "content": "Create API services and HTTP client",
+          "status": "completed"
+        },
+        {
+          "id": "frontend-contexts",
+          "content": "Create React contexts for state management",
+          "status": "completed"
+        },
+        {
+          "id": "frontend-pages",
+          "content": "Create Dashboard/Login/Accounts/Transactions UI",
+          "status": "completed"
+        },
+        {
+          "id": "frontend-routing",
+          "content": "Setup protected routes and navigation",
+          "status": "completed"
+        },
+        {
+          "id": "frontend-tests",
+          "content": "Add/verify React Testing Library tests",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "error-handling",
+      "content": "Phase 5: Error Handling & Logging",
+      "status": "completed",
+      "priority": "medium",
+      "subtasks": [
+        {"id":"backend-logging","content":"Backend logging/middleware in place","status":"completed"},
+        {"id":"frontend-errors","content":"Frontend error boundaries and toasts","status":"completed"}
+      ]
+    },
+    {
+      "id": "auth-security",
+      "content": "Phase 6: Authentication & Security",
+      "status": "completed",
+      "priority": "high",
+      "subtasks": [
+        {"id":"backend-auth","content":"Implement JWT authentication and role checks","status":"completed"},
+        {"id":"refresh-token-system","content":"Implement two-token JWT system with refresh tokens","status":"completed"},
+        {"id":"frontend-auth","content":"Auth context/provider and persistent session","status":"completed"}
+      ]
+    },
+    {
+      "id": "error-handling-api",
+      "content": "Phase 6.5: Global Error Handling & API Stability",
+      "status": "completed",
+      "priority": "high",
+      "subtasks": [
+        {"id":"unified-error-handler","content":"Create unified error handler with ApiError class and standard codes","status":"completed"},
+        {"id":"response-envelope","content":"Implement standardized API response envelope utilities","status":"completed"},
+        {"id":"circuit-breaker","content":"Implement circuit breaker pattern for external service resilience","status":"completed"},
+        {"id":"logging-bridge","content":"Create logging bridge between AuditLogger and Monitoring services","status":"completed"},
+        {"id":"panic-monitor","content":"Implement System Panic Monitor for health tracking","status":"completed"},
+        {"id":"graceful-shutdown","content":"Add graceful shutdown and process-level error handling","status":"completed"},
+        {"id":"error-tests","content":"Create comprehensive tests for error handling and circuit breaker","status":"completed"}
+      ]
+    },
+    {
+      "id": "api-business-logic",
+      "content": "Phase 7: API Layer: Business Logic, Financial Rules & Validation Framework",
+      "status": "in_progress",
+      "priority": "high",
+      "subtasks": [
+        {"id":"business-logic-layer","content":"Implement Business Logic Layer with financial calculations","status":"pending"},
+        {"id":"domain-validation","content":"Create Domain Validation Framework for amounts and currencies","status":"pending"},
+        {"id":"consistency-rules","content":"Implement double-entry bookkeeping and atomic operations","status":"pending"},
+        {"id":"anti-fraud-checks","content":"Add anti-fraud checks for suspicious patterns","status":"pending"},
+        {"id":"financial-tests","content":"Create unit and integration tests for financial rules","status":"pending"}
+      ]
+    },
+    {
+      "id": "testing-ci",
+      "content": "Phase 8: Automated Tests & CI",
+      "status": "pending",
+      "priority": "high",
+      "subtasks": [
+        {"id":"tests-backend","content":"Run and stabilize backend tests","status":"pending"},
+        {"id":"tests-frontend","content":"Run and stabilize frontend tests","status":"pending"},
+        {"id":"ci-setup","content":"Configure CI/CD pipeline","status":"pending"}
+      ]
+    },
+    {
+      "id": "deployment",
+      "content": "Phase 9: Build & Deployment",
+      "status": "pending",
+      "priority": "medium",
+      "subtasks": [
+        {"id":"build-frontend","content":"Build fontend for production","status":"pending"},
+        {"id":"dockerize","content":"Dockerize frontend/backend services","status":"pending"},
+        {"id":"prod-env","content":"Create production .env files/settings","status":"pending"}
+      ]
+    },
+    {
+      "id": "post-deploy",
+      "content": "Phase 10: Post-Deployment Checks",
+      "status": "pending",
+      "priority": "medium",
+      "subtasks": [
+        {"id":"connectivity","content":"Verify connectivity between services","status":"pending"},
+        {"id":"smoke-tests","content":"Run smoke tests (login, transactions)","status":"pending"},
+        {"id":"monitoring","content":"Set up monitoring/logging stacks","status":"pending"}
+      ]
+    },
+    {
+      "id": "maintenance",
+      "content": "Phase 11: Maintenance & Documentation",
+      "status": "pending",
+      "priority": "low",
+      "subtasks": [
+        {"id":"docs-backend","content":"Generate API documentation","status":"pending"},
+        {"id":"docs-frontend","content":"Document frontend components","status":"pending"},
+        {"id":"docs-deploy","content":"Document deployment steps","status":"pending"}
+      ]
+    }
+  ]
+}

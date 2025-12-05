@@ -2,6 +2,7 @@ import { Queue, Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
 
 // Redis connection for BullMQ
+console.log('Connecting to Redis at:', process.env.REDIS_HOST || 'localhost', 'port:', process.env.REDIS_PORT || '6379');
 export const redis = new IORedis({
   host: process.env.REDIS_HOST || 'localhost',
   port: parseInt(process.env.REDIS_PORT || '6379'),
@@ -9,6 +10,22 @@ export const redis = new IORedis({
   retryDelayOnFailover: 100,
   enableReadyCheck: false,
   maxRetriesPerRequest: null,
+  connectTimeout: 10000, // 10 seconds
+  lazyConnect: true, // Don't connect immediately
+});
+
+// Handle Redis connection events
+redis.on('connect', () => {
+  console.log('Redis connected successfully');
+});
+
+redis.on('error', (err) => {
+  console.error('Redis connection error:', err);
+});
+
+// Connect to Redis
+redis.connect().catch(err => {
+  console.error('Failed to connect to Redis:', err);
 });
 
 // Job queue configurations

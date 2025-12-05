@@ -1,0 +1,53 @@
+{
+  "project": {
+    "name": "AccuBooks",
+    "version": "1.0.0",
+    "description": "Enterprise-grade accounting software with QuickBooks-like features",
+    "rootDir": "c:\\FidiMyProjects2025\\Software_Projects\\AccuBooks\\AccuBooks",
+    "components": ["client", "server", "database", "docs", "scripts"],
+    "techStack": {
+      "frontend": ["React", "TypeScript", "Vite", "Tailwind CSS", "Shadcn/UI"],
+      "backend": ["Node.js", "Express", "TypeScript", "Prisma", "PostgreSQL"],
+      "testing": ["Vitest", "Playwright", "React Testing Library"],
+      "infra": ["Docker", "GitHub Actions", "Vercel"]
+    },
+    "qualityGates": {
+      "testCoverage": 90,
+      "performanceScore": 90,
+      "securityScan": true,
+      "typeCoverage": 95,
+      "accessibility": "WCAG AA"
+    },
+    "autoFix": {
+      "enabled": true,
+      "maxRetries": 3,
+      "backupBeforeFix": true
+    },
+    "logging": {
+      "level": "info",
+      "file": "logs/cascade.log",
+      "maxSize": "10MB",
+      "maxFiles": 5
+    }
+  },
+  "workflows": {
+    "ci": {
+      "enabled": true,
+      "onPush": ["main", "develop"],
+      "steps": [
+        "lint",
+        "typecheck",
+        "test:unit",
+        "test:integration",
+        "test:e2e",
+        "build",
+        "deploy:staging"
+      ]
+    },
+    "pr": {
+      "enabled": true,
+      "requiredChecks": ["lint", "test", "build"],
+      "autoMerge": true
+    }
+  }
+}

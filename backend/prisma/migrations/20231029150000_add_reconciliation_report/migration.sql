@@ -19,6 +19,3 @@ CREATE TABLE "ReconciliationReport" (
 
     CONSTRAINT "ReconciliationReport_pkey" PRIMARY KEY ("id")
 );
-
--- AddForeignKey
-ALTER TABLE "ReconciliationReport" ADD CONSTRAINT "ReconciliationReport_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "Business"("id") ON DELETE CASCADE ON UPDATE CASCADE;

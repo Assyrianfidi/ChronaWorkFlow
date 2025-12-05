@@ -22,6 +22,8 @@ import { EnterpriseAPIGateway } from './components/integration/EnterpriseAPIGate
 import { GraphQLServer } from './components/integration/GraphQLServer';
 import { ThirdPartyIntegrations } from './components/integration/ThirdPartyIntegrations';
 import { WebhookManager } from './components/integration/WebhookManager';
+import { DashboardProvider } from './contexts/DashboardContext';
+import { Dashboard } from './components/dashboard/Dashboard';
 import './styles/globals.css';
 
 // Extend the ImportMeta interface to include Vite's env variables
@@ -55,46 +57,50 @@ function App() {
   }, [checkAuth]);
 
   return (
-    <WebhookManager>
-      <ThirdPartyIntegrations>
-        <GraphQLServer>
-          <EnterpriseAPIGateway>
-            <AutomationEngine>
-              <BusinessIntelligence>
-                <AnalyticsEngine>
-                  <ErrorRecoveryUI>
-                    <PredictiveAssistant>
-                      <WorkflowManager>
-                        <InteractionEngine>
-                          <AccessibilityProvider>
-                            <NotificationSystem>
-                              <UIPerformanceEngine>
-                                <AdaptiveLayoutEngine>
-                                  <UserExperienceModeProvider>
-                                    <ThemeProvider>
-                                      <ErrorBoundary>
-                                        <Layout>
-                                          <RouterProvider router={router} />
-                                        </Layout>
-                                        <ToastContainer />
-                                      </ErrorBoundary>
-                                    </ThemeProvider>
-                                  </UserExperienceModeProvider>
-                                </AdaptiveLayoutEngine>
-                              </UIPerformanceEngine>
-                            </NotificationSystem>
-                          </AccessibilityProvider>
-                        </InteractionEngine>
-                      </WorkflowManager>
-                    </PredictiveAssistant>
-                  </ErrorRecoveryUI>
-                </AnalyticsEngine>
-              </BusinessIntelligence>
-            </AutomationEngine>
-          </EnterpriseAPIGateway>
-        </GraphQLServer>
-      </ThirdPartyIntegrations>
-    </WebhookManager>
+    <DashboardProvider initialRole="cfo">
+      <Dashboard>
+        <WebhookManager>
+          <ThirdPartyIntegrations>
+            <GraphQLServer>
+              <EnterpriseAPIGateway>
+                <AutomationEngine>
+                  <BusinessIntelligence>
+                    <AnalyticsEngine>
+                      <ErrorRecoveryUI>
+                        <PredictiveAssistant>
+                          <WorkflowManager>
+                            <InteractionEngine>
+                              <AccessibilityProvider>
+                                <NotificationSystem>
+                                  <UIPerformanceEngine>
+                                    <AdaptiveLayoutEngine>
+                                      <UserExperienceModeProvider>
+                                        <ThemeProvider>
+                                          <ErrorBoundary>
+                                            <Layout>
+                                              <RouterProvider router={router} />
+                                            </Layout>
+                                            <ToastContainer />
+                                          </ErrorBoundary>
+                                        </ThemeProvider>
+                                      </UserExperienceModeProvider>
+                                    </AdaptiveLayoutEngine>
+                                  </UIPerformanceEngine>
+                                </NotificationSystem>
+                              </AccessibilityProvider>
+                            </InteractionEngine>
+                          </WorkflowManager>
+                        </PredictiveAssistant>
+                      </ErrorRecoveryUI>
+                    </AnalyticsEngine>
+                  </BusinessIntelligence>
+                </AutomationEngine>
+              </EnterpriseAPIGateway>
+            </GraphQLServer>
+          </ThirdPartyIntegrations>
+        </WebhookManager>
+      </Dashboard>
+    </DashboardProvider>
   );
 }
 

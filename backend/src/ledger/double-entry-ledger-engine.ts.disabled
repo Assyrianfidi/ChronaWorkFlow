@@ -1,0 +1,908 @@
+/**
+ * Autonomous Double-Entry Ledger Engine
+ * Enterprise-grade double-entry bookkeeping with automated balancing
+ */
+
+import { PrismaClient } from '@prisma/client';
+import { Logger } from '../utils/logger';
+import { EventBus } from '../events/event-bus';
+import { AccountingAIEngine } from '../ai/accounting-ai-engine';
+
+export interface JournalEntry {
+  id: string;
+  date: Date;
+  description: string;
+  reference?: string;
+  entries: LedgerEntry[];
+  metadata?: Record<string, any>;
+  status: 'draft' | 'posted' | 'reversed';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface LedgerEntry {
+  id: string;
+  journalEntryId: string;
+  accountId: string;
+  debit: number;
+  credit: number;
+  balance: number;
+  description?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface Account {
+  id: string;
+  name: string;
+  type: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+  subtype?: string;
+  normalBalance: 'debit' | 'credit';
+  balance: number;
+  isActive: boolean;
+  parentAccountId?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface TrialBalance {
+  accountId: string;
+  accountName: string;
+  debitBalance: number;
+  creditBalance: number;
+  normalBalance: 'debit' | 'credit';
+}
+
+export interface BalanceSheet {
+  assets: Array<{
+    accountId: string;
+    accountName: string;
+    balance: number;
+    subcategory?: string;
+  }>;
+  liabilities: Array<{
+    accountId: string;
+    accountName: string;
+    balance: number;
+    subcategory?: string;
+  }>;
+  equity: Array<{
+    accountId: string;
+    accountName: string;
+    balance: number;
+    subcategory?: string;
+  }>;
+  totalAssets: number;
+  totalLiabilities: number;
+  totalEquity: number;
+  asOfDate: Date;
+}
+
+export interface IncomeStatement {
+  revenues: Array<{
+    accountId: string;
+    accountName: string;
+    amount: number;
+    subcategory?: string;
+  }>;
+  expenses: Array<{
+    accountId: string;
+    accountName: string;
+    amount: number;
+    subcategory?: string;
+  }>;
+  totalRevenues: number;
+  totalExpenses: number;
+  netIncome: number;
+  periodStart: Date;
+  periodEnd: Date;
+}
+
+export class DoubleEntryLedgerEngine {
+  private prisma: PrismaClient;
+  private logger: Logger;
+  private eventBus: EventBus;
+  private aiEngine: AccountingAIEngine;
+
+  constructor() {
+    this.prisma = new PrismaClient();
+    this.logger = new Logger('DoubleEntryLedgerEngine');
+    this.eventBus = new EventBus();
+    this.aiEngine = new AccountingAIEngine();
+  }
+
+  /**
+   * Create a new journal entry with automatic double-entry validation
+   */
+  async createJournalEntry(data: {
+    date: Date;
+    description: string;
+    reference?: string;
+    entries: Array<{
+      accountId: string;
+      debit?: number;
+      credit?: number;
+      description?: string;
+    }>;
+    metadata?: Record<string, any>;
+  }): Promise<JournalEntry> {
+    const startTime = performance.now();
+    
+    try {
+      // Validate double-entry principle
+      this.validateDoubleEntry(data.entries);
+      
+      // Validate account existence and status
+      await this.validateAccounts(data.entries);
+      
+      // Calculate running balances
+      const entriesWithBalances = await this.calculateBalances(data.entries);
+      
+      // Create journal entry
+      const journalEntry = await this.prisma.journalEntry.create({
+        data: {
+          date: data.date,
+          description: data.description,
+          reference: data.reference,
+          status: 'posted',
+          metadata: data.metadata || {},
+          entries: {
+            create: entriesWithBalances.map(entry => ({
+              accountId: entry.accountId,
+              debit: entry.debit || 0,
+              credit: entry.credit || 0,
+              balance: entry.balance,
+              description: entry.description,
+              metadata: entry.metadata
+            }))
+          }
+        },
+        include: {
+          entries: {
+            include: {
+              account: true
+            }
+          }
+        }
+      });
+
+      // Update account balances
+      await this.updateAccountBalances(entriesWithBalances);
+      
+      // Emit events
+      this.eventBus.emit('journal.entry.created', journalEntry);
+      entriesWithBalances.forEach(entry => {
+        this.eventBus.emit('account.balance.updated', {
+          accountId: entry.accountId,
+          newBalance: entry.balance,
+          entryId: entry.id
+        });
+      });
+      
+      const duration = performance.now() - startTime;
+      this.logger.info(`Journal entry created in ${duration}ms`, {
+        journalEntryId: journalEntry.id,
+        totalEntries: entriesWithBalances.length
+      });
+      
+      return journalEntry;
+    } catch (error) {
+      this.logger.error('Failed to create journal entry:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Reverse a journal entry (create correcting entry)
+   */
+  async reverseJournalEntry(journalEntryId: string, reason: string): Promise<JournalEntry> {
+    try {
+      // Get original entry
+      const originalEntry = await this.prisma.journalEntry.findUnique({
+        where: { id: journalEntryId },
+        include: { entries: true }
+      });
+      
+      if (!originalEntry) {
+        throw new Error('Journal entry not found');
+      }
+      
+      if (originalEntry.status === 'reversed') {
+        throw new Error('Journal entry is already reversed');
+      }
+      
+      // Create reversing entries
+      const reversingEntries = originalEntry.entries.map(entry => ({
+        accountId: entry.accountId,
+        debit: entry.credit, // Swap debit and credit
+        credit: entry.debit,
+        description: `Reversal: ${entry.description || ''}`
+      }));
+      
+      // Create reversing journal entry
+      const reversingJournalEntry = await this.createJournalEntry({
+        date: new Date(),
+        description: `Reversal of entry ${originalEntry.reference || originalEntry.id}`,
+        reference: `REV-${originalEntry.reference || originalEntry.id}`,
+        entries: reversingEntries,
+        metadata: {
+          reversesEntry: journalEntryId,
+          reversalReason: reason
+        }
+      });
+      
+      // Mark original entry as reversed
+      await this.prisma.journalEntry.update({
+        where: { id: journalEntryId },
+        data: {
+          status: 'reversed',
+          metadata: {
+            ...originalEntry.metadata,
+            reversedBy: reversingJournalEntry.id,
+            reversedAt: new Date(),
+            reversalReason: reason
+          }
+        }
+      });
+      
+      this.eventBus.emit('journal.entry.reversed', {
+        originalEntryId: journalEntryId,
+        reversingEntryId: reversingJournalEntry.id,
+        reason
+      });
+      
+      return reversingJournalEntry;
+    } catch (error) {
+      this.logger.error('Failed to reverse journal entry:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate trial balance
+   */
+  async generateTrialBalance(asOfDate?: Date): Promise<TrialBalance[]> {
+    try {
+      const date = asOfDate || new Date();
+      
+      // Get all active accounts
+      const accounts = await this.prisma.account.findMany({
+        where: { isActive: true },
+        orderBy: { type: 'asc' }
+      });
+      
+      // Calculate balances for each account
+      const trialBalances: TrialBalance[] = [];
+      
+      for (const account of accounts) {
+        const balance = await this.calculateAccountBalance(account.id, date);
+        
+        let debitBalance = 0;
+        let creditBalance = 0;
+        
+        if (account.normalBalance === 'debit') {
+          debitBalance = balance >= 0 ? balance : 0;
+          creditBalance = balance < 0 ? Math.abs(balance) : 0;
+        } else {
+          creditBalance = balance >= 0 ? balance : 0;
+          debitBalance = balance < 0 ? Math.abs(balance) : 0;
+        }
+        
+        trialBalances.push({
+          accountId: account.id,
+          accountName: account.name,
+          debitBalance,
+          creditBalance,
+          normalBalance: account.normalBalance
+        });
+      }
+      
+      // Validate trial balance balances
+      const totalDebits = trialBalances.reduce((sum, tb) => sum + tb.debitBalance, 0);
+      const totalCredits = trialBalances.reduce((sum, tb) => sum + tb.creditBalance, 0);
+      
+      if (Math.abs(totalDebits - totalCredits) > 0.01) {
+        this.logger.warn('Trial balance is out of balance', {
+          totalDebits,
+          totalCredits,
+          difference: totalDebits - totalCredits
+        });
+      }
+      
+      return trialBalances;
+    } catch (error) {
+      this.logger.error('Failed to generate trial balance:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate balance sheet
+   */
+  async generateBalanceSheet(asOfDate?: Date): Promise<BalanceSheet> {
+    try {
+      const date = asOfDate || new Date();
+      const trialBalance = await this.generateTrialBalance(date);
+      
+      // Separate accounts by type
+      const assets = trialBalance
+        .filter(tb => {
+          const account = trialBalance.find(t => t.accountId === tb.accountId);
+          return account?.accountId.startsWith('asset-');
+        })
+        .map(tb => ({
+          accountId: tb.accountId,
+          accountName: tb.accountName,
+          balance: tb.debitBalance - tb.creditBalance,
+          subcategory: this.getSubcategory(tb.accountId)
+        }));
+      
+      const liabilities = trialBalance
+        .filter(tb => tb.accountId.startsWith('liability-'))
+        .map(tb => ({
+          accountId: tb.accountId,
+          accountName: tb.accountName,
+          balance: tb.creditBalance - tb.debitBalance,
+          subcategory: this.getSubcategory(tb.accountId)
+        }));
+      
+      const equity = trialBalance
+        .filter(tb => tb.accountId.startsWith('equity-'))
+        .map(tb => ({
+          accountId: tb.accountId,
+          accountName: tb.accountName,
+          balance: tb.creditBalance - tb.debitBalance,
+          subcategory: this.getSubcategory(tb.accountId)
+        }));
+      
+      const totalAssets = assets.reduce((sum, asset) => sum + asset.balance, 0);
+      const totalLiabilities = liabilities.reduce((sum, liability) => sum + liability.balance, 0);
+      const totalEquity = equity.reduce((sum, eq) => sum + eq.balance, 0);
+      
+      // Validate balance sheet equation
+      if (Math.abs(totalAssets - (totalLiabilities + totalEquity)) > 0.01) {
+        this.logger.warn('Balance sheet is out of balance', {
+          totalAssets,
+          totalLiabilities,
+          totalEquity,
+          difference: totalAssets - (totalLiabilities + totalEquity)
+        });
+      }
+      
+      return {
+        assets,
+        liabilities,
+        equity,
+        totalAssets,
+        totalLiabilities,
+        totalEquity,
+        asOfDate: date
+      };
+    } catch (error) {
+      this.logger.error('Failed to generate balance sheet:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate income statement
+   */
+  async generateIncomeStatement(periodStart: Date, periodEnd: Date): Promise<IncomeStatement> {
+    try {
+      // Get revenue and expense accounts
+      const revenueAccounts = await this.prisma.account.findMany({
+        where: { 
+          type: 'revenue',
+          isActive: true 
+        }
+      });
+      
+      const expenseAccounts = await this.prisma.account.findMany({
+        where: { 
+          type: 'expense',
+          isActive: true 
+        }
+      });
+      
+      // Calculate period balances for revenues
+      const revenues = [];
+      for (const account of revenueAccounts) {
+        const periodBalance = await this.calculatePeriodBalance(account.id, periodStart, periodEnd);
+        if (periodBalance !== 0) {
+          revenues.push({
+            accountId: account.id,
+            accountName: account.name,
+            amount: Math.abs(periodBalance),
+            subcategory: this.getSubcategory(account.id)
+          });
+        }
+      }
+      
+      // Calculate period balances for expenses
+      const expenses = [];
+      for (const account of expenseAccounts) {
+        const periodBalance = await this.calculatePeriodBalance(account.id, periodStart, periodEnd);
+        if (periodBalance !== 0) {
+          expenses.push({
+            accountId: account.id,
+            accountName: account.name,
+            amount: Math.abs(periodBalance),
+            subcategory: this.getSubcategory(account.id)
+          });
+        }
+      }
+      
+      const totalRevenues = revenues.reduce((sum, rev) => sum + rev.amount, 0);
+      const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const netIncome = totalRevenues - totalExpenses;
+      
+      return {
+        revenues,
+        expenses,
+        totalRevenues,
+        totalExpenses,
+        netIncome,
+        periodStart,
+        periodEnd
+      };
+    } catch (error) {
+      this.logger.error('Failed to generate income statement:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create recurring journal entry template
+   */
+  async createRecurringEntryTemplate(data: {
+    name: string;
+    description: string;
+    frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+    entries: Array<{
+      accountId: string;
+      debit?: number;
+      credit?: number;
+      description?: string;
+    }>;
+    startDate: Date;
+    endDate?: Date;
+    nextDueDate: Date;
+  }): Promise<any> {
+    try {
+      // Validate template
+      this.validateDoubleEntry(data.entries);
+      await this.validateAccounts(data.entries);
+      
+      const template = await this.prisma.recurringEntryTemplate.create({
+        data: {
+          name: data.name,
+          description: data.description,
+          frequency: data.frequency,
+          entries: {
+            create: data.entries.map(entry => ({
+              accountId: entry.accountId,
+              debit: entry.debit || 0,
+              credit: entry.credit || 0,
+              description: entry.description
+            }))
+          },
+          startDate: data.startDate,
+          endDate: data.endDate,
+          nextDueDate: data.nextDueDate,
+          isActive: true
+        },
+        include: {
+          entries: {
+            include: {
+              account: true
+            }
+          }
+        }
+      });
+      
+      this.eventBus.emit('recurring.template.created', template);
+      
+      return template;
+    } catch (error) {
+      this.logger.error('Failed to create recurring entry template:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process recurring entries
+   */
+  async processRecurringEntries(): Promise<JournalEntry[]> {
+    try {
+      const dueTemplates = await this.prisma.recurringEntryTemplate.findMany({
+        where: {
+          isActive: true,
+          nextDueDate: {
+            lte: new Date()
+          },
+          OR: [
+            { endDate: null },
+            { endDate: { gte: new Date() } }
+          ]
+        },
+        include: {
+          entries: {
+            include: {
+              account: true
+            }
+          }
+        }
+      });
+      
+      const createdEntries: JournalEntry[] = [];
+      
+      for (const template of dueTemplates) {
+        try {
+          // Create journal entry from template
+          const journalEntry = await this.createJournalEntry({
+            date: new Date(),
+            description: `Recurring: ${template.description}`,
+            reference: `REC-${template.id}`,
+            entries: template.entries.map(entry => ({
+              accountId: entry.accountId,
+              debit: entry.debit,
+              credit: entry.credit,
+              description: entry.description
+            })),
+            metadata: {
+              recurringTemplateId: template.id,
+              autoGenerated: true
+            }
+          });
+          
+          createdEntries.push(journalEntry);
+          
+          // Update next due date
+          const nextDueDate = this.calculateNextDueDate(template.frequency, template.nextDueDate);
+          await this.prisma.recurringEntryTemplate.update({
+            where: { id: template.id },
+            data: { nextDueDate }
+          });
+          
+          // Deactivate template if end date reached
+          if (template.endDate && nextDueDate > template.endDate) {
+            await this.prisma.recurringEntryTemplate.update({
+              where: { id: template.id },
+              data: { isActive: false }
+            });
+          }
+          
+          this.eventBus.emit('recurring.entry.processed', {
+            templateId: template.id,
+            journalEntryId: journalEntry.id
+          });
+          
+        } catch (error) {
+          this.logger.error(`Failed to process recurring template ${template.id}:`, error);
+        }
+      }
+      
+      return createdEntries;
+    } catch (error) {
+      this.logger.error('Failed to process recurring entries:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Validate double-entry principle
+   */
+  private validateDoubleEntry(entries: Array<{ accountId: string; debit?: number; credit?: number }>): void {
+    const totalDebits = entries.reduce((sum, entry) => sum + (entry.debit || 0), 0);
+    const totalCredits = entries.reduce((sum, entry) => sum + (entry.credit || 0), 0);
+    
+    if (Math.abs(totalDebits - totalCredits) > 0.01) {
+      throw new Error(`Double-entry violation: Debits (${totalDebits}) != Credits (${totalCredits})`);
+    }
+    
+    if (totalDebits === 0 && totalCredits === 0) {
+      throw new Error('Journal entry must have at least one non-zero amount');
+    }
+    
+    // Validate each entry has either debit or credit, not both
+    for (const entry of entries) {
+      if (entry.debit && entry.credit) {
+        throw new Error(`Entry for account ${entry.accountId} cannot have both debit and credit`);
+      }
+      if (!entry.debit && !entry.credit) {
+        throw new Error(`Entry for account ${entry.accountId} must have either debit or credit`);
+      }
+    }
+  }
+
+  /**
+   * Validate account existence and status
+   */
+  private async validateAccounts(entries: Array<{ accountId: string }>): Promise<void> {
+    const accountIds = entries.map(e => e.accountId);
+    const accounts = await this.prisma.account.findMany({
+      where: { id: { in: accountIds } }
+    });
+    
+    const foundIds = accounts.map(a => a.id);
+    const missingIds = accountIds.filter(id => !foundIds.includes(id));
+    
+    if (missingIds.length > 0) {
+      throw new Error(`Accounts not found: ${missingIds.join(', ')}`);
+    }
+    
+    const inactiveAccounts = accounts.filter(a => !a.isActive);
+    if (inactiveAccounts.length > 0) {
+      throw new Error(`Inactive accounts: ${inactiveAccounts.map(a => a.id).join(', ')}`);
+    }
+  }
+
+  /**
+   * Calculate running balances for entries
+   */
+  private async calculateBalances(entries: Array<{
+    accountId: string;
+    debit?: number;
+    credit?: number;
+    description?: string;
+  }>): Promise<Array<{
+    accountId: string;
+    debit?: number;
+    credit?: number;
+    balance: number;
+    description?: string;
+  }>> {
+    const entriesWithBalances = [];
+    
+    for (const entry of entries) {
+      const currentBalance = await this.calculateAccountBalance(entry.accountId);
+      const amount = (entry.debit || 0) - (entry.credit || 0);
+      const newBalance = currentBalance + amount;
+      
+      entriesWithBalances.push({
+        ...entry,
+        balance: newBalance
+      });
+    }
+    
+    return entriesWithBalances;
+  }
+
+  /**
+   * Calculate account balance as of specific date
+   */
+  private async calculateAccountBalance(accountId: string, asOfDate?: Date): Promise<number> {
+    const date = asOfDate || new Date();
+    
+    const result = await this.prisma.ledgerEntry.aggregate({
+      where: {
+        accountId,
+        journalEntry: {
+          date: {
+            lte: date
+          }
+        }
+      },
+      _sum: {
+        debit: true,
+        credit: true
+      }
+    });
+    
+    const totalDebits = result._sum.debit || 0;
+    const totalCredits = result._sum.credit || 0;
+    
+    return totalDebits - totalCredits;
+  }
+
+  /**
+   * Calculate account balance for a specific period
+   */
+  private async calculatePeriodBalance(accountId: string, periodStart: Date, periodEnd: Date): Promise<number> {
+    const result = await this.prisma.ledgerEntry.aggregate({
+      where: {
+        accountId,
+        journalEntry: {
+          date: {
+            gte: periodStart,
+            lte: periodEnd
+          }
+        }
+      },
+      _sum: {
+        debit: true,
+        credit: true
+      }
+    });
+    
+    const totalDebits = result._sum.debit || 0;
+    const totalCredits = result._sum.credit || 0;
+    
+    return totalDebits - totalCredits;
+  }
+
+  /**
+   * Update account balances
+   */
+  private async updateAccountBalances(entries: Array<{
+    accountId: string;
+    balance: number;
+  }>): Promise<void> {
+    for (const entry of entries) {
+      await this.prisma.account.update({
+        where: { id: entry.accountId },
+        data: { balance: entry.balance }
+      });
+    }
+  }
+
+  /**
+   * Get subcategory from account ID
+   */
+  private getSubcategory(accountId: string): string {
+    const parts = accountId.split('-');
+    return parts.length > 2 ? parts[1] : 'general';
+  }
+
+  /**
+   * Calculate next due date for recurring entries
+   */
+  private calculateNextDueDate(frequency: string, currentDate: Date): Date {
+    const nextDate = new Date(currentDate);
+    
+    switch (frequency) {
+      case 'daily':
+        nextDate.setDate(nextDate.getDate() + 1);
+        break;
+      case 'weekly':
+        nextDate.setDate(nextDate.getDate() + 7);
+        break;
+      case 'monthly':
+        nextDate.setMonth(nextDate.getMonth() + 1);
+        break;
+      case 'quarterly':
+        nextDate.setMonth(nextDate.getMonth() + 3);
+        break;
+      case 'yearly':
+        nextDate.setFullYear(nextDate.getFullYear() + 1);
+        break;
+    }
+    
+    return nextDate;
+  }
+
+  /**
+   * Auto-balance journal entry
+   */
+  async autoBalanceEntry(entries: Array<{
+    accountId: string;
+    debit?: number;
+    credit?: number;
+    description?: string;
+  }>, balanceAccountId: string): Promise<Array<{
+    accountId: string;
+    debit?: number;
+    credit?: number;
+    description?: string;
+  }>> {
+    const totalDebits = entries.reduce((sum, entry) => sum + (entry.debit || 0), 0);
+    const totalCredits = entries.reduce((sum, entry) => sum + (entry.credit || 0), 0);
+    
+    const difference = totalDebits - totalCredits;
+    
+    if (Math.abs(difference) < 0.01) {
+      return entries; // Already balanced
+    }
+    
+    // Add balancing entry
+    const balancingEntry = {
+      accountId: balanceAccountId,
+      debit: difference > 0 ? 0 : Math.abs(difference),
+      credit: difference > 0 ? difference : 0,
+      description: 'Auto-balancing entry'
+    };
+    
+    return [...entries, balancingEntry];
+  }
+
+  /**
+   * Get account hierarchy
+   */
+  async getAccountHierarchy(): Promise<any> {
+    const accounts = await this.prisma.account.findMany({
+      where: { isActive: true },
+      orderBy: { type: 'asc' }
+    });
+    
+    // Build hierarchy tree
+    const hierarchy = this.buildAccountTree(accounts);
+    
+    return hierarchy;
+  }
+
+  /**
+   * Build account tree from flat list
+   */
+  private buildAccountTree(accounts: Account[]): any {
+    const accountMap = new Map(accounts.map(a => [a.id, { ...a, children: [] }]));
+    const rootAccounts: any[] = [];
+    
+    for (const account of accounts) {
+      const accountNode = accountMap.get(account.id)!;
+      
+      if (account.parentAccountId) {
+        const parent = accountMap.get(account.parentAccountId);
+        if (parent) {
+          parent.children.push(accountNode);
+        }
+      } else {
+        rootAccounts.push(accountNode);
+      }
+    }
+    
+    return rootAccounts;
+  }
+
+  /**
+   * Validate period closing
+   */
+  async validatePeriodClosing(periodEnd: Date): Promise<{
+    isValid: boolean;
+    issues: string[];
+    recommendations: string[];
+  }> {
+    const issues: string[] = [];
+    const recommendations: string[] = [];
+    
+    try {
+      // Check for unposted entries
+      const unpostedEntries = await this.prisma.journalEntry.count({
+        where: { 
+          status: 'draft',
+          date: { lte: periodEnd }
+        }
+      });
+      
+      if (unpostedEntries > 0) {
+        issues.push(`${unpostedEntries} draft journal entries exist before period end`);
+        recommendations.push('Post all draft entries before closing period');
+      }
+    
+      // Check trial balance
+      const trialBalance = await this.generateTrialBalance(periodEnd);
+      const totalDebits = trialBalance.reduce((sum, tb) => sum + tb.debitBalance, 0);
+      const totalCredits = trialBalance.reduce((sum, tb) => sum + tb.creditBalance, 0);
+      
+      if (Math.abs(totalDebits - totalCredits) > 0.01) {
+        issues.push('Trial balance is out of balance');
+        recommendations.push('Review and correct journal entries to balance trial balance');
+      }
+      
+      // Check for unusual balances
+      for (const tb of trialBalance) {
+        if (tb.accountId.startsWith('asset-') && tb.creditBalance > tb.debitBalance) {
+          issues.push(`Asset account ${tb.accountName} has credit balance`);
+          recommendations.push(`Review ${tb.accountName} for potential errors`);
+        }
+        
+        if (tb.accountId.startsWith('expense-') && tb.debitBalance < tb.creditBalance) {
+          issues.push(`Expense account ${tb.accountName} has credit balance`);
+          recommendations.push(`Review ${tb.accountName} for potential errors`);
+        }
+      }
+      
+      return {
+        isValid: issues.length === 0,
+        issues,
+        recommendations
+      };
+    } catch (error) {
+      this.logger.error('Failed to validate period closing:', error);
+      return {
+        isValid: false,
+        issues: ['Validation failed due to system error'],
+        recommendations: ['Contact system administrator']
+      };
+    }
+  }
+}
+
+export default DoubleEntryLedgerEngine;

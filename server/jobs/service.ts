@@ -14,6 +14,11 @@ export class JobService {
     this.setupQueueEvents();
   }
 
+  async initialize(): Promise<void> {
+    // Initialization is done in constructor, but we provide this method for compatibility
+    logger.info('Job service initialized');
+  }
+
   private initializeQueues() {
     logger.info('Initializing job queues...');
     queues.forEach(queue => {
@@ -36,8 +41,12 @@ export class JobService {
         this.updateWorkerStats(worker, 'processed');
       });
 
-      worker.on('failed', (job: Job, err: Error) => {
-        logger.error(`Job ${job.id} failed in queue ${queueName}:`, err);
+      worker.on('failed', (job: Job | undefined, err: Error) => {
+        if (job) {
+          logger.error(`Job ${job.id} failed in queue ${queueName}:`, err);
+        } else {
+          logger.error(`Job failed in queue ${queueName}:`, err);
+        }
         this.updateJobStats(queueName, 'failed');
         this.updateWorkerStats(worker, 'failed');
       });
@@ -147,7 +156,9 @@ export class JobService {
     // Reset other statuses when updating one
     Object.keys(currentStats).forEach(key => {
       if (key !== 'queueName' && key !== status) {
-        currentStats[key as keyof JobStats] = 0;
+        if (key !== 'queueName') {
+          currentStats[key as keyof Omit<JobStats, 'queueName'>] = 0;
+        }
       }
     });
 

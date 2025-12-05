@@ -1,0 +1,125 @@
+// @ts-check
+import { fileURLToPath } from 'url';
+import path from 'path';
+import { execSync } from 'child_process';
+import { dirname, join } from 'path';
+import { glob } from 'glob';
+import { db } from './index.js';
+import { sql } from 'drizzle-orm';
+import fs from 'fs/promises';
+
+// Get current file and directory paths
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+interface Migration {
+  up: () => Promise<void>;
+  down: () => Promise<void>;
+}
+
+async function loadMigrations(): Promise<{ [key: string]: Migration }> {
+  const migrationsDir = path.join(__dirname, 'migrations');
+  const migrationFiles = await glob('**/*.js', { cwd: migrationsDir, absolute: true });
+  
+  const migrations: { [key: string]: Migration } = {};
+  
+  for (const file of migrationFiles) {
+    const module = await import(file);
+    const migrationName = path.basename(file, '.js');
+    migrations[migrationName] = {
+      up: module.up,
+      down: module.down
+    };
+  }
+  
+  return Object.entries(migrations)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {} as { [key: string]: Migration });
+}
+
+async function ensureMigrationsTable() {
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS _migrations (
+      name TEXT PRIMARY KEY,
+      run_at TIMESTAMP NOT NULL DEFAULT NOW()
+    )
+  `);
+}
+
+async function getCompletedMigrations(): Promise<Set<string>> {
+  try {
+    const result = await db.execute<{ name: string }>('SELECT name FROM _migrations');
+    // Type assertion for the result
+    const rows = (result as unknown as { rows: { name: string }[] }).rows;
+    return new Set(rows.map(row => row.name));
+  } catch (error) {
+    // If the table doesn't exist yet, return an empty set
+    const pgError = error as { code?: string };
+    if (pgError.code === '42P01') { // table does not exist
+      return new Set<string>();
+    }
+    throw error;
+  }
+}
+
+async function markMigrationComplete(name: string) {
+  // Use a template literal with parameters to avoid type issues
+  await db.execute(
+    sql.raw(`INSERT INTO _migrations (name) VALUES ('${name}') ON CONFLICT (name) DO NOTHING`)
+  );
+}
+
+async function runMigrations() {
+  console.log('🔍 Loading migrations...');
+  
+  await ensureMigrationsTable();
+  const completedMigrations = await getCompletedMigrations();
+  const migrations = await loadMigrations();
+  
+  // Ensure migrations directory exists
+  const migrationsDir = path.join(__dirname, 'migrations');
+  try {
+    await fs.access(migrationsDir);
+  } catch (error) {
+    console.log('No migrations directory found, creating...');
+    await fs.mkdir(migrationsDir, { recursive: true });
+  }
+  
+  console.log(`📊 Found ${Object.keys(migrations).length} migrations, ${completedMigrations.size} already applied`);
+  
+  let applied = 0;
+  
+  for (const [name, migration] of Object.entries(migrations)) {
+    if (!completedMigrations.has(name)) {
+      console.log(`🚀 Applying migration: ${name}`);
+      try {
+        await migration.up();
+        await markMigrationComplete(name);
+        applied++;
+        console.log(`✅ Applied migration: ${name}`);
+      } catch (error) {
+        console.error(`❌ Failed to apply migration ${name}:`, error);
+        throw error;
+      }
+    }
+  }
+  
+  if (applied === 0) {
+    console.log('✅ Database is up to date, no new migrations to apply');
+  } else {
+    console.log(`✅ Successfully applied ${applied} migration(s)`);
+  }
+}
+
+runMigrations()
+  .then(() => {
+    console.log('✨ All migrations completed successfully');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('❌ Migration failed:', error);
+    process.exit(1);
+  });

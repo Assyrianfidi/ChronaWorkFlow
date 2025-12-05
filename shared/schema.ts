@@ -1296,6 +1296,87 @@ export const insertBackupJobSchema = createInsertSchema(backupJobs).omit({
   createdAt: true
 });
 
+// Insert schemas for all tables
+export const insertCompanySchema = createInsertSchema(companies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Create a base user schema and then extend it
+export const baseUserSchema = createInsertSchema(users);
+
+export const insertUserSchema = baseUserSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+}).extend({
+  // Add any additional validation or transformation here
+});
+
+export const insertAccountSchema = createInsertSchema(accounts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertCustomerSchema = createInsertSchema(customers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertVendorSchema = createInsertSchema(vendors).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertTransactionSchema = createInsertSchema(transactions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertTransactionLineSchema = createInsertSchema(transactionLines).omit({
+  id: true,
+  createdAt: true
+});
+
+// Create a base invoice schema and then extend it
+export const baseInvoiceSchema = createInsertSchema(invoices);
+
+export const insertInvoiceSchema = baseInvoiceSchema.omit({
+  id: true,
+  invoiceNumber: true,
+  createdAt: true,
+  updatedAt: true
+}).extend({
+  // Add any additional validation or transformation here
+});
+
+export const insertInvoiceItemSchema = createInsertSchema(invoiceItems).omit({
+  id: true,
+  createdAt: true
+});
+
+// Create a base payment schema and then extend it
+export const basePaymentSchema = createInsertSchema(payments);
+
+export const insertPaymentSchema = basePaymentSchema.omit({
+    id: true,
+    createdAt: true
+  }).extend({
+    // Add any additional validation or transformation here
+  });
+
+export const insertBankTransactionSchema = createInsertSchema(bankTransactions).omit({
+  id: true,
+  isReconciled: true,
+  reconciledAt: true,
+  createdAt: true
+});
+
 export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
   id: true,
   createdAt: true

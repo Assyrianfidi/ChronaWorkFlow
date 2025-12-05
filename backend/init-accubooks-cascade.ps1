@@ -2,9 +2,7 @@ Write-Host "Initializing AccuBooks Enterprise Cascade Setup..."
 
 # STEP 1: Set up Environment Variables
 $PostgresUser = "postgres"
-$PostgresPassword = Read-Host "Enter your PostgreSQL password" -AsSecureString
-$UnsecureBSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($PostgresPassword)
-$plainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($UnsecureBSTR)
+$PostgresPassword = "Fkhouch8"
 $PostgresHost = "localhost"
 $PostgresPort = "5432"
 $PostgresDB = "AccuBooks"
@@ -12,7 +10,7 @@ $PostgresDB = "AccuBooks"
 # Create or overwrite .env in the backend directory
 $envFilePath = Join-Path -Path $PSScriptRoot -ChildPath ".env"
 # Use braces for host/port to avoid ambiguous variable parsing
-$databaseUrl = "postgresql://$PostgresUser:$plainPassword@${PostgresHost}:${PostgresPort}/${PostgresDB}"
+$databaseUrl = "postgresql://$PostgresUser:$PostgresPassword@${PostgresHost}:${PostgresPort}/${PostgresDB}"
 $envContent = @()
 $envContent += "DATABASE_URL=`"$databaseUrl`""
 $envContent += "NODE_ENV=development"
@@ -66,9 +64,7 @@ Write-Host "Initializing AccuBooks Enterprise Cascade Setup..."
 
 # STEP 1: Set up Environment Variables
 $PostgresUser = "postgres"
-$PostgresPassword = Read-Host "Enter your PostgreSQL password" -AsSecureString
-$UnsecureBSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($PostgresPassword)
-$plainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($UnsecureBSTR)
+$PostgresPassword = "Fkhouch8"
 $PostgresHost = "localhost"
 $PostgresPort = "5432"
 $PostgresDB = "AccuBooks"
@@ -76,7 +72,7 @@ $PostgresDB = "AccuBooks"
 # Create or overwrite .env in the backend directory
 $envFilePath = Join-Path -Path $PSScriptRoot -ChildPath ".env"
 # Use braces for host/port to avoid ambiguous variable parsing
-$databaseUrl = "postgresql://$PostgresUser:$plainPassword@${PostgresHost}:${PostgresPort}/${PostgresDB}"
+$databaseUrl = "postgresql://$PostgresUser:$PostgresPassword@${PostgresHost}:${PostgresPort}/${PostgresDB}"
 $envContent = @()
 $envContent += "DATABASE_URL=`"$databaseUrl`""
 $envContent += "NODE_ENV=development"
@@ -130,7 +126,7 @@ Write-Host "🔧 Initializing AccuBooks Enterprise Cascade Setup..."
 
 # STEP 1️⃣: Set up Environment Variables
 $PostgresUser = "postgres"
-$PostgresPassword = Read-Host "Enter your PostgreSQL password"
+$PostgresPassword = "Fkhouch8"
 $PostgresHost = "localhost"
 $PostgresPort = "5432"
 $PostgresDB = "AccuBooks"

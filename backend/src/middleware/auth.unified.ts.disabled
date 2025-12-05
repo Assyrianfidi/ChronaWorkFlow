@@ -1,0 +1,242 @@
+import { Request, Response, NextFunction } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { getServerSession } from 'next-auth';
+import { authConfig } from '../config/auth.config';
+import { PrismaClient } from '@prisma/client';
+import { ApiError } from '../utils/errors';
+
+const prisma = new PrismaClient();
+
+// Extend Express Request type
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        role: string;
+        isActive: boolean;
+        currentCompanyId?: string | null;
+      };
+    }
+  }
+}
+
+/**
+ * Rate limiting for auth endpoints
+ */
+export const authLimiter = (maxRequests: number = 5, windowMs: number = 15 * 60 * 1000) => {
+  const requests = new Map();
+  
+  return (req: Request, res: Response, next: NextFunction) => {
+    const key = req.ip || 'unknown';
+    const now = Date.now();
+    const windowStart = now - windowMs;
+    
+    // Clean old entries
+    if (requests.has(key)) {
+      const userRequests = requests.get(key).filter((time: number) => time > windowStart);
+      requests.set(key, userRequests);
+    } else {
+      requests.set(key, []);
+    }
+    
+    // Check current requests
+    const userRequests = requests.get(key);
+    if (userRequests.length >= maxRequests) {
+      return res.status(StatusCodes.TOO_MANY_REQUESTS).json({
+        success: false,
+        message: 'Too many requests. Please try again later.',
+      });
+    }
+    
+    // Add current request
+    userRequests.push(now);
+    next();
+  };
+};
+
+/**
+ * CSRF Protection middleware
+ */
+export const csrfProtection = (req: Request, res: Response, next: NextFunction) => {
+  // Skip CSRF check for GET, HEAD, OPTIONS
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    return next();
+  }
+  
+  // Skip for API routes that use JWT authentication
+  if (req.path.startsWith('/api/auth/')) {
+    return next();
+  }
+  
+  const csrfToken = req.headers['x-csrf-token'] || req.body._csrf;
+  
+  if (!csrfToken || csrfToken !== req.cookies['XSRF-TOKEN']) {
+    throw new ApiError(StatusCodes.FORBIDDEN, 'Invalid CSRF token');
+  }
+  
+  next();
+};
+
+/**
+ * Authentication middleware using NextAuth
+ */
+export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Get session from NextAuth
+    const session = await getServerSession(authConfig as any);
+    
+    if (!session || !session.user) {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Not authenticated');
+    }
+    
+    // Get fresh user data from database
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email! },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        currentCompanyId: true,
+      },
+    });
+    
+    if (!user || !user.isActive) {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, 'User not found or inactive');
+    }
+    
+    // Attach user to request
+    req.user = user;
+    
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Role-based authorization middleware
+ */
+export const authorize = (...roles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return next(new ApiError(StatusCodes.UNAUTHORIZED, 'Authentication required'));
+    }
+    
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ApiError(
+          StatusCodes.FORBIDDEN,
+          `User role ${req.user.role} is not authorized to access this route`
+        )
+      );
+    }
+    
+    next();
+  };
+};
+
+/**
+ * Resource ownership checker
+ */
+export const checkOwnership = (model: any, paramName: string = 'id') => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.user) {
+        throw new ApiError(StatusCodes.UNAUTHORIZED, 'Not authenticated');
+      }
+      
+      const resourceId = req.params[paramName];
+      
+      // Admins can access any resource
+      if (req.user.role === 'ADMIN') {
+        return next();
+      }
+      
+      // Check ownership based on the model
+      let resource;
+      if (model === 'reconciliationReport') {
+        resource = await prisma.reconciliationReport.findUnique({
+          where: { id: resourceId },
+          select: { userId: true },
+        });
+      } else if (model === 'inventoryItem') {
+        resource = await prisma.inventoryItem.findUnique({
+          where: { id: resourceId },
+          select: { createdById: true },
+        });
+        // For inventory items, check createdById instead of userId
+        if (resource && 'createdById' in resource) {
+          if (resource.createdById !== req.user.id) {
+            throw new ApiError(
+              StatusCodes.FORBIDDEN,
+              'Not authorized to access this resource'
+            );
+          }
+          return next();
+        }
+      }
+      
+      if (!resource || ('userId' in resource && resource.userId !== req.user.id)) {
+        throw new ApiError(
+          StatusCodes.FORBIDDEN,
+          'Not authorized to access this resource'
+        );
+      }
+      
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+};
+
+/**
+ * Company context middleware
+ */
+export const requireCompanyContext = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) {
+      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Authentication required');
+    }
+    
+    // Check if user has a current company
+    if (!req.user.currentCompanyId) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        'No company context selected. Please select a company first.'
+      );
+    }
+    
+    // Verify company exists and user has access
+    const company = await prisma.company.findFirst({
+      where: {
+        id: req.user.currentCompanyId,
+        users: {
+          some: {
+            id: req.user.id,
+          },
+        },
+      },
+    });
+    
+    if (!company) {
+      throw new ApiError(
+        StatusCodes.FORBIDDEN,
+        'Access to the selected company is not permitted'
+      );
+    }
+    
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  authenticate as auth,
+  authorize as authorizeRoles,
+};

@@ -9,10 +9,10 @@ services:
       - .:/app
       - /app/node_modules
     ports:
-      - "3000:3000"
+      - 3000:3000
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:<REDACTED_DB_PASSWORD>@postgres:5432/accubooks_db
+      - DATABASE_URL=postgresql://postgres:Fkhouch8@localhost:5432/AccuBooks
       - REDIS_URL=redis://redis:6379
     depends_on:
       - postgres
@@ -24,10 +24,10 @@ services:
     container_name: accubooks-postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: "<REDACTED_DB_PASSWORD>"
-      POSTGRES_DB: accubooks_db
+      POSTGRES_PASSWORD: Fkhouch8
+      POSTGRES_DB: AccuBooks
     ports:
-      - "5432:5432"
+      - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -35,7 +35,7 @@ services:
     image: redis:7-alpine
     container_name: accubooks-redis
     ports:
-      - "6379:6379"
+      - 6379:6379
     volumes:
       - redis_data:/data
 

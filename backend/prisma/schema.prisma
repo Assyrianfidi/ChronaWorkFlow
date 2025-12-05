@@ -3,176 +3,341 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = []
 }
+
+// ERD generator disabled for Docker builds
+// generator erd {
+//   provider = "prisma-erd-generator"
+//   output   = "../docs/erd.svg"
+//   theme    = "default"
+//   includeRelationFromFields = true
+// }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// User model with authentication
+enum Role {
+  USER
+  ADMIN
+  MANAGER
+  AUDITOR
+  INVENTORY_MANAGER
+}
+
+enum InventoryHistoryType {
+  INITIAL
+  RECEIVED
+  SOLD
+  ADJUSTMENT
+  RETURNED
+  DAMAGED
+  DELETED
+  TRANSFER_IN
+  TRANSFER_OUT
+}
+
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  password  String
-  firstName String
-  lastName  String
-  role      Role      @default(BUSINESS_USER)
-  isActive  Boolean   @default(true)
-  lastLogin DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id               Int                 @id @default(autoincrement())
+  name             String
+  email            String              @unique(map: "users_email_unique")
+  password         String
+  role             Role                @default(USER)
+  isActive         Boolean             @default(true)
+  passwordChangedAt DateTime?
+  lastLogin        DateTime?
+  refreshTokens    RefreshToken[]
+  reports          ReconciliationReport[]
+  inventoryItems   InventoryItem[]     @relation("CreatedBy")
+  inventoryHistory InventoryHistory[]
+  companies        CompanyMember[]
+  currentCompanyId String?
+  currentCompany    Company?            @relation("UserCurrentCompany", fields: [currentCompanyId], references: [id])
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  deletedAt        DateTime?
 
-  // Relations
-  ownedBusinesses     Business[]       @relation("BusinessOwnership")
-  businessMemberships BusinessMember[]
-  refreshTokens       RefreshToken[]
-
+  @@index([role])
+  @@index([isActive])
+  @@index([currentCompanyId])
   @@map("users")
 }
 
-// Business/Organization model
-model Business {
-  id                    String                 @id @default(uuid())
-  name                  String
-  description           String?
-  email                 String
-  phone                 String?
-  address               String?
-  city                  String?
-  country               String?
-  postalCode            String?
-  taxId                 String?
-  isActive              Boolean                @default(true)
-  type                  String?
-  industry              String?
-  owner                 User                   @relation("BusinessOwnership", fields: [ownerId], references: [id])
-  ownerId               String
-  members               BusinessMember[]
-  clients               Client[]
-  invoices              Invoice[]
-  reconciliationReports ReconciliationReport[]
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-
-  @@map("businesses")
-}
-
-// Business Member (join table with role)
-model BusinessMember {
-  id         String   @id @default(uuid())
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
-  business   Business @relation(fields: [businessId], references: [id])
-  businessId String
-  role       String   @default("member") // owner | admin | accountant | member
-  createdAt  DateTime @default(now())
-
-  @@unique([userId, businessId])
-  @@map("business_members")
-}
-
-// Client model
-model Client {
-  id         String   @id @default(uuid())
-  name       String
-  email      String
-  phone      String?
-  address    String?
-  city       String?
-  country    String?
-  postalCode String?
-  taxId      String?
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  // Relations
-  business   Business  @relation(fields: [businessId], references: [id])
-  businessId String
-  invoices   Invoice[]
-
-  @@map("clients")
-}
-
-// Invoice model
-model Invoice {
-  id            String        @id @default(uuid())
-  invoiceNumber String        @unique
-  issueDate     DateTime      @default(now())
-  dueDate       DateTime
-  status        InvoiceStatus @default(DRAFT)
-  notes         String?
-  subtotal      Decimal       @default(0)
-  taxAmount     Decimal       @default(0)
-  total         Decimal       @default(0)
-  currency      String        @default("USD")
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-
-  // Relations
-  business   Business      @relation(fields: [businessId], references: [id])
-  businessId String
-  client     Client        @relation(fields: [clientId], references: [id])
-  clientId   String
-  items      InvoiceItem[]
-  payments   Payment[]
-
-  @@map("invoices")
-}
-
-// Invoice items
-model InvoiceItem {
-  id          String  @id @default(uuid())
-  description String
-  quantity    Decimal @default(1)
-  unitPrice   Decimal
-  amount      Decimal
-  taxRate     Decimal @default(0)
-  taxAmount   Decimal @default(0)
-  total       Decimal
-
-  // Relations
-  invoice   Invoice @relation(fields: [invoiceId], references: [id])
-  invoiceId String
-
-  @@map("invoice_items")
-}
-
-// Payments
-model Payment {
-  id            String        @id @default(uuid())
-  amount        Decimal
-  paymentDate   DateTime      @default(now())
-  paymentMethod PaymentMethod
-  reference     String?
-  notes         String?
-
-  // Relations
-  invoice   Invoice @relation(fields: [invoiceId], references: [id])
-  invoiceId String
-
-  @@map("payments")
-}
-
-// Refresh tokens for JWT
 model RefreshToken {
-  id        String   @id @default(uuid())
-  token     String   @unique
-  userId    String
+  id        Int      @id @default(autoincrement())
+  tokenHash String   @unique
+  userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@index([userId])
+  @@index([expiresAt])
   @@map("refresh_tokens")
 }
 
-// Enums
-enum Role {
-  SUPER_ADMIN
-  ADMIN
-  ACCOUNTANT
-  BUSINESS_USER
+model ReconciliationReport {
+  id        Int      @id @default(autoincrement())
+  title     String
+  amount    Float
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([title, userId], name: "title_userId")
+  @@index([userId])
+  @@index([createdAt])
+  @@map("reconciliation_reports")
+}
+
+model Category {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  description String?
+  items       InventoryItem[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+
+  @@index([name])
+  @@map("categories")
+}
+
+model Supplier {
+  id          Int             @id @default(autoincrement())
+  name        String
+  email       String?
+  phone       String?
+  address     String?
+  items       InventoryItem[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+
+  @@index([name])
+  @@index([email])
+  @@map("suppliers")
+}
+
+model InventoryItem {
+  id            String              @id @default(uuid())
+  name          String
+  description   String?
+  sku           String              @unique
+  barcode       String?             @unique
+  category      Category?           @relation(fields: [categoryId], references: [id])
+  categoryId    Int?
+  supplier      Supplier?           @relation(fields: [supplierId], references: [id])
+  supplierId    Int?
+  quantity      Int                 @default(0)
+  unit          String
+  costPrice     Decimal             @default(0)
+  sellingPrice  Decimal             @default(0)
+  reorderPoint  Int                 @default(0)
+  location      String?
+  notes         String?
+  isActive      Boolean             @default(true)
+  tenantId      String
+  createdBy     User                @relation("CreatedBy", fields: [createdById], references: [id])
+  createdById   Int
+  history       InventoryHistory[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  deletedAt     DateTime?
+
+  @@index([sku])
+  @@index([barcode])
+  @@index([categoryId])
+  @@index([supplierId])
+  @@index([tenantId])
+  @@index([isActive])
+  @@map("inventory_items")
+}
+
+model InventoryHistory {
+  id              Int                 @id @default(autoincrement())
+  item            InventoryItem       @relation(fields: [itemId], references: [id])
+  itemId          String
+  quantity        Int
+  previousQuantity Int
+  type            InventoryHistoryType
+  referenceId     String?
+  notes           String?
+  createdBy       User                @relation(fields: [createdById], references: [id])
+  createdById     Int
+  createdAt       DateTime            @default(now())
+
+  @@index([itemId])
+  @@index([type])
+  @@index([referenceId])
+  @@index([createdAt])
+  @@map("inventory_history")
+}
+
+model Company {
+  id              String     @id @default(uuid())
+  name            String
+  description     String?
+  logo            String?
+  website         String?
+  isActive        Boolean    @default(true)
+  members         CompanyMember[]
+  accounts        Account[]
+  currentUsers    User[]     @relation("UserCurrentCompany")
+  transactions    Transaction[]
+  invoices        Invoice[]
+  clients         Client[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  deletedAt       DateTime?
+
+  @@index([name])
+  @@index([isActive])
+  @@map("companies")
+}
+
+model CompanyMember {
+  id        String   @id @default(uuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   @default("MEMBER")
+  joinedAt  DateTime @default(now())
+
+  @@unique([companyId, userId])
+  @@index([userId])
+  @@index([role])
+  @@map("company_members")
+}
+
+model Account {
+  id          String     @id @default(uuid())
+  companyId   String
+  company     Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  code        String
+  name        String
+  type        AccountType
+  parentId    String?
+  parent      Account?   @relation("AccountHierarchy", fields: [parentId], references: [id])
+  children    Account[]  @relation("AccountHierarchy")
+  balance     Decimal    @default(0)
+  description String?
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
+  transactionLines TransactionLine[]
+  invoiceItems InvoiceItem[]
+
+  @@unique([companyId, code])
+  @@index([companyId])
+  @@index([type])
+  @@index([parentId])
+  @@index([isActive])
+  @@index([name])
+  @@map("accounts")
+}
+
+model Transaction {
+  id               String      @id @default(uuid())
+  transactionNumber String     @unique
+  date             DateTime
+  type             TransactionType
+  totalAmount      Decimal
+  description      String?
+  companyId        String
+  company          Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  lines            TransactionLine[]
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@index([companyId])
+  @@index([date])
+  @@index([type])
+  @@index([transactionNumber])
+  @@map("transactions")
+}
+
+model TransactionLine {
+  id            String      @id @default(uuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  accountId     String
+  account       Account     @relation(fields: [accountId], references: [id])
+  debit         Decimal     @default(0)
+  credit        Decimal     @default(0)
+  description   String?
+
+  @@index([transactionId])
+  @@index([accountId])
+  @@map("transaction_lines")
+}
+
+model Invoice {
+  id            String      @id @default(uuid())
+  invoiceNumber String      @unique
+  date          DateTime
+  dueDate       DateTime
+  totalAmount   Decimal
+  status        InvoiceStatus @default(DRAFT)
+  companyId     String
+  company       Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  clientId      String?
+  client        Client?     @relation(fields: [clientId], references: [id])
+  items         InvoiceItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([companyId])
+  @@index([status])
+  @@index([date])
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String    @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Decimal
+  unitPrice   Decimal
+  totalAmount Decimal
+  accountId   String
+  account     Account   @relation(fields: [accountId], references: [id])
+
+  @@index([invoiceId])
+  @@index([accountId])
+  @@map("invoice_items")
+}
+
+model Client {
+  id        String    @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  companyId String
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoices  Invoice[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([companyId])
+  @@map("clients")
+}
+
+enum TransactionType {
+  JOURNAL_ENTRY
+  INVOICE
+  PAYMENT
+  BILL
+  EXPENSE
+  ADJUSTMENT
 }
 
 enum InvoiceStatus {
@@ -181,36 +346,65 @@ enum InvoiceStatus {
   PAID
   OVERDUE
   CANCELLED
-  REFUNDED
 }
 
-enum PaymentMethod {
-  CASH
-  CREDIT_CARD
-  BANK_TRANSFER
-  CHECK
-  OTHER
+model Activity {
+  id          String   @id @default(uuid())
+  type        String
+  action      String
+  userId      String
+  userName    String
+  description String
+  metadata    Json?
+  timestamp   DateTime @default(now())
+  
+  @@map("activities")
 }
 
-// Reconciliation report stored after each run
-model ReconciliationReport {
-  id                 String   @id @default(uuid())
-  businessId         String
-  reportDate         DateTime @default(now())
-  fromDate           DateTime
-  toDate             DateTime
-  status             String   @default("COMPLETED")
-  totalInvoices      Int      @default(0)
-  totalPayments      Int      @default(0)
-  totalInvoiceAmount Float?
-  totalPaymentAmount Float?
-  discrepancies      Int      @default(0)
-  summary            Json?
-  createdBy          String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+model ActivityNotification {
+  id          String   @id @default(uuid())
+  userId      String
+  activityId  String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  @@map("activity_notifications")
+}
 
-  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+model ActivityAggregation {
+  id            String   @id @default(uuid())
+  userId        String
+  activityType  String
+  count         Int      @default(0)
+  lastActivity  DateTime @default(now())
+  
+  @@map("activity_aggregations")
+}
 
-  @@map("reconciliation_reports")
+model NotificationPreference {
+  id     String @id @default(uuid())
+  userId String
+  type   String
+  enabled Boolean @default(true)
+  
+  @@map("notification_preferences")
+}
+
+model ActivityStream {
+  id          String   @id @default(uuid())
+  userId      String
+  event       String
+  data        Json?
+  timestamp   DateTime @default(now())
+  processed   Boolean  @default(false)
+  
+  @@map("activity_streams")
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
 }

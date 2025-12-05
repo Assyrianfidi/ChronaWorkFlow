@@ -1,0 +1,195 @@
+import { and, asc, desc, eq, gt, gte, inArray, lt, lte, not, notInArray, or, SQL, sql } from 'drizzle-orm';
+import { PgColumn, PgTableWithColumns } from 'drizzle-orm/pg-core';
+import { PostgresError } from 'postgres';
+import { db } from '../../db/index.js';
+
+type Table = PgTableWithColumns<any>;
+type Column = PgColumn<any, any, any>;
+
+export class BaseRepository<T extends Record<string, any>, TInsert = Omit<T, 'id' | 'createdAt' | 'updatedAt'>> {
+  constructor(
+    protected readonly table: Table,
+    protected readonly primaryKey: keyof T = 'id' as keyof T
+  ) {}
+
+  // Basic CRUD operations
+  async findAll(where?: SQL): Promise<T[]> {
+    try {
+      const query = db.select().from(this.table);
+      const results = where ? await query.where(where) : await query;
+      return results as T[];
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async findOne(where: SQL): Promise<T | null> {
+    try {
+      const results = await db.select().from(this.table).where(where).limit(1);
+      return (results[0] as T) || null;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async findById(id: string | number): Promise<T | null> {
+    try {
+      const results = await db
+        .select()
+        .from(this.table)
+        .where(eq(this.table[this.primaryKey as string] as any, id as any));
+      return (results[0] as T) || null;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async create(data: TInsert): Promise<T> {
+    try {
+      const now = new Date();
+      const result = await db
+        .insert(this.table)
+        .values({
+          ...(data as any),
+          createdAt: now,
+          updatedAt: now,
+        } as any)
+        .returning();
+      return result[0] as T;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async update(id: string | number, data: Partial<T>): Promise<T | null> {
+    try {
+      const now = new Date();
+      const result = await db
+        .update(this.table)
+        .set({
+          ...(data as any),
+          updatedAt: now,
+        } as any)
+        .where(eq(this.table[this.primaryKey as string] as any, id as any))
+        .returning();
+      return (result[0] as T) || null;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async delete(id: string | number): Promise<boolean> {
+    try {
+      const result = await db
+        .delete(this.table)
+        .where(eq(this.table[this.primaryKey as string] as any, id as any));
+      // Type assertion to handle the Postgres result type
+      return (result as unknown as { rowCount: number }).rowCount > 0;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  // Query builder helpers
+  eq(column: Column, value: any): SQL {
+    return eq(column, value);
+  }
+
+  and(...conditions: SQL[]): SQL {
+    return and(...conditions);
+  }
+
+  or(...conditions: SQL[]): SQL {
+    return or(...conditions);
+  }
+
+  not(condition: SQL): SQL {
+    return not(condition);
+  }
+
+  in(column: Column, values: any[]): SQL {
+    return inArray(column, values);
+  }
+
+  notIn(column: Column, values: any[]): SQL {
+    return notInArray(column, values);
+  }
+
+  lt(column: Column, value: any): SQL {
+    return lt(column, value);
+  }
+
+  lte(column: Column, value: any): SQL {
+    return lte(column, value);
+  }
+
+  gt(column: Column, value: any): SQL {
+    return gt(column, value);
+  }
+
+  gte(column: Column, value: any): SQL {
+    return gte(column, value);
+  }
+
+  asc(column: Column): SQL {
+    return asc(column);
+  }
+
+  desc(column: Column): SQL {
+    return desc(column);
+  }
+
+  // Error handling
+  protected handleError(error: unknown): never {
+    if (error instanceof PostgresError) {
+      // Handle specific PostgreSQL errors
+      switch (error.code) {
+        case '23505': // Unique violation
+          throw new Error('A record with this data already exists');
+        case '23503': // Foreign key violation
+          throw new Error('Referenced record not found');
+        default:
+          console.error('Database error:', error);
+          throw new Error('A database error occurred');
+      }
+    }
+    console.error('Unexpected error:', error);
+    throw error;
+  }
+
+  // Pagination helper
+  async paginate(
+    page: number = 1,
+    limit: number = 10,
+    where?: SQL
+  ): Promise<{ data: T[]; total: number; page: number; totalPages: number }> {
+    try {
+      const offset = (page - 1) * limit;
+      
+      const query = db.select().from(this.table).limit(limit).offset(offset);
+      const countQuery = db.select({ count: sql<number>`count(*)::int` }).from(this.table);
+
+      const [data, totalResult] = await Promise.all([
+        where ? query.where(where) : query,
+        where ? countQuery.where(where) : countQuery,
+      ]);
+
+      const total = totalResult[0]?.count || 0;
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        data: data as T[],
+        total,
+        page,
+        totalPages,
+      };
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  // Transaction support
+  static async transaction<T>(callback: (tx: any) => Promise<T>): Promise<T> {
+    return db.transaction(callback);
+  }
+}

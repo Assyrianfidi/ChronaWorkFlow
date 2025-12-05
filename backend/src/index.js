@@ -1,31 +1,115 @@
-require('dotenv').config();
+// Load environment variables and config first
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
+
+// Set Prisma to use WASM engine
+process.env.PRISMA_QUERY_ENGINE_TYPE = 'wasm';
+
+// Import config after .env is loaded
+const config = require('./config');
+const { NODE_ENV, PORT, CORS_ORIGIN } = config;
+const { validateEnv } = require('./envValidator');
+
 // Validate environment early
 try {
-  const { validateEnv } = require('./envValidator');
   validateEnv();
 } catch (err) {
   // If validation fails we abort startup by throwing — let the process crash
   // eslint-disable-next-line no-console
   console.error('Environment validation failed - aborting startup.');
-  throw err;
+  console.error(err);
+  process.exit(1);
 }
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 const { PrismaClient } = require('@prisma/client');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
-const { errorHandler } = require('./middleware/errorHandler');
-const { rateLimiter } = require('./middleware/rateLimiter');
+const {
+  globalErrorHandler,
+  notFoundHandler,
+  SystemPanicMonitor,
+  asyncHandler
+} = require('./utils/errorHandler');
+const { sendSuccess } = require('./utils/responseEnvelope');
 const { logger, stream } = require('./utils/logger');
-const { NODE_ENV, PORT, CORS_ORIGIN } = require('./config');
 
 // Initialize Prisma Client
 const prisma = new PrismaClient();
 
 // Create Express app
 const app = express();
+
+// Request timing middleware
+app.use((req, res, next) => {
+  req.startTime = Date.now();
+  next();
+});
+
+// Test route
+app.get('/', (req, res) => {
+  res.send('AccuBooks Backend Server is running!');
+});
+
+// Test route for Jest tests
+if (process.env.NODE_ENV === 'test') {
+  app.get('/test', (req, res) => {
+    res.json({ success: true, message: 'Test endpoint working' });
+  });
+}
+
+// Health check endpoint with system metrics
+app.get('/api/health', asyncHandler(async (req, res) => {
+  const systemHealth = SystemPanicMonitor.checkSystemHealth();
+
+  // Test database connection
+  let dbStatus = 'healthy';
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+  } catch (error) {
+    dbStatus = 'unhealthy';
+    systemHealth.issues.push('Database connection failed');
+  }
+
+  const healthData = {
+    status: systemHealth.isHealthy && dbStatus === 'healthy' ? 'healthy' : 'unhealthy',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    version: process.env.npm_package_version || '1.0.0',
+    uptime: process.uptime(),
+    services: {
+      database: dbStatus,
+      system: systemHealth.isHealthy ? 'healthy' : 'unhealthy',
+    },
+    metrics: {
+      ...systemHealth.metrics,
+      memory: process.memoryUsage(),
+    },
+    issues: systemHealth.issues,
+  };
+
+  if (systemHealth.isHealthy && dbStatus === 'healthy') {
+    return sendSuccess(res, healthData);
+  } else {
+    return res.status(503).json({
+      success: false,
+      ...healthData,
+    });
+  }
+}));
+
+// Test database connection route
+app.get('/test-db', asyncHandler(async (req, res) => {
+  // Test connection by querying the database
+  const users = await prisma.user.findMany({ take: 1 });
+  return sendSuccess(res, {
+    message: 'Database connection successful',
+    data: users
+  });
+}));
 
 // Swagger configuration
 const swaggerOptions = {
@@ -62,22 +146,39 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
-// Middleware
-app.use(helmet());
-app.use(cors({
-  origin: CORS_ORIGIN,
-  credentials: true,
-}));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan('combined', { stream }));
+// Middleware - Apply security middleware first
+const applySecurityMiddlewares = require('./middleware/security');
+const { authRateLimiter, sensitiveRouteLimiter } = require('./middleware/security');
+const { logAllRequests, logErrors, logPerformance } = require('./middleware/security/auditLogger.middleware');
 
-// Rate limiting
-app.use(rateLimiter);
+applySecurityMiddlewares(app);
+
+// Apply audit logging middleware
+app.use(logPerformance);
+app.use(logAllRequests);
+
+// Apply specific rate limiters to sensitive routes
+app.use('/api/v1/auth/login', authRateLimiter);
+app.use('/api/v1/auth/register', authRateLimiter);
+app.use('/api/v1/accounts', sensitiveRouteLimiter);
+app.use('/api/v1/transactions', sensitiveRouteLimiter);
+
+// Morgan logging after security middleware
+app.use(morgan('combined', { stream }));
 
 // API Routes
 // Mount auth (exists)
 app.use('/api/v1', require('./routes/auth'));
+
+// Mount monitoring routes
+app.use('/api/v1/monitoring', require('./routes/monitoring.routes'));
+
+// Mount accounts and transactions routes
+route('/api/v1/accounts', './routes/accounts.routes');
+route('/api/v1/transactions', './routes/transactions.routes');
+
+// Mount business logic routes
+route('/api/v1/business', './routes/business-logic.routes');
 
 // Conditionally mount optional route modules if present. This avoids startup
 // failures and ESLint 'node/no-missing-require' errors when routes are not
@@ -133,26 +234,56 @@ if (NODE_ENV === 'development') {
   }
 }
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    status: 'error',
-    message: 'Not Found',
-  });
-});
+// 404 handler - use new standardized handler
+app.use(notFoundHandler);
 
-// Error handler
-app.use(errorHandler);
+// Global error handler - use new standardized handler
+app.use(globalErrorHandler);
+
+// Request metrics collection middleware (at the end)
+app.use((req, res, next) => {
+  const responseTime = Date.now() - (req.startTime || Date.now());
+  const isError = res.statusCode >= 400;
+
+  // Record metrics for system monitoring
+  SystemPanicMonitor.recordRequest(responseTime, isError);
+
+  // Log performance for audit trail
+  if (req.logPerformance) {
+    req.logPerformance('request_completed', {
+      method: req.method,
+      url: req.originalUrl,
+      statusCode: res.statusCode,
+      responseTime,
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+    });
+  }
+
+  next();
+});
 
 // Start server
 const server = app.listen(PORT, () => {
   logger.info(`Server running in ${NODE_ENV} mode on port ${PORT}`);
   logger.info(`API Documentation available at http://localhost:${PORT}/api-docs`);
+
+  // Initialize monitoring service
+  const MonitoringService = require('./services/monitoring.service');
+  MonitoringService.initializeMetrics();
+
+  // Log system startup
+  logger.info('Monitoring service initialized');
 });
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
-  logger.error(`Error: ${err.message}`);
+  logger.error(`Unhandled Rejection: ${err.message}`);
+  logger.error(err.stack);
+
+  // Record error in panic monitor
+  SystemPanicMonitor.recordRequest(0, true);
+
   // Close server and rethrow the error so the process terminates and
   // upstream supervisors can restart it.
   server.close(() => {
@@ -160,9 +291,40 @@ process.on('unhandledRejection', (err) => {
   });
 });
 
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  logger.error(`Uncaught Exception: ${err.message}`);
+  logger.error(err.stack);
+
+  // Record error in panic monitor
+  SystemPanicMonitor.recordRequest(0, true);
+
+  // Close server and exit
+  server.close(() => {
+    process.exit(1);
+  });
+});
+
 // Graceful shutdown
 process.on('SIGTERM', () => {
   logger.info('SIGTERM received. Shutting down gracefully');
+
+  // Cleanup monitoring service
+  const MonitoringService = require('./services/monitoring.service');
+  MonitoringService.cleanup();
+
+  server.close(() => {
+    logger.info('Process terminated');
+  });
+});
+
+process.on('SIGINT', () => {
+  logger.info('SIGINT received. Shutting down gracefully');
+
+  // Cleanup monitoring service
+  const MonitoringService = require('./services/monitoring.service');
+  MonitoringService.cleanup();
+
   server.close(() => {
     logger.info('Process terminated');
   });

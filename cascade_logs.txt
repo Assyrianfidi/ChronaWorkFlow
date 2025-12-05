@@ -1,0 +1,4 @@
+=== AccuBooks Setup Log ===
+Started at: 2025-11-08T21:02:00-08:00
+
+[2025-11-08T21:02:00-08:00] INFO: Starting project setup...

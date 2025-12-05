@@ -1,4 +1,4 @@
-import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } from 'plaid';
+import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode, DepositoryAccountSubtype } from 'plaid';
 import { logger } from '../utils/logger';
 
 // Initialize Plaid with API keys from environment
@@ -66,7 +66,7 @@ export interface PlaidTransaction {
   };
   merchant_name?: string;
   name: string;
-  payment_channel: string;
+  payment_channel?: string;
   payment_meta?: {
     by_order_of?: string;
     payee?: string;
@@ -85,7 +85,6 @@ export interface PlaidTransaction {
   };
   transaction_id: string;
   transaction_type?: string;
-  unofficial_currency_code?: string;
 }
 
 export interface PlaidAccountBalance {
@@ -107,13 +106,13 @@ export class PlaidService {
           client_user_id: `${userId}-${companyId}`,
         },
         client_name: 'AccuBooks',
-        products: [Products.Transactions, Products.Accounts],
+        products: [Products.Transactions, Products.Auth],
         country_codes: [CountryCode.Us],
         language: 'en',
         webhook: process.env.PLAID_WEBHOOK_URL,
         account_filters: {
           depository: {
-            account_subtypes: ['checking', 'savings'],
+            account_subtypes: [DepositoryAccountSubtype.Checking, DepositoryAccountSubtype.Savings],
           },
         },
       };
@@ -226,7 +225,6 @@ export class PlaidService {
         account_id: transaction.account_id,
         amount: transaction.amount,
         iso_currency_code: transaction.iso_currency_code || undefined,
-        unofficial_currency_code: transaction.unofficial_currency_code || undefined,
         category: transaction.category || undefined,
         category_id: transaction.category_id || undefined,
         check_number: transaction.check_number || undefined,

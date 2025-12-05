@@ -20,7 +20,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: accubooks-redis
-    command: ["redis-server", "--requirepass", "<REDACTED_REDIS_PASSWORD>"]
+    command: ["redis-server"]
     ports:
       - "6379:6379"
     volumes:
@@ -47,7 +47,7 @@ services:
       POSTGRES_DB: "accubooks"
       POSTGRES_HOST: "accubooks-postgres"
       POSTGRES_PORT: "5432"
-      REDIS_URL: "redis://:<REDACTED_REDIS_PASSWORD>@accubooks-redis:6379"
+      REDIS_URL: "redis://accubooks-redis:6379"
       JWT_SECRET: "your_jwt_secret_here"
     volumes:
       - .:/app

@@ -1,97 +1,129 @@
 version: '3.8'
 
+x-common-env: &common-env
+  NODE_ENV: production
+  NEXTAUTH_URL: ${NEXTAUTH_URL:-https://accubooks.example.com}
+  NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+  JWT_SECRET: ${JWT_SECRET}
+  ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+  COOKIE_SECRET: ${COOKIE_SECRET}
+  # OAuth Providers
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  GITHUB_ID: ${GITHUB_CLIENT_ID:-}
+  GITHUB_SECRET: ${GITHUB_CLIENT_SECRET:-}
+  # SMTP
+  SMTP_HOST: ${SMTP_HOST:-smtp.example.com}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  SMTP_SECURE: ${SMTP_SECURE:-false}
+  SMTP_USER: ${SMTP_USER:-}
+  SMTP_PASS: ${SMTP_PASSWORD:-}
+  SMTP_FROM: ${SMTP_FROM:-no-reply@accubooks.example.com}
+  # Sentry
+  SENTRY_DSN: ${SENTRY_DSN:-}
+  SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN:-}
+  SENTRY_ORG: ${SENTRY_ORG:-your-org}
+  SENTRY_PROJECT: ${SENTRY_PROJECT:-accubooks}
+  # App Settings
+  PORT: 3000
+  HOSTNAME: 0.0.0.0
+  CORS_ORIGIN: ${CORS_ORIGIN:-https://accubooks.example.com}
+  # Rate Limiting
+  RATE_LIMIT_WINDOW_MS: 900000  # 15 minutes
+  RATE_LIMIT_MAX_REQUESTS: 100
+  # Features
+  FEATURE_REGISTRATION: ${FEATURE_REGISTRATION:-true}
+  FEATURE_EMAIL_VERIFICATION: ${FEATURE_EMAIL_VERIFICATION:-true}
+  FEATURE_PASSWORD_RESET: ${FEATURE_PASSWORD_RESET:-true}
+  FEATURE_2FA: ${FEATURE_2FA:-false}
+
 services:
-  # PostgreSQL Database - Production Optimized
+  # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: accubooks_prod
-      POSTGRES_USER: accubooks_prod
+      POSTGRES_DB: accubooks
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     volumes:
-      - postgres_prod_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
       - ./backups:/backups
     healthcheck:
-      test: [CMD-SHELL, pg_isready -U accubooks_prod -d accubooks_prod]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+      test: ["CMD-SHELL", "pg_isready -U postgres -d accubooks"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - accubooks_network
 
-  # Redis for Background Jobs and Caching
+  # Redis for Caching and Rate Limiting
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-your_secure_redis_password}
     volumes:
-      - redis_prod_data:/data
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - accubooks_network
 
-  # Main Application - Production Optimized
+  # Main Application
   app:
-    image: accubooks:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      args:
+        NODE_ENV: production
     restart: unless-stopped
-    environment:
-      # Database
-      DATABASE_URL: postgresql://accubooks_prod:${DB_PASSWORD}@postgres:5432/accubooks_prod
-      # Redis
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      # Authentication
-      JWT_SECRET: ${JWT_SECRET}
-      SESSION_SECRET: ${SESSION_SECRET}
-      # Stripe Integration
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
-      # Plaid Integration
-      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID}
-      PLAID_SECRET: ${PLAID_SECRET}
-      PLAID_WEBHOOK_URL: ${PLAID_WEBHOOK_URL}
-      # Email Configuration
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASS: ${SMTP_PASS}
-      SMTP_FROM: ${SMTP_FROM}
-      # Application
-      NODE_ENV: production
-      PORT: 5000
-      FRONTEND_URL: https://${DOMAIN}
-      # Logging
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-      LOG_FILE: /app/logs/app.log
-      # Security
-      CORS_ORIGIN: https://${DOMAIN}
-      # Monitoring
-      PROMETHEUS_METRICS: true
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ./logs:/app/logs
-      - ./uploads:/app/uploads
+    environment:
+      <<: *common-env
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@postgres:5432/accubooks
+      REDIS_URL: redis://:${REDIS_PASSWORD:-your_secure_redis_password}@redis:6379/0
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SESSION_SECRET: ${SESSION_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID}
+      PLAID_SECRET: ${PLAID_SECRET}
+      PLAID_WEBHOOK_URL: ${PLAID_WEBHOOK_URL}
+      NODE_ENV: production
+      PORT: 5000
+      FRONTEND_URL: https://${DOMAIN}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FILE: /app/logs/app.log
+      CORS_ORIGIN: https://${DOMAIN}
+      PROMETHEUS_METRICS: "true"
+    ports:
+      - "5000:5000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 30s
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
     networks:
       - accubooks_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Nginx Reverse Proxy with SSL
   nginx:
@@ -101,66 +133,85 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/ssl:ro
-      - ./nginx-ssl.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./certs:/etc/letsencrypt
+      - ./certs/www:/var/www/certbot
     depends_on:
       - app
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost/health"]
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 3
     networks:
       - accubooks_network
 
-  # Prometheus for Metrics Collection
+  # Certbot for SSL Certificates
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certs:/etc/letsencrypt
+      - ./certs/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done;'"
+    networks:
+      - accubooks_network
+    depends_on:
+      - nginx
+
+  # Monitoring Stack
   prometheus:
     image: prom/prometheus:latest
     restart: unless-stopped
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
+      - '9090:9090'
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
     networks:
       - accubooks_network
-    profiles:
-      - monitoring
 
-  # Grafana for Visualization
   grafana:
     image: grafana/grafana:latest
     restart: unless-stopped
-    environment:
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
-      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - '3001:3000'
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
-      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
-    ports:
-      - "3000:3000"
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
     networks:
       - accubooks_network
-    profiles:
-      - monitoring
+
+  # Portainer for container management
+  portainer:
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    command: -H unix:///var/run/docker.sock
+    ports:
+      - '9000:9000'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - accubooks_network
 
 volumes:
-  postgres_prod_data:
+  postgres_data:
     driver: local
-  redis_prod_data:
+  redis_data:
     driver: local
   prometheus_data:
     driver: local
   grafana_data:
+    driver: local
+  portainer_data:
     driver: local
 
 networks:

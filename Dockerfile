@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-RUN npm ci && npm rebuild rollup --force
+RUN npm install --include=dev --ignore-scripts && npm rebuild rollup --force
 
 # Build the application
 FROM base AS builder

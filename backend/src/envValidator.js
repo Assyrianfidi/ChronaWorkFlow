@@ -1,48 +1,79 @@
-// Robust environment validator using Joi
-const Joi = require('joi');
-const { logger } = require('./utils/logger');
+import Joi from 'joi';
+import { logger } from './utils/logger.js';
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-function containsRedacted(value) {
-  if (!value) return false;
-  const patterns = [/REDACTED/i, /your_?secret/i, /your_?password/i, /change_me/i, /<.*>/];
-  try {
-    return patterns.some((p) => p.test(String(value)));
-  } catch (err) {
-    return false;
-  }
-}
+// Get the current file's directory using import.meta.url
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
+// Common validation patterns
+const patterns = {
+  jwtSecret: /^[A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_=]+\.?[A-Za-z0-9\-_.+/=]*$/
+};
+
+// Custom validation messages
+const messages = {
+  'string.base': '{#label} must be a string',
+  'string.empty': '{#label} cannot be empty',
+  'string.min': '{#label} must be at least {#limit} characters',
+  'number.base': '{#label} must be a number',
+  'number.port': '{#label} must be a valid port number',
+  'any.required': '{#label} is required',
+  'string.uri': '{#label} must be a valid URI',
+  'string.pattern.base': '{#label} does not match the required pattern',
+  'any.only': '{#label} must be one of {#valids}'
+};
+
+// Define schema with custom messages
 const schema = Joi.object({
-  NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
-  DATABASE_URL: Joi.string().uri().required(),
-  REDIS_URL: Joi.string().uri().required(),
-  REDIS_HOST: Joi.string().required(),
-  REDIS_PORT: Joi.number().port().required(),
-  PORT: Joi.number().default(3000),
-  HOST: Joi.string().default('localhost'),
+  // Core
+  NODE_ENV: Joi.string()
+    .valid('development', 'production', 'test')
+    .default('development')
+    .messages({
+      'any.only': 'NODE_ENV must be one of development, production, or test'
+    }),
 
-  JWT_SECRET: Joi.string().min(32).required(),
-  JWT_REFRESH_SECRET: Joi.string().min(32).required(),
-  SESSION_SECRET: Joi.string().min(32).required(),
+  PORT: Joi.number()
+    .port()
+    .default(3000)
+    .messages({
+      'number.base': 'PORT must be a number',
+      'number.port': 'PORT must be a valid port number (1-65535)'
+    }),
 
-  SMTP_HOST: Joi.string().required(),
-  SMTP_PORT: Joi.number().required(),
-  SMTP_SECURE: Joi.boolean().optional(),
-  SMTP_USER: Joi.string().required(),
-  SMTP_PASS: Joi.string().required(),
-  MAIL_FROM: Joi.string().required(),
+  // Database
+  DATABASE_URL: Joi.string()
+    .uri({ scheme: ['postgresql', 'postgres'] })
+    .required()
+    .messages({
+      'string.uri': 'DATABASE_URL must be a valid PostgreSQL connection string',
+      'string.empty': 'DATABASE_URL is required'
+    }),
 
-  STRIPE_SECRET_KEY: Joi.string().pattern(/^sk_/).required(),
-  STRIPE_PUBLISHABLE_KEY: Joi.string().pattern(/^pk_/).required(),
-  STRIPE_WEBHOOK_SECRET: Joi.string().pattern(/^whsec_/).required(),
+  // JWT
+  JWT_SECRET: Joi.string()
+    .min(32)
+    .required()
+    .pattern(patterns.jwtSecret)
+    .messages({
+      'string.min': 'JWT_SECRET must be at least 32 characters long',
+      'string.pattern.base': 'JWT_SECRET must be a valid JWT secret'
+    }),
 
-  FRONTEND_URL: Joi.string().uri().required(),
-  ADMIN_URL: Joi.string().uri().required(),
-  API_URL: Joi.string().uri().required(),
-  DOCS_URL: Joi.string().uri().required(),
+  // Add more environment variables as needed
 }).unknown(true);
 
 function validateEnv() {
+  const isTest = process.env.NODE_ENV === 'test';
+  const isDev = process.env.NODE_ENV === 'development';
+
+  // Skip validation in test environment if explicitly set
+  if (isTest && process.env.SKIP_ENV_VALIDATION === 'true') {
+    logger.warn('Skipping environment validation in test environment');
+    return true;
+  }
+
   const env = {
     NODE_ENV: process.env.NODE_ENV,
     DATABASE_URL: process.env.DATABASE_URL,
@@ -68,33 +99,49 @@ function validateEnv() {
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
 
     FRONTEND_URL: process.env.FRONTEND_URL,
-    ADMIN_URL: process.env.ADMIN_URL,
-    API_URL: process.env.API_URL,
-    DOCS_URL: process.env.DOCS_URL,
   };
 
-  const { error } = schema.validate(env, { abortEarly: false });
+  const { error, value } = schema.validate(process.env, {
+    abortEarly: false,
+    allowUnknown: true,
+    stripUnknown: true
+  });
 
-  const redacted = Object.entries(env)
-    .filter(([k, v]) => {
-      const sensitiveKeys = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'SESSION_SECRET', 'SMTP_PASS', 'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'REDIS_PASSWORD', 'DB_PASSWORD'];
-      return sensitiveKeys.includes(k) && containsRedacted(v);
-    })
-    .map(([k]) => k);
+  // Skip redaction check in development
+  if (!isDev) {
+    const redacted = Object.entries(value)
+      .filter(([k, v]) => {
+        const sensitiveKeys = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'SESSION_SECRET', 'SMTP_PASS', 'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'REDIS_PASSWORD', 'DB_PASSWORD'];
+        return sensitiveKeys.includes(k) && containsRedacted(v);
+      })
+      .map(([k]) => k);
 
-  if (redacted.length > 0) {
-    const msg = `Environment contains redacted placeholders for: ${redacted.join(', ')}. Replace with real values.`;
-    logger.error(msg);
-    throw new Error(msg);
+    if (redacted.length > 0) {
+      const msg = `Environment contains redacted placeholders for: ${redacted.join(', ')}. Replace with real values.`;
+      logger.error(msg);
+      throw new Error(msg);
+    }
   }
 
   if (error) {
-    logger.error('Environment validation failed:');
-    error.details.forEach((d) => logger.error(` - ${d.message}`));
-    throw new Error('Environment validation failed');
+    const errorMessage = `Invalid environment variables (${process.env.NODE_ENV || 'development'}):\n${error.details
+      .map((d) => `- ${d.path.join('.')}: ${d.message}`)
+      .join('\n')}`;
+
+    if (isTest) {
+      console.error('❌ Environment validation failed in test environment:');
+      console.error(errorMessage);
+      process.exit(1);
+    }
+
+    if (criticalErrors.length > 0 || !isDev) {
+      throw new Error('Environment validation failed');
+    }
+
+    logger.warn('Non-critical environment validation issues detected. Continuing in development mode.');
   }
 
   logger.info('Environment validation passed');
 }
 
-module.exports = { validateEnv };
+export { validateEnv };

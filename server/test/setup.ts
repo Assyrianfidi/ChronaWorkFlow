@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, beforeEach } from 'vitest';
+import { beforeAll, afterAll, beforeEach, vi } from 'vitest';
 
 // Setup test database or mocks
 beforeAll(async () => {
@@ -13,5 +13,5 @@ afterAll(async () => {
 
 beforeEach(() => {
   // Reset any mocks or test state
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });

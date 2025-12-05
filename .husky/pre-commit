@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run secret scanning before commit
+if ! node ./security/scripts/scan-secrets.mjs --staged; then
+  echo "
+❌ Secret scan detected potential secrets in staged files. Commit aborted.
+   Please remove or redact any sensitive information before committing."
+  exit 1
+fi
+
+# Run linter
+npm run lint-staged
+
+# Run tests
+npm test -- --findRelatedTests --passWithNoTests

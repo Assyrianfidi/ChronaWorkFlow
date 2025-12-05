@@ -4,7 +4,7 @@ import * as schema from './schema';
 import { logger } from '../utils/logger';
 
 // Database connection
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:<REDACTED_DB_PASSWORD>@localhost:5432/AccuBooks';
+const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:Fkhouch8@localhost:5432/AccuBooks';
 
 const client = postgres(connectionString, { prepare: false });
 const db = drizzle(client, { schema });

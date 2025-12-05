@@ -1,0 +1,1581 @@
+﻿
+client/src/__tests__/components/repor
+ts/ReportFilters.test.tsx(6,18): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/components/repor
+ts/ReportFilters.test.tsx(7,1): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/components/repor
+ts/ReportFilters.test.tsx(13,10): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/components/repor
+ts/ReportFilters.test.tsx(18,26): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/components/repor
+ts/ReportFilters.test.tsx(21,5): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/components/repor
+ts/ReportFilters.test.tsx(187,5): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/components/repor
+ts/ReportFilters.test.tsx(198,5): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/components/repor
+ts/ReportFilters.test.tsx(202,5): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/components/repor
+ts/ReportFilters.test.tsx(208,5): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(37,23): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(38,24): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(40,1): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(52,13): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(56,13): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(60,13): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(90,5): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(98,40): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(117,32): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(156,22): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(182,40): 
+error TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(198,5): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(201,5): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(201,15): 
+error TS2304: Cannot find name 
+'useReport'.
+client/src/__tests__/integration/Repo
+rtIntegration.test.tsx(220,5): error 
+TS2304: Cannot find name 'vi'.
+client/src/__tests__/integration/user
+Workflow.test.tsx(61,13): error 
+TS2339: Property 'LoginPage' does 
+not exist on type 'typeof import("C:/
+FidiMyProjects2025/Software_Projects/
+AccuBooks/AccuBooks/client/src/app/au
+th/login/page")'.
+client/src/__tests__/integration/user
+Workflow.test.tsx(72,40): error 
+TS2307: Cannot find module 
+'@/app/dashboard/page' or its 
+corresponding type declarations.
+client/src/__tests__/integration/user
+Workflow.test.tsx(79,13): error 
+TS2339: Property 'ProfilePage' does 
+not exist on type 'typeof import("C:/
+FidiMyProjects2025/Software_Projects/
+AccuBooks/AccuBooks/client/src/app/se
+ttings/profile/page")'.
+client/src/__tests__/integration/user
+Workflow.test.tsx(90,13): error 
+TS2339: Property 'AdminDashboard' 
+does not exist on type 'typeof import
+("C:/FidiMyProjects2025/Software_Proj
+ects/AccuBooks/AccuBooks/client/src/a
+pp/admin/page")'.
+client/src/__tests__/utils/test-utils
+.tsx(38,28): error TS2558: Expected 
+0-1 type arguments, but got 2.
+client/src/App.tsx(10,5): error 
+TS2687: All declarations of 'env' 
+must have identical modifiers.
+client/src/App.tsx(10,5): error 
+TS2717: Subsequent property 
+declarations must have the same 
+type.  Property 'env' must be of 
+type 'ImportMetaEnv', but here has 
+type '{ VITE_API_URL?: string | 
+undefined; }'.
+client/src/app/admin/__tests__/AdminD
+ashboard.client.test.tsx(72,28): 
+error TS2322: Type '{ users: { id: 
+string; name: string; email: string; 
+role: string; emailVerified: Date; 
+image: null; accounts: never[]; }[]; 
+isAdmin: boolean; }' is not 
+assignable to type 
+'IntrinsicAttributes'.
+client/src/app/admin/__tests__/AdminD
+ashboard.client.test.tsx(104,28): 
+error TS2322: Type '{ users: { id: 
+string; name: string; email: string; 
+role: string; emailVerified: Date; 
+image: null; accounts: never[]; }[]; 
+isAdmin: boolean; }' is not 
+assignable to type 
+'IntrinsicAttributes'.
+client/src/app/admin/__tests__/AdminD
+ashboard.client.test.tsx(111,28): 
+error TS2322: Type '{ users: { id: 
+string; name: string; email: string; 
+role: string; emailVerified: Date; 
+image: null; accounts: never[]; }[]; 
+isAdmin: boolean; }' is not 
+assignable to type 
+'IntrinsicAttributes'.
+client/src/app/admin/__tests__/AdminD
+ashboard.test.tsx(6,10): error 
+TS2305: Module '"@prisma/client"' 
+has no exported member 'UserRole'.
+client/src/app/admin/__tests__/AdminD
+ashboardClient.test.tsx(29,18): 
+error TS2740: Type '{ provider: 
+string; }' is missing the following 
+properties from type 'Account': id, 
+providerAccountId, type, userId, and 
+2 more.
+client/src/app/admin/__tests__/AdminD
+ashboardClient.test.tsx(38,18): 
+error TS2740: Type '{ provider: 
+string; }' is missing the following 
+properties from type 'Account': id, 
+providerAccountId, type, userId, and 
+2 more.
+client/src/app/admin/__tests__/AdminD
+ashboardClient.test.tsx(129,5): 
+error TS2322: Type '{ reload: 
+Mock<Procedure>; ancestorOrigins: 
+DOMStringList; hash: string; host: 
+string; hostname: string; href: 
+string; toString(): string; origin: 
+string; pathname: string; ... 4 more 
+...; replace(url: string | URL): 
+void; }' is not assignable to type 
+'string & Location'.
+client/src/app/admin/__tests__/AdminD
+ashboardClient.test.tsx(157,5): 
+error TS2322: Type 'Location' is not 
+assignable to type 'string & 
+Location'.
+client/src/app/admin/page.tsx(1,10): 
+error TS2305: Module 
+'"next-auth/next"' has no exported 
+member 'getServerSession'.
+client/src/app/admin/page.tsx(2,10): 
+error TS2614: Module 
+'"@/lib/auth-options"' has no 
+exported member 'authOptions'. Did 
+you mean to use 'import authOptions 
+from "@/lib/auth-options"' instead?
+client/src/app/api/admin/users/role/r
+oute.ts(2,10): error TS2305: Module 
+'"next-auth/next"' has no exported 
+member 'getServerSession'.
+client/src/app/api/admin/users/role/r
+oute.ts(3,10): error TS2614: Module 
+'"@/lib/auth-options"' has no 
+exported member 'authOptions'. Did 
+you mean to use 'import authOptions 
+from "@/lib/auth-options"' instead?
+client/src/app/api/auth/[...nextauth]
+/route.ts(2,10): error TS2614: 
+Module '"@/lib/auth-options"' has no 
+exported member 'authOptions'. Did 
+you mean to use 'import authOptions 
+from "@/lib/auth-options"' instead?
+client/src/app/auth/forgot-password/_
+_tests__/ForgotPasswordPage.stable.te
+st.tsx(113,5): error TS2454: 
+Variable 'resolveRequest' is used 
+before being assigned.
+client/src/app/auth/register/__tests_
+_/RegisterPage.full.test.tsx(211,13):
+ error TS2304: Cannot find name 
+'act'.
+client/src/app/auth/register/__tests_
+_/RegisterPage.simple.test.tsx(109,5)
+: error TS2454: Variable 
+'resolveRegister' is used before 
+being assigned.
+client/src/app/auth/register/__tests_
+_/RegisterPage.test.tsx(100,7): 
+error TS2304: Cannot find name 
+'resolveRegister'.
+client/src/app/auth/register/__tests_
+_/RegisterPage.test.tsx(117,7): 
+error TS2304: Cannot find name 
+'rerender'.
+client/src/app/auth/reset-password/__
+tests__/ResetPasswordPage.test.tsx(20
+1,11): error TS2304: Cannot find 
+name 'act'.
+client/src/app/inventory/page.tsx(46,
+25): error TS2528: A module cannot 
+have multiple default exports.
+client/src/app/inventory/page.tsx(103
+,25): error TS2345: Argument of type 
+'InventoryFilterOptions' is not 
+assignable to parameter of type 
+'Omit<InventoryQueryOptions, "page" 
+| "sortBy" | "sortDirection" | 
+"pageSize">'.
+client/src/app/inventory/page.tsx(232
+,24): error TS2345: Argument of type 
+'string' is not assignable to 
+parameter of type 
+'ChangeEvent<HTMLInputElement>'.
+client/src/app/inventory/page.tsx(233
+,5): error TS2554: Expected 2 
+arguments, but got 1.
+client/src/app/inventory/page.tsx(237
+,22): error TS2345: Argument of type 
+'keyof InventoryItem' is not 
+assignable to parameter of type 
+'SortableField'.
+client/src/app/inventory/page.tsx(238
+,5): error TS2304: Cannot find name 
+'setSortOrder'.
+client/src/app/inventory/page.tsx(238
+,18): error TS7006: Parameter 'prev' 
+implicitly has an 'any' type.
+client/src/app/inventory/page.tsx(256
+,24): error TS18048: 
+'inventoryResponse' is possibly 
+'undefined'.
+client/src/app/inventory/page.tsx(282
+,9): error TS2353: Object literal 
+may only specify known properties, 
+and 'searchTerm' does not exist in 
+type 'InventoryFilters'.
+client/src/app/inventory/page.tsx(329
+,8): error TS2304: Cannot find name 
+'TableRow'.
+client/src/app/inventory/page.tsx(330
+,10): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(346
+,11): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(347
+,10): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(347
+,57): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(348
+,10): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(348
+,32): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(349
+,10): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(353
+,11): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(354
+,10): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(354
+,43): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(355
+,10): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(355
+,50): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(356
+,10): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(376
+,11): error TS2304: Cannot find name 
+'TableCell'.
+client/src/app/inventory/page.tsx(377
+,9): error TS2304: Cannot find name 
+'TableRow'.
+client/src/app/inventory/page.tsx(432
+,41): error TS2554: Expected 0 
+arguments, but got 1.
+client/src/app/inventory/page.tsx(471
+,32): error TS2304: Cannot find name 
+'setStatusFilter'.
+client/src/app/inventory/page.tsx(508
+,30): error TS2345: Argument of type 
+'string[]' is not assignable to 
+parameter of type 'string'.
+client/src/app/inventory/page.tsx(582
+,35): error TS2339: Property 'items' 
+does not exist on type 
+'InventoryItem[]'.
+client/src/app/inventory/page.tsx(585
+,9): error TS2322: Type '{ items: 
+any; renderRow: (item: 
+InventoryItem) => Element; 
+rowHeight: number; headerHeight: 
+number; overscanRowCount: number; }' 
+is not assignable to type 
+'IntrinsicAttributes & 
+VirtualizedTableProps'.
+client/src/app/inventory/page.tsx(590
+,27): error TS2339: Property 
+'totalPages' does not exist on type 
+'InventoryItem[]'.
+client/src/app/inventory/page.tsx(594
+,60): error TS2339: Property 'total' 
+does not exist on type 
+'InventoryItem[]'.
+client/src/app/inventory/page.tsx(595
+,38): error TS2339: Property 'total' 
+does not exist on type 
+'InventoryItem[]'.
+client/src/app/inventory/page.tsx(607
+,79): error TS2339: Property 'total' 
+does not exist on type 
+'InventoryItem[]'.
+client/src/app/inventory/page.tsx(610
+,66): error TS2339: Property 'total' 
+does not exist on type 
+'InventoryItem[]'.
+client/src/app/inventory/page.tsx(638
+,64): error TS2339: Property 'total' 
+does not exist on type 
+'InventoryItem[]'.
+client/src/app/inventory/page.tsx(648
+,16): error TS2528: A module cannot 
+have multiple default exports.
+client/src/app/profile/page.tsx(1,10)
+: error TS2305: Module 
+'"next-auth/next"' has no exported 
+member 'getServerSession'.
+client/src/app/profile/page.tsx(2,10)
+: error TS2614: Module 
+'"@/lib/auth-options"' has no 
+exported member 'authOptions'. Did 
+you mean to use 'import authOptions 
+from "@/lib/auth-options"' instead?
+client/src/app/profile/page.tsx(24,42
+): error TS7006: Parameter 'account' 
+implicitly has an 'any' type.
+client/src/app/profile/page.tsx(25,47
+): error TS7006: Parameter 'account' 
+implicitly has an 'any' type.
+client/src/app/profile/page.tsx(97,36
+): error TS7006: Parameter 'account' 
+implicitly has an 'any' type.
+client/src/components/accounts/Virtua
+lizedAccountsTable.tsx(4,10): error 
+TS2305: Module '"react-window"' has 
+no exported member 
+'VariableSizeList'.
+client/src/components/accounts/Virtua
+lizedAccountsTable.tsx(128,26): 
+error TS7006: Parameter 'index' 
+implicitly has an 'any' type.
+client/src/components/accounts/Virtua
+lizedAccountsTable.tsx(130,25): 
+error TS7006: Parameter 'index' 
+implicitly has an 'any' type.
+client/src/components/accounts/Virtua
+lizedAccountsTable.tsx(133,19): 
+error TS7031: Binding element 
+'index' implicitly has an 'any' type.
+client/src/components/accounts/Virtua
+lizedAccountsTable.tsx(133,26): 
+error TS7031: Binding element 
+'style' implicitly has an 'any' type.
+client/src/components/forms/NewReport
+Form.tsx(50,5): error TS2322: Type 
+'Resolver<{ title: string; 
+description: string; status: 
+"approved" | "rejected" | "draft" | 
+"in_review"; dueDate: string; 
+priority: "high" | "low" | "medium"; 
+attachments: File[]; tags: string[]; 
+existingAttachments?: any[] | 
+undefined; isPublic?: boolean | 
+undefined; assigneeId?: string | 
+undefined; notes?: string |...' is 
+not assignable to type 'Resolver<{ 
+title: string; description: string; 
+status: "approved" | "rejected" | 
+"draft" | "in_review"; dueDate: 
+string; priority: "high" | "low" | 
+"medium"; attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }, any, 
+{ ...;...'.
+client/src/components/forms/NewReport
+Form.tsx(85,34): error TS2345: 
+Argument of type 'SubmitHandler<{ 
+title: string; description: string; 
+status: "approved" | "rejected" | 
+"draft" | "in_review"; dueDate: 
+string; priority: "high" | "low" | 
+"medium"; attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }>' is 
+not assignable to parameter of type 
+'SubmitHandler<TFieldValues>'.
+client/src/components/forms/ReportFor
+m.new.tsx(17,38): error TS2305: 
+Module '"@/lib/api/reportService"' 
+has no exported member 
+'ReportAttachment'.
+client/src/components/forms/ReportFor
+m.new.tsx(78,5): error TS2322: Type 
+'Resolver<{ title: string; 
+description: string; status: 
+"approved" | "rejected" | "draft" | 
+"in_review"; dueDate: string; 
+priority: "high" | "low" | "medium"; 
+attachments: File[]; tags: string[]; 
+existingAttachments?: any[] | 
+undefined; isPublic?: boolean | 
+undefined; assigneeId?: string | 
+undefined; notes?: string |...' is 
+not assignable to type 'Resolver<{ 
+title: string; description: string; 
+status: "approved" | "rejected" | 
+"draft" | "in_review"; dueDate: 
+string; priority: "high" | "low" | 
+"medium"; attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }, any, 
+{ ...;...'.
+client/src/components/forms/ReportFor
+m.new.tsx(87,15): error TS18046: 
+'data' is of type 'unknown'.
+client/src/components/forms/ReportFor
+m.new.tsx(88,32): error TS18046: 
+'data' is of type 'unknown'.
+client/src/components/forms/ReportFor
+m.new.tsx(88,41): error TS2345: 
+Argument of type 'unknown' is not 
+assignable to parameter of type 
+'Partial<{ title: string; 
+description: string; status: 
+"approved" | "rejected" | "draft" | 
+"in_review"; dueDate: string; 
+priority: "high" | "low" | "medium"; 
+attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }>'.
+client/src/components/forms/ReportFor
+m.new.tsx(90,32): error TS2345: 
+Argument of type 'unknown' is not 
+assignable to parameter of type '{ 
+title: string; description: string; 
+status: "approved" | "rejected" | 
+"draft" | "in_review"; dueDate: 
+string; priority: "high" | "low" | 
+"medium"; attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }'.
+client/src/components/forms/ReportFor
+m.new.tsx(154,25): error TS2339: 
+Property 'id' does not exist on type 
+'Partial<{ title: string; 
+description: string; status: 
+"approved" | "rejected" | "draft" | 
+"in_review"; dueDate: string; 
+priority: "high" | "low" | "medium"; 
+attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }>'.
+client/src/components/forms/ReportFor
+m.new.tsx(158,13): error TS2304: 
+Cannot find name 'deleteAttachment'.
+client/src/components/forms/ReportFor
+m.new.tsx(158,44): error TS2339: 
+Property 'id' does not exist on type 
+'Partial<{ title: string; 
+description: string; status: 
+"approved" | "rejected" | "draft" | 
+"in_review"; dueDate: string; 
+priority: "high" | "low" | "medium"; 
+attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }>'.
+client/src/components/forms/ReportFor
+m.new.tsx(199,27): error TS2339: 
+Property 'id' does not exist on type 
+'Partial<{ title: string; 
+description: string; status: 
+"approved" | "rejected" | "draft" | 
+"in_review"; dueDate: string; 
+priority: "high" | "low" | "medium"; 
+attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }>'.
+client/src/components/forms/ReportFor
+m.new.tsx(205,37): error TS2339: 
+Property 'id' does not exist on type 
+'Partial<{ title: string; 
+description: string; status: 
+"approved" | "rejected" | "draft" | 
+"in_review"; dueDate: string; 
+priority: "high" | "low" | "medium"; 
+attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }>'.
+client/src/components/forms/ReportFor
+m.new.tsx(248,30): error TS2345: 
+Argument of type 'SubmitHandler<{ 
+title: string; description: string; 
+status: "approved" | "rejected" | 
+"draft" | "in_review"; dueDate: 
+string; priority: "high" | "low" | 
+"medium"; attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }>' is 
+not assignable to parameter of type 
+'SubmitHandler<TFieldValues>'.
+client/src/components/forms/ReportFor
+m.new.tsx(254,38): error TS2339: 
+Property 'id' does not exist on type 
+'Partial<{ title: string; 
+description: string; status: 
+"approved" | "rejected" | "draft" | 
+"in_review"; dueDate: string; 
+priority: "high" | "low" | "medium"; 
+attachments: File[]; 
+existingAttachments: any[]; 
+isPublic: boolean; tags: string[]; 
+assigneeId?: string | undefined; 
+notes?: string | undefined; }>'.
+client/src/components/forms/ReportFor
+m.new.tsx(331,26): error TS2304: 
+Cannot find name 'REPORT_STATUSES'.
+client/src/components/forms/ReportFor
+m.new.tsx(331,47): error TS7006: 
+Parameter 'status' implicitly has an 
+'any' type.
+client/src/components/forms/ReportFor
+m.new.tsx(337,52): error TS7006: 
+Parameter 'word' implicitly has an 
+'any' type.
+client/src/components/forms/ReportFor
+m.new.tsx(509,24): error TS2304: 
+Cannot find name 'Plus'.
+client/src/components/forms/ReportFor
+m.stories.tsx(43,7): error TS2322: 
+Type '"PENDING"' is not assignable 
+to type '"approved" | "rejected" | 
+"draft" | "in_review" | undefined'.
+client/src/components/forms/ReportFor
+m.tsx(13,15): error TS2440: Import 
+declaration conflicts with local 
+declaration of 'ReportFormValues'.
+client/src/components/forms/ReportFor
+m.tsx(13,33): error TS2440: Import 
+declaration conflicts with local 
+declaration of 'ReportFormProps'.
+client/src/components/inventory/__tes
+ts__/InventoryTable.test.tsx(108,31):
+ error TS2769: No overload matches 
+this call.
+client/src/components/inventory/__tes
+ts__/InventoryTable.test.tsx(147,29):
+ error TS2769: No overload matches 
+this call.
+client/src/components/inventory/Inven
+toryTable.tsx(21,28): error TS2307: 
+Cannot find module 
+'@tanstack/react-virtual' or its 
+corresponding type declarations.
+client/src/components/inventory/Inven
+toryTable.tsx(201,45): error TS7006: 
+Parameter 'virtualRow' implicitly 
+has an 'any' type.
+client/src/components/inventory/Inven
+toryTable.tsx(271,25): error TS2322: 
+Type '"default" | "destructive" | 
+"warning"' is not assignable to type 
+'"default" | "destructive" | 
+"outline" | "secondary" | null | 
+undefined'.
+client/src/components/inventory/Virtu
+alizedTable.tsx(2,8): error TS1192: 
+Module '"C:/FidiMyProjects2025/Softwa
+re_Projects/AccuBooks/AccuBooks/clien
+t/node_modules/react-window/dist/reac
+t-window"' has no default export.
+client/src/components/inventory/Virtu
+alizedTable.tsx(35,12): error 
+TS2304: Cannot find name 
+'FixedSizeList'.
+client/src/components/inventory/Virtu
+alizedTable.tsx(44,13): error 
+TS2304: Cannot find name 
+'FixedSizeList'.
+client/src/components/layout/AppLayou
+t.tsx(24,16): error TS2322: Type 
+'User | null' is not assignable to 
+type '{ role: string; name: string; 
+email: string; } | null | undefined'.
+client/src/components/reports/ReportV
+iew.tsx(94,20): error TS2322: Type 
+'"destructive" | "secondary" | 
+"success"' is not assignable to type 
+'"default" | "destructive" | 
+"outline" | "secondary" | null | 
+undefined'.
+client/src/components/reports/ReportV
+iew.tsx(115,25): error TS2339: 
+Property 'createdBy' does not exist 
+on type 'Report'.
+client/src/components/reports/ReportV
+iew.tsx(135,19): error TS2339: 
+Property 'notes' does not exist on 
+type 'Report'.
+client/src/components/reports/ReportV
+iew.tsx(138,58): error TS2339: 
+Property 'notes' does not exist on 
+type 'Report'.
+client/src/components/reports/ReportV
+iew.tsx(142,19): error TS2339: 
+Property 'attachments' does not 
+exist on type 'Report'.
+client/src/components/reports/ReportV
+iew.tsx(142,41): error TS2339: 
+Property 'attachments' does not 
+exist on type 'Report'.
+client/src/components/reports/ReportV
+iew.tsx(146,25): error TS2339: 
+Property 'attachments' does not 
+exist on type 'Report'.
+client/src/components/reports/ReportV
+iew.tsx(146,42): error TS7006: 
+Parameter 'attachment' implicitly 
+has an 'any' type.
+client/src/components/theme-provider.
+tsx(3,41): error TS2307: Cannot find 
+module 'next-themes/dist/types' or 
+its corresponding type declarations.
+client/src/components/ui/chart.tsx(11
+9,7): error TS2339: Property 
+'payload' does not exist on type 
+'Omit<Omit<Props<ValueType, 
+NameType>, 
+PropertiesReadFromContext> & { 
+active?: boolean | undefined; 
+includeHidden?: boolean | undefined; 
+... 17 more ...; axisId?: AxisId | 
+undefined; } & ClassAttributes<...> 
+& HTMLAttributes<...> & { ...; }, 
+"ref">'.
+client/src/components/ui/chart.tsx(12
+4,7): error TS2339: Property 'label' 
+does not exist on type 
+'Omit<Omit<Props<ValueType, 
+NameType>, 
+PropertiesReadFromContext> & { 
+active?: boolean | undefined; 
+includeHidden?: boolean | undefined; 
+... 17 more ...; axisId?: AxisId | 
+undefined; } & ClassAttributes<...> 
+& HTMLAttributes<...> & { ...; }, 
+"ref">'.
+client/src/components/ui/chart.tsx(18
+8,25): error TS7006: Parameter 
+'item' implicitly has an 'any' type.
+client/src/components/ui/chart.tsx(18
+8,31): error TS7006: Parameter 
+'index' implicitly has an 'any' type.
+client/src/components/ui/chart.tsx(26
+4,41): error TS2344: Type '"payload" 
+| "verticalAlign"' does not satisfy 
+the constraint '"string" | "filter" 
+| "fill" | "values" | "path" | 
+"type" | "name" | "id" | "style" | 
+"clipPath" | "mask" | "key" | 
+"suppressHydrationWarning" | 
+"className" | "lang" | "tabIndex" | 
+... 427 more ... | "onBBoxUpdate"'.
+client/src/components/ui/chart.tsx(27
+5,19): error TS2339: Property 
+'length' does not exist on type '{}'.
+client/src/components/ui/chart.tsx(28
+8,18): error TS2339: Property 'map' 
+does not exist on type '{}'.
+client/src/components/ui/chart.tsx(28
+8,23): error TS7006: Parameter 
+'item' implicitly has an 'any' type.
+client/src/components/ui/form/Form.ts
+x(40,40): error TS2769: No overload 
+matches this call.
+client/src/components/ui/virtualized-
+table/VirtualizedTable.tsx(2,10): 
+error TS2305: Module 
+'"react-window"' has no exported 
+member 'VariableSizeList'.
+client/src/components/ui/virtualized-
+table/VirtualizedTable.tsx(2,36): 
+error TS2724: '"react-window"' has 
+no exported member named 
+'ListChildComponentProps'. Did you 
+mean 'CellComponentProps'?
+client/src/hooks/use-inventory.ts(12,
+10): error TS2614: Module 
+'"@/lib/api"' has no exported member 
+'api'. Did you mean to use 'import 
+api from "@/lib/api"' instead?
+client/src/hooks/useAutoSave.ts(16,31
+): error TS2344: Type 'T' does not 
+satisfy the constraint 'FieldValues'.
+client/src/hooks/useInventoryFilters.
+ts(39,46): error TS2304: Cannot find 
+name 'InventoryItem'.
+client/src/hooks/useReports.ts(31,5):
+ error TS2769: No overload matches 
+this call.
+client/src/lib/api.ts(113,16): error 
+TS2339: Property 'companyId' does 
+not exist on type 'User'.
+client/src/lib/auth-utils.ts(1,10): 
+error TS2614: Module 
+'"./auth-options"' has no exported 
+member 'authOptions'. Did you mean 
+to use 'import authOptions from 
+"./auth-options"' instead?
+client/src/lib/auth-utils.ts(2,10): 
+error TS2305: Module 
+'"next-auth/next"' has no exported 
+member 'getServerSession'.
+client/src/lib/query-config.ts(12,9):
+ error TS2353: Object literal may 
+only specify known properties, and 
+'cacheTime' does not exist in type 'O
+mitKeyof<QueryObserverOptions<unknown
+, Error, unknown, unknown, readonly 
+unknown[], never>, "suspense" | 
+"queryKey", "strictly">'.
+client/src/pages/api/auth/[...nextaut
+h].ts(2,10): error TS2614: Module 
+'"@/lib/auth"' has no exported 
+member 'authOptions'. Did you mean 
+to use 'import authOptions from 
+"@/lib/auth"' instead?
+client/src/pages/auth/LoginPage.tsx(3
+1,26): error TS2554: Expected 1 
+arguments, but got 2.
+client/src/pages/auth/ResetPasswordPa
+ge.tsx(54,34): error TS2554: 
+Expected 1 arguments, but got 2.
+client/src/pages/inventory/__tests__/
+InventoryPage.test.tsx(7,27): error 
+TS2307: Cannot find module '../page' 
+or its corresponding type 
+declarations.
+client/src/pages/inventory/index.tsx(
+15,8): error TS2459: Module 
+'"@/hooks/use-inventory"' declares 
+'SortDirection' locally, but it is 
+not exported.
+client/src/pages/inventory/index.tsx(
+154,9): error TS2451: Cannot 
+redeclare block-scoped variable 
+'handleSort'.
+client/src/pages/inventory/index.tsx(
+171,9): error TS2451: Cannot 
+redeclare block-scoped variable 
+'handleSelectAll'.
+client/src/pages/inventory/index.tsx(
+193,17): error TS2304: Cannot find 
+name 'debouncedSearchTerm'.
+client/src/pages/inventory/index.tsx(
+194,8): error TS2304: Cannot find 
+name 'filters'.
+client/src/pages/inventory/index.tsx(
+202,5): error TS2304: Cannot find 
+name 'setSelectedIds'.
+client/src/pages/inventory/index.tsx(
+202,20): error TS7006: Parameter 
+'prev' implicitly has an 'any' type.
+client/src/pages/inventory/index.tsx(
+214,9): error TS2451: Cannot 
+redeclare block-scoped variable 
+'handleSelectAll'.
+client/src/pages/inventory/index.tsx(
+216,7): error TS2304: Cannot find 
+name 'setSelectedIds'.
+client/src/pages/inventory/index.tsx(
+218,7): error TS2304: Cannot find 
+name 'setSelectedIds'.
+client/src/pages/inventory/index.tsx(
+233,9): error TS2451: Cannot 
+redeclare block-scoped variable 
+'handleSort'.
+client/src/pages/inventory/index.tsx(
+234,5): error TS2304: Cannot find 
+name 'setFilters'.
+client/src/pages/inventory/index.tsx(
+234,16): error TS7006: Parameter 
+'prev' implicitly has an 'any' type.
+client/src/pages/inventory/index.tsx(
+256,9): error TS2304: Cannot find 
+name 'selectedIds'.
+client/src/pages/inventory/index.tsx(
+261,51): error TS2304: Cannot find 
+name 'selectedIds'.
+client/src/pages/inventory/index.tsx(
+265,53): error TS2304: Cannot find 
+name 'selectedIds'.
+client/src/pages/inventory/index.tsx(
+269,49): error TS2304: Cannot find 
+name 'selectedIds'.
+client/src/pages/inventory/index.tsx(
+273,56): error TS2304: Cannot find 
+name 'selectedIds'.
+client/src/pages/inventory/index.tsx(
+274,51): error TS2304: Cannot find 
+name 'selectedIds'.
+client/src/pages/inventory/index.tsx(
+278,7): error TS2304: Cannot find 
+name 'selectedIds'.
+client/src/pages/inventory/index.tsx(
+396,18): error TS2304: Cannot find 
+name 'filters'.
+client/src/pages/inventory/index.tsx(
+408,30): error TS2304: Cannot find 
+name 'filters'.
+client/src/pages/inventory/index.tsx(
+410,23): error TS2304: Cannot find 
+name 'setFilters'.
+client/src/pages/inventory/index.tsx(
+410,34): error TS7006: Parameter 
+'prev' implicitly has an 'any' type.
+client/src/pages/inventory/index.tsx(
+425,30): error TS2304: Cannot find 
+name 'filters'.
+client/src/pages/inventory/index.tsx(
+427,23): error TS2304: Cannot find 
+name 'setFilters'.
+client/src/pages/inventory/index.tsx(
+427,34): error TS7006: Parameter 
+'prev' implicitly has an 'any' type.
+client/src/pages/inventory/index.tsx(
+442,30): error TS2304: Cannot find 
+name 'filters'.
+client/src/pages/inventory/index.tsx(
+444,23): error TS2304: Cannot find 
+name 'setFilters'.
+client/src/pages/inventory/index.tsx(
+444,34): error TS7006: Parameter 
+'prev' implicitly has an 'any' type.
+client/src/pages/inventory/index.tsx(
+460,51): error TS2345: Argument of 
+type '(category: string) => 
+JSX.Element' is not assignable to 
+parameter of type '((value: string, 
+index: number, array: string[]) => 
+Element) & ((value: string | 
+undefined, index: number, array: 
+(string | undefined)[]) => Element)'.
+client/src/pages/inventory/index.tsx(
+465,25): error TS2304: Cannot find 
+name 'setFilters'.
+client/src/pages/inventory/index.tsx(
+465,36): error TS7006: Parameter 
+'prev' implicitly has an 'any' type.
+client/src/pages/inventory/index.tsx(
+474,36): error TS2304: Cannot find 
+name 'filters'.
+client/src/pages/inventory/index.tsx(
+489,19): error TS2304: Cannot find 
+name 'setFilters'.
+client/src/pages/inventory/index.tsx(
+500,12): error TS2304: Cannot find 
+name 'selectedIds'.
+client/src/pages/inventory/index.tsx(
+504,20): error TS2304: Cannot find 
+name 'selectedIds'.
+client/src/pages/inventory/index.tsx(
+541,26): error TS2304: Cannot find 
+name 'selectedIds'.
+client/src/pages/inventory/index.tsx(
+545,20): error TS2304: Cannot find 
+name 'filters'.
+client/src/pages/inventory/index.tsx(
+546,26): error TS2304: Cannot find 
+name 'filters'.
+client/src/stories/Button.stories.ts(
+3,20): error TS2307: Cannot find 
+module 'storybook/test' or its 
+corresponding type declarations.
+client/src/stories/Header.stories.ts(
+3,20): error TS2307: Cannot find 
+module 'storybook/test' or its 
+corresponding type declarations.
+client/src/stories/Page.stories.ts(3,
+43): error TS2307: Cannot find 
+module 'storybook/test' or its 
+corresponding type declarations.
+client/src/stories/RichTextEditor.sto
+ries.tsx(3,10): error TS2305: Module 
+'"@storybook/preview-api"' has no 
+exported member 'useArgs'.
+server/controllers/inventory.controll
+er.new.ts(92,7): error TS2345: 
+Argument of type 'string | 
+undefined' is not assignable to 
+parameter of type 'string'.
+server/controllers/inventory.controll
+er.new.ts(146,7): error TS2345: 
+Argument of type 'string | 
+undefined' is not assignable to 
+parameter of type 'string'.
+server/controllers/inventory.controll
+er.new.ts(173,48): error TS2345: 
+Argument of type 'string | 
+undefined' is not assignable to 
+parameter of type 'string'.
+server/controllers/inventory.controll
+er.new.ts(202,7): error TS2345: 
+Argument of type 'string | 
+undefined' is not assignable to 
+parameter of type 'string'.
+server/controllers/inventory.controll
+er.ts(92,7): error TS2345: Argument 
+of type 'string | undefined' is not 
+assignable to parameter of type 
+'string'.
+server/controllers/inventory.controll
+er.ts(146,7): error TS2345: Argument 
+of type 'string | undefined' is not 
+assignable to parameter of type 
+'string'.
+server/controllers/inventory.controll
+er.ts(173,48): error TS2345: 
+Argument of type 'string | 
+undefined' is not assignable to 
+parameter of type 'string'.
+server/controllers/inventory.controll
+er.ts(202,7): error TS2345: Argument 
+of type 'string | undefined' is not 
+assignable to parameter of type 
+'string'.
+server/integrations/stripe.ts(10,5): 
+error TS2322: Type 
+'"2025-09-30.clover"' is not 
+assignable to type 
+'"2025-10-29.clover"'.
+server/integrations/stripe.ts(159,35)
+: error TS18047: 'stripe' is 
+possibly 'null'.
+server/integrations/stripe.ts(176,35)
+: error TS18047: 'stripe' is 
+possibly 'null'.
+server/integrations/stripe.ts(200,29)
+: error TS18047: 'stripe' is 
+possibly 'null'.
+server/integrations/stripe.ts(208,13)
+: error TS18047: 'stripe' is 
+possibly 'null'.
+server/integrations/stripe.ts(217,38)
+: error TS18047: 'stripe' is 
+possibly 'null'.
+server/integrations/stripe.ts(233,13)
+: error TS18047: 'stripe' is 
+possibly 'null'.
+server/integrations/stripe.ts(244,14)
+: error TS18047: 'stripe' is 
+possibly 'null'.
+server/integrations/stripe.ts(322,29)
+: error TS18047: 'stripe' is 
+possibly 'null'.
+server/integrations/stripe.ts(335,13)
+: error TS18047: 'stripe' is 
+possibly 'null'.
+server/integrations/stripe.ts(349,13)
+: error TS18047: 'stripe' is 
+possibly 'null'.
+server/jobs/config.ts(6,26): error 
+TS2769: No overload matches this 
+call.
+server/middleware/auth.middleware.ts(
+18,7): error TS2717: Subsequent 
+property declarations must have the 
+same type.  Property 'user' must be 
+of type 'UserPayload | undefined', 
+but here has type 'UserPayload | 
+undefined'.
+server/middleware/auth.middleware.ts(
+68,7): error TS2739: Type '{ id: 
+any; role: AppRole; tenantId: any; 
+}' is missing the following 
+properties from type 'UserPayload': 
+email, name, isActive
+server/middleware/auth.middleware.ts(
+109,33): error TS2345: Argument of 
+type 'string' is not assignable to 
+parameter of type 'AppRole'.
+server/middleware/csrf.middleware.ts(
+9,7): error TS2687: All declarations 
+of 'csrfToken' must have identical 
+modifiers.
+server/middleware/validate.middleware
+.ts(56,55): error TS2345: Argument 
+of type '{ field: string; message: 
+string; }[]' is not assignable to 
+parameter of type 'boolean | 
+undefined'.
+server/middleware/validate.middleware
+.ts(70,59): error TS2345: Argument 
+of type 'ZodIssue[]' is not 
+assignable to parameter of type 
+'boolean | undefined'.
+server/routes/auth.ts(6,47): error 
+TS2307: Cannot find module 
+'../db/schema' or its corresponding 
+type declarations.
+server/routes/auth.ts(8,27): error 
+TS2307: Cannot find module 
+'../services/email' or its 
+corresponding type declarations.
+server/routes/auth.ts(44,11): error 
+TS2430: Interface 
+'AuthenticatedRequest' incorrectly 
+extends interface 
+'Request<ParamsDictionary, any, any, 
+ParsedQs, Record<string, any>>'.
+server/routes/auth.ts(403,11): error 
+TS2304: Cannot find name 'gt'.
+server/routes/billing.ts(4,47): 
+error TS2307: Cannot find module 
+'../db/schema' or its corresponding 
+type declarations.
+server/routes/billing.ts(8,27): 
+error TS2307: Cannot find module 
+'../services/email' or its 
+corresponding type declarations.
+server/routes/billing.ts(12,11): 
+error TS2430: Interface 
+'AuthenticatedRequest' incorrectly 
+extends interface 
+'Request<ParamsDictionary, any, any, 
+ParsedQs, Record<string, any>>'.
+server/routes/billing.ts(119,52): 
+error TS2339: Property 
+'createSubscription' does not exist 
+on type 'StripeService'.
+server/routes/billing.ts(225,53): 
+error TS2339: Property 
+'updateSubscription' does not exist 
+on type 'StripeService'.
+server/routes/billing.ts(298,55): 
+error TS2339: Property 
+'cancelSubscription' does not exist 
+on type 'StripeService'.
+server/routes/billing.ts(381,57): 
+error TS2339: Property 
+'reactivateSubscription' does not 
+exist on type 'StripeService'.
+server/routes/billing.ts(491,42): 
+error TS2339: Property 'getInvoices' 
+does not exist on type 
+'StripeService'.
+server/routes/billing.ts(494,35): 
+error TS7006: Parameter 'invoice' 
+implicitly has an 'any' type.
+server/routes/billing.ts(537,48): 
+error TS2339: Property 
+'getPaymentMethods' does not exist 
+on type 'StripeService'.
+server/routes/billing.ts(540,47): 
+error TS7006: Parameter 'pm' 
+implicitly has an 'any' type.
+server/routes/billing.ts(589,25): 
+error TS2339: Property 
+'updateDefaultPaymentMethod' does 
+not exist on type 'StripeService'.
+server/routes/billing.ts(655,24): 
+error TS2304: Cannot find name 'sql'.
+server/routes/billing.ts(660,24): 
+error TS2304: Cannot find name 'sql'.
+server/routes/billing.ts(665,24): 
+error TS2304: Cannot find name 'sql'.
+server/routes/billing.ts(671,16): 
+error TS2304: Cannot find name 'sql'.
+server/routes/inventory.new.ts(4,10):
+ error TS2305: Module '"../middleware
+/rate-limit.middleware"' has no 
+exported member 'rateLimiter'.
+server/routes/inventory.new.ts(7,10):
+ error TS2305: Module 
+'"@prisma/client"' has no exported 
+member 'Role'.
+server/routes/inventory.new.ts(66,3):
+ error TS2769: No overload matches 
+this call.
+server/routes/inventory.new.ts(73,3):
+ error TS2769: No overload matches 
+this call.
+server/routes/inventory.new.ts(82,3):
+ error TS2769: No overload matches 
+this call.
+server/routes/inventory.new.ts(94,3):
+ error TS2769: No overload matches 
+this call.
+server/routes/inventory.new.ts(103,3)
+: error TS2769: No overload matches 
+this call.
+server/routes/inventory.new.ts(115,3)
+: error TS2769: No overload matches 
+this call.
+server/routes/inventory.new.ts(131,3)
+: error TS2769: No overload matches 
+this call.
+server/routes/projects.ts(3,99): 
+error TS2307: Cannot find module 
+'../shared/schema' or its 
+corresponding type declarations.
+server/routes/projects.ts(9,28): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(16,34): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(23,32): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(25,29): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(35,29): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(37,29): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(44,34): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(46,29): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(58,52): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(60,29): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(67,42): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(69,27): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(79,47): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(81,27): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(93,27): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(100,33): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(107,31): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(109,28): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(119,28): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(121,28): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(131,43): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(133,30): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(142,27): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(153,25): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(155,25): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(164,28): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(166,27): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(176,40): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(178,13): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(187,28): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(194,34): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(201,29): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(203,29): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/projects.ts(210,34): 
+error TS2304: Cannot find name 
+'authenticateToken'.
+server/routes/projects.ts(212,29): 
+error TS2304: Cannot find name 
+'storage'.
+server/routes/v1/inventory.routes.ts(
+2,35): error TS2305: Module 
+'"../../middleware/auth.middleware"' 
+has no exported member 
+'csrfProtection'.
+server/routes/v1/inventory.routes.ts(
+2,51): error TS2305: Module 
+'"../../middleware/auth.middleware"' 
+has no exported member 'authLimiter'.
+server/routes/v1/inventory.routes.ts(
+31,60): error TS2769: No overload 
+matches this call.
+server/routes/v1/inventory.routes.ts(
+32,20): error TS2769: No overload 
+matches this call.
+server/routes/v1/inventory.routes.ts(
+33,28): error TS2769: No overload 
+matches this call.
+server/routes/v1/inventory.routes.ts(
+39,20): error TS2304: Cannot find 
+name 'createInventorySchema'.
+server/routes/v1/inventory.routes.ts(
+40,3): error TS2769: No overload 
+matches this call.
+server/routes/v1/inventory.routes.ts(
+46,20): error TS2304: Cannot find 
+name 'updateInventorySchema'.
+server/routes/v1/inventory.routes.ts(
+47,3): error TS2769: No overload 
+matches this call.
+server/routes/v1/inventory.routes.ts(
+50,8): error TS2695: Left side of 
+comma operator is unused and has no 
+side effects.
+server/routes/v1/inventory.routes.ts(
+50,8): error TS2703: The operand of 
+a 'delete' operator must be a 
+property reference.
+server/seed.ts(365,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(366,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(382,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(383,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(399,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(400,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(416,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(417,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(433,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(434,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(451,11): error 
+TS2741: Property 'transactionId' is 
+missing in type '{ accountId: 
+string; debit: string; credit: 
+string; description: string; }' but 
+required in type '{ transactionId: 
+string; accountId: string; 
+createdAt?: Date | undefined; id?: 
+string | undefined; description?: 
+string | null | undefined; debit?: 
+string | undefined; credit?: string 
+| undefined; }'.
+server/seed.ts(452,11): error 
+TS2741: Property 'transactionId' is 
+missing in type '{ accountId: 
+string; debit: string; credit: 
+string; description: string; }' but 
+required in type '{ transactionId: 
+string; accountId: string; 
+createdAt?: Date | undefined; id?: 
+string | undefined; description?: 
+string | null | undefined; debit?: 
+string | undefined; credit?: string 
+| undefined; }'.
+server/seed.ts(469,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(470,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(530,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(531,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(663,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(664,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(679,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(680,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(695,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/seed.ts(696,9): error TS2741: 
+Property 'transactionId' is missing 
+in type '{ accountId: string; debit: 
+string; credit: string; description: 
+string; }' but required in type '{ 
+transactionId: string; accountId: 
+string; createdAt?: Date | 
+undefined; id?: string | undefined; 
+description?: string | null | 
+undefined; debit?: string | 
+undefined; credit?: string | 
+undefined; }'.
+server/services/cache.ts(20,22): 
+error TS2769: No overload matches 
+this call.
+
+
