@@ -499,39 +499,48 @@ const MicroLoadingIndicators: React.FC<MicroLoadingProps> = ({
 export const LoadingSpinner = memo((props: Omit<MicroLoadingProps, 'type'>) => (
   <MicroLoadingIndicators type="spinner" {...props} />
 ));
+LoadingSpinner.displayName = 'LoadingSpinner';
 
 export const LoadingDots = memo((props: Omit<MicroLoadingProps, 'type'>) => (
   <MicroLoadingIndicators type="dots" {...props} />
 ));
+LoadingDots.displayName = 'LoadingDots';
 
 export const LoadingPulse = memo((props: Omit<MicroLoadingProps, 'type'>) => (
   <MicroLoadingIndicators type="pulse" {...props} />
 ));
+LoadingPulse.displayName = 'LoadingPulse';
 
 export const LoadingSkeleton = memo((props: Omit<MicroLoadingProps, 'type'>) => (
   <MicroLoadingIndicators type="skeleton" {...props} />
 ));
+LoadingSkeleton.displayName = 'LoadingSkeleton';
 
 export const LoadingProgress = memo((props: Omit<MicroLoadingProps, 'type'>) => (
   <MicroLoadingIndicators type="progress" {...props} />
 ));
+LoadingProgress.displayName = 'LoadingProgress';
 
 export const LoadingWave = memo((props: Omit<MicroLoadingProps, 'type'>) => (
   <MicroLoadingIndicators type="wave" {...props} />
 ));
+LoadingWave.displayName = 'LoadingWave';
 
 export const LoadingMorph = memo((props: Omit<MicroLoadingProps, 'type'>) => (
   <MicroLoadingIndicators type="morph" {...props} />
 ));
+LoadingMorph.displayName = 'LoadingMorph';
 
 export const LoadingOrbit = memo((props: Omit<MicroLoadingProps, 'type'>) => (
   <MicroLoadingIndicators type="orbit" {...props} />
 ));
+LoadingOrbit.displayName = 'LoadingOrbit';
 
 // Full-screen loading overlay
 export const FullScreenLoading = memo((props: Omit<MicroLoadingProps, 'overlay' | 'centered'>) => (
   <MicroLoadingIndicators overlay centered size="lg" {...props} />
 ));
+FullScreenLoading.displayName = 'FullScreenLoading';
 
 // Button loading state wrapper
 export interface LoadingButtonProps {

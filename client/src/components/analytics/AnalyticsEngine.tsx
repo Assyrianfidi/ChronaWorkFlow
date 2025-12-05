@@ -110,7 +110,7 @@ const AnalyticsContext = React.createContext<AnalyticsContextType | null>(null);
 // Analytics Engine Class
 class AnalyticsDataProcessor {
   private cache: Map<string, any> = new Map();
-  private subscriptions: Map<string, Function> = new Map();
+  private subscriptions: Map<string, (data: any) => void> = new Map();
 
   constructor() {
     this.initializeDataSources();
@@ -220,7 +220,7 @@ class AnalyticsDataProcessor {
     ];
   }
 
-  subscribe(event: string, callback: Function): string {
+  subscribe(event: string, callback: (data: any) => void): string {
     const id = Math.random().toString(36);
     this.subscriptions.set(id, callback);
     return id;

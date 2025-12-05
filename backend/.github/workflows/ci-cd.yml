@@ -126,6 +126,9 @@ jobs:
     permissions:
       contents: read
       packages: write
+      pull-requests: read
+      deployments: write
+      id-token: write
 
     steps:
       - name: Checkout code

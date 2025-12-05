@@ -4,7 +4,10 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { PrismaClient } from '@prisma/client';
 import { config } from './config/config.js';
-import authRoutes from './routes/auth.routes.js';
+import { authRoutes } from './routes/auth.routes.js';
+import invoicingRoutes from './routes/invoicing/index.js';
+import billingRoutes from './routes/billing/billing.routes.js';
+import documentRoutes from './routes/storage/document.routes.js';
 import { StatusCodes } from 'http-status-codes';
 import { CacheEngine } from './utils/cacheEngine.js';
 import { PerformanceMonitor } from './utils/performanceMonitor.js';
@@ -62,6 +65,9 @@ app.get('/api/metrics', async (req: Request, res: Response) => {
 
 // API Routes with rate limiting
 app.use('/api/auth', RateLimiter.perUserLimit('auth'), authRoutes);
+app.use('/api', invoicingRoutes);
+app.use('/api/billing', billingRoutes);
+app.use('/api/documents', documentRoutes);
 
 // 404 handler with logging
 app.use((req: Request, res: Response) => {

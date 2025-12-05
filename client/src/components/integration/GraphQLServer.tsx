@@ -30,7 +30,7 @@ interface GraphQLField {
   args: GraphQLInputValue[];
   isDeprecated: boolean;
   deprecationReason?: string;
-  resolver?: Function;
+  resolver?: (parent: any, args: any, context: any, info: any) => any;
 }
 
 interface GraphQLInputValue {
@@ -147,9 +147,9 @@ const GraphQLContext = React.createContext<GraphQLContextType | null>(null);
 // GraphQL Engine
 class GraphQLEngine {
   private schema: GraphQLSchema | null = null;
-  private resolvers: Map<string, Function> = new Map();
+  private resolvers: Map<string, (parent: any, args: any, context: any, info: any) => any> = new Map();
   private subscriptions: Map<string, GraphQLSubscription> = new Map();
-  private middleware: Map<string, Function> = new Map();
+  private middleware: Map<string, (req: any, res: any, next: any) => void> = new Map();
   private queries: Map<string, GraphQLQuery> = new Map();
   private executions: GraphQLExecution[] = [];
   private complexityAnalyzer: ComplexityAnalyzer;

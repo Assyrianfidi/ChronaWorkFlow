@@ -20,18 +20,60 @@ async function main() {
     await prisma.reconciliationReport.deleteMany({});
     await prisma.user.deleteMany({});
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash('Fkhouch8', 12);
-
-    // Create admin user
-    const admin = await prisma.user.create({
-      data: {
+    // Create demo users with proper roles
+    const demoUsers = [
+      {
         name: 'Admin User',
-        email: 'fidi.amazon@gmail.com',
-        password: hashedPassword,
-        role: 'admin',
+        email: 'admin@accubooks.com',
+        password: await bcrypt.hash('admin123', 12),
+        role: 'ADMIN',
         isActive: true,
       },
+      {
+        name: 'Manager User',
+        email: 'manager@accubooks.com',
+        password: await bcrypt.hash('manager123', 12),
+        role: 'MANAGER',
+        isActive: true,
+      },
+      {
+        name: 'Regular User',
+        email: 'user@accubooks.com',
+        password: await bcrypt.hash('user123', 12),
+        role: 'USER',
+        isActive: true,
+      },
+      {
+        name: 'Auditor User',
+        email: 'auditor@accubooks.com',
+        password: await bcrypt.hash('auditor123', 12),
+        role: 'AUDITOR',
+        isActive: true,
+      },
+      {
+        name: 'Inventory Manager',
+        email: 'inventory@accubooks.com',
+        password: await bcrypt.hash('inventory123', 12),
+        role: 'INVENTORY_MANAGER',
+        isActive: true,
+      }
+    ];
+
+    const createdUsers = await prisma.user.createMany({
+      data: demoUsers,
+    });
+
+    console.log(`✅ Created ${createdUsers.count} demo users`);
+    console.log('📧 Demo accounts:');
+    console.log('   admin@accubooks.com / admin123');
+    console.log('   manager@accubooks.com / manager123');
+    console.log('   user@accubooks.com / user123');
+    console.log('   auditor@accubooks.com / auditor123');
+    console.log('   inventory@accubooks.com / inventory123');
+
+    // Get the admin user for reports
+    const admin = await prisma.user.findUnique({
+      where: { email: 'admin@accubooks.com' }
     });
 
     // Create sample reports

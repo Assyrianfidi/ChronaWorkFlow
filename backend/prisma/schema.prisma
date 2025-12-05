@@ -48,6 +48,13 @@ model User {
   isActive         Boolean             @default(true)
   passwordChangedAt DateTime?
   lastLogin        DateTime?
+  stripeCustomerId String?             @unique
+  subscriptionId   String?             @unique
+  subscriptionStatus String?
+  planType         String?             // STARTUP, BUSINESS, ENTERPRISE
+  cancelAtPeriodEnd Boolean            @default(false)
+  lastPaymentAt    DateTime?
+  documents        Document[]
   refreshTokens    RefreshToken[]
   reports          ReconciliationReport[]
   inventoryItems   InventoryItem[]     @relation("CreatedBy")
@@ -357,7 +364,7 @@ model Activity {
   description String
   metadata    Json?
   timestamp   DateTime @default(now())
-  
+
   @@map("activities")
 }
 
@@ -367,7 +374,7 @@ model ActivityNotification {
   activityId  String
   isRead      Boolean  @default(false)
   createdAt   DateTime @default(now())
-  
+
   @@map("activity_notifications")
 }
 
@@ -377,7 +384,7 @@ model ActivityAggregation {
   activityType  String
   count         Int      @default(0)
   lastActivity  DateTime @default(now())
-  
+
   @@map("activity_aggregations")
 }
 
@@ -386,7 +393,7 @@ model NotificationPreference {
   userId String
   type   String
   enabled Boolean @default(true)
-  
+
   @@map("notification_preferences")
 }
 
@@ -397,7 +404,7 @@ model ActivityStream {
   data        Json?
   timestamp   DateTime @default(now())
   processed   Boolean  @default(false)
-  
+
   @@map("activity_streams")
 }
 
@@ -407,4 +414,105 @@ enum AccountType {
   EQUITY
   REVENUE
   EXPENSE
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  BANK_TRANSFER
+  CHECK
+  ONLINE
+}
+
+// Additional Invoicing Models
+model Customer {
+  id                 String   @id @default(uuid())
+  companyName        String?
+  firstName          String?
+  lastName           String?
+  email              String?  @unique
+  phone              String?
+  address            Json?
+  province           String?
+  country            String?
+  defaultTaxSettings Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("customers")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  sku         String   @unique
+  name        String
+  description String?
+  unitPrice   Int      // Store in cents
+  taxInclusive Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
+}
+
+model Payment {
+  id             String         @id @default(uuid())
+  invoiceId      String
+  amount         Int            // Store in cents
+  method         PaymentMethod
+  transactionRef String?
+  paidAt         DateTime       @default(now())
+  metadata       Json?
+
+  @@map("payments")
+}
+
+model AccountEntry {
+  id           String @id @default(uuid())
+  refId        String // Reference to invoice, payment, etc.
+  refType      String // "INVOICE", "PAYMENT", etc.
+  debitAccount String
+  creditAccount String
+  amount       Int    // Store in cents
+  description  String
+  createdAt    DateTime @default(now())
+
+  @@map("account_entries")
+}
+
+enum DocumentCategory {
+  INVOICE
+  RECEIPT
+  CONTRACT
+  OTHER
+}
+
+model Document {
+  id          String             @id @default(uuid())
+  userId      Int
+  fileName    String
+  originalName String
+  mimeType    String
+  size        Int
+  category    DocumentCategory
+  filePath    String
+  description String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  // Relations
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("documents")
+}
+
+model TaxRule {
+  id          String   @id @default(uuid())
+  name        String
+  regionCode  String   // e.g., "CA-BC", "CA"
+  rate        Float    // e.g., 0.05 for 5%
+  isCompound  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("tax_rules")
 }

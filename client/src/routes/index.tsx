@@ -1,20 +1,31 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
-import { useAuthStore } from '../store/auth-store';
-import DashboardLayout from '../components/layout/DashboardLayout';
+import { useAuth } from '../contexts/AuthContext';
+import { MainLayout } from '../components/layout/MainLayout';
 import { FullPageLoading } from '../components/ui/full-page-loading';
+import PrivateRoute from './PrivateRoute';
+import RoleAllowed from './RoleAllowed';
 
 // Lazy load pages for better performance
-const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
-const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
-const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'));
-const ForgotPasswordPage = lazy(() => import('../pages/auth/ForgotPasswordPage'));
-const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'));
-const ProfilePage = lazy(() => import('../pages/settings/ProfilePage'));
+const DashboardRouter = lazy(() => import('../pages/DashboardRouter'));
+const LoginPage = lazy(() => import('../pages/LoginPage'));
+const RegisterPage = lazy(() => import('../pages/RegisterPage'));
+const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
+const ProfilePage = lazy(() => import('../pages/ProfilePage'));
+const InvoicesPage = lazy(() => import('../pages/InvoicesPage'));
+const CustomersPage = lazy(() => import('../pages/CustomersPage'));
+const TransactionsPage = lazy(() => import('../pages/TransactionsPage'));
+const InventoryPage = lazy(() => import('../pages/InventoryPage'));
+const ReportsPage = lazy(() => import('../pages/ReportsPage'));
+const AdminSettingsPage = lazy(() => import('../pages/AdminSettingsPage'));
+const AuditLogsPage = lazy(() => import('../pages/AuditLogsPage'));
+const NotificationsPage = lazy(() => import('../pages/NotificationsPage'));
+const Unauthorized = lazy(() => import('../pages/Unauthorized'));
 
 // Auth guard component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
     return <FullPageLoading />;
@@ -31,7 +42,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 // Public route component
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
     return <FullPageLoading />;
@@ -88,21 +99,143 @@ const router = createBrowserRouter([
   {
     path: '/dashboard',
     element: (
-      <ProtectedRoute>
-        <DashboardLayout />
-      </ProtectedRoute>
+      <PrivateRoute>
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <DashboardRouter />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
     ),
-    children: [
-      {
-        index: true,
-        element: <DashboardPage />,
-      },
-      {
-        path: 'profile',
-        element: <ProfilePage />,
-      },
-      // Add more protected routes here
-    ],
+  },
+  {
+    path: '/unauthorized',
+    element: (
+      <Suspense fallback={<FullPageLoading />}>
+        <Unauthorized />
+      </Suspense>
+    ),
+  },
+  // Role-protected routes
+  {
+    path: '/invoices',
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER", "AUDITOR"]}>
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <InvoicesPage />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/customers',
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER"]}>
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <CustomersPage />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/transactions',
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER", "AUDITOR"]}>
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <TransactionsPage />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/reports',
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "AUDITOR"]}>
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <ReportsPage />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/notifications',
+    element: (
+      <PrivateRoute>
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <NotificationsPage />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/users',
+    element: (
+      <PrivateRoute requiredRole="ADMIN">
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <AdminSettingsPage />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/inventory',
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "INVENTORY_MANAGER"]}>
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <InventoryPage />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/audit',
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "AUDITOR"]}>
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <AuditLogsPage />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/settings',
+    element: (
+      <PrivateRoute requiredRole="ADMIN">
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <AdminSettingsPage />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: '/profile',
+    element: (
+      <PrivateRoute>
+        <MainLayout>
+          <Suspense fallback={<FullPageLoading />}>
+            <ProfilePage />
+          </Suspense>
+        </MainLayout>
+      </PrivateRoute>
+    ),
   },
   // 404 route
   {

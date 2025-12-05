@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
-import { logger } from '../utils/logger.ts';
+import { logger } from '../utils/logger.js';
 
 const prisma = new PrismaClient();
 

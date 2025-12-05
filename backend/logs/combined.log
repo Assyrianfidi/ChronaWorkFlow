@@ -1456,3 +1456,602 @@
   service: 'accubooks-backend',
   timestamp: '2025-11-29 11:46:18'
 }
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 11:52:14'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 11:52:14'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 11:52:36'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 11:52:36'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 11:52:47'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 11:52:47'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 11:52:56'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 11:52:56'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 11:53:04'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 11:53:04'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 11:53:27'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 11:53:27'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 12:02:36'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 12:02:36'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 12:03:03'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 12:03:03'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 12:03:10'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 12:03:10'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 12:03:18'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 12:03:18'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 12:03:26'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 12:03:26'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 22:36:48'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 22:36:48'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 22:41:19'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 22:41:19'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 22:42:11'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 22:42:11'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 22:42:11'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 22:42:11'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:03:21'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:03:21'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:03:21'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:03:21'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:03:28'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:03:28'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:03:28'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:03:28'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:04:36'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:04:36'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:04:37'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:04:37'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:04:44'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:04:44'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:04:44'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:04:44'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:04:51'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:04:51'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:04:51'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:04:51'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:19:33'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:19:33'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:19:33'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:19:33'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:19:40'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:19:40'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:19:40'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:19:40'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:21:20'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:21:20'
+}
+{
+  type: 'INFO',
+  message: 'Redis connected',
+  details: { host: 'localhost' },
+  level: 'info',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-03 23:21:20'
+}
+{
+  service: 'accubooks-backend',
+  port: 3001,
+  environment: 'development',
+  nodeVersion: 'v20.19.5',
+  level: 'info',
+  message: 'Server starting up',
+  timestamp: '2025-12-03 23:21:20'
+}

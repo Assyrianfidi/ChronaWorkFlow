@@ -170,9 +170,9 @@ class APIGatewayEngine {
   private requests: Map<string, APIRequest> = new Map();
   private apiKeys: Map<string, APIKey> = new Map();
   private webhooks: Map<string, Webhook> = new Map();
-  private middleware: Map<string, Function> = new Map();
-  private transformers: Map<string, Function> = new Map();
-  private validators: Map<string, Function> = new Map();
+  private middleware: Map<string, (req: any, res: any, next: any) => void> = new Map();
+  private transformers: Map<string, (data: any) => any> = new Map();
+  private validators: Map<string, (data: any) => boolean> = new Map();
 
   constructor() {
     this.initializeMiddleware();

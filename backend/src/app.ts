@@ -10,7 +10,7 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import { config } from './config/config.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
-import authRoutes from './routes/auth.routes.js';
+import { authRoutes } from './routes/auth.routes.js';
 import reportRoutes from './routes/report.routes.js';
 import userRoutes from './routes/user.routes.js';
 import accountsRoutes from './modules/accounts/accounts.routes.js';

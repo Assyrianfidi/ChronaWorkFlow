@@ -146,7 +146,7 @@ class AIAutomationEngine {
   public rules: Map<string, AutomationRule> = new Map();
   public executions: Map<string, AutomationExecution> = new Map();
   private scheduler: NodeJS.Timeout | null = null;
-  private eventListeners: Map<string, Function[]> = new Map();
+  private eventListeners: Map<string, ((event: any) => void)[]> = new Map();
 
   constructor() {
     this.initializeAIModels();
@@ -600,14 +600,14 @@ class AIAutomationEngine {
   }
 
   // Event Management
-  addEventListener(event: string, callback: Function): void {
+  addEventListener(event: string, callback: (event: any) => void): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
     this.eventListeners.get(event)!.push(callback);
   }
 
-  removeEventListener(event: string, callback: Function): void {
+  removeEventListener(event: string, callback: (event: any) => void): void {
     const listeners = this.eventListeners.get(event);
     if (listeners) {
       const index = listeners.indexOf(callback);

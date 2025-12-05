@@ -214,8 +214,8 @@ export class MotionV3Engine {
     const friction = options?.friction ?? this.config.physics.friction;
     const tension = options?.tension ?? this.config.physics.tension;
 
-    let velocity = { ...initialVelocity };
-    let position = { x: 0, y: 0 };
+    const velocity = { ...initialVelocity };
+    const position = { x: 0, y: 0 };
     let time = 0;
 
     const animate = () => {

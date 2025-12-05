@@ -457,6 +457,7 @@ describe('AnalyticsEngine Higher-Order Components', () => {
     const TestComponent = React.forwardRef<HTMLDivElement>((props, ref) => (
       <div ref={ref}>Wrapped Component</div>
     ));
+    TestComponent.displayName = 'TestComponent';
 
     const WrappedComponent = withAnalytics(TestComponent);
 

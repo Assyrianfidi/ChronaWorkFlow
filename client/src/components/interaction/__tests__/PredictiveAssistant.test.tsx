@@ -617,7 +617,7 @@ describe('ML Model Manager', () => {
     render(
       <PredictiveAssistant>
         <TestComponent />
-      </PredictiveAssembly>
+      </PredictiveAssistant>
     );
 
     fireEvent.click(screen.getByText('Predict Error'));

@@ -1,0 +1,35 @@
+:root {
+  --colors-bg-50: #FFFFFF;
+  --colors-bg-90: #0B1220;
+  --colors-bg-100: #0F1724;
+  --colors-primary-50: #E6F4FF;
+  --colors-primary-100: #BEE6FF;
+  --colors-primary-500: #0B72FF;
+  --colors-primary-700: #084FCC;
+  --colors-accent-500: #FF8A00;
+  --colors-success-500: #18A558;
+  --colors-danger-500: #D64545;
+  --colors-muted-500: #94A3B8;
+  --typography-fontFamily: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  --typography-sizes-xs: 12px;
+  --typography-sizes-sm: 14px;
+  --typography-sizes-md: 16px;
+  --typography-sizes-lg: 20px;
+  --typography-sizes-xl: 28px;
+  --typography-weights-regular: 400;
+  --typography-weights-medium: 500;
+  --typography-weights-bold: 700;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 40px;
+  --radii-sm: 4px;
+  --radii-md: 8px;
+  --radii-lg: 12px;
+  --elevation-low: 0 1px 3px rgba(2,6,23,.05);
+  --elevation-medium: 0 6px 18px rgba(2,6,23,.08);
+  --motion-duration-fast: 120ms;
+  --motion-duration-medium: 240ms;
+  --motion-ease: cubic-bezier(.2,.9,.2,1);
+}

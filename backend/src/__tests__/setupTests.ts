@@ -1,5 +1,5 @@
 import { beforeAll, afterEach, afterAll } from '@jest/globals';
-import { prisma } from '../../prisma';
+import { prisma } from '../utils/prisma';
 
 beforeAll(async () => {
   // Initialize test database

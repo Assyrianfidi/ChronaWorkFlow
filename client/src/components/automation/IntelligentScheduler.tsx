@@ -168,7 +168,7 @@ class IntelligentScheduler {
     const now = new Date();
 
     // Simple implementation - find next matching time
-    let nextTime = new Date(now);
+    const nextTime = new Date(now);
     
     if (minute !== '*') {
       nextTime.setMinutes(parseInt(minute));

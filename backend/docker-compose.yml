@@ -1,4 +1,4 @@
-version: '3.8'
+version: 3.8
 
 services:
   # Application service
@@ -45,7 +45,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-accu_books}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
@@ -54,7 +54,7 @@ services:
     networks:
       - accu-books-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-accu_books}"]
+      test: [CMD-SHELL, "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-accu_books}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -83,8 +83,8 @@ services:
     container_name: accu-books-nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/ssl:/etc/nginx/ssl
@@ -102,17 +102,17 @@ services:
     container_name: accu-books-prometheus
     restart: unless-stopped
     ports:
-      - "9090:9090"
+      - 9090:9090
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.console.libraries=/etc/prometheus/console_libraries
+      - --web.console.templates=/etc/prometheus/consoles
+      - --storage.tsdb.retention.time=200h
+      - --web.enable-lifecycle
     networks:
       - accu-books-network
     profiles:
@@ -124,7 +124,7 @@ services:
     container_name: accu-books-grafana
     restart: unless-stopped
     ports:
-      - "3001:3000"
+      - 3001:3000
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false

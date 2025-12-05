@@ -104,7 +104,7 @@ const BIContext = React.createContext<BIContextType | null>(null);
 // Business Intelligence Engine
 class BIEngine {
   private models: Map<string, any> = new Map();
-  private algorithms: Map<string, Function> = new Map();
+  private algorithms: Map<string, (data: any) => any> = new Map();
 
   constructor() {
     this.initializeModels();

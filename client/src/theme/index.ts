@@ -17,12 +17,14 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setMode(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  return (
-    <ThemeContext.Provider value={{ mode, toggleTheme }}>
-      <div className={`theme-${mode}`}>
-        {children}
-      </div>
-    </ThemeContext.Provider>
+  return React.createElement(
+    ThemeContext.Provider,
+    { value: { mode, toggleTheme } },
+    React.createElement(
+      'div',
+      { className: `theme-${mode}` },
+      children
+    )
   );
 };
 

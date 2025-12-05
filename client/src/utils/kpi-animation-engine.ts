@@ -367,8 +367,6 @@ export class KPIAnimationEngine {
     updateInterval: number = 5000,
     variation: number = 0.05
   ): () => void {
-    let intervalId: NodeJS.Timeout;
-
     const update = () => {
       const variationAmount = value.target * variation;
       const newValue = value.target + (Math.random() - 0.5) * variationAmount;
@@ -381,7 +379,7 @@ export class KPIAnimationEngine {
       });
     };
 
-    intervalId = setInterval(update, updateInterval);
+    const intervalId = setInterval(update, updateInterval);
 
     return () => {
       if (intervalId) {

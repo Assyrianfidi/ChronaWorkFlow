@@ -10,17 +10,17 @@ const buttonVariants = cva(
         primary:
           "bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white border-0 hover:from-blue-700 hover:via-blue-600 hover:to-blue-700 focus-visible:ring-blue-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
         secondary:
-          "bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 text-white border-0 hover:from-emerald-700 hover:via-emerald-600 hover:to-emerald-700 focus-visible:ring-emerald-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
+          "bg-gradient-to-r from-navy-700 via-navy-600 to-navy-700 text-white border-0 hover:from-navy-800 hover:via-navy-700 hover:to-navy-800 focus-visible:ring-navy-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
         ghost:
           "bg-white/10 backdrop-blur-md text-gray-700 hover:bg-white/20 focus-visible:ring-gray-500 border border-white/20 hover:border-white/30 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 glass",
         danger:
           "bg-gradient-to-r from-red-600 via-red-500 to-red-600 text-white border-0 hover:from-red-700 hover:via-red-600 hover:to-red-700 focus-visible:ring-red-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
         success:
-          "bg-gradient-to-r from-green-600 via-green-500 to-green-600 text-white border-0 hover:from-green-700 hover:via-green-600 hover:to-green-700 focus-visible:ring-green-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
+          "bg-gradient-to-r from-green-500 via-green-400 to-green-500 text-white border-0 hover:from-green-600 hover:via-green-500 hover:to-green-600 focus-visible:ring-green-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
         warning:
           "bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-white border-0 hover:from-amber-700 hover:via-amber-600 hover:to-amber-700 focus-visible:ring-amber-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
         info:
-          "bg-gradient-to-r from-cyan-600 via-cyan-500 to-cyan-600 text-white border-0 hover:from-cyan-700 hover:via-cyan-600 hover:to-cyan-700 focus-visible:ring-cyan-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
+          "bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white border-0 hover:from-blue-700 hover:via-blue-600 hover:to-blue-700 focus-visible:ring-blue-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
         neutral:
           "bg-gradient-to-r from-gray-600 via-gray-500 to-gray-600 text-white border-0 hover:from-gray-700 hover:via-gray-600 hover:to-gray-700 focus-visible:ring-gray-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
       },

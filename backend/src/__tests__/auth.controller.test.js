@@ -21,7 +21,6 @@ jest.mock('@prisma/client', () => ({
   PrismaClient: jest.fn(() => mockPrisma),
 }));
 
-const { describe, it, expect, beforeEach, afterEach } = require('@jest/globals');
 const bcrypt = require('bcryptjs');
 
 // Mock the auth controller functions directly
@@ -37,10 +36,15 @@ const mockAuthController = {
 jest.mock('../controllers/auth.controller.js', () => mockAuthController);
 
 describe('Auth Controller', () => {
+  /** @type {any} */
   let testUser;
+  /** @type {any} */
   let testUserId;
+  /** @type {any} */
   let mockRequest;
+  /** @type {any} */
   let mockResponse;
+  /** @type {any} */
   let nextFunction;
 
   beforeEach(async () => {

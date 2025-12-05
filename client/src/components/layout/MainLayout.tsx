@@ -1,58 +1,83 @@
 import * as React from "react"
-import { TopNavigation } from "./TopNavigation"
-import { SideNavigation } from "./SideNavigation"
+import { Outlet } from "react-router-dom"
+import { EnterpriseSidebar } from "./EnterpriseSidebar"
+import { EnterpriseHeader } from "./EnterpriseHeader"
 import { cn } from "../../lib/utils"
+import { useAuth } from "../../contexts/AuthContext"
 
 interface MainLayoutProps {
   children: React.ReactNode
   className?: string
+  user?: {
+    name: string
+    email: string
+    avatar?: string
+    role: string
+  }
 }
 
-const MainLayout = React.forwardRef<HTMLDivElement, MainLayoutProps>(
-  ({ children, className }, ref) => {
-    const [sidebarOpen, setSidebarOpen] = React.useState(true)
-    const [activeNav, setActiveNav] = React.useState("dashboard")
+const MainLayout: React.FC<MainLayoutProps> = ({ children, className, user }) => {
+  const [sidebarOpen, setSidebarOpen] = React.useState(true)
+  const { user: authUser } = useAuth()
+  const [isMobile, setIsMobile] = React.useState(false)
 
-    const handleSidebarToggle = () => {
-      setSidebarOpen(!sidebarOpen)
+  // Use the user from props or fallback to auth user
+  const currentUser = user || authUser
+
+  // Handle responsive behavior
+  React.useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 1024
+      setIsMobile(mobile)
+      if (mobile) {
+        setSidebarOpen(false)
+      } else {
+        setSidebarOpen(true)
+      }
     }
 
-    const handleNavItemClick = (item: any) => {
-      setActiveNav(item.id)
-      // Handle navigation logic here
-      console.log("Navigating to:", item.href)
-    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
-    return (
-      <div ref={ref} className={cn("min-h-screen bg-background", className)}>
-        {/* Top Navigation */}
-        <TopNavigation
-          onSidebarToggle={handleSidebarToggle}
-          sidebarOpen={sidebarOpen}
-        />
+  const handleSidebarToggle = () => {
+    setSidebarOpen(!sidebarOpen)
+  }
 
-        {/* Side Navigation */}
-        <SideNavigation
-          open={sidebarOpen}
-          activeItem={activeNav}
-          onItemClick={handleNavItemClick}
+  return (
+    <div className={cn("min-h-screen bg-gray-50", className)}>
+      <div className="flex h-screen overflow-hidden">
+        {/* Sidebar */}
+        <EnterpriseSidebar 
+          isOpen={sidebarOpen} 
+          onToggle={handleSidebarToggle}
         />
 
         {/* Main Content */}
-        <main
-          className={cn(
-            "transition-all duration-300 pt-16",
-            sidebarOpen ? "ml-64" : "ml-0"
-          )}
-        >
-          <div className="p-6">
-            {children}
-          </div>
-        </main>
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Top Navigation */}
+          <EnterpriseHeader 
+            user={currentUser ? {
+              name: currentUser.name,
+              email: currentUser.email,
+              avatar: currentUser.avatar,
+              role: currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)
+            } : undefined}
+            onSidebarToggle={handleSidebarToggle}
+            sidebarOpen={sidebarOpen}
+          />
+
+          {/* Page Content */}
+          <main className="flex-1 overflow-y-auto bg-gray-50">
+            <div className="container mx-auto px-4 py-6 max-w-7xl">
+              {children || <Outlet />}
+            </div>
+          </main>
+        </div>
       </div>
-    )
-  }
-)
-MainLayout.displayName = "MainLayout"
+    </div>
+  )
+}
 
 export { MainLayout }

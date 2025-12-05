@@ -1,10 +1,9 @@
 /// <reference types="@testing-library/jest-dom" />
-/// <reference types="vitest" />
 /// <reference types="vite/client" />
 
 // Import Vitest types
 import type { TestingLibraryMatchers } from '@testing-library/jest-dom/matchers';
-import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll, test, assert } from 'vitest';
+import type { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll, test, assert } from 'vitest';
 
 // Extend Vitest's expect with Testing Library matchers
 declare module 'vitest' {
