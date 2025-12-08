@@ -1,10 +1,9 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { lazy } from 'react';
 import { MainLayout } from '../components/layout/MainLayout';
-import { FullPageLoading } from '../components/ui/full-page-loading';
 import PrivateRoute from './PrivateRoute';
 import RoleAllowed from './RoleAllowed';
+import { ProtectedRoute, PublicRoute, SuspenseWrapper } from './RouteGuards';
 
 // Lazy load pages for better performance
 const DashboardRouter = lazy(() => import('../pages/DashboardRouter'));
@@ -23,40 +22,6 @@ const AuditLogsPage = lazy(() => import('../pages/AuditLogsPage'));
 const NotificationsPage = lazy(() => import('../pages/NotificationsPage'));
 const Unauthorized = lazy(() => import('../pages/Unauthorized'));
 
-// Auth guard component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <FullPageLoading />;
-  }
-  
-  return isAuthenticated ? (
-    <Suspense fallback={<FullPageLoading />}>
-      {children}
-    </Suspense>
-  ) : (
-    <Navigate to="/login" state={{ from: window.location.pathname }} replace />
-  );
-};
-
-// Public route component
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return <FullPageLoading />;
-  }
-  
-  return !isAuthenticated ? (
-    <Suspense fallback={<FullPageLoading />}>
-      {children}
-    </Suspense>
-  ) : (
-    <Navigate to="/dashboard" replace />
-  );
-};
-
 const router = createBrowserRouter([
   {
     path: '/',
@@ -67,7 +32,9 @@ const router = createBrowserRouter([
     path: '/login',
     element: (
       <PublicRoute>
-        <LoginPage />
+        <SuspenseWrapper>
+          <LoginPage />
+        </SuspenseWrapper>
       </PublicRoute>
     ),
   },
@@ -75,7 +42,9 @@ const router = createBrowserRouter([
     path: '/register',
     element: (
       <PublicRoute>
-        <RegisterPage />
+        <SuspenseWrapper>
+          <RegisterPage />
+        </SuspenseWrapper>
       </PublicRoute>
     ),
   },
@@ -83,7 +52,9 @@ const router = createBrowserRouter([
     path: '/forgot-password',
     element: (
       <PublicRoute>
-        <ForgotPasswordPage />
+        <SuspenseWrapper>
+          <ForgotPasswordPage />
+        </SuspenseWrapper>
       </PublicRoute>
     ),
   },
@@ -91,7 +62,9 @@ const router = createBrowserRouter([
     path: '/reset-password',
     element: (
       <PublicRoute>
-        <ResetPasswordPage />
+        <SuspenseWrapper>
+          <ResetPasswordPage />
+        </SuspenseWrapper>
       </PublicRoute>
     ),
   },
@@ -99,21 +72,21 @@ const router = createBrowserRouter([
   {
     path: '/dashboard',
     element: (
-      <PrivateRoute>
+      <ProtectedRoute>
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <DashboardRouter />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
-      </PrivateRoute>
+      </ProtectedRoute>
     ),
   },
   {
     path: '/unauthorized',
     element: (
-      <Suspense fallback={<FullPageLoading />}>
+      <SuspenseWrapper>
         <Unauthorized />
-      </Suspense>
+      </SuspenseWrapper>
     ),
   },
   // Role-protected routes
@@ -122,9 +95,9 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER", "AUDITOR"]}>
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <InvoicesPage />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
       </PrivateRoute>
     ),
@@ -134,9 +107,9 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER"]}>
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <CustomersPage />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
       </PrivateRoute>
     ),
@@ -146,9 +119,9 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER", "AUDITOR"]}>
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <TransactionsPage />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
       </PrivateRoute>
     ),
@@ -158,9 +131,9 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "AUDITOR"]}>
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <ReportsPage />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
       </PrivateRoute>
     ),
@@ -168,13 +141,13 @@ const router = createBrowserRouter([
   {
     path: '/notifications',
     element: (
-      <PrivateRoute>
+      <ProtectedRoute>
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <NotificationsPage />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
-      </PrivateRoute>
+      </ProtectedRoute>
     ),
   },
   {
@@ -182,9 +155,9 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute requiredRole="ADMIN">
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <AdminSettingsPage />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
       </PrivateRoute>
     ),
@@ -194,9 +167,9 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute requiredRole={["ADMIN", "INVENTORY_MANAGER"]}>
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <InventoryPage />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
       </PrivateRoute>
     ),
@@ -206,9 +179,9 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute requiredRole={["ADMIN", "AUDITOR"]}>
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <AuditLogsPage />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
       </PrivateRoute>
     ),
@@ -218,9 +191,9 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute requiredRole="ADMIN">
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <AdminSettingsPage />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
       </PrivateRoute>
     ),
@@ -228,13 +201,13 @@ const router = createBrowserRouter([
   {
     path: '/profile',
     element: (
-      <PrivateRoute>
+      <ProtectedRoute>
         <MainLayout>
-          <Suspense fallback={<FullPageLoading />}>
+          <SuspenseWrapper>
             <ProfilePage />
-          </Suspense>
+          </SuspenseWrapper>
         </MainLayout>
-      </PrivateRoute>
+      </ProtectedRoute>
     ),
   },
   // 404 route

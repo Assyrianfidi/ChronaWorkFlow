@@ -1,0 +1,40 @@
+[2m11:17:58 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] Unexpected token (201:3)[39m
+  Plugin: [35mvite:css[39m
+  File: [36mC:/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/client/src/styles/globals.css[39m:undefined:NaN
+[33m  234|  }
+  235|  
+  236|  @keyframes fade-in {
+     |        ^
+  237|    from { opacity: 0; }
+  238|    to { opacity: 1; }[39m
+      at unexpected (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\util.js:99:15)
+      at parseExprAtom (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:594:24)
+      at parseExprSubscripts (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:276:20)
+      at parseMaybeUnary (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:257:20)
+      at parseExprOps (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:185:20)
+      at parseMaybeConditional (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:157:20)
+      at baseParseMaybeAssign (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:142:20)
+      at tsParseMaybeAssignWithoutJSX (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\plugins\typescript.js:1580:45)
+      at tsParseMaybeAssign (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\plugins\typescript.js:1548:12)
+      at parseMaybeAssign (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:121:43)
+[2m11:17:58 AM[22m [31m[1m[vite][22m[39m Pre-transform error: [postcss] Unexpected token (201:3)
+[2m11:17:58 AM[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] Unexpected token (201:3)[39m
+  Plugin: [35mvite:css[39m
+  File: [36mC:/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/client/src/index.css[39m:undefined:NaN
+[33m  232|   * <element className="toggle-elevate toggle-elevated" />
+  233|   *
+  234|   * Elevation systems have to handle many states.
+     |                                        ^
+  235|   * - not-hovered, vs. hovered vs. active  (three mutually exclusive states)
+  236|   * - toggled or not[39m
+      at unexpected (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\util.js:99:15)
+      at parseExprAtom (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:594:24)
+      at parseExprSubscripts (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:276:20)
+      at parseMaybeUnary (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:257:20)
+      at parseExprOps (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:185:20)
+      at parseMaybeConditional (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:157:20)
+      at baseParseMaybeAssign (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:142:20)
+      at tsParseMaybeAssignWithoutJSX (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\plugins\typescript.js:1580:45)
+      at tsParseMaybeAssign (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\plugins\typescript.js:1548:12)
+      at parseMaybeAssign (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\client\node_modules\sucrase\dist\parser\traverser\expression.js:121:43)
+[2m11:17:58 AM[22m [31m[1m[vite][22m[39m Pre-transform error: [postcss] Unexpected token (201:3)
