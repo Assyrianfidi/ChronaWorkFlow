@@ -58,7 +58,7 @@ describe("Auth Controller - Unit Tests", () => {
   beforeAll(async () => {
     // Import after mocking
     const authControllerModule = await import(
-      "../controllers/auth.controller.js"
+      "../controllers/auth.controller"
     );
     ({ login, register, refreshToken, logout, logoutAll, changePassword } =
       authControllerModule);

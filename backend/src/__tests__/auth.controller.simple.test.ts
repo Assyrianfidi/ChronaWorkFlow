@@ -278,7 +278,7 @@ describe("Auth Controller - Simple Tests", () => {
 
     it("should reject missing refresh token", async () => {
       const { refreshToken } = await import(
-        "../controllers/auth.controller.js"
+        "../controllers/auth.controller"
       );
 
       mockRequest.cookies = {};
@@ -386,7 +386,7 @@ describe("Auth Controller - Simple Tests", () => {
   describe("changePassword", () => {
     it("should change password successfully", async () => {
       const { changePassword } = await import(
-        "../controllers/auth.controller.js"
+        "../controllers/auth.controller"
       );
 
       mockRequest.user = { id: 1, role: "USER" as const };
@@ -424,7 +424,7 @@ describe("Auth Controller - Simple Tests", () => {
 
     it("should require authentication", async () => {
       const { changePassword } = await import(
-        "../controllers/auth.controller.js"
+        "../controllers/auth.controller"
       );
 
       mockRequest.user = undefined;

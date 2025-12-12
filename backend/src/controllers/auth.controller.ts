@@ -4,7 +4,6 @@ import { z } from "zod";
 import {
   authService,
   AuthTokens,
-  UserRole,
   generateAccessToken,
 } from "../services/auth.service";
 import { RefreshTokenService } from "../services/refreshToken.service";
@@ -27,7 +26,7 @@ const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email format"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  role: z.nativeEnum(UserRole).optional(),
+  role: z.nativeEnum(Role).optional(),
 });
 
 const changePasswordSchema = z.object({
