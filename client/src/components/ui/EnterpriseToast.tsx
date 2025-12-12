@@ -84,7 +84,11 @@ const ToastContainer: React.FC = () => {
   const { toasts } = useToast();
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full">
+    <div 
+      className="fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {toasts.map((toast) => (
         <Toast key={toast.id} {...toast} />
       ))}
@@ -169,6 +173,8 @@ const Toast: React.FC<ToastProps> = ({
         isVisible && !isLeaving && "animate-slide-in-from-right",
         isLeaving && "animate-slide-out-to-right opacity-0",
       )}
+      role={type === "error" ? "alert" : "status"}
+      aria-live={type === "error" ? "assertive" : "polite"}
     >
       <Icon className={cn("w-5 h-5 flex-shrink-0 mt-0.5", config.iconColor)} />
 
