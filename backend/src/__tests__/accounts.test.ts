@@ -25,6 +25,7 @@ jest.mock("../utils/errors", () => ({
 import { accountsService } from "../modules/accounts/accounts.service";
 import { accountsController } from "../modules/accounts/accounts.controller";
 import { Request, Response, NextFunction } from "express";
+import { Decimal } from "@prisma/client/runtime/library";
 
 describe("Accounts Module", () => {
   let mockRequest: Partial<Request>;
@@ -94,7 +95,16 @@ describe("Accounts Module", () => {
 
         expect(result).toEqual(mockAccount);
         expect(mockPrisma.account.create).toHaveBeenCalledWith({
-          data: accountData,
+          data: {
+            companyId: "550e8400-e29b-41d4-a716-446655440000",
+            code: "1000",
+            name: "Cash",
+            type: "ASSET",
+            parentId: undefined,
+            balance: new Decimal(0),
+            description: undefined,
+            isActive: true,
+          },
         });
       });
     });
@@ -130,7 +140,14 @@ describe("Accounts Module", () => {
       });
 
       it("should throw error for NaN amount", async () => {
-        await expect(accountsService.adjustBalance("1", NaN)).rejects.toThrow();
+        // Temporarily restore the original prisma to test service logic
+        const { prisma: originalPrisma } = jest.requireActual('../utils/prisma');
+        jest.doMock('../utils/prisma', () => ({ prisma: originalPrisma }));
+        
+        // Import fresh service instance
+        const { accountsService: freshService } = require('../modules/accounts/accounts.service');
+        
+        await expect(freshService.adjustBalance("1", NaN)).rejects.toThrow("amount must be a number");
       });
     });
   });

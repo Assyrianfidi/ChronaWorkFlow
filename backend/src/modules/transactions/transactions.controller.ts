@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { transactionsService } from "./transactions.service.js";
-import { transactionListSchema } from "./transactions.model.js";
+import { transactionsService } from "./transactions.service";
+import { transactionListSchema } from "./transactions.model";
 import { StatusCodes } from "http-status-codes";
 
 export const transactionsController = {

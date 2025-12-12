@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { accountsService } from "./accounts.service.js";
-import { accountListQuerySchema } from "./accounts.model.js";
-import { ApiError } from "../../utils/errors.js";
+import { accountsService } from "./accounts.service";
+import { accountListQuerySchema } from "./accounts.model";
+import { ApiError } from "../../utils/errors";
 import { StatusCodes } from "http-status-codes";
 
 export const accountsController = {
