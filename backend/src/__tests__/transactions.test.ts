@@ -25,8 +25,8 @@ jest.mock("../utils/errors", () => ({
   }),
 }));
 
-import { transactionsService } from "../modules/transactions/transactions.service.js";
-import { transactionsController } from "../modules/transactions/transactions.controller.js";
+import { transactionsService } from "../modules/transactions/transactions.service";
+import { transactionsController } from "../modules/transactions/transactions.controller";
 import { Request, Response, NextFunction } from "express";
 
 describe("Transactions Module", () => {

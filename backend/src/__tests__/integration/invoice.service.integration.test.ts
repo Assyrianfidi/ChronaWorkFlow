@@ -1,6 +1,6 @@
-import { InvoiceService } from "../../services/invoice.service.js";
-import { prisma } from "../../utils/prisma.js";
-import { ApiError } from "../../utils/errors.js";
+import { InvoiceService } from "../../services/invoice.service";
+import { prisma } from "../../utils/prisma";
+import { ApiError } from "../../utils/errors";
 import {
   jest,
   describe,

@@ -1,6 +1,6 @@
 import request from "supertest";
 import express from "express";
-import DatabaseSecurityService from "../../services/databaseSecurity.service.js";
+import DatabaseSecurityService from "../../services/databaseSecurity.service";
 import {
   requireDatabasePermission,
   validateDatabaseConstraints,

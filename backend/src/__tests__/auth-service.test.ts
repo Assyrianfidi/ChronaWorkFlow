@@ -1,9 +1,9 @@
 jest.mock("dotenv", () => ({
   config: () => ({ parsed: { JWT_SECRET: "test-secret" } }),
 }));
-import { AuthService } from "../services/auth.service.js";
+import { AuthService } from "../services/auth.service";
 // Import the prisma client
-import { prisma } from "../utils/prisma.js";
+import { prisma } from "../utils/prisma";
 
 // Mock the prisma client
 jest.mock("../utils/prisma.js", () => ({
@@ -17,7 +17,7 @@ jest.mock("../utils/prisma.js", () => ({
 }));
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { ApiError } from "../utils/errors.js";
+import { ApiError } from "../utils/errors";
 
 // Mock the dependencies
 jest.mock("../utils/prisma.js");

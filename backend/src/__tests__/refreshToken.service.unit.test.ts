@@ -30,7 +30,7 @@ jest.mock("crypto", () => ({
   randomBytes: jest.fn(() => Buffer.from("a".repeat(64))),
 }));
 
-import { RefreshTokenService } from "../services/refreshToken.service.js";
+import { RefreshTokenService } from "../services/refreshToken.service";
 
 describe("RefreshTokenService - Unit Tests", () => {
   beforeEach(() => {

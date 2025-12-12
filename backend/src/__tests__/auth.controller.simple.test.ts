@@ -84,7 +84,7 @@ describe("Auth Controller - Simple Tests", () => {
   describe("login", () => {
     it("should login user successfully", async () => {
       // Import dynamically to avoid circular dependencies
-      const { login } = await import("../controllers/auth.controller.js");
+      const { login } = await import("../controllers/auth.controller");
 
       const mockUser = { id: 1, email: "test@example.com", name: "Test User" };
       const mockTokens = { accessToken: "access-token", expiresIn: 900 };
@@ -144,7 +144,7 @@ describe("Auth Controller - Simple Tests", () => {
     });
 
     it("should handle validation errors", async () => {
-      const { login } = await import("../controllers/auth.controller.js");
+      const { login } = await import("../controllers/auth.controller");
 
       mockRequest.body = {
         email: "invalid-email",
@@ -165,7 +165,7 @@ describe("Auth Controller - Simple Tests", () => {
     });
 
     it("should handle authentication errors", async () => {
-      const { login } = await import("../controllers/auth.controller.js");
+      const { login } = await import("../controllers/auth.controller");
 
       mockRequest.body = {
         email: "test@example.com",
@@ -189,7 +189,7 @@ describe("Auth Controller - Simple Tests", () => {
 
   describe("register", () => {
     it("should register new user successfully", async () => {
-      const { register } = await import("../controllers/auth.controller.js");
+      const { register } = await import("../controllers/auth.controller");
 
       const mockUser = { id: 2, email: "new@example.com", name: "New User" };
       const mockTokens = { accessToken: "access-token", expiresIn: 900 };
@@ -239,7 +239,7 @@ describe("Auth Controller - Simple Tests", () => {
 
   describe("refreshToken", () => {
     it("should refresh access token successfully", async () => {
-      const authModule = await import("../controllers/auth.controller.js");
+      const authModule = await import("../controllers/auth.controller");
       const { refreshToken } = authModule;
 
       const mockRefreshToken = "valid-refresh-token";
@@ -300,7 +300,7 @@ describe("Auth Controller - Simple Tests", () => {
 
   describe("logout", () => {
     it("should logout user successfully", async () => {
-      const { logout } = await import("../controllers/auth.controller.js");
+      const { logout } = await import("../controllers/auth.controller");
 
       const mockRefreshToken = "valid-refresh-token";
       mockRequest.cookies = { refreshToken: mockRefreshToken };
@@ -339,7 +339,7 @@ describe("Auth Controller - Simple Tests", () => {
 
   describe("logoutAll", () => {
     it("should logout from all sessions", async () => {
-      const { logoutAll } = await import("../controllers/auth.controller.js");
+      const { logoutAll } = await import("../controllers/auth.controller");
 
       mockRequest.user = { id: 1, role: "USER" as const };
 
@@ -364,7 +364,7 @@ describe("Auth Controller - Simple Tests", () => {
     });
 
     it("should require authentication", async () => {
-      const { logoutAll } = await import("../controllers/auth.controller.js");
+      const { logoutAll } = await import("../controllers/auth.controller");
 
       mockRequest.user = undefined;
 

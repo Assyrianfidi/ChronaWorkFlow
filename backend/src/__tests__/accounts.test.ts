@@ -22,8 +22,8 @@ jest.mock("../utils/errors", () => ({
   }),
 }));
 
-import { accountsService } from "../modules/accounts/accounts.service.js";
-import { accountsController } from "../modules/accounts/accounts.controller.js";
+import { accountsService } from "../modules/accounts/accounts.service";
+import { accountsController } from "../modules/accounts/accounts.controller";
 import { Request, Response, NextFunction } from "express";
 
 describe("Accounts Module", () => {

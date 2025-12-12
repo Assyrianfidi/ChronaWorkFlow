@@ -10,8 +10,8 @@ jest.mock("../utils/logger.js", () => ({
   logger: mockLogger,
 }));
 
-import { errorHandler, notFound } from "../middleware/errorHandler.js";
-import { ApiError } from "../utils/errors.js";
+import { errorHandler, notFound } from "../middleware/errorHandler";
+import { ApiError } from "../utils/errors";
 
 describe("Error Handler Middleware", () => {
   let mockRequest: Partial<Request>;

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
 import { PrismaClient } from "@prisma/client";
-import { RefreshTokenService } from "../services/refreshToken.service.js";
+import { RefreshTokenService } from "../services/refreshToken.service";
 
 const prisma = new PrismaClient();
 

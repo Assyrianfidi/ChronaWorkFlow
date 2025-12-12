@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
-import AuditLoggerService from "../../services/auditLogger.service.js";
-import MonitoringService from "../../services/monitoring.service.js";
+import AuditLoggerService from "../../services/auditLogger.service";
+import MonitoringService from "../../services/monitoring.service";
 import {
   logAuthEvent,
   logDataEvent,

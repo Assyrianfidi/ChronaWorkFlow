@@ -1,7 +1,7 @@
 // Import the service and dependencies
-import { AuthService } from "../services/auth.service.js";
-import { prisma } from "../utils/prisma.js";
-import { ApiError } from "../utils/errors.js";
+import { AuthService } from "../services/auth.service";
+import { prisma } from "../utils/prisma";
+import { ApiError } from "../utils/errors";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
