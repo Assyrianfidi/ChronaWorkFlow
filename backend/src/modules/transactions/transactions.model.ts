@@ -59,7 +59,6 @@ export const transactionListSchema = z.object({
 export type TransactionCreateInput = z.infer<typeof transactionCreateSchema>;
 export type TransactionLineInput = z.infer<typeof transactionLineSchema>;
 
-const prisma = prisma;
 export type Decimal = Prisma.Decimal;
 
 export const toDecimal = (value: string | number): Decimal =>

@@ -89,7 +89,7 @@ describe("Transactions Module", () => {
           companyId: string;
           transactionNumber: string;
           date: string;
-          type: "journal_entry" | "invoice" | "payment" | "bank";
+          type: "JOURNAL_ENTRY" | "INVOICE" | "PAYMENT" | "BILL" | "EXPENSE" | "ADJUSTMENT";
           totalAmount: string;
           lines: {
             accountId: string;
@@ -100,7 +100,7 @@ describe("Transactions Module", () => {
           companyId: "550e8400-e29b-41d4-a716-446655440000",
           transactionNumber: "TXN001",
           date: "2023-01-01",
-          type: "journal_entry" as const,
+          type: "JOURNAL_ENTRY" as const,
           totalAmount: "100.00",
           lines: [
             {
@@ -136,11 +136,18 @@ describe("Transactions Module", () => {
       });
 
       it("should throw error for unbalanced transaction", async () => {
+        // Temporarily restore the original prisma to test service logic
+        const { prisma: originalPrisma } = jest.requireActual('../utils/prisma');
+        jest.doMock('../utils/prisma', () => ({ prisma: originalPrisma }));
+        
+        // Import fresh service instance
+        const { transactionsService: freshService } = require('../modules/transactions/transactions.service');
+        
         const transactionData: {
           companyId: string;
           transactionNumber: string;
           date: string;
-          type: "journal_entry" | "invoice" | "payment" | "bank";
+          type: "JOURNAL_ENTRY" | "INVOICE" | "PAYMENT" | "BILL" | "EXPENSE" | "ADJUSTMENT";
           totalAmount: string;
           lines: {
             accountId: string;
@@ -151,7 +158,7 @@ describe("Transactions Module", () => {
           companyId: "550e8400-e29b-41d4-a716-446655440000",
           transactionNumber: "TXN001",
           date: "2023-01-01",
-          type: "journal_entry" as const,
+          type: "JOURNAL_ENTRY" as const,
           totalAmount: "100.00",
           lines: [
             {
@@ -168,7 +175,7 @@ describe("Transactions Module", () => {
         };
 
         await expect(
-          transactionsService.create(transactionData, "user-1"),
+          freshService.create(transactionData, "user-1"),
         ).rejects.toThrow("Transaction must be balanced");
       });
     });
@@ -234,7 +241,7 @@ describe("Transactions Module", () => {
           companyId: string;
           transactionNumber: string;
           date: string;
-          type: "journal_entry" | "invoice" | "payment" | "bank";
+          type: "JOURNAL_ENTRY" | "INVOICE" | "PAYMENT" | "BILL" | "EXPENSE" | "ADJUSTMENT";
           totalAmount: string;
           lines: {
             accountId: string;
@@ -245,7 +252,7 @@ describe("Transactions Module", () => {
           companyId: "550e8400-e29b-41d4-a716-446655440000",
           transactionNumber: "TXN001",
           date: "2023-01-01",
-          type: "journal_entry" as const,
+          type: "JOURNAL_ENTRY" as const,
           totalAmount: "100.00",
           lines: [
             {
