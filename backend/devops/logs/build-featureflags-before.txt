@@ -1,0 +1,222 @@
+
+> accubooks-backend@1.0.0 build
+> tsc --noEmitOnError false || echo 'Build completed with warnings'
+
+src/ai/accounting-ai-engine.ts(60,19): error TS2304: Cannot find name 'PrismaClient'.
+src/ai/predictive-insights-backend.ts(92,19): error TS2304: Cannot find name 'PrismaClient'.
+src/app.ts(14,26): error TS2307: Cannot find module './routes/report.routes.js' or its corresponding type declarations.
+src/app.ts(15,24): error TS2307: Cannot find module './routes/user.routes.js' or its corresponding type declarations.
+src/audit/audit-trail-system.ts(144,19): error TS2304: Cannot find name 'PrismaClient'.
+src/business-logic/business.logic.service.ts(52,19): error TS2304: Cannot find name 'PrismaClient'.
+src/controllers/api-v3-upgrades.ts(26,19): error TS2304: Cannot find name 'PrismaClient'.
+src/controllers/auth.controller.ts(115,17): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/controllers/auth.controller.ts(164,7): error TS2322: Type '"USER" | "ADMIN" | "MANAGER" | "AUDITOR" | "INVENTORY_MANAGER"' is not assignable to type 'UserRole'.
+  Type '"USER"' is not assignable to type 'UserRole'.
+src/controllers/auth.controller.ts(210,17): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/controllers/auth.controller.ts(365,15): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/controllers/authController.ts(6,3): error TS2614: Module '"../config"' has no exported member 'JWT_SECRET'. Did you mean to use 'import JWT_SECRET from "../config"' instead?
+src/controllers/authController.ts(7,3): error TS2614: Module '"../config"' has no exported member 'JWT_EXPIRES_IN'. Did you mean to use 'import JWT_EXPIRES_IN from "../config"' instead?
+src/controllers/authController.ts(8,3): error TS2614: Module '"../config"' has no exported member 'JWT_REFRESH_SECRET'. Did you mean to use 'import JWT_REFRESH_SECRET from "../config"' instead?
+src/controllers/authController.ts(9,3): error TS2614: Module '"../config"' has no exported member 'JWT_REFRESH_EXPIRES_IN'. Did you mean to use 'import JWT_REFRESH_EXPIRES_IN from "../config"' instead?
+src/controllers/authController.ts(10,3): error TS2614: Module '"../config"' has no exported member 'FRONTEND_URL'. Did you mean to use 'import FRONTEND_URL from "../config"' instead?
+src/controllers/authController.ts(12,10): error TS2459: Module '"../middleware/errorHandler"' declares 'ApiError' locally, but it is not exported.
+src/controllers/billing/billing.controller.ts(4,47): error TS2307: Cannot find module '../lib/prisma' or its corresponding type declarations.
+src/controllers/billing/billing.controller.ts(7,16): error TS2448: Block-scoped variable 'prisma' used before its declaration.
+src/controllers/billing/billing.controller.ts(147,42): error TS2339: Property 'current_period_end' does not exist on type 'Subscription'.
+src/controllers/report.controller.ts(6,16): error TS2448: Block-scoped variable 'prisma' used before its declaration.
+src/controllers/reports.controller.ts(2,10): error TS2459: Module '"../middleware/errorHandler.js"' declares 'ApiError' locally, but it is not exported.
+src/controllers/reports.controller.ts(5,16): error TS2304: Cannot find name 'PrismaClientSingleton'.
+src/controllers/reports.controller.ts(18,28): error TS2339: Property 'ASSISTANT_MANAGER' does not exist on type '{ readonly ADMIN: "ADMIN"; readonly MANAGER: "MANAGER"; readonly USER: "USER"; readonly AUDITOR: "AUDITOR"; readonly INVENTORY_MANAGER: "INVENTORY_MANAGER"; readonly ACCOUNTANT: "ACCOUNTANT"; }'.
+src/controllers/reports.controller.ts(19,13): error TS2339: Property 'userId' does not exist on type '{}'.
+src/controllers/storage/document.controller.ts(7,11): error TS2430: Interface 'AuthenticatedRequest' incorrectly extends interface 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+  The types of 'user.role' are incompatible between these types.
+    Type 'string' is not assignable to type 'UserRole'.
+src/controllers/storage/document.controller.ts(13,18): error TS2694: Namespace 'global.Express' has no exported member 'Multer'.
+src/controllers/user.controller.ts(7,16): error TS2448: Block-scoped variable 'prisma' used before its declaration.
+src/envValidator.ts(123,45): error TS2304: Cannot find name 'containsRedacted'.
+src/envValidator.ts(145,9): error TS2304: Cannot find name 'criticalErrors'.
+src/index.ts(10,23): error TS2440: Import declaration conflicts with local declaration of 'server'.
+src/index.ts(11,41): error TS2448: Block-scoped variable 'server' used before its declaration.
+src/index.ts(39,18): error TS2305: Module '"./utils/logger"' has no exported member 'stream'.
+src/index.ts(165,8): error TS2307: Cannot find module './middleware/security' or its corresponding type declarations.
+src/index.ts(170,8): error TS2307: Cannot find module './middleware/security/auditLogger.middleware' or its corresponding type declarations.
+src/index.ts(195,1): error TS2448: Block-scoped variable 'route' used before its declaration.
+src/index.ts(196,1): error TS2448: Block-scoped variable 'route' used before its declaration.
+src/index.ts(199,1): error TS2448: Block-scoped variable 'route' used before its declaration.
+src/index.ts(237,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+src/index.ts(237,31): error TS2307: Cannot find module './utils/emailService' or its corresponding type declarations.
+src/middleware/auth.middleware.ts(4,10): error TS2724: '"./error.middleware"' has no exported member named 'ApiError'. Did you mean 'AppError'?
+src/middleware/auth.ts(4,10): error TS2440: Import declaration conflicts with local declaration of 'prisma'.
+src/middleware/auth.ts(11,16): error TS2448: Block-scoped variable 'prisma' used before its declaration.
+src/middleware/errorHandler.ts(46,20): error TS2339: Property 'statusCode' does not exist on type '{ name: string; message: string; stack?: string; }'.
+src/middleware/validation.ts(24,9): error TS2322: Type 'unknown' is not assignable to type 'ParsedQs'.
+  Index signature for type 'string' is missing in type '{}'.
+src/middleware/validation.ts(29,9): error TS2322: Type 'unknown' is not assignable to type 'ParamsDictionary'.
+  Index signature for type 'string' is missing in type '{}'.
+src/middleware/validation.ts(35,37): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/performance/backend-performance-engine.ts(127,19): error TS2304: Cannot find name 'PrismaClient'.
+src/routes/accounts.routes.ts(3,10): error TS2305: Module '"../middleware/auth"' has no exported member 'authenticate'.
+src/routes/billing/billing.routes.ts(22,18): error TS2345: Argument of type '("ADMIN" | "MANAGER")[]' is not assignable to parameter of type 'string'.
+src/routes/billing/billing.routes.ts(30,18): error TS2345: Argument of type '("ADMIN" | "MANAGER")[]' is not assignable to parameter of type 'string'.
+src/routes/billing/billing.routes.ts(43,18): error TS2345: Argument of type '("ADMIN" | "MANAGER")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/customer.routes.ts(4,47): error TS2307: Cannot find module '../lib/prisma' or its corresponding type declarations.
+src/routes/invoicing/customer.routes.ts(9,16): error TS2448: Block-scoped variable 'prisma' used before its declaration.
+src/routes/invoicing/customer.routes.ts(103,18): error TS2345: Argument of type '("ADMIN" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/customer.routes.ts(156,18): error TS2345: Argument of type '("ADMIN" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/customer.routes.ts(212,18): error TS2345: Argument of type '"ADMIN"[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/invoice.routes.ts(20,18): error TS2345: Argument of type '("ADMIN" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/invoice.routes.ts(34,18): error TS2345: Argument of type '("ADMIN" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/invoice.routes.ts(42,18): error TS2345: Argument of type '"ADMIN"[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/invoice.routes.ts(49,18): error TS2345: Argument of type '("ADMIN" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/invoice.routes.ts(62,18): error TS2345: Argument of type '("ADMIN" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/product.routes.ts(4,47): error TS2307: Cannot find module '../lib/prisma' or its corresponding type declarations.
+src/routes/invoicing/product.routes.ts(9,16): error TS2448: Block-scoped variable 'prisma' used before its declaration.
+src/routes/invoicing/product.routes.ts(108,18): error TS2345: Argument of type '("ADMIN" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/product.routes.ts(160,18): error TS2345: Argument of type '("ADMIN" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/product.routes.ts(216,18): error TS2345: Argument of type '"ADMIN"[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/reports.routes.ts(9,16): error TS2448: Block-scoped variable 'prisma' used before its declaration.
+src/routes/invoicing/reports.routes.ts(17,18): error TS2345: Argument of type '("ADMIN" | "MANAGER" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/reports.routes.ts(173,18): error TS2345: Argument of type '("ADMIN" | "MANAGER" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/invoicing/reports.routes.ts(304,18): error TS2345: Argument of type '("ADMIN" | "ACCOUNTANT")[]' is not assignable to parameter of type 'string'.
+src/routes/monitoring.routes.ts(6,10): error TS2305: Module '"../middleware/auth"' has no exported member 'authenticate'.
+src/routes/reports.routes.ts(41,11): error TS2339: Property 'ASSISTANT_MANAGER' does not exist on type '{ readonly ADMIN: "ADMIN"; readonly MANAGER: "MANAGER"; readonly USER: "USER"; readonly AUDITOR: "AUDITOR"; readonly INVENTORY_MANAGER: "INVENTORY_MANAGER"; readonly ACCOUNTANT: "ACCOUNTANT"; }'.
+src/routes/reports.routes.ts(61,11): error TS2339: Property 'ASSISTANT_MANAGER' does not exist on type '{ readonly ADMIN: "ADMIN"; readonly MANAGER: "MANAGER"; readonly USER: "USER"; readonly AUDITOR: "AUDITOR"; readonly INVENTORY_MANAGER: "INVENTORY_MANAGER"; readonly ACCOUNTANT: "ACCOUNTANT"; }'.
+src/routes/transactions.routes.ts(3,10): error TS2305: Module '"../middleware/auth"' has no exported member 'authenticate'.
+src/server.ts(6,10): error TS2395: Individual declarations in merged declaration 'prisma' must be all exported or all local.
+src/server.ts(6,47): error TS2307: Cannot find module '../lib/prisma' or its corresponding type declarations.
+src/server.ts(21,14): error TS2395: Individual declarations in merged declaration 'prisma' must be all exported or all local.
+src/server.ts(21,23): error TS2448: Block-scoped variable 'prisma' used before its declaration.
+src/services/auditLogger.service.ts(9,22): error TS2304: Cannot find name 'PrismaClientSingleton'.
+src/services/auditLogger.service.ts(54,17): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(55,14): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(57,12): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(60,16): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(61,14): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(61,32): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(98,16): error TS2339: Property 'isSensitive' does not exist on type '{ timestamp: Date; eventType: string; action: any; resourceType: any; resourceId: any; userId: any; companyId: any; ip: any; userAgent: any; success: boolean; details: any; severity: any; }'.
+src/services/auditLogger.service.ts(104,17): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(105,14): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(107,12): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(109,16): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(110,14): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(110,32): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(114,52): error TS2339: Property 'isSensitive' does not exist on type '{ timestamp: Date; eventType: string; action: any; resourceType: any; resourceId: any; userId: any; companyId: any; ip: any; userAgent: any; success: boolean; details: any; severity: any; }'.
+src/services/auditLogger.service.ts(149,17): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(150,14): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(152,12): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(154,16): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(155,14): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(155,32): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(185,17): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(186,14): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(188,12): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(190,16): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(191,14): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(191,32): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(225,17): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(226,14): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(228,12): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(231,16): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(232,14): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(232,37): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(254,15): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(258,25): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(261,17): error TS2339: Property 'eventType' does not exist on type '{}'.
+src/services/auditLogger.service.ts(262,66): error TS2339: Property 'eventType' does not exist on type '{}'.
+src/services/auditLogger.service.ts(264,17): error TS2339: Property 'userId' does not exist on type '{}'.
+src/services/auditLogger.service.ts(265,63): error TS2339: Property 'userId' does not exist on type '{}'.
+src/services/auditLogger.service.ts(267,17): error TS2339: Property 'severity' does not exist on type '{}'.
+src/services/auditLogger.service.ts(268,65): error TS2339: Property 'severity' does not exist on type '{}'.
+src/services/auditLogger.service.ts(270,17): error TS2339: Property 'startDate' does not exist on type '{}'.
+src/services/auditLogger.service.ts(272,67): error TS2339: Property 'startDate' does not exist on type '{}'.
+src/services/auditLogger.service.ts(275,17): error TS2339: Property 'endDate' does not exist on type '{}'.
+src/services/auditLogger.service.ts(277,67): error TS2339: Property 'endDate' does not exist on type '{}'.
+src/services/auditLogger.service.ts(282,30): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/services/auditLogger.service.ts(282,54): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/services/auditLogger.service.ts(285,17): error TS2339: Property 'limit' does not exist on type '{}'.
+src/services/auditLogger.service.ts(286,36): error TS2339: Property 'limit' does not exist on type '{}'.
+src/services/auditLogger.service.ts(298,15): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(302,27): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(305,17): error TS2339: Property 'alertType' does not exist on type '{}'.
+src/services/auditLogger.service.ts(306,74): error TS2339: Property 'alertType' does not exist on type '{}'.
+src/services/auditLogger.service.ts(308,17): error TS2339: Property 'severity' does not exist on type '{}'.
+src/services/auditLogger.service.ts(309,73): error TS2339: Property 'severity' does not exist on type '{}'.
+src/services/auditLogger.service.ts(311,17): error TS2339: Property 'acknowledged' does not exist on type '{}'.
+src/services/auditLogger.service.ts(313,56): error TS2339: Property 'acknowledged' does not exist on type '{}'.
+src/services/auditLogger.service.ts(318,32): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/services/auditLogger.service.ts(318,56): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/services/auditLogger.service.ts(321,17): error TS2339: Property 'limit' does not exist on type '{}'.
+src/services/auditLogger.service.ts(322,40): error TS2339: Property 'limit' does not exist on type '{}'.
+src/services/auditLogger.service.ts(335,15): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(339,24): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(363,15): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(378,29): error TS2551: Property '_auditLogs' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getAuditLogs'?
+src/services/auditLogger.service.ts(381,31): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(382,14): error TS2551: Property '_securityAlerts' does not exist on type 'typeof AuditLoggerService'. Did you mean 'getSecurityAlerts'?
+src/services/auditLogger.service.ts(416,51): error TS2339: Property 'period' does not exist on type '{}'.
+src/services/auth.service.ts(194,11): error TS2322: Type '{ id: number; email: string; name: string; password: string; role: UserRole; isActive: true; passwordChangedAt: null; lastLogin: null; createdAt: Date; updatedAt: Date; currentCompanyId: null; deletedAt: null; }' is not assignable to type 'UserWithRole'.
+  Type '{ id: number; email: string; name: string; password: string; role: UserRole; isActive: true; passwordChangedAt: null; lastLogin: null; createdAt: Date; updatedAt: Date; currentCompanyId: null; deletedAt: null; }' is missing the following properties from type 'Omit<{ name: string; id: number; email: string; password: string; isActive: boolean; createdAt: Date; updatedAt: Date; lastLogin: Date; passwordChangedAt: Date; role: Role; ... 7 more ...; subscriptionStatus: string; }, "role">': cancelAtPeriodEnd, lastPaymentAt, planType, stripeCustomerId, and 2 more.
+src/services/billing/stripe.service.ts(3,47): error TS2307: Cannot find module '../lib/prisma' or its corresponding type declarations.
+src/services/billing/stripe.service.ts(6,16): error TS2448: Block-scoped variable 'prisma' used before its declaration.
+src/services/billing/stripe.service.ts(17,7): error TS2322: Type '"2024-11-20.acacia"' is not assignable to type '"2025-10-29.clover"'.
+src/services/billing/stripe.service.ts(256,17): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/services/billing/stripe.service.ts(258,42): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/services/billing/stripe.service.ts(264,65): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/services/billing/stripe.service.ts(271,17): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/services/billing/stripe.service.ts(273,42): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/services/billing/stripe.service.ts(278,62): error TS2339: Property 'subscription' does not exist on type 'Invoice'.
+src/services/databaseConstraints.service.ts(9,22): error TS2304: Cannot find name 'PrismaClientSingleton'.
+src/services/databaseSecurity.service.ts(80,27): error TS2339: Property 'companyId' does not exist on type '{}'.
+src/services/databaseSecurity.service.ts(85,27): error TS2339: Property 'companyId' does not exist on type '{}'.
+src/services/databaseSecurity.service.ts(112,12): error TS2551: Property 'unauthorizedAttempts' does not exist on type 'typeof DatabaseSecurityService'. Did you mean 'getUnauthorizedAttempts'?
+src/services/databaseSecurity.service.ts(118,12): error TS2551: Property 'unauthorizedAttempts' does not exist on type 'typeof DatabaseSecurityService'. Did you mean 'getUnauthorizedAttempts'?
+src/services/databaseSecurity.service.ts(118,40): error TS2551: Property 'unauthorizedAttempts' does not exist on type 'typeof DatabaseSecurityService'. Did you mean 'getUnauthorizedAttempts'?
+src/services/email/email.service.ts(4,39): error TS2307: Cannot find module '../lib/prisma' or its corresponding type declarations.
+src/services/invoicing/invoice.service.ts(44,9): error TS2322: Type '{ defaultTaxSettings: true; }' is not assignable to type 'never'.
+src/services/invoicing/invoice.service.ts(114,11): error TS2353: Object literal may only specify known properties, and 'customerId' does not exist in type '(Without<InvoiceCreateInput, InvoiceUncheckedCreateInput> & InvoiceUncheckedCreateInput) | (Without<...> & InvoiceCreateInput)'.
+src/services/invoicing/invoice.service.ts(136,11): error TS2353: Object literal may only specify known properties, and 'customer' does not exist in type 'InvoiceInclude<DefaultArgs>'.
+src/services/invoicing/invoice.service.ts(157,11): error TS2353: Object literal may only specify known properties, and 'customer' does not exist in type 'InvoiceInclude<DefaultArgs>'.
+src/services/invoicing/invoice.service.ts(182,20): error TS2353: Object literal may only specify known properties, and 'lines' does not exist in type 'InvoiceInclude<DefaultArgs>'.
+src/services/invoicing/invoice.service.ts(191,9): error TS2367: This comparison appears to be unintentional because the types '"DRAFT" | "SENT" | "OVERDUE" | "CANCELLED"' and '"VOIDED"' have no overlap.
+src/services/invoicing/invoice.service.ts(198,57): error TS2339: Property 'customerId' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/invoice.service.ts(260,29): error TS2339: Property 'subtotal' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/invoice.service.ts(264,29): error TS2339: Property 'taxTotal' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/invoice.service.ts(271,11): error TS2353: Object literal may only specify known properties, and 'customerId' does not exist in type '(Without<InvoiceUpdateInput, InvoiceUncheckedUpdateInput> & InvoiceUncheckedUpdateInput) | (Without<...> & InvoiceUpdateInput)'.
+src/services/invoicing/invoice.service.ts(296,11): error TS2353: Object literal may only specify known properties, and 'customer' does not exist in type 'InvoiceInclude<DefaultArgs>'.
+src/services/invoicing/invoice.service.ts(338,13): error TS2353: Object literal may only specify known properties, and 'customer' does not exist in type 'InvoiceInclude<DefaultArgs>'.
+src/services/invoicing/invoice.service.ts(381,13): error TS2353: Object literal may only specify known properties, and 'sentAt' does not exist in type '(Without<InvoiceUpdateInput, InvoiceUncheckedUpdateInput> & InvoiceUncheckedUpdateInput) | (Without<...> & InvoiceUpdateInput)'.
+src/services/invoicing/payment.service.ts(20,11): error TS2353: Object literal may only specify known properties, and 'payments' does not exist in type 'InvoiceInclude<DefaultArgs>'.
+src/services/invoicing/payment.service.ts(33,11): error TS2367: This comparison appears to be unintentional because the types '"DRAFT" | "SENT" | "OVERDUE" | "CANCELLED"' and '"VOIDED"' have no overlap.
+src/services/invoicing/payment.service.ts(38,33): error TS2339: Property 'payments' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/payment.service.ts(44,34): error TS2339: Property 'total' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/payment.service.ts(46,81): error TS2339: Property 'total' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/payment.service.ts(59,9): error TS2322: Type '{ invoice: { include: { customer: true; }; }; }' is not assignable to type 'never'.
+src/services/invoicing/payment.service.ts(70,36): error TS2339: Property 'total' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/payment.service.ts(71,9): error TS2322: Type '"PAID"' is not assignable to type '"DRAFT" | "SENT" | "OVERDUE" | "CANCELLED"'.
+src/services/invoicing/payment.service.ts(87,35): error TS2339: Property 'total' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/payment.service.ts(88,47): error TS2339: Property 'total' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/payment.service.ts(101,9): error TS2322: Type '{ invoice: { include: { customer: true; }; }; }' is not assignable to type 'never'.
+src/services/invoicing/payment.service.ts(121,9): error TS2322: Type '{ invoice: { include: { customer: true; lines: true; }; }; }' is not assignable to type 'never'.
+src/services/invoicing/payment.service.ts(147,9): error TS2322: Type '{ invoice: { include: { payments: true; }; }; }' is not assignable to type 'never'.
+src/services/invoicing/payment.service.ts(169,9): error TS2322: Type '{ invoice: { include: { customer: true; payments: true; }; }; }' is not assignable to type 'never'.
+src/services/invoicing/payment.service.ts(180,48): error TS2339: Property 'payments' does not exist on type 'never'.
+src/services/invoicing/payment.service.ts(184,51): error TS2339: Property 'total' does not exist on type 'never'.
+src/services/invoicing/payment.service.ts(186,46): error TS2339: Property 'status' does not exist on type 'never'.
+src/services/invoicing/payment.service.ts(192,32): error TS2339: Property 'status' does not exist on type 'never'.
+src/services/invoicing/payment.service.ts(217,9): error TS2322: Type '{ invoice: { include: { payments: true; }; }; }' is not assignable to type 'never'.
+src/services/invoicing/payment.service.ts(236,49): error TS2339: Property 'payments' does not exist on type 'never'.
+src/services/invoicing/payment.service.ts(242,40): error TS2339: Property 'total' does not exist on type 'never'.
+src/services/invoicing/payment.service.ts(295,11): error TS2353: Object literal may only specify known properties, and 'payments' does not exist in type 'InvoiceInclude<DefaultArgs>'.
+src/services/invoicing/payment.service.ts(305,33): error TS2339: Property 'payments' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/payment.service.ts(309,40): error TS2339: Property 'total' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/payment.service.ts(314,30): error TS2339: Property 'total' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/payment.service.ts(317,31): error TS2339: Property 'payments' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/payment.service.ts(320,27): error TS2339: Property 'payments' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; companyId: string; date: Date; totalAmount: Decimal; invoiceNumber: string; dueDate: Date; status: InvoiceStatus; clientId: string; }'.
+src/services/invoicing/pdf.service.ts(2,39): error TS2307: Cannot find module '../lib/prisma' or its corresponding type declarations.
+src/services/invoicing/utils/invoice-number.util.ts(1,39): error TS2307: Cannot find module '../lib/prisma' or its corresponding type declarations.
+src/services/storage/document.service.ts(3,39): error TS2307: Cannot find module '../lib/prisma' or its corresponding type declarations.
+'Build completed with warnings'
+
+> accubooks-backend@1.0.0 postbuild
+> node -e "require('fs').cpSync('prisma', 'dist/prisma', {recursive:true}); require('fs').copyFileSync('package.json', 'dist/package.json')"
+
