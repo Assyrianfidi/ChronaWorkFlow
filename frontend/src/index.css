@@ -1,3 +1,4 @@
+/* tailwindcss v4 directives - ignore unknown at-rule warnings */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
