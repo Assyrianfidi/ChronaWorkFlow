@@ -1,63 +1,46 @@
-import React from 'react';
-import { Button } from '../components/ui/button';
-import { useAuth } from '../contexts/AuthContext';
+import React from "react";
+import { useAuth } from '../contexts/AuthContext.js';
+import { DashboardShell } from '../components/ui/layout/DashboardShell.js';
 
+// @ts-ignore
 const DashboardPage: React.FC = () => {
-  const { state } = useAuth();
+  const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg h-96">
-            <div className="p-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                Welcome to AccuBooks Dashboard
-              </h1>
-              {state.user && (
-                <div className="mb-6">
-                  <p className="text-lg text-gray-600">
-                    Hello, {state.user.firstName} {state.user.lastName}!
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Email: {state.user.email}
-                  </p>
-                </div>
-              )}
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Accounts
-                  </h3>
-                  <p className="text-gray-600">
-                    Manage your chart of accounts
-                  </p>
-                </div>
-                
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Transactions
-                  </h3>
-                  <p className="text-gray-600">
-                    Create and view transactions
-                  </p>
-                </div>
-                
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Reports
-                  </h3>
-                  <p className="text-gray-600">
-                    Generate financial reports
-                  </p>
-                </div>
-              </div>
+    <DashboardShell>
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-surface2 border border-border-gray rounded-2xl shadow-soft p-8">
+          <h1 className="text-3xl font-bold mb-4">
+            Welcome to AccuBooks Dashboard
+          </h1>
+          {user && (
+            <div className="mb-6">
+              <p className="text-lg text-black/70">Hello, {user.name}!</p>
+              <p className="text-sm text-black/70 opacity-80">
+                Email: {user.email}
+              </p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-6">
+              <h3 className="text-lg font-semibold mb-2">Accounts</h3>
+              <p className="text-black/70">Manage your chart of accounts</p>
+            </div>
+
+            <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-6">
+              <h3 className="text-lg font-semibold mb-2">Transactions</h3>
+              <p className="text-black/70">Create and view transactions</p>
+            </div>
+
+            <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-6">
+              <h3 className="text-lg font-semibold mb-2">Reports</h3>
+              <p className="text-black/70">Generate financial reports</p>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </DashboardShell>
   );
 };
 

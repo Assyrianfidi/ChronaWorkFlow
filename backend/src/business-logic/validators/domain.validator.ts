@@ -1,4 +1,4 @@
-import { ApiError, ErrorCodes } from '../../utils/errorHandler.js';
+import { ApiError, ErrorCodes } from "../../utils/errorHandler.js";
 
 /**
  * Domain validation framework for financial operations
@@ -42,42 +42,42 @@ export class DomainValidator {
     const errors: ValidationError[] = [];
 
     // Check if amount is a valid number
-    if (typeof validation.amount !== 'number' || isNaN(validation.amount)) {
+    if (typeof validation.amount !== "number" || isNaN(validation.amount)) {
       errors.push({
-        field: 'amount',
-        code: 'INVALID_AMOUNT',
-        message: 'Amount must be a valid number',
-        value: validation.amount
+        field: "amount",
+        code: "INVALID_AMOUNT",
+        message: "Amount must be a valid number",
+        value: validation.amount,
       });
     }
 
     // Check for negative amounts (debits should be handled separately)
     if (validation.amount < 0) {
       errors.push({
-        field: 'amount',
-        code: 'NEGATIVE_AMOUNT',
-        message: 'Amount cannot be negative',
-        value: validation.amount
+        field: "amount",
+        code: "NEGATIVE_AMOUNT",
+        message: "Amount cannot be negative",
+        value: validation.amount,
       });
     }
 
     // Check minimum amount
     if (validation.minAmount && validation.amount < validation.minAmount) {
       errors.push({
-        field: 'amount',
-        code: 'BELOW_MINIMUM',
+        field: "amount",
+        code: "BELOW_MINIMUM",
         message: `Amount must be at least ${validation.minAmount}`,
-        value: validation.amount
+        value: validation.amount,
       });
     }
 
     // Check maximum amount
     if (validation.maxAmount && validation.amount > validation.maxAmount) {
       errors.push({
-        field: 'amount',
-        code: 'ABOVE_MAXIMUM',
+        field: "amount",
+        code: "ABOVE_MAXIMUM",
         message: `Amount cannot exceed ${validation.maxAmount}`,
-        value: validation.amount
+        value: validation.amount,
       });
     }
 
@@ -85,40 +85,42 @@ export class DomainValidator {
     const decimals = this.countDecimals(validation.amount);
     if (decimals > validation.precision) {
       errors.push({
-        field: 'amount',
-        code: 'INVALID_PRECISION',
+        field: "amount",
+        code: "INVALID_PRECISION",
         message: `Amount cannot have more than ${validation.precision} decimal places`,
-        value: validation.amount
+        value: validation.amount,
       });
     }
 
     // Validate currency code
     if (!validation.currency || validation.currency.length !== 3) {
       errors.push({
-        field: 'currency',
-        code: 'INVALID_CURRENCY',
-        message: 'Currency must be a valid 3-letter code',
-        value: validation.currency
+        field: "currency",
+        code: "INVALID_CURRENCY",
+        message: "Currency must be a valid 3-letter code",
+        value: validation.currency,
       });
     }
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
   /**
    * Validate transaction data
    */
-  static validateTransaction(transaction: TransactionValidation): ValidationResult {
+  static validateTransaction(
+    transaction: TransactionValidation,
+  ): ValidationResult {
     const errors: ValidationError[] = [];
 
     // Validate amount using amount validator
     const amountValidation = this.validateAmount({
       amount: transaction.amount,
       currency: transaction.currency,
-      precision: this.getCurrencyPrecision(transaction.currency)
+      precision: this.getCurrencyPrecision(transaction.currency),
     });
 
     if (!amountValidation.isValid) {
@@ -126,57 +128,66 @@ export class DomainValidator {
     }
 
     // Validate account IDs
-    if (!transaction.fromAccountId || typeof transaction.fromAccountId !== 'string') {
+    if (
+      !transaction.fromAccountId ||
+      typeof transaction.fromAccountId !== "string"
+    ) {
       errors.push({
-        field: 'fromAccountId',
-        code: 'INVALID_ACCOUNT_ID',
-        message: 'From account ID is required and must be a string',
-        value: transaction.fromAccountId
+        field: "fromAccountId",
+        code: "INVALID_ACCOUNT_ID",
+        message: "From account ID is required and must be a string",
+        value: transaction.fromAccountId,
       });
     }
 
-    if (!transaction.toAccountId || typeof transaction.toAccountId !== 'string') {
+    if (
+      !transaction.toAccountId ||
+      typeof transaction.toAccountId !== "string"
+    ) {
       errors.push({
-        field: 'toAccountId',
-        code: 'INVALID_ACCOUNT_ID',
-        message: 'To account ID is required and must be a string',
-        value: transaction.toAccountId
+        field: "toAccountId",
+        code: "INVALID_ACCOUNT_ID",
+        message: "To account ID is required and must be a string",
+        value: transaction.toAccountId,
       });
     }
 
     // Check for same account transfer
     if (transaction.fromAccountId === transaction.toAccountId) {
       errors.push({
-        field: 'toAccountId',
-        code: 'SAME_ACCOUNT_TRANSFER',
-        message: 'Cannot transfer to the same account',
-        value: transaction.toAccountId
+        field: "toAccountId",
+        code: "SAME_ACCOUNT_TRANSFER",
+        message: "Cannot transfer to the same account",
+        value: transaction.toAccountId,
       });
     }
 
     // Validate description length
     if (transaction.description && transaction.description.length > 500) {
       errors.push({
-        field: 'description',
-        code: 'DESCRIPTION_TOO_LONG',
-        message: 'Description cannot exceed 500 characters',
-        value: transaction.description.length
+        field: "description",
+        code: "DESCRIPTION_TOO_LONG",
+        message: "Description cannot exceed 500 characters",
+        value: transaction.description.length,
       });
     }
 
     // Validate reference format
-    if (transaction.reference && !/^[A-Za-z0-9\-_]{1,50}$/.test(transaction.reference)) {
+    if (
+      transaction.reference &&
+      !/^[A-Za-z0-9\-_]{1,50}$/.test(transaction.reference)
+    ) {
       errors.push({
-        field: 'reference',
-        code: 'INVALID_REFERENCE_FORMAT',
-        message: 'Reference must be alphanumeric (1-50 characters)',
-        value: transaction.reference
+        field: "reference",
+        code: "INVALID_REFERENCE_FORMAT",
+        message: "Reference must be alphanumeric (1-50 characters)",
+        value: transaction.reference,
       });
     }
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -187,7 +198,7 @@ export class DomainValidator {
     currentBalance: number,
     transactionAmount: number,
     accountType: string,
-    allowOverdraft: boolean = false
+    allowOverdraft: boolean = false,
   ): ValidationResult {
     const errors: ValidationError[] = [];
 
@@ -196,36 +207,37 @@ export class DomainValidator {
 
     if (!allowOverdraft && newBalance < 0) {
       errors.push({
-        field: 'balance',
-        code: 'INSUFFICIENT_FUNDS',
+        field: "balance",
+        code: "INSUFFICIENT_FUNDS",
         message: `Insufficient funds. Current: ${currentBalance}, Required: ${transactionAmount}`,
-        value: { currentBalance, transactionAmount, newBalance }
+        value: { currentBalance, transactionAmount, newBalance },
       });
     }
 
     // Check overdraft limits if allowed
-    if (allowOverdraft && newBalance < -10000) { // $10,000 overdraft limit
+    if (allowOverdraft && newBalance < -10000) {
+      // $10,000 overdraft limit
       errors.push({
-        field: 'balance',
-        code: 'OVERDRAFT_LIMIT_EXCEEDED',
-        message: 'Overdraft limit exceeded',
-        value: { newBalance, limit: -10000 }
+        field: "balance",
+        code: "OVERDRAFT_LIMIT_EXCEEDED",
+        message: "Overdraft limit exceeded",
+        value: { newBalance, limit: -10000 },
       });
     }
 
     // Special rules for different account types
-    if (accountType === 'SAVINGS' && newBalance < 0) {
+    if (accountType === "SAVINGS" && newBalance < 0) {
       errors.push({
-        field: 'balance',
-        code: 'SAVINGS_NEGATIVE_BALANCE',
-        message: 'Savings accounts cannot have negative balance',
-        value: newBalance
+        field: "balance",
+        code: "SAVINGS_NEGATIVE_BALANCE",
+        message: "Savings accounts cannot have negative balance",
+        value: newBalance,
       });
     }
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -236,7 +248,7 @@ export class DomainValidator {
     fromCurrency: string,
     toCurrency: string,
     amount: number,
-    exchangeRate?: number
+    exchangeRate?: number,
   ): ValidationResult {
     const errors: ValidationError[] = [];
 
@@ -248,26 +260,26 @@ export class DomainValidator {
     // Validate exchange rate is provided for different currencies
     if (!exchangeRate || exchangeRate <= 0) {
       errors.push({
-        field: 'exchangeRate',
-        code: 'INVALID_EXCHANGE_RATE',
-        message: 'Exchange rate is required and must be positive',
-        value: exchangeRate
+        field: "exchangeRate",
+        code: "INVALID_EXCHANGE_RATE",
+        message: "Exchange rate is required and must be positive",
+        value: exchangeRate,
       });
     }
 
     // Check if exchange rate is reasonable (between 0.0001 and 10000)
     if (exchangeRate && (exchangeRate < 0.0001 || exchangeRate > 10000)) {
       errors.push({
-        field: 'exchangeRate',
-        code: 'UNREASONABLE_EXCHANGE_RATE',
-        message: 'Exchange rate seems unreasonable',
-        value: exchangeRate
+        field: "exchangeRate",
+        code: "UNREASONABLE_EXCHANGE_RATE",
+        message: "Exchange rate seems unreasonable",
+        value: exchangeRate,
       });
     }
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -276,7 +288,7 @@ export class DomainValidator {
    */
   static validateTransactionTiming(
     lastTransactionTime?: Date,
-    amount?: number
+    amount?: number,
   ): ValidationResult {
     const errors: ValidationError[] = [];
 
@@ -285,32 +297,35 @@ export class DomainValidator {
     }
 
     const now = new Date();
-    const timeSinceLastTransaction = now.getTime() - lastTransactionTime.getTime();
+    const timeSinceLastTransaction =
+      now.getTime() - lastTransactionTime.getTime();
     const minutesSinceLastTransaction = timeSinceLastTransaction / (1000 * 60);
 
     // Rule: No transactions within 1 minute for amounts > $1000
     if (amount && amount > 1000 && minutesSinceLastTransaction < 1) {
       errors.push({
-        field: 'timing',
-        code: 'TOO_FREQUENT_HIGH_VALUE',
-        message: 'High-value transactions require at least 1 minute between them',
-        value: { minutesSinceLastTransaction, amount }
+        field: "timing",
+        code: "TOO_FREQUENT_HIGH_VALUE",
+        message:
+          "High-value transactions require at least 1 minute between them",
+        value: { minutesSinceLastTransaction, amount },
       });
     }
 
     // Rule: Maximum 10 transactions per minute
-    if (minutesSinceLastTransaction < 0.1) { // Less than 6 seconds
+    if (minutesSinceLastTransaction < 0.1) {
+      // Less than 6 seconds
       errors.push({
-        field: 'timing',
-        code: 'TOO_FREQUENT',
-        message: 'Transactions must be at least 6 seconds apart',
-        value: minutesSinceLastTransaction
+        field: "timing",
+        code: "TOO_FREQUENT",
+        message: "Transactions must be at least 6 seconds apart",
+        value: minutesSinceLastTransaction,
       });
     }
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -319,13 +334,15 @@ export class DomainValidator {
    */
   static validateOrThrow(validation: ValidationResult): void {
     if (!validation.isValid) {
-      const errorMessages = validation.errors.map(e => `${e.field}: ${e.message}`).join('; ');
+      const errorMessages = validation.errors
+        .map((e) => `${e.field}: ${e.message}`)
+        .join("; ");
       throw new ApiError(
         `Validation failed: ${errorMessages}`,
         400,
         ErrorCodes.VALIDATION_ERROR,
         true,
-        { validationErrors: validation.errors }
+        { validationErrors: validation.errors },
       );
     }
   }
@@ -335,10 +352,10 @@ export class DomainValidator {
    */
   private static countDecimals(value: number): number {
     const str = value.toString();
-    if (str.indexOf('.') !== -1 && str.indexOf('e-') === -1) {
-      return str.split('.')[1].length;
-    } else if (str.indexOf('e-') !== -1) {
-      const parts = str.split('e-');
+    if (str.indexOf(".") !== -1 && str.indexOf("e-") === -1) {
+      return str.split(".")[1].length;
+    } else if (str.indexOf("e-") !== -1) {
+      const parts = str.split("e-");
       return parseInt(parts[1], 10);
     }
     return 0;
@@ -347,16 +364,16 @@ export class DomainValidator {
   private static getCurrencyPrecision(currency: string): number {
     // Common currency precisions
     const precisions: Record<string, number> = {
-      'USD': 2,
-      'EUR': 2,
-      'GBP': 2,
-      'JPY': 0,
-      'CHF': 2,
-      'CAD': 2,
-      'AUD': 2,
-      'CNY': 2,
-      'INR': 2,
-      'BTC': 8
+      USD: 2,
+      EUR: 2,
+      GBP: 2,
+      JPY: 0,
+      CHF: 2,
+      CAD: 2,
+      AUD: 2,
+      CNY: 2,
+      INR: 2,
+      BTC: 8,
     };
 
     // Use hasOwnProperty to check if the currency exists, since 0 is falsy
@@ -375,13 +392,21 @@ export const ValidationRules = {
   },
 
   // High-value transaction validation (additional checks)
-  highValueTransaction: (transaction: TransactionValidation, lastTransactionTime?: Date) => {
+  highValueTransaction: (
+    transaction: TransactionValidation,
+    lastTransactionTime?: Date,
+  ) => {
     // First validate standard rules
-    DomainValidator.validateOrThrow(DomainValidator.validateTransaction(transaction));
+    DomainValidator.validateOrThrow(
+      DomainValidator.validateTransaction(transaction),
+    );
 
     // Additional high-value checks
     if (transaction.amount > 10000) {
-      const timingValidation = DomainValidator.validateTransactionTiming(lastTransactionTime, transaction.amount);
+      const timingValidation = DomainValidator.validateTransactionTiming(
+        lastTransactionTime,
+        transaction.amount,
+      );
       DomainValidator.validateOrThrow(timingValidation);
     }
   },
@@ -391,14 +416,15 @@ export const ValidationRules = {
     fromCurrency: string,
     toCurrency: string,
     amount: number,
-    exchangeRate?: number
+    exchangeRate?: number,
   ) => {
-    const crossCurrencyValidation = DomainValidator.validateCrossCurrencyTransaction(
-      fromCurrency,
-      toCurrency,
-      amount,
-      exchangeRate
-    );
+    const crossCurrencyValidation =
+      DomainValidator.validateCrossCurrencyTransaction(
+        fromCurrency,
+        toCurrency,
+        amount,
+        exchangeRate,
+      );
     DomainValidator.validateOrThrow(crossCurrencyValidation);
-  }
+  },
 };

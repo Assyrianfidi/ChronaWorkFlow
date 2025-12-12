@@ -1,11 +1,18 @@
-import { useState } from 'react';
-import { useEmployees, useCreateEmployee } from '../hooks/use-api';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Badge } from '../components/ui/badge';
-import { Plus, Search, Filter } from 'lucide-react';
+import React from 'react';
+import { useState } from "react";
+import { useEmployees, useCreateEmployee } from '../hooks/use-api.js';
+import { Button } from '../components/ui/button.js';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js';
+import { Input } from '../components/ui/input.js';
+import { Label } from '../components/ui/label.js';
+import { Badge } from '../components/ui/badge.js';
+import { Plus, Search, Filter } from "lucide-react";
 
 interface Employee {
   id: string;
@@ -13,7 +20,7 @@ interface Employee {
   firstName: string;
   lastName: string;
   email?: string;
-  status: 'active' | 'inactive' | 'terminated';
+  status: "active" | "inactive" | "terminated";
   jobTitle?: string;
   department?: string;
   hireDate: string;
@@ -24,34 +31,39 @@ interface Employee {
 export default function PayrollPage() {
   const { data: employees = [], isLoading, error } = useEmployees();
   const createEmployee = useCreateEmployee();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   // Filter employees based on search and status
   const filteredEmployees = employees.filter((employee: Employee) => {
-    const matchesSearch = searchTerm === '' ||
-      `${employee.firstName} ${employee.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =
+      searchTerm === "" ||
+      `${employee.firstName} ${employee.lastName}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       employee.employeeNumber.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = statusFilter === 'all' || employee.status === statusFilter;
+    const matchesStatus =
+      statusFilter === "all" || employee.status === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
 
   const handleCreateEmployee = async () => {
     // This would open a modal or navigate to a form
-    console.log('Creating new employee...');
+    console.log("Creating new employee...");
   };
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      active: 'default',
-      inactive: 'secondary',
-      terminated: 'destructive',
+      active: "default",
+      inactive: "secondary",
+      terminated: "destructive",
     } as const;
 
     return (
-      <Badge variant={variants[status as keyof typeof variants] || 'secondary'}>
+// @ts-ignore
+      <Badge variant={variants[status as keyof typeof variants] || "secondary"}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
@@ -62,10 +74,15 @@ export default function PayrollPage() {
       <div className="container mx-auto py-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-red-600">Error Loading Payroll Data</CardTitle>
+            <CardTitle className="text-red-600">
+              Error Loading Payroll Data
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p>There was an error loading the payroll data. Please try again later.</p>
+            <p>
+              There was an error loading the payroll data. Please try again
+              later.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -77,7 +94,9 @@ export default function PayrollPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Payroll Management</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Payroll Management
+          </h1>
           <p className="text-muted-foreground">
             Manage employees, payroll periods, and pay runs
           </p>
@@ -92,7 +111,9 @@ export default function PayrollPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Employees
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{employees.length}</div>
@@ -104,11 +125,13 @@ export default function PayrollPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Employees</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Employees
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {employees.filter((e: Employee) => e.status === 'active').length}
+              {employees.filter((e: Employee) => e.status === "active").length}
             </div>
             <p className="text-xs text-muted-foreground">
               Currently active employees
@@ -118,7 +141,9 @@ export default function PayrollPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month's Payroll</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              This Month's Payroll
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$45,231.89</div>
@@ -130,7 +155,9 @@ export default function PayrollPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Approvals</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Approvals
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3</div>
@@ -196,7 +223,8 @@ export default function PayrollPage() {
                       Employee #{employee.employeeNumber}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {employee.jobTitle} {employee.department && `• ${employee.department}`}
+                      {employee.jobTitle}{" "}
+                      {employee.department && `• ${employee.department}`}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Hired: {new Date(employee.hireDate).toLocaleDateString()}
@@ -205,7 +233,8 @@ export default function PayrollPage() {
 
                   <div className="text-right">
                     <p className="text-sm font-medium">
-                      {employee.payFrequency.charAt(0).toUpperCase() + employee.payFrequency.slice(1)}
+                      {employee.payFrequency.charAt(0).toUpperCase() +
+                        employee.payFrequency.slice(1)}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Joined {new Date(employee.createdAt).toLocaleDateString()}

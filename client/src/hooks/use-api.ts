@@ -1,13 +1,20 @@
-import { useQuery, useMutation, useQueryClient, QueryClient, UseQueryOptions, UseMutationOptions } from "@tanstack/react-query";
-import { apiRequest } from "./queryClient";
-import { getCurrentCompanyId } from "../lib/api";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  UseQueryOptions,
+  UseMutationOptions,
+} from "@tanstack/react-query";
+import { apiRequest } from './queryClient.js';
+import { getCurrentCompanyId } from '../lib/api.js';
 
 export interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: 'admin' | 'user' | 'accountant' | 'manager';
+  role: "admin" | "user" | "accountant" | "manager";
   isActive: boolean;
   lastLoginAt?: string;
   createdAt: string;
@@ -179,7 +186,13 @@ export interface Employee {
   department?: string;
   managerId?: string;
   payRate?: string;
-  payFrequency: "weekly" | "bi-weekly" | "semi-monthly" | "monthly" | "quarterly" | "annually";
+  payFrequency:
+    | "weekly"
+    | "bi-weekly"
+    | "semi-monthly"
+    | "monthly"
+    | "quarterly"
+    | "annually";
   hourlyRate?: string;
   overtimeRate?: string;
   isExempt: boolean;
@@ -402,16 +415,16 @@ function getCompanyId(): string {
 // Users
 export function useUsers() {
   return useQuery<User[]>({
-    queryKey: ['users'],
-    queryFn: () => apiRequest('GET', '/api/users'),
+    queryKey: ["users"],
+    queryFn: () => apiRequest("GET", "/api/users"),
   });
 }
 
 // Companies
 export function useCompanies() {
   return useQuery<Company[]>({
-    queryKey: ['companies'],
-    queryFn: () => apiRequest<Company[]>('GET', '/api/companies'),
+    queryKey: ["companies"],
+    queryFn: () => apiRequest<Company[]>("GET", "/api/companies"),
   });
 }
 
@@ -425,7 +438,11 @@ export function useCompany(id: string) {
 
 export function useCreateCompany() {
   const queryClient = useQueryClient();
-  return useMutation<Company, Error, Omit<Company, "id" | "createdAt" | "updatedAt">>({
+  return useMutation<
+    Company,
+    Error,
+    Omit<Company, "id" | "createdAt" | "updatedAt">
+  >({
     mutationFn: (data) => apiRequest<Company>("POST", "/api/companies", data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["companies"] }),
   });
@@ -434,7 +451,8 @@ export function useCreateCompany() {
 export function useUpdateCompany() {
   const queryClient = useQueryClient();
   return useMutation<Company, Error, { id: string; data: Partial<Company> }>({
-    mutationFn: ({ id, data }) => apiRequest<Company>("PATCH", `/api/companies/${id}`, data),
+    mutationFn: ({ id, data }) =>
+      apiRequest<Company>("PATCH", `/api/companies/${id}`, data),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
       queryClient.invalidateQueries({ queryKey: ["companies", id] });
@@ -447,14 +465,19 @@ export function useAccounts(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery<Account[]>({
     queryKey: ["accounts", company],
-    queryFn: () => apiRequest<Account[]>("GET", `/api/accounts?companyId=${company}`),
+    queryFn: () =>
+      apiRequest<Account[]>("GET", `/api/accounts?companyId=${company}`),
     enabled: !!company,
   });
 }
 
 export function useCreateAccount() {
   const queryClient = useQueryClient();
-  return useMutation<Account, Error, Omit<Account, "id" | "createdAt" | "updatedAt" | "balance">>({
+  return useMutation<
+    Account,
+    Error,
+    Omit<Account, "id" | "createdAt" | "updatedAt" | "balance">
+  >({
     mutationFn: (data) => apiRequest<Account>("POST", "/api/accounts", data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["accounts"] }),
   });
@@ -465,14 +488,19 @@ export function useCustomers(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery<Customer[]>({
     queryKey: ["customers", company],
-    queryFn: () => apiRequest<Customer[]>("GET", `/api/customers?companyId=${company}`),
+    queryFn: () =>
+      apiRequest<Customer[]>("GET", `/api/customers?companyId=${company}`),
     enabled: !!company,
   });
 }
 
 export function useCreateCustomer() {
   const queryClient = useQueryClient();
-  return useMutation<Customer, Error, Omit<Customer, "id" | "createdAt" | "updatedAt" | "balance">>({
+  return useMutation<
+    Customer,
+    Error,
+    Omit<Customer, "id" | "createdAt" | "updatedAt" | "balance">
+  >({
     mutationFn: (data) => apiRequest<Customer>("POST", "/api/customers", data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["customers"] }),
   });
@@ -481,7 +509,8 @@ export function useCreateCustomer() {
 export function useUpdateCustomer() {
   const queryClient = useQueryClient();
   return useMutation<Customer, Error, { id: string; data: Partial<Customer> }>({
-    mutationFn: ({ id, data }) => apiRequest<Customer>("PATCH", `/api/customers/${id}`, data),
+    mutationFn: ({ id, data }) =>
+      apiRequest<Customer>("PATCH", `/api/customers/${id}`, data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["customers"] }),
   });
 }
@@ -491,14 +520,19 @@ export function useVendors(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery<Vendor[]>({
     queryKey: ["vendors", company],
-    queryFn: () => apiRequest<Vendor[]>("GET", `/api/vendors?companyId=${company}`),
+    queryFn: () =>
+      apiRequest<Vendor[]>("GET", `/api/vendors?companyId=${company}`),
     enabled: !!company,
   });
 }
 
 export function useCreateVendor() {
   const queryClient = useQueryClient();
-  return useMutation<Vendor, Error, Omit<Vendor, "id" | "createdAt" | "updatedAt" | "balance">>({
+  return useMutation<
+    Vendor,
+    Error,
+    Omit<Vendor, "id" | "createdAt" | "updatedAt" | "balance">
+  >({
     mutationFn: (data) => apiRequest<Vendor>("POST", "/api/vendors", data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["vendors"] }),
   });
@@ -509,7 +543,11 @@ export function useTransactions(companyId?: string, limit = 50) {
   const company = companyId || getCompanyId();
   return useQuery<Transaction[]>({
     queryKey: ["transactions", company, limit],
-    queryFn: () => apiRequest<Transaction[]>("GET", `/api/transactions?companyId=${company}&limit=${limit}`),
+    queryFn: () =>
+      apiRequest<Transaction[]>(
+        "GET",
+        `/api/transactions?companyId=${company}&limit=${limit}`,
+      ),
     enabled: !!company,
   });
 }
@@ -517,16 +555,30 @@ export function useTransactions(companyId?: string, limit = 50) {
 export function useTransactionLines(transactionId?: string) {
   return useQuery<TransactionLine[]>({
     queryKey: ["transaction-lines", transactionId],
-    queryFn: () => apiRequest<TransactionLine[]>("GET", `/api/transactions/${transactionId}/lines`),
+    queryFn: () =>
+      apiRequest<TransactionLine[]>(
+        "GET",
+        `/api/transactions/${transactionId}/lines`,
+      ),
     enabled: !!transactionId,
   });
 }
 
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
-  return useMutation<Transaction, Error, { transaction: Omit<Transaction, "id" | "createdAt" | "updatedAt">; lines: Omit<TransactionLine, "id" | "createdAt">[] }>({
-    mutationFn: ({ transaction, lines }) => 
-      apiRequest<Transaction>("POST", "/api/transactions", { transaction, lines }),
+  return useMutation<
+    Transaction,
+    Error,
+    {
+      transaction: Omit<Transaction, "id" | "createdAt" | "updatedAt">;
+      lines: Omit<TransactionLine, "id" | "createdAt">[];
+    }
+  >({
+    mutationFn: ({ transaction, lines }) =>
+      apiRequest<Transaction>("POST", "/api/transactions", {
+        transaction,
+        lines,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -537,7 +589,8 @@ export function useCreateTransaction() {
 export function useVoidTransaction() {
   const queryClient = useQueryClient();
   return useMutation<Transaction, Error, string>({
-    mutationFn: (id) => apiRequest<Transaction>("POST", `/api/transactions/${id}/void`),
+    mutationFn: (id) =>
+      apiRequest<Transaction>("POST", `/api/transactions/${id}/void`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -550,7 +603,8 @@ export function useInvoices(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery<Invoice[]>({
     queryKey: ["invoices", company],
-    queryFn: () => apiRequest<Invoice[]>("GET", `/api/invoices?companyId=${company}`),
+    queryFn: () =>
+      apiRequest<Invoice[]>("GET", `/api/invoices?companyId=${company}`),
     enabled: !!company,
   });
 }
@@ -565,8 +619,15 @@ export function useInvoice(id: string) {
 
 export function useCreateInvoice() {
   const queryClient = useQueryClient();
-  return useMutation<Invoice, Error, { invoice: Omit<Invoice, "id" | "createdAt" | "updatedAt" | "amountPaid">; items: Omit<InvoiceItem, "id" | "createdAt">[] }>({
-    mutationFn: ({ invoice, items }) => 
+  return useMutation<
+    Invoice,
+    Error,
+    {
+      invoice: Omit<Invoice, "id" | "createdAt" | "updatedAt" | "amountPaid">;
+      items: Omit<InvoiceItem, "id" | "createdAt">[];
+    }
+  >({
+    mutationFn: ({ invoice, items }) =>
       apiRequest<Invoice>("POST", "/api/invoices", { invoice, items }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
@@ -579,10 +640,16 @@ export function useCreateInvoice() {
 // Payments
 export function useCreatePayment() {
   const queryClient = useQueryClient();
-  return useMutation<Payment, Error, Omit<Payment, "id" | "createdAt" | "updatedAt">>({
+  return useMutation<
+    Payment,
+    Error,
+    Omit<Payment, "id" | "createdAt" | "updatedAt">
+  >({
     mutationFn: (data) => apiRequest<Payment>("POST", "/api/payments", data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["invoices", variables.invoiceId] });
+      queryClient.invalidateQueries({
+        queryKey: ["invoices", variables.invoiceId],
+      });
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.invalidateQueries({ queryKey: ["customers"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -593,7 +660,8 @@ export function useCreatePayment() {
 export function usePaymentsByInvoice(invoiceId: string) {
   return useQuery<Payment[]>({
     queryKey: ["payments", "invoice", invoiceId],
-    queryFn: () => apiRequest<Payment[]>("GET", `/api/payments?invoiceId=${invoiceId}`),
+    queryFn: () =>
+      apiRequest<Payment[]>("GET", `/api/payments?invoiceId=${invoiceId}`),
     enabled: !!invoiceId,
   });
 }
@@ -603,15 +671,23 @@ export function useBankTransactions(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery<BankTransaction[]>({
     queryKey: ["bank-transactions", company],
-    queryFn: () => apiRequest<BankTransaction[]>("GET", `/api/bank-transactions?companyId=${company}`),
+    queryFn: () =>
+      apiRequest<BankTransaction[]>(
+        "GET",
+        `/api/bank-transactions?companyId=${company}`,
+      ),
     enabled: !!company,
   });
 }
 
 export function useCreateBankTransaction() {
   const queryClient = useQueryClient();
-  return useMutation<BankTransaction[], Error, Omit<BankTransaction, "id" | "createdAt">>({
-    mutationFn: (data) => 
+  return useMutation<
+    BankTransaction[],
+    Error,
+    Omit<BankTransaction, "id" | "createdAt">
+  >({
+    mutationFn: (data) =>
       apiRequest<BankTransaction[]>("POST", "/api/bank-transactions/import", {
         transactions: [data],
       }),
@@ -624,9 +700,17 @@ export function useCreateBankTransaction() {
 
 export function useReconcileBankTransaction() {
   const queryClient = useQueryClient();
-  return useMutation<BankTransaction, Error, { id: string; matchedTransactionId: string }>({
+  return useMutation<
+    BankTransaction,
+    Error,
+    { id: string; matchedTransactionId: string }
+  >({
     mutationFn: ({ id, matchedTransactionId }) =>
-      apiRequest<BankTransaction>("POST", `/api/bank-transactions/${id}/reconcile`, { matchedTransactionId }),
+      apiRequest<BankTransaction>(
+        "POST",
+        `/api/bank-transactions/${id}/reconcile`,
+        { matchedTransactionId },
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bank-transactions"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
@@ -636,7 +720,11 @@ export function useReconcileBankTransaction() {
 }
 
 // Reports
-export function useProfitLossReport(companyId?: string, startDate?: string, endDate?: string) {
+export function useProfitLossReport(
+  companyId?: string,
+  startDate?: string,
+  endDate?: string,
+) {
   const company = companyId || getCompanyId();
   const params = new URLSearchParams({ companyId: company });
   if (startDate) params.append("startDate", startDate);
@@ -645,7 +733,10 @@ export function useProfitLossReport(companyId?: string, startDate?: string, endD
   return useQuery({
     queryKey: ["reports", "profit-loss", company, startDate, endDate],
     queryFn: async () => {
-      const response = await apiRequest("GET", `/api/reports/profit-loss?${params}`);
+      const response = await apiRequest(
+        "GET",
+        `/api/reports/profit-loss?${params}`,
+      );
       return response.json();
     },
     enabled: !!company,
@@ -656,7 +747,10 @@ export function useBalanceSheetReport(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery({
     queryKey: ["reports", "balance-sheet", company],
-    queryFn: () => apiRequest("GET", `/api/reports/balance-sheet?companyId=${company}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/reports/balance-sheet?companyId=${company}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!company,
   });
 }
@@ -665,7 +759,10 @@ export function useCashFlowReport(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery({
     queryKey: ["reports", "cash-flow", company],
-    queryFn: () => apiRequest("GET", `/api/reports/cash-flow?companyId=${company}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/reports/cash-flow?companyId=${company}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!company,
   });
 }
@@ -676,7 +773,10 @@ export function useEmployees(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery({
     queryKey: ["payroll", "employees", company],
-    queryFn: () => apiRequest("GET", `/api/payroll/employees?companyId=${company}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/payroll/employees?companyId=${company}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!company,
   });
 }
@@ -684,7 +784,10 @@ export function useEmployees(companyId?: string) {
 export function useEmployee(id: string) {
   return useQuery({
     queryKey: ["payroll", "employee", id],
-    queryFn: () => apiRequest("GET", `/api/payroll/employees/${id}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/payroll/employees/${id}`).then((r: Response) =>
+        r.json(),
+      ),
     enabled: !!id,
   });
 }
@@ -693,7 +796,10 @@ export function useDeductions(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery({
     queryKey: ["payroll", "deductions", company],
-    queryFn: () => apiRequest("GET", `/api/payroll/deductions?companyId=${company}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/payroll/deductions?companyId=${company}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!company,
   });
 }
@@ -701,7 +807,10 @@ export function useDeductions(companyId?: string) {
 export function useEmployeeDeductions(employeeId: string) {
   return useQuery({
     queryKey: ["payroll", "employee-deductions", employeeId],
-    queryFn: () => apiRequest("GET", `/api/payroll/employee-deductions/${employeeId}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/payroll/employee-deductions/${employeeId}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!employeeId,
   });
 }
@@ -710,7 +819,10 @@ export function usePayrollPeriods(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery({
     queryKey: ["payroll", "periods", company],
-    queryFn: () => apiRequest("GET", `/api/payroll/periods?companyId=${company}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/payroll/periods?companyId=${company}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!company,
   });
 }
@@ -718,7 +830,11 @@ export function usePayrollPeriods(companyId?: string) {
 export function useTimeEntries(employeeId?: string, payrollPeriodId?: string) {
   return useQuery({
     queryKey: ["payroll", "time-entries", employeeId, payrollPeriodId],
-    queryFn: () => apiRequest("GET", `/api/payroll/time-entries${employeeId ? `?employeeId=${employeeId}` : payrollPeriodId ? `?payrollPeriodId=${payrollPeriodId}` : ''}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest(
+        "GET",
+        `/api/payroll/time-entries${employeeId ? `?employeeId=${employeeId}` : payrollPeriodId ? `?payrollPeriodId=${payrollPeriodId}` : ""}`,
+      ).then((r: Response) => r.json()),
     enabled: !!employeeId || !!payrollPeriodId,
   });
 }
@@ -727,7 +843,10 @@ export function usePayRuns(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery({
     queryKey: ["payroll", "pay-runs", company],
-    queryFn: () => apiRequest("GET", `/api/payroll/pay-runs?companyId=${company}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/payroll/pay-runs?companyId=${company}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!company,
   });
 }
@@ -735,7 +854,10 @@ export function usePayRuns(companyId?: string) {
 export function usePayRun(id: string) {
   return useQuery({
     queryKey: ["payroll", "pay-run", id],
-    queryFn: () => apiRequest("GET", `/api/payroll/pay-runs/${id}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/payroll/pay-runs/${id}`).then((r: Response) =>
+        r.json(),
+      ),
     enabled: !!id,
   });
 }
@@ -744,7 +866,10 @@ export function useTaxForms(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery({
     queryKey: ["payroll", "tax-forms", company],
-    queryFn: () => apiRequest("GET", `/api/payroll/tax-forms?companyId=${company}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/payroll/tax-forms?companyId=${company}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!company,
   });
 }
@@ -755,7 +880,10 @@ export function useInventoryItems(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery({
     queryKey: ["inventory", "items", company],
-    queryFn: () => apiRequest("GET", `/api/inventory/items?companyId=${company}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/inventory/items?companyId=${company}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!company,
   });
 }
@@ -764,7 +892,11 @@ export function usePurchaseOrders(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery({
     queryKey: ["inventory", "purchase-orders", company],
-    queryFn: () => apiRequest("GET", `/api/inventory/purchase-orders?companyId=${company}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest(
+        "GET",
+        `/api/inventory/purchase-orders?companyId=${company}`,
+      ).then((r: Response) => r.json()),
     enabled: !!company,
   });
 }
@@ -772,7 +904,10 @@ export function usePurchaseOrders(companyId?: string) {
 export function usePurchaseOrder(id: string) {
   return useQuery({
     queryKey: ["inventory", "purchase-order", id],
-    queryFn: () => apiRequest("GET", `/api/inventory/purchase-orders/${id}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/inventory/purchase-orders/${id}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!id,
   });
 }
@@ -781,7 +916,10 @@ export function useInventoryAdjustments(companyId?: string) {
   const company = companyId || getCompanyId();
   return useQuery({
     queryKey: ["inventory", "adjustments", company],
-    queryFn: () => apiRequest("GET", `/api/inventory/adjustments?companyId=${company}`).then((r: Response) => r.json()),
+    queryFn: () =>
+      apiRequest("GET", `/api/inventory/adjustments?companyId=${company}`).then(
+        (r: Response) => r.json(),
+      ),
     enabled: !!company,
   });
 }
@@ -789,8 +927,10 @@ export function useInventoryAdjustments(companyId?: string) {
 // Mutations
 export function useCreateEmployee() {
   return useMutation({
-    mutationFn: (employee: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>) =>
-      apiRequest("POST", "/api/payroll/employees", employee).then((r: Response) => r.json()),
+    mutationFn: (employee: Omit<Employee, "id" | "createdAt" | "updatedAt">) =>
+      apiRequest("POST", "/api/payroll/employees", employee).then(
+        (r: Response) => r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["payroll", "employees"] });
     },
@@ -799,8 +939,16 @@ export function useCreateEmployee() {
 
 export function useUpdateEmployee() {
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>> }) =>
-      apiRequest("PATCH", `/api/payroll/employees/${id}`, updates).then((r: Response) => r.json()),
+    mutationFn: ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: Partial<Omit<Employee, "id" | "createdAt" | "updatedAt">>;
+    }) =>
+      apiRequest("PATCH", `/api/payroll/employees/${id}`, updates).then(
+        (r: Response) => r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["payroll", "employees"] });
     },
@@ -809,8 +957,12 @@ export function useUpdateEmployee() {
 
 export function useCreateDeduction() {
   return useMutation({
-    mutationFn: (deduction: Omit<Deduction, 'id' | 'createdAt' | 'updatedAt'>) =>
-      apiRequest("POST", "/api/payroll/deductions", deduction).then((r: Response) => r.json()),
+    mutationFn: (
+      deduction: Omit<Deduction, "id" | "createdAt" | "updatedAt">,
+    ) =>
+      apiRequest("POST", "/api/payroll/deductions", deduction).then(
+        (r: Response) => r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["payroll", "deductions"] });
     },
@@ -819,18 +971,26 @@ export function useCreateDeduction() {
 
 export function useCreateEmployeeDeduction() {
   return useMutation({
-    mutationFn: (deduction: Omit<EmployeeDeduction, 'id' | 'createdAt'>) =>
-      apiRequest("POST", "/api/payroll/employee-deductions", deduction).then((r: Response) => r.json()),
+    mutationFn: (deduction: Omit<EmployeeDeduction, "id" | "createdAt">) =>
+      apiRequest("POST", "/api/payroll/employee-deductions", deduction).then(
+        (r: Response) => r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
-      queryClient.invalidateQueries({ queryKey: ["payroll", "employee-deductions"] });
+      queryClient.invalidateQueries({
+        queryKey: ["payroll", "employee-deductions"],
+      });
     },
   });
 }
 
 export function useCreatePayrollPeriod() {
   return useMutation({
-    mutationFn: (period: Omit<PayrollPeriod, 'id' | 'createdAt' | 'updatedAt'>) =>
-      apiRequest("POST", "/api/payroll/periods", period).then((r: Response) => r.json()),
+    mutationFn: (
+      period: Omit<PayrollPeriod, "id" | "createdAt" | "updatedAt">,
+    ) =>
+      apiRequest("POST", "/api/payroll/periods", period).then((r: Response) =>
+        r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["payroll", "periods"] });
     },
@@ -839,8 +999,10 @@ export function useCreatePayrollPeriod() {
 
 export function useCreateTimeEntry() {
   return useMutation({
-    mutationFn: (entry: Omit<TimeEntry, 'id' | 'createdAt' | 'updatedAt'>) =>
-      apiRequest("POST", "/api/payroll/time-entries", entry).then((r: Response) => r.json()),
+    mutationFn: (entry: Omit<TimeEntry, "id" | "createdAt" | "updatedAt">) =>
+      apiRequest("POST", "/api/payroll/time-entries", entry).then(
+        (r: Response) => r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["payroll", "time-entries"] });
     },
@@ -850,7 +1012,9 @@ export function useCreateTimeEntry() {
 export function useApproveTimeEntry() {
   return useMutation({
     mutationFn: (id: string) =>
-      apiRequest("POST", `/api/payroll/time-entries/${id}/approve`).then((r: Response) => r.json()),
+      apiRequest("POST", `/api/payroll/time-entries/${id}/approve`).then(
+        (r: Response) => r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["payroll", "time-entries"] });
     },
@@ -859,8 +1023,13 @@ export function useApproveTimeEntry() {
 
 export function useCreatePayRun() {
   return useMutation({
-    mutationFn: (data: { payRun: Omit<PayRun, 'id' | 'createdAt' | 'updatedAt'>; details: Omit<PayRunDetail, 'id' | 'payRunId' | 'createdAt'>[] }) =>
-      apiRequest("POST", "/api/payroll/pay-runs", data).then((r: Response) => r.json()),
+    mutationFn: (data: {
+      payRun: Omit<PayRun, "id" | "createdAt" | "updatedAt">;
+      details: Omit<PayRunDetail, "id" | "payRunId" | "createdAt">[];
+    }) =>
+      apiRequest("POST", "/api/payroll/pay-runs", data).then((r: Response) =>
+        r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["payroll", "pay-runs"] });
     },
@@ -870,7 +1039,9 @@ export function useCreatePayRun() {
 export function useUpdatePayRunStatus() {
   return useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
-      apiRequest("PATCH", `/api/payroll/pay-runs/${id}/status`, { status }).then((r: Response) => r.json()),
+      apiRequest("PATCH", `/api/payroll/pay-runs/${id}/status`, {
+        status,
+      }).then((r: Response) => r.json()),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["payroll", "pay-runs"] });
     },
@@ -879,8 +1050,10 @@ export function useUpdatePayRunStatus() {
 
 export function useCreateTaxForm() {
   return useMutation({
-    mutationFn: (form: Omit<TaxForm, 'id' | 'createdAt' | 'updatedAt'>) =>
-      apiRequest("POST", "/api/payroll/tax-forms", form).then((r: Response) => r.json()),
+    mutationFn: (form: Omit<TaxForm, "id" | "createdAt" | "updatedAt">) =>
+      apiRequest("POST", "/api/payroll/tax-forms", form).then((r: Response) =>
+        r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["payroll", "tax-forms"] });
     },
@@ -890,8 +1063,10 @@ export function useCreateTaxForm() {
 // Inventory Module Mutations
 export function useCreateInventoryItem() {
   return useMutation({
-    mutationFn: (item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>) =>
-      apiRequest("POST", "/api/inventory/items", item).then((r: Response) => r.json()),
+    mutationFn: (item: Omit<InventoryItem, "id" | "createdAt" | "updatedAt">) =>
+      apiRequest("POST", "/api/inventory/items", item).then((r: Response) =>
+        r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["inventory", "items"] });
     },
@@ -900,8 +1075,16 @@ export function useCreateInventoryItem() {
 
 export function useUpdateInventoryItem() {
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>> }) =>
-      apiRequest("PATCH", `/api/inventory/items/${id}`, updates).then((r: Response) => r.json()),
+    mutationFn: ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: Partial<Omit<InventoryItem, "id" | "createdAt" | "updatedAt">>;
+    }) =>
+      apiRequest("PATCH", `/api/inventory/items/${id}`, updates).then(
+        (r: Response) => r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["inventory", "items"] });
     },
@@ -910,8 +1093,19 @@ export function useUpdateInventoryItem() {
 
 export function useUpdateInventoryQuantity() {
   return useMutation({
-    mutationFn: ({ id, quantityChange, reason }: { id: string; quantityChange: string; reason: string }) =>
-      apiRequest("PATCH", `/api/inventory/items/${id}/quantity`, { quantityChange, reason }).then((r: Response) => r.json()),
+    mutationFn: ({
+      id,
+      quantityChange,
+      reason,
+    }: {
+      id: string;
+      quantityChange: string;
+      reason: string;
+    }) =>
+      apiRequest("PATCH", `/api/inventory/items/${id}/quantity`, {
+        quantityChange,
+        reason,
+      }).then((r: Response) => r.json()),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["inventory", "items"] });
     },
@@ -920,10 +1114,17 @@ export function useUpdateInventoryQuantity() {
 
 export function useCreatePurchaseOrder() {
   return useMutation({
-    mutationFn: (data: { order: Omit<PurchaseOrder, 'id' | 'createdAt' | 'updatedAt'>; items: Omit<PurchaseOrderItem, 'id' | 'purchaseOrderId' | 'createdAt'>[] }) =>
-      apiRequest("POST", "/api/inventory/purchase-orders", data).then((r: Response) => r.json()),
+    mutationFn: (data: {
+      order: Omit<PurchaseOrder, "id" | "createdAt" | "updatedAt">;
+      items: Omit<PurchaseOrderItem, "id" | "purchaseOrderId" | "createdAt">[];
+    }) =>
+      apiRequest("POST", "/api/inventory/purchase-orders", data).then(
+        (r: Response) => r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
-      queryClient.invalidateQueries({ queryKey: ["inventory", "purchase-orders"] });
+      queryClient.invalidateQueries({
+        queryKey: ["inventory", "purchase-orders"],
+      });
     },
   });
 }
@@ -931,17 +1132,23 @@ export function useCreatePurchaseOrder() {
 export function useUpdatePurchaseOrderStatus() {
   return useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
-      apiRequest("PATCH", `/api/inventory/purchase-orders/${id}/status`, { status }).then((r: Response) => r.json()),
+      apiRequest("PATCH", `/api/inventory/purchase-orders/${id}/status`, {
+        status,
+      }).then((r: Response) => r.json()),
     onSuccess: (queryClient: QueryClient) => {
-      queryClient.invalidateQueries({ queryKey: ["inventory", "purchase-orders"] });
+      queryClient.invalidateQueries({
+        queryKey: ["inventory", "purchase-orders"],
+      });
     },
   });
 }
 
 export function useCreateInventoryAdjustment() {
   return useMutation({
-    mutationFn: (adjustment: Omit<InventoryAdjustment, 'id' | 'createdAt'>) =>
-      apiRequest("POST", "/api/inventory/adjustments", adjustment).then((r: Response) => r.json()),
+    mutationFn: (adjustment: Omit<InventoryAdjustment, "id" | "createdAt">) =>
+      apiRequest("POST", "/api/inventory/adjustments", adjustment).then(
+        (r: Response) => r.json(),
+      ),
     onSuccess: (queryClient: QueryClient) => {
       queryClient.invalidateQueries({ queryKey: ["inventory", "adjustments"] });
       queryClient.invalidateQueries({ queryKey: ["inventory", "items"] });

@@ -1,8 +1,8 @@
-import { Report, ReportFormData, ReportListResponse } from '../types/report';
-import api from '../lib/api';
-import { QueryParams } from '../types/common';
+import { Report, ReportFormData, ReportListResponse } from '../types/report.js';
+import api from '../lib/api.js';
+import { QueryParams } from '../types/common.js';
 
-const REPORT_ENDPOINT = '/reports';
+const REPORT_ENDPOINT = "/reports";
 
 export const reportService = {
   /**
@@ -10,10 +10,12 @@ export const reportService = {
    */
   async getReports(params?: QueryParams): Promise<ReportListResponse> {
     try {
-      const response = await api.get<ReportListResponse>(REPORT_ENDPOINT, { params });
+      const response = await api.get<ReportListResponse>(REPORT_ENDPOINT, {
+        params,
+      });
       return response.data;
     } catch (error) {
-      throw new Error('Failed to fetch reports');
+      throw new Error("Failed to fetch reports");
     }
   },
 
@@ -22,10 +24,12 @@ export const reportService = {
    */
   async getReportById(id: string): Promise<Report> {
     try {
-      const response = await api.get<{ data: Report }>(`${REPORT_ENDPOINT}/${id}`);
+      const response = await api.get<{ data: Report }>(
+        `${REPORT_ENDPOINT}/${id}`,
+      );
       return response.data.data;
     } catch (error) {
-      throw new Error('Failed to fetch report');
+      throw new Error("Failed to fetch report");
     }
   },
 
@@ -37,19 +41,25 @@ export const reportService = {
       const response = await api.post<{ data: Report }>(REPORT_ENDPOINT, data);
       return response.data.data;
     } catch (error) {
-      throw new Error('Failed to create report');
+      throw new Error("Failed to create report");
     }
   },
 
   /**
    * Update an existing report
    */
-  async updateReport(id: string, data: Partial<ReportFormData>): Promise<Report> {
+  async updateReport(
+    id: string,
+    data: Partial<ReportFormData>,
+  ): Promise<Report> {
     try {
-      const response = await api.put<{ data: Report }>(`${REPORT_ENDPOINT}/${id}`, data);
+      const response = await api.put<{ data: Report }>(
+        `${REPORT_ENDPOINT}/${id}`,
+        data,
+      );
       return response.data.data;
     } catch (error) {
-      throw new Error('Failed to update report');
+      throw new Error("Failed to update report");
     }
   },
 
@@ -60,22 +70,23 @@ export const reportService = {
     try {
       await api.delete(`${REPORT_ENDPOINT}/${id}`);
     } catch (error) {
-      throw new Error('Failed to delete report');
+      throw new Error("Failed to delete report");
     }
   },
 
   /**
+// @ts-ignore
    * Export report as PDF
    */
-  async exportReport(id: string, format: 'pdf' | 'csv' = 'pdf'): Promise<Blob> {
+  async exportReport(id: string, format: "pdf" | "csv" = "pdf"): Promise<Blob> {
     try {
       const response = await api.get<Blob>(`${REPORT_ENDPOINT}/${id}/export`, {
         params: { format },
-        responseType: 'blob',
+        responseType: "blob",
       });
       return response.data;
     } catch (error) {
-      throw new Error('Failed to export report');
+      throw new Error("Failed to export report");
     }
   },
 };

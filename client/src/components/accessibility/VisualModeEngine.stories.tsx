@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { VisualModeEngine } from './VisualModeEngine';
+import type { Meta, StoryObj } from "@storybook/react";
+import { VisualModeEngine } from './VisualModeEngine.js';
 
 const meta: Meta<typeof VisualModeEngine> = {
-  title: 'Accessibility/VisualModeEngine',
+  title: "Accessibility/VisualModeEngine",
   component: VisualModeEngine,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { MainLayout } from '../components/layout/MainLayout';
-import { EnterpriseDashboardNew } from '../components/dashboard/EnterpriseDashboardNew';
+import { MainLayout } from '../components/layout/MainLayout.js';
+import { EnterpriseDashboardNew } from '../components/dashboard/EnterpriseDashboardNew.js';
 
 export default function DashboardPage() {
   return (

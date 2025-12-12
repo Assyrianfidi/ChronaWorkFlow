@@ -1,50 +1,61 @@
-const dotenv = require('dotenv');
-const path = require('path');
+const dotenv = require("dotenv");
+const path = require("path");
 
 // Load environment variables from .env file
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 
 // Default configuration
 const config = {
   // Core
-  NODE_ENV: process.env.NODE_ENV || 'development',
+  NODE_ENV: process.env.NODE_ENV || "development",
   PORT: process.env.PORT || 3001, // Changed from 3000 to 3001 to avoid conflicts
-  HOST: process.env.HOST || 'localhost',
+  HOST: process.env.HOST || "localhost",
 
   // Database
-  DATABASE_URL: process.env.DATABASE_URL || 'postgresql://postgres:Fkhouch8@localhost:5432/AccuBooks?sslmode=prefer&connect_timeout=10',
+  DATABASE_URL:
+    process.env.DATABASE_URL ||
+    "postgresql://postgres:Fkhouch8@localhost:5432/AccuBooks?sslmode=prefer&connect_timeout=10",
 
   // Redis
-  REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
-  REDIS_HOST: process.env.REDIS_HOST || 'localhost',
+  REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
+  REDIS_HOST: process.env.REDIS_HOST || "localhost",
   REDIS_PORT: process.env.REDIS_PORT || 6379,
 
   // JWT
-  JWT_SECRET: process.env.JWT_SECRET || 'dev_jwt_secret_change_in_production_12345',
-  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'dev_refresh_secret_change_in_prod_12345',
-  SESSION_SECRET: process.env.SESSION_SECRET || 'dev_session_secret_change_in_prod_12345',
+  JWT_SECRET:
+    process.env.JWT_SECRET || "dev_jwt_secret_change_in_production_12345",
+  JWT_REFRESH_SECRET:
+    process.env.JWT_REFRESH_SECRET || "dev_refresh_secret_change_in_prod_12345",
+  SESSION_SECRET:
+    process.env.SESSION_SECRET || "dev_session_secret_change_in_prod_12345",
 
   // Email
-  SMTP_HOST: process.env.SMTP_HOST || 'smtp.ethereal.email',
+  SMTP_HOST: process.env.SMTP_HOST || "smtp.ethereal.email",
   SMTP_PORT: parseInt(process.env.SMTP_PORT) || 587,
-  SMTP_SECURE: process.env.SMTP_SECURE === 'true',
-  SMTP_USER: process.env.SMTP_USER || 'test@example.com',
-  SMTP_PASS: process.env.SMTP_PASS || 'testpass123!@#',
-  MAIL_FROM: process.env.MAIL_FROM || 'noreply@accubooks.dev',
+  SMTP_SECURE: process.env.SMTP_SECURE === "true",
+  SMTP_USER: process.env.SMTP_USER || "test@example.com",
+  SMTP_PASS: process.env.SMTP_PASS || "testpass123!@#",
+  MAIL_FROM: process.env.MAIL_FROM || "noreply@accubooks.dev",
 
   // Stripe (test mode defaults)
-  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || 'sk_test_51P3Xr1Kj4X8Z1X2Q3w4e5r6t7y8u9i0o1p2a3s4d5f6g7h8j9k0l1z2x3c4v5b6n7m8',
-  STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51P3Xr1Kj4X8Z1X2Q3w4e5r6t7y8u9i0o1p2a3s4d5f6g7h8j9k0l1z2x3c4v5b6n7m8',
-  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || 'whsec_test_1234567890abcdefghijklmnopqrstuvwxyz123456',
+  STRIPE_SECRET_KEY:
+    process.env.STRIPE_SECRET_KEY ||
+    "sk_test_51P3Xr1Kj4X8Z1X2Q3w4e5r6t7y8u9i0o1p2a3s4d5f6g7h8j9k0l1z2x3c4v5b6n7m8",
+  STRIPE_PUBLISHABLE_KEY:
+    process.env.STRIPE_PUBLISHABLE_KEY ||
+    "pk_test_51P3Xr1Kj4X8Z1X2Q3w4e5r6t7y8u9i0o1p2a3s4d5f6g7h8j9k0l1z2x3c4v5b6n7m8",
+  STRIPE_WEBHOOK_SECRET:
+    process.env.STRIPE_WEBHOOK_SECRET ||
+    "whsec_test_1234567890abcdefghijklmnopqrstuvwxyz123456",
 
   // URLs
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
-  ADMIN_URL: process.env.ADMIN_URL || 'http://localhost:5173/admin',
-  API_URL: process.env.API_URL || 'http://localhost:3000',
-  DOCS_URL: process.env.DOCS_URL || 'http://localhost:3000/api-docs',
+  FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173",
+  ADMIN_URL: process.env.ADMIN_URL || "http://localhost:5173/admin",
+  API_URL: process.env.API_URL || "http://localhost:3000",
+  DOCS_URL: process.env.DOCS_URL || "http://localhost:3000/api-docs",
 
   // CORS
-  CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  CORS_ORIGIN: process.env.CORS_ORIGIN || "http://localhost:5173",
 
   // Rate Limiting
   rateLimit: {
@@ -54,26 +65,31 @@ const config = {
 
   // Logging
   logs: {
-    level: process.env.LOG_LEVEL || 'info',
-    file: process.env.LOG_FILE || 'logs/app.log',
+    level: process.env.LOG_LEVEL || "info",
+    file: process.env.LOG_FILE || "logs/app.log",
   },
-  
+
   // Database (legacy structure)
   db: {
-    url: process.env.DATABASE_URL || 'postgresql://postgres:Fkhouch8@localhost:5432/AccuBooks?sslmode=prefer&connect_timeout=10',
+    url:
+      process.env.DATABASE_URL ||
+      "postgresql://postgres:Fkhouch8@localhost:5432/AccuBooks?sslmode=prefer&connect_timeout=10",
   },
 
   // JWT (legacy structure)
   jwt: {
-    secret: process.env.JWT_SECRET || 'dev_jwt_secret_change_in_production_12345',
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'dev_refresh_secret_change_in_prod_12345',
-    expiresIn: process.env.JWT_EXPIRES_IN || '1d',
-    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+    secret:
+      process.env.JWT_SECRET || "dev_jwt_secret_change_in_production_12345",
+    refreshSecret:
+      process.env.JWT_REFRESH_SECRET ||
+      "dev_refresh_secret_change_in_prod_12345",
+    expiresIn: process.env.JWT_EXPIRES_IN || "1d",
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
   },
 
   // CORS (legacy structure)
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
   },
 
   // Rate limiting (legacy structure)
@@ -83,7 +99,7 @@ const config = {
   },
 
   // Frontend URL for email templates, etc.
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+  frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
 };
 
 // Export config with backward compatibility

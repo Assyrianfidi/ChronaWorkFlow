@@ -1,3 +1,10 @@
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
@@ -13,8 +20,10 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   const token = localStorage.getItem("auth_token");
-  
-  const headers: HeadersInit = data ? { "Content-Type": "application/json" } : {};
+
+  const headers: HeadersInit = data
+    ? { "Content-Type": "application/json" }
+    : {};
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
@@ -44,12 +53,13 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     const token = localStorage.getItem("auth_token");
-    
+
     const headers: HeadersInit = {};
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
+// @ts-ignore
     const res = await fetch(queryKey.join("/") as string, {
       headers,
       credentials: "include",

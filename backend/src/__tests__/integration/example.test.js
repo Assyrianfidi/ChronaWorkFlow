@@ -1,7 +1,7 @@
-const { createTestServer, TEST_CONFIG } = require('../test-utils');
-const request = require('supertest');
+const { createTestServer, TEST_CONFIG } = require("../test-utils");
+const request = require("supertest");
 
-describe('Example API', () => {
+describe("Example API", () => {
   let server;
   let app;
   let testAdmin;
@@ -12,7 +12,7 @@ describe('Example API', () => {
     const testServer = createTestServer();
     server = testServer.server;
     app = testServer.app;
-    
+
     // Store test users in global for easy access
     testAdmin = global.testAdmin;
     testUser = global.testUser;
@@ -20,19 +20,19 @@ describe('Example API', () => {
 
   afterAll(async () => {
     // Close the server after all tests
-    if (server && typeof server.close === 'function') {
-      await new Promise(resolve => server.close(resolve));
+    if (server && typeof server.close === "function") {
+      await new Promise((resolve) => server.close(resolve));
     }
   });
 
-  it('should return 200 for health check', async () => {
-    const response = await request(app).get('/health');
+  it("should return 200 for health check", async () => {
+    const response = await request(app).get("/health");
     expect(response.status).toBe(200);
-    expect(response.body.status).toBe('ok');
+    expect(response.body.status).toBe("ok");
   });
 
-  it('should return 404 for non-existent route', async () => {
-    const response = await request(app).get('/non-existent-route');
+  it("should return 404 for non-existent route", async () => {
+    const response = await request(app).get("/non-existent-route");
     expect(response.status).toBe(404);
     expect(response.body.success).toBe(false);
   });

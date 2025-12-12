@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
-import { CacheEngine } from './cacheEngine.js';
-import { CircuitBreakerRegistry } from './circuitBreaker.js';
-import { logger } from './logger.js';
-import { DatabaseMonitor } from './performanceMonitor.js';
-import { prisma } from '../server.js';
+import { Request, Response } from "express";
+import { CacheEngine } from "./cacheEngine.js";
+import { CircuitBreakerRegistry } from "./circuitBreaker.js";
+import { logger } from "./logger.js";
+import { DatabaseMonitor } from "./performanceMonitor.js";
+import { prisma } from "../server.js";
 
 /**
  * Comprehensive health check system
@@ -14,10 +14,10 @@ export class HealthChecker {
    */
   static async basicHealth(req: Request, res: Response): Promise<void> {
     const health = {
-      status: 'ok',
+      status: "ok",
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development',
-      version: process.env.npm_package_version || '1.0.0',
+      environment: process.env.NODE_ENV || "development",
+      version: process.env.npm_package_version || "1.0.0",
       uptime: process.uptime(),
       memory: process.memoryUsage(),
       cpu: process.cpuUsage(),
@@ -46,14 +46,16 @@ export class HealthChecker {
       diskSpace: this.getResult(checks[4]),
     };
 
-    const allHealthy = Object.values(results).every(r => r.status === 'healthy');
+    const allHealthy = Object.values(results).every(
+      (r) => r.status === "healthy",
+    );
     const statusCode = allHealthy ? 200 : 503;
 
     const health = {
-      status: allHealthy ? 'healthy' : 'unhealthy',
+      status: allHealthy ? "healthy" : "unhealthy",
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development',
-      version: process.env.npm_package_version || '1.0.0',
+      environment: process.env.NODE_ENV || "development",
+      version: process.env.npm_package_version || "1.0.0",
       uptime: process.uptime(),
       checks: results,
     };
@@ -68,21 +70,21 @@ export class HealthChecker {
     try {
       // Check critical dependencies
       await this.checkDatabase();
-      
+
       const ready = {
-        status: 'ready',
+        status: "ready",
         timestamp: new Date().toISOString(),
         checks: {
-          database: 'healthy',
+          database: "healthy",
         },
       };
 
       res.status(200).json(ready);
     } catch (error) {
       const notReady = {
-        status: 'not_ready',
+        status: "not_ready",
         timestamp: new Date().toISOString(),
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error instanceof Error ? error.message : "Unknown error",
       };
 
       res.status(503).json(notReady);
@@ -94,7 +96,7 @@ export class HealthChecker {
    */
   static async liveness(req: Request, res: Response): Promise<void> {
     const alive = {
-      status: 'alive',
+      status: "alive",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
     };
@@ -105,7 +107,11 @@ export class HealthChecker {
   /**
    * Check database connection
    */
-  static async checkDatabase(): Promise<{ status: string; latency?: number; error?: string }> {
+  static async checkDatabase(): Promise<{
+    status: string;
+    latency?: number;
+    error?: string;
+  }> {
     try {
       const start = Date.now();
       await prisma.$queryRaw`SELECT 1`;
@@ -113,17 +119,17 @@ export class HealthChecker {
 
       if (latency > 1000) {
         return {
-          status: 'degraded',
+          status: "degraded",
           latency,
           error: `High latency: ${latency}ms`,
         };
       }
 
-      return { status: 'healthy', latency };
+      return { status: "healthy", latency };
     } catch (error) {
       return {
-        status: 'unhealthy',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        status: "unhealthy",
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -133,18 +139,18 @@ export class HealthChecker {
    */
   static async checkCache(): Promise<{ status: string; error?: string }> {
     try {
-      await CacheEngine.set('health:check', 'ok', 10);
-      const value = await CacheEngine.get('health:check');
-      
-      if (value === 'ok') {
-        return { status: 'healthy' };
+      await CacheEngine.set("health:check", "ok", 10);
+      const value = await CacheEngine.get("health:check");
+
+      if (value === "ok") {
+        return { status: "healthy" };
       } else {
-        return { status: 'unhealthy', error: 'Cache value mismatch' };
+        return { status: "unhealthy", error: "Cache value mismatch" };
       }
     } catch (error) {
       return {
-        status: 'unhealthy',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        status: "unhealthy",
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -152,14 +158,17 @@ export class HealthChecker {
   /**
    * Check circuit breaker states
    */
-  static async checkCircuitBreakers(): Promise<{ status: string; breakers: any }> {
+  static async checkCircuitBreakers(): Promise<{
+    status: string;
+    breakers: any;
+  }> {
     const statuses = CircuitBreakerRegistry.getAllStatuses();
     const unhealthyBreakers = Object.entries(statuses)
-      .filter(([_, state]: [string, any]) => state.state === 'OPEN')
+      .filter(([_, state]: [string, any]) => state.state === "OPEN")
       .map(([name]) => name);
 
     return {
-      status: unhealthyBreakers.length > 0 ? 'degraded' : 'healthy',
+      status: unhealthyBreakers.length > 0 ? "degraded" : "healthy",
       breakers: statuses,
     };
   }
@@ -173,11 +182,11 @@ export class HealthChecker {
     const usedMemory = usage.heapUsed;
     const memoryUsagePercent = (usedMemory / totalMemory) * 100;
 
-    let status = 'healthy';
+    let status = "healthy";
     if (memoryUsagePercent > 90) {
-      status = 'unhealthy';
+      status = "unhealthy";
     } else if (memoryUsagePercent > 80) {
-      status = 'degraded';
+      status = "degraded";
     }
 
     return {
@@ -194,15 +203,15 @@ export class HealthChecker {
    */
   static async checkDiskSpace(): Promise<{ status: string; error?: string }> {
     try {
-      const fs = await import('fs/promises');
+      const fs = await import("fs/promises");
       const stats = await fs.stat(process.cwd());
-      
+
       // This is a simplified check - in production you'd want to check actual disk space
-      return { status: 'healthy' };
+      return { status: "healthy" };
     } catch (error) {
       return {
-        status: 'unhealthy',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        status: "unhealthy",
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -211,12 +220,15 @@ export class HealthChecker {
    * Extract result from PromiseSettled
    */
   static getResult(result: PromiseSettledResult<any>): any {
-    if (result.status === 'fulfilled') {
+    if (result.status === "fulfilled") {
       return result.value;
     } else {
       return {
-        status: 'unhealthy',
-        error: result.reason instanceof Error ? result.reason.message : 'Unknown error',
+        status: "unhealthy",
+        error:
+          result.reason instanceof Error
+            ? result.reason.message
+            : "Unknown error",
       };
     }
   }
@@ -230,22 +242,22 @@ export class MetricsCollector {
    * Get application metrics
    */
   static async getMetrics(): Promise<any> {
-    const [
-      dbStats,
-      circuitBreakerStats,
-      memoryStats,
-    ] = await Promise.allSettled([
-      DatabaseMonitor.getConnectionPoolStats(prisma),
-      Promise.resolve(CircuitBreakerRegistry.getAllStatuses()),
-      Promise.resolve(HealthChecker.checkMemory()),
-    ]);
+    const [dbStats, circuitBreakerStats, memoryStats] =
+      await Promise.allSettled([
+        DatabaseMonitor.getConnectionPoolStats(prisma),
+        Promise.resolve(CircuitBreakerRegistry.getAllStatuses()),
+        Promise.resolve(HealthChecker.checkMemory()),
+      ]);
 
     return {
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      memory: memoryStats.status === 'fulfilled' ? memoryStats.value : null,
-      database: dbStats.status === 'fulfilled' ? dbStats.value : null,
-      circuitBreakers: circuitBreakerStats.status === 'fulfilled' ? circuitBreakerStats.value : null,
+      memory: memoryStats.status === "fulfilled" ? memoryStats.value : null,
+      database: dbStats.status === "fulfilled" ? dbStats.value : null,
+      circuitBreakers:
+        circuitBreakerStats.status === "fulfilled"
+          ? circuitBreakerStats.value
+          : null,
       process: {
         pid: process.pid,
         version: process.version,
@@ -260,29 +272,29 @@ export class MetricsCollector {
    */
   static async prometheusMetrics(req: Request, res: Response): Promise<void> {
     const metrics = await this.getMetrics();
-    
+
     // Convert to Prometheus format
     const prometheusMetrics = [
       `# HELP accu_books_uptime_seconds Application uptime in seconds`,
       `# TYPE accu_books_uptime_seconds counter`,
       `accu_books_uptime_seconds ${metrics.uptime}`,
-      '',
+      "",
       `# HELP accu_books_memory_usage_bytes Memory usage in bytes`,
       `# TYPE accu_books_memory_usage_bytes gauge`,
       `accu_books_memory_usage_bytes{type="rss"} ${metrics.memory?.usage?.rss || 0}`,
       `accu_books_memory_usage_bytes{type="heapTotal"} ${metrics.memory?.usage?.heapTotal || 0}`,
       `accu_books_memory_usage_bytes{type="heapUsed"} ${metrics.memory?.usage?.heapUsed || 0}`,
       `accu_books_memory_usage_bytes{type="external"} ${metrics.memory?.usage?.external || 0}`,
-      '',
+      "",
       `# HELP accu_books_db_connections Database connection pool stats`,
       `# TYPE accu_books_db_connections gauge`,
       `accu_books_db_connections{state="total"} ${metrics.database?.totalConnections || 0}`,
       `accu_books_db_connections{state="active"} ${metrics.database?.activeConnections || 0}`,
       `accu_books_db_connections{state="idle"} ${metrics.database?.idleConnections || 0}`,
       `accu_books_db_connections{state="waiting"} ${metrics.database?.waitingClients || 0}`,
-    ].join('\n');
+    ].join("\n");
 
-    res.set('Content-Type', 'text/plain');
+    res.set("Content-Type", "text/plain");
     res.send(prometheusMetrics);
   }
 }

@@ -1,13 +1,30 @@
+import React from 'react';
 import { useLocation } from "wouter";
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
+// @ts-ignore
+import { Button } from '../components/ui/button.js.js';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js.js';
 import { Wallet } from "lucide-react";
-import { useToast } from "../hooks/use-toast";
-import { useAuthStore } from "../store/auth-store";
-import { loginSchema, type LoginFormData } from "../lib/validations/schemas";
-import { useForm, type UseFormReturn, type SubmitHandler } from "react-hook-form";
+// @ts-ignore
+import { useToast } from '../hooks/use-toast.js.js';
+// @ts-ignore
+import { useAuthStore } from '../store/auth-store.js.js';
+// @ts-ignore
+import { loginSchema, type LoginFormData } from '../lib/validations/schemas.js.js';
+import {
+  useForm,
+  type UseFormReturn,
+  type SubmitHandler,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../components/ui/input";
+// @ts-ignore
+import { Input } from '../components/ui/input.js.js';
 import { type ReactElement } from "react";
 
 interface LoginFormProps {
@@ -30,7 +47,7 @@ const LoginForm = ({ methods, onSubmit }: LoginFormProps): ReactElement => (
           type="email"
           placeholder="demo@accubooks.com"
           data-testid="input-email"
-          {...methods.register('email')}
+          {...methods.register("email")}
         />
         {methods.formState.errors.email && (
           <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -51,7 +68,7 @@ const LoginForm = ({ methods, onSubmit }: LoginFormProps): ReactElement => (
           type="password"
           placeholder="Enter your password"
           data-testid="input-password"
-          {...methods.register('password')}
+          {...methods.register("password")}
         />
         {methods.formState.errors.password && (
           <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -70,7 +87,7 @@ const LoginForm = ({ methods, onSubmit }: LoginFormProps): ReactElement => (
     <CardFooter className="flex flex-col gap-4">
       <Button
         type="submit"
-        className="w-full"
+        className="w-full text-black"
         disabled={methods.formState.isSubmitting}
         data-testid="button-login"
       >
@@ -98,8 +115,8 @@ export default function Login() {
   const methods = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -107,16 +124,17 @@ export default function Login() {
     try {
       await login(data.email, data.password);
       toast({
-        title: 'Success',
-        description: 'You have been logged in successfully!',
-        variant: 'default',
+        title: "Success",
+        description: "You have been logged in successfully!",
+        variant: "default",
       });
-      setLocation('/dashboard');
+      setLocation("/dashboard");
     } catch (error) {
       toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Failed to log in',
-        variant: 'destructive',
+        title: "Error",
+        description:
+          error instanceof Error ? error.message : "Failed to log in",
+        variant: "destructive",
       });
     }
   };

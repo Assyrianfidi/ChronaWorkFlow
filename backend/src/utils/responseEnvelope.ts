@@ -1,5 +1,5 @@
-import { Response } from 'express';
-import { config } from '../config/config.js';
+import { Response } from "express";
+import { config } from "../config/config.js";
 
 /**
  * Standard API response envelope
@@ -41,7 +41,7 @@ export const sendSuccess = <T>(
       hasPrev: boolean;
     };
     warnings?: string[];
-  }
+  },
 ): Response => {
   const response: ApiResponse<T> = {
     success: true,
@@ -49,7 +49,7 @@ export const sendSuccess = <T>(
     meta: {
       timestamp: new Date().toISOString(),
       requestId: meta?.requestId,
-      version: process.env.npm_package_version || '1.0.0',
+      version: process.env.npm_package_version || "1.0.0",
     },
   };
 
@@ -73,7 +73,7 @@ export const sendPaginatedResponse = <T>(
   page: number,
   limit: number,
   total: number,
-  requestId?: string
+  requestId?: string,
 ): Response => {
   const totalPages = Math.ceil(total / limit);
   const hasNext = page < totalPages;
@@ -98,7 +98,7 @@ export const sendPaginatedResponse = <T>(
 export const sendCreated = <T>(
   res: Response,
   data: T,
-  requestId?: string
+  requestId?: string,
 ): Response => {
   return sendSuccess(res, data, 201, { requestId });
 };
@@ -117,7 +117,7 @@ export const sendPartial = <T>(
   res: Response,
   data: T,
   requestId?: string,
-  warnings?: string[]
+  warnings?: string[],
 ): Response => {
   return sendSuccess(res, data, 206, { requestId, warnings });
 };

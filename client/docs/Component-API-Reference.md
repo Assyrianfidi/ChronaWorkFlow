@@ -1,6 +1,7 @@
 # AccuBooks Component API Reference
 
 ## Table of Contents
+
 1. [Core Components](#core-components)
 2. [Adaptive Components](#adaptive-components)
 3. [Interaction Components](#interaction-components)
@@ -15,6 +16,7 @@
 ### Authentication Components
 
 #### `LoginForm`
+
 ```tsx
 interface LoginFormProps {
   onSubmit: (credentials: LoginCredentials) => Promise<void>;
@@ -31,15 +33,13 @@ interface LoginCredentials {
 ```
 
 **Usage:**
+
 ```tsx
-<LoginForm 
-  onSubmit={handleLogin}
-  loading={isLoading}
-  error={errorMessage}
-/>
+<LoginForm onSubmit={handleLogin} loading={isLoading} error={errorMessage} />
 ```
 
 #### `AuthProvider`
+
 ```tsx
 interface AuthContextType {
   user: User | null;
@@ -55,12 +55,13 @@ interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'user' | 'viewer';
+  role: "admin" | "user" | "viewer";
   preferences: UserPreferences;
 }
 ```
 
 **Usage:**
+
 ```tsx
 const { user, login, logout } = useAuth();
 ```
@@ -68,6 +69,7 @@ const { user, login, logout } = useAuth();
 ### Layout Components
 
 #### `Layout`
+
 ```tsx
 interface LayoutProps {
   children: React.ReactNode;
@@ -79,6 +81,7 @@ interface LayoutProps {
 ```
 
 **Usage:**
+
 ```tsx
 <Layout sidebar={true}>
   <main>Main content</main>
@@ -86,12 +89,13 @@ interface LayoutProps {
 ```
 
 #### `Navigation`
+
 ```tsx
 interface NavigationProps {
   items: NavigationItem[];
   activeItem?: string;
   onItemClick?: (item: NavigationItem) => void;
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   className?: string;
 }
 
@@ -108,6 +112,7 @@ interface NavigationItem {
 ## Adaptive Components
 
 ### `AdaptiveLayoutEngine`
+
 ```tsx
 interface AdaptiveLayoutEngineProps {
   children: React.ReactNode;
@@ -124,6 +129,7 @@ interface BreakpointConfig {
 ```
 
 **Usage:**
+
 ```tsx
 <AdaptiveLayoutEngine>
   <App />
@@ -131,9 +137,10 @@ interface BreakpointConfig {
 ```
 
 ### `UserExperienceModeProvider`
+
 ```tsx
 interface UXModeContextType {
-  mode: 'normal' | 'focus' | 'immersive' | 'minimal';
+  mode: "normal" | "focus" | "immersive" | "minimal";
   setMode: (mode: UXMode) => void;
   preferences: UXPreferences;
   updatePreferences: (prefs: Partial<UXPreferences>) => void;
@@ -148,6 +155,7 @@ interface UXPreferences {
 ```
 
 **Usage:**
+
 ```tsx
 const { mode, setMode } = useUserExperienceMode();
 ```
@@ -155,6 +163,7 @@ const { mode, setMode } = useUserExperienceMode();
 ## Interaction Components
 
 ### `WorkflowManager`
+
 ```tsx
 interface WorkflowManagerProps {
   workflows: Workflow[];
@@ -175,21 +184,23 @@ interface Workflow {
 interface WorkflowStep {
   id: string;
   name: string;
-  type: 'action' | 'condition' | 'delay' | 'approval';
+  type: "action" | "condition" | "delay" | "approval";
   config: StepConfig;
   nextSteps?: string[];
 }
 ```
 
 **Usage:**
+
 ```tsx
-<WorkflowManager 
+<WorkflowManager
   workflows={availableWorkflows}
   onWorkflowStart={handleWorkflowStart}
 />
 ```
 
 ### `PredictiveAssistant`
+
 ```tsx
 interface PredictiveAssistantProps {
   enabled?: boolean;
@@ -202,22 +213,23 @@ interface AssistantContext {
   currentPage: string;
   userHistory: UserAction[];
   currentTask?: string;
-  timeOfDay: 'morning' | 'afternoon' | 'evening';
+  timeOfDay: "morning" | "afternoon" | "evening";
 }
 
 interface AssistantSuggestion {
   id: string;
-  type: 'action' | 'navigation' | 'information';
+  type: "action" | "navigation" | "information";
   title: string;
   description: string;
   action?: () => void;
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
 }
 ```
 
 **Usage:**
+
 ```tsx
-<PredictiveAssistant 
+<PredictiveAssistant
   enabled={true}
   context={assistantContext}
   onSuggestion={handleSuggestion}
@@ -227,6 +239,7 @@ interface AssistantSuggestion {
 ## Analytics Components
 
 ### `AnalyticsEngine`
+
 ```tsx
 interface AnalyticsEngineProps {
   children: React.ReactNode;
@@ -243,6 +256,7 @@ interface AnalyticsConfig {
 ```
 
 **Usage:**
+
 ```tsx
 <AnalyticsEngine trackingEnabled={true}>
   <App />
@@ -250,6 +264,7 @@ interface AnalyticsConfig {
 ```
 
 ### `DataVisualization`
+
 ```tsx
 interface DataVisualizationProps {
   data: any[];
@@ -259,7 +274,7 @@ interface DataVisualizationProps {
   className?: string;
 }
 
-type ChartType = 'line' | 'bar' | 'pie' | 'scatter' | 'heatmap';
+type ChartType = "line" | "bar" | "pie" | "scatter" | "heatmap";
 
 interface VisualizationConfig {
   title?: string;
@@ -272,8 +287,9 @@ interface VisualizationConfig {
 ```
 
 **Usage:**
+
 ```tsx
-<DataVisualization 
+<DataVisualization
   data={salesData}
   type="line"
   config={chartConfig}
@@ -282,6 +298,7 @@ interface VisualizationConfig {
 ```
 
 ### `BusinessIntelligence`
+
 ```tsx
 interface BusinessIntelligenceProps {
   dashboards: Dashboard[];
@@ -300,7 +317,7 @@ interface Dashboard {
 
 interface Widget {
   id: string;
-  type: 'chart' | 'metric' | 'table' | 'text';
+  type: "chart" | "metric" | "table" | "text";
   title: string;
   dataSource: string;
   config: WidgetConfig;
@@ -308,8 +325,9 @@ interface Widget {
 ```
 
 **Usage:**
+
 ```tsx
-<BusinessIntelligence 
+<BusinessIntelligence
   dashboards={dashboards}
   activeDashboard={currentDashboard}
 />
@@ -318,6 +336,7 @@ interface Widget {
 ## Automation Components
 
 ### `AutomationEngine`
+
 ```tsx
 interface AutomationEngineProps {
   children: React.ReactNode;
@@ -337,6 +356,7 @@ interface AutomationRule {
 ```
 
 **Usage:**
+
 ```tsx
 <AutomationEngine rules={automationRules}>
   <App />
@@ -344,6 +364,7 @@ interface AutomationRule {
 ```
 
 ### `SmartWorkflow`
+
 ```tsx
 interface SmartWorkflowProps {
   workflow: Workflow;
@@ -354,14 +375,13 @@ interface SmartWorkflowProps {
 ```
 
 **Usage:**
+
 ```tsx
-<SmartWorkflow 
-  workflow={currentWorkflow}
-  onStepComplete={handleStepComplete}
-/>
+<SmartWorkflow workflow={currentWorkflow} onStepComplete={handleStepComplete} />
 ```
 
 ### `IntelligentScheduler`
+
 ```tsx
 interface IntelligentSchedulerProps {
   tasks: ScheduledTask[];
@@ -375,13 +395,14 @@ interface ScheduledTask {
   name: string;
   schedule: ScheduleConfig;
   action: () => Promise<any>;
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
 }
 ```
 
 **Usage:**
+
 ```tsx
-<IntelligentScheduler 
+<IntelligentScheduler
   tasks={scheduledTasks}
   onTaskExecute={handleTaskExecution}
 />
@@ -390,6 +411,7 @@ interface ScheduledTask {
 ## Integration Components
 
 ### `EnterpriseAPIGateway`
+
 ```tsx
 interface EnterpriseAPIGatewayProps {
   children: React.ReactNode;
@@ -408,6 +430,7 @@ interface GatewayConfig {
 ```
 
 **Usage:**
+
 ```tsx
 <EnterpriseAPIGateway config={gatewayConfig}>
   <App />
@@ -415,6 +438,7 @@ interface GatewayConfig {
 ```
 
 ### `GraphQLServer`
+
 ```tsx
 interface GraphQLServerProps {
   children: React.ReactNode;
@@ -426,16 +450,15 @@ interface GraphQLServerProps {
 ```
 
 **Usage:**
+
 ```tsx
-<GraphQLServer 
-  endpoint="/graphql"
-  onQuery={handleQuery}
->
+<GraphQLServer endpoint="/graphql" onQuery={handleQuery}>
   <App />
 </GraphQLServer>
 ```
 
 ### `ThirdPartyIntegrations`
+
 ```tsx
 interface ThirdPartyIntegrationsProps {
   children: React.ReactNode;
@@ -447,15 +470,16 @@ interface ThirdPartyIntegrationsProps {
 interface Integration {
   id: string;
   name: string;
-  type: 'oauth' | 'api-key' | 'webhook';
+  type: "oauth" | "api-key" | "webhook";
   config: IntegrationConfig;
-  status: 'connected' | 'disconnected' | 'error';
+  status: "connected" | "disconnected" | "error";
 }
 ```
 
 **Usage:**
+
 ```tsx
-<ThirdPartyIntegrations 
+<ThirdPartyIntegrations
   integrations={availableIntegrations}
   onIntegrationConnect={handleConnection}
 >
@@ -464,6 +488,7 @@ interface Integration {
 ```
 
 ### `WebhookManager`
+
 ```tsx
 interface WebhookManagerProps {
   children: React.ReactNode;
@@ -483,8 +508,9 @@ interface Webhook {
 ```
 
 **Usage:**
+
 ```tsx
-<WebhookManager 
+<WebhookManager
   webhooks={configuredWebhooks}
   onWebhookTrigger={handleWebhookTrigger}
 >
@@ -495,6 +521,7 @@ interface Webhook {
 ## Accessibility Components
 
 ### `VoiceCommandEngine`
+
 ```tsx
 interface VoiceCommandEngineProps {
   children: React.ReactNode;
@@ -513,6 +540,7 @@ interface VoiceCommand {
 ```
 
 **Usage:**
+
 ```tsx
 <VoiceCommandEngine commands={voiceCommands}>
   <App />
@@ -520,6 +548,7 @@ interface VoiceCommand {
 ```
 
 ### `ScreenReaderEnhancements`
+
 ```tsx
 interface ScreenReaderEnhancementsProps {
   children: React.ReactNode;
@@ -537,6 +566,7 @@ interface ScreenReaderSettings {
 ```
 
 **Usage:**
+
 ```tsx
 <ScreenReaderEnhancements settings={screenReaderSettings}>
   <App />
@@ -544,6 +574,7 @@ interface ScreenReaderSettings {
 ```
 
 ### `VisualModeEngine`
+
 ```tsx
 interface VisualModeEngineProps {
   children: React.ReactNode;
@@ -554,12 +585,13 @@ interface VisualModeEngineProps {
 interface VisualMode {
   id: string;
   name: string;
-  type: 'high-contrast' | 'colorblind' | 'dyslexia' | 'low-vision';
+  type: "high-contrast" | "colorblind" | "dyslexia" | "low-vision";
   settings: VisualModeSettings;
 }
 ```
 
 **Usage:**
+
 ```tsx
 <VisualModeEngine mode={currentMode}>
   <App />
@@ -567,6 +599,7 @@ interface VisualMode {
 ```
 
 ### `RealTimeAccessibilityMonitor`
+
 ```tsx
 interface RealTimeAccessibilityMonitorProps {
   children: React.ReactNode;
@@ -585,8 +618,9 @@ interface AccessibilityRule {
 ```
 
 **Usage:**
+
 ```tsx
-<RealTimeAccessibilityMonitor 
+<RealTimeAccessibilityMonitor
   rules={accessibilityRules}
   onViolation={handleViolation}
 >
@@ -599,6 +633,7 @@ interface AccessibilityRule {
 ### Chart Components
 
 #### `ChartContainer`
+
 ```tsx
 interface ChartContainerProps {
   children: React.ReactNode;
@@ -615,6 +650,7 @@ interface ChartConfig {
 ```
 
 #### `ChartTooltip`
+
 ```tsx
 interface ChartTooltipProps {
   active?: boolean;
@@ -626,6 +662,7 @@ interface ChartTooltipProps {
 ```
 
 #### `ChartLegend`
+
 ```tsx
 interface ChartLegendProps {
   payload?: any[];
@@ -638,11 +675,12 @@ interface ChartLegendProps {
 ### Form Components
 
 #### `FormField`
+
 ```tsx
 interface FormFieldProps {
   label: string;
   name: string;
-  type?: 'text' | 'email' | 'password' | 'number';
+  type?: "text" | "email" | "password" | "number";
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
@@ -653,6 +691,7 @@ interface FormFieldProps {
 ```
 
 #### `FormSelect`
+
 ```tsx
 interface FormSelectProps {
   label: string;
@@ -675,6 +714,7 @@ interface SelectOption {
 ### Table Components
 
 #### `DataTable`
+
 ```tsx
 interface DataTableProps<T> {
   data: T[];
@@ -698,24 +738,26 @@ interface TableColumn<T> {
 ### Modal Components
 
 #### `Modal`
+
 ```tsx
 interface ModalProps {
   open: boolean;
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  size?: 'small' | 'medium' | 'large' | 'fullscreen';
+  size?: "small" | "medium" | "large" | "fullscreen";
   closable?: boolean;
   className?: string;
 }
 ```
 
 #### `Drawer`
+
 ```tsx
 interface DrawerProps {
   open: boolean;
   onClose: () => void;
-  placement?: 'left' | 'right' | 'top' | 'bottom';
+  placement?: "left" | "right" | "top" | "bottom";
   children: React.ReactNode;
   width?: number | string;
   height?: number | string;
@@ -728,6 +770,7 @@ interface DrawerProps {
 ### Custom Hooks
 
 #### `useAuth`
+
 ```tsx
 const useAuth = (): AuthContextType => {
   // Returns authentication context
@@ -735,6 +778,7 @@ const useAuth = (): AuthContextType => {
 ```
 
 #### `useTheme`
+
 ```tsx
 const useTheme = (): ThemeContextType => {
   // Returns theme context
@@ -742,6 +786,7 @@ const useTheme = (): ThemeContextType => {
 ```
 
 #### `useAccessibility`
+
 ```tsx
 const useAccessibility = (): AccessibilityContextType => {
   // Returns accessibility context
@@ -749,6 +794,7 @@ const useAccessibility = (): AccessibilityContextType => {
 ```
 
 #### `useVoiceCommands`
+
 ```tsx
 const useVoiceCommands = (): VoiceCommandContextType => {
   // Returns voice command context
@@ -756,6 +802,7 @@ const useVoiceCommands = (): VoiceCommandContextType => {
 ```
 
 #### `useAnalytics`
+
 ```tsx
 const useAnalytics = (): AnalyticsContextType => {
   // Returns analytics context
@@ -763,6 +810,7 @@ const useAnalytics = (): AnalyticsContextType => {
 ```
 
 #### `useWorkflow`
+
 ```tsx
 const useWorkflow = (): WorkflowContextType => {
   // Returns workflow context
@@ -772,6 +820,7 @@ const useWorkflow = (): WorkflowContextType => {
 ## Utility Functions
 
 ### Validation
+
 ```tsx
 // Email validation
 const validateEmail = (email: string): boolean;
@@ -784,6 +833,7 @@ const validateForm = (data: FormData, schema: ValidationSchema): ValidationResul
 ```
 
 ### Formatting
+
 ```tsx
 // Currency formatting
 const formatCurrency = (amount: number, currency: string): string;
@@ -796,6 +846,7 @@ const formatNumber = (number: number, options: NumberFormatOptions): string;
 ```
 
 ### API Utilities
+
 ```tsx
 // API request helper
 const apiRequest = async <T>(endpoint: string, options?: RequestOptions): Promise<T>;
@@ -810,6 +861,7 @@ const transformResponse = <T, U>(data: T, transformer: (data: T) => U): U;
 ## Type Definitions
 
 ### Common Types
+
 ```tsx
 // API Response
 interface ApiResponse<T = any> {
@@ -829,23 +881,24 @@ interface PaginationConfig {
 // Sorting
 interface SortingConfig {
   key: string;
-  direction: 'asc' | 'desc';
+  direction: "asc" | "desc";
 }
 
 // Filtering
 interface FilteringConfig {
   filters: Filter[];
-  operator: 'and' | 'or';
+  operator: "and" | "or";
 }
 
 interface Filter {
   field: string;
-  operator: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'contains';
+  operator: "eq" | "ne" | "gt" | "gte" | "lt" | "lte" | "contains";
   value: any;
 }
 ```
 
 ### Component Props
+
 ```tsx
 // Common props
 interface BaseComponentProps {
@@ -873,6 +926,7 @@ interface InteractiveComponentProps extends BaseComponentProps {
 ## Best Practices
 
 ### Component Design
+
 1. **Single Responsibility**: Each component should have one clear purpose
 2. **Composition over Inheritance**: Favor composition patterns
 3. **Props Interface**: Always define clear prop interfaces
@@ -880,6 +934,7 @@ interface InteractiveComponentProps extends BaseComponentProps {
 5. **Error Boundaries**: Wrap components in error boundaries
 
 ### Performance
+
 1. **React.memo**: Use for expensive components
 2. **useMemo**: Cache expensive calculations
 3. **useCallback**: Stable function references
@@ -887,6 +942,7 @@ interface InteractiveComponentProps extends BaseComponentProps {
 5. **Virtualization**: For large lists/tables
 
 ### Accessibility
+
 1. **Semantic HTML**: Use appropriate HTML elements
 2. **ARIA Attributes**: Provide proper ARIA markup
 3. **Keyboard Navigation**: Ensure all interactions work via keyboard
@@ -894,6 +950,7 @@ interface InteractiveComponentProps extends BaseComponentProps {
 5. **Color Contrast**: Maintain sufficient contrast ratios
 
 ### Testing
+
 1. **Unit Tests**: Test component logic
 2. **Integration Tests**: Test component interactions
 3. **Accessibility Tests**: Test a11y features
@@ -903,6 +960,7 @@ interface InteractiveComponentProps extends BaseComponentProps {
 ## Migration Guide
 
 ### From Legacy Components
+
 1. **Identify Dependencies**: Map current component usage
 2. **Create Wrapper**: Build wrapper components for gradual migration
 3. **Update Props**: Adjust prop interfaces as needed
@@ -910,6 +968,7 @@ interface InteractiveComponentProps extends BaseComponentProps {
 5. **Remove Legacy**: Clean up old components
 
 ### Breaking Changes
+
 1. **Version Bump**: Update package version
 2. **Changelog**: Document breaking changes
 3. **Migration Guide**: Provide upgrade instructions

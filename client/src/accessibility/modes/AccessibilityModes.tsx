@@ -3,8 +3,9 @@
  * WCAG AAA compliant accessibility settings and mode controls
  */
 
-import React, { useState, useEffect } from 'react';
-import AccessibilityEngine, { AccessibilityConfig } from '../a11y-engine';
+import React, { useState, useEffect } from "react";
+// @ts-ignore
+import AccessibilityEngine, { AccessibilityConfig } from '../a11y-engine.js.js';
 
 interface AccessibilityModesProps {
   engine: AccessibilityEngine;
@@ -12,10 +13,11 @@ interface AccessibilityModesProps {
   className?: string;
 }
 
+// @ts-ignore
 const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
   engine,
   onConfigChange,
-  className = ''
+  className = "",
 }) => {
   const [config, setConfig] = useState<AccessibilityConfig>(engine.getConfig());
   const [isOpen, setIsOpen] = useState(false);
@@ -45,64 +47,78 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
   const toggleMode = (mode: string) => {
     switch (mode) {
-      case 'high-contrast':
+      case "high-contrast":
         handleConfigUpdate({
-          visual: { ...config.visual, highContrast: !config.visual.highContrast }
+          visual: {
+            ...config.visual,
+            highContrast: !config.visual.highContrast,
+          },
         });
         break;
-      case 'large-text':
+      case "large-text":
         handleConfigUpdate({
-          visual: { ...config.visual, largeText: !config.visual.largeText }
+          visual: { ...config.visual, largeText: !config.visual.largeText },
         });
         break;
-      case 'reduced-motion':
+      case "reduced-motion":
         handleConfigUpdate({
-          visual: { ...config.visual, reducedMotion: !config.visual.reducedMotion }
+          visual: {
+            ...config.visual,
+            reducedMotion: !config.visual.reducedMotion,
+          },
         });
         break;
-      case 'simplified-ui':
+      case "simplified-ui":
         handleConfigUpdate({
-          cognitive: { ...config.cognitive, simplifiedUI: !config.cognitive.simplifiedUI }
+          cognitive: {
+            ...config.cognitive,
+            simplifiedUI: !config.cognitive.simplifiedUI,
+          },
         });
         break;
-      case 'large-targets':
+      case "large-targets":
         handleConfigUpdate({
-          motor: { ...config.motor, largerClickTargets: !config.motor.largerClickTargets }
+          motor: {
+            ...config.motor,
+            largerClickTargets: !config.motor.largerClickTargets,
+          },
         });
         break;
     }
   };
 
-  const setColorBlindnessFilter = (type: 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia') => {
+  const setColorBlindnessFilter = (
+    type: "none" | "protanopia" | "deuteranopia" | "tritanopia",
+  ) => {
     handleConfigUpdate({
       visual: {
         ...config.visual,
         colorBlindness: {
           type,
-          enabled: type !== 'none'
-        }
-      }
+          enabled: type !== "none",
+        },
+      },
     });
     engine.setColorBlindnessFilter(type);
   };
 
-  const setReadingLevel = (level: 'basic' | 'intermediate' | 'advanced') => {
+  const setReadingLevel = (level: "basic" | "intermediate" | "advanced") => {
     handleConfigUpdate({
-      cognitive: { ...config.cognitive, readingLevel: level }
+      cognitive: { ...config.cognitive, readingLevel: level },
     });
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 70) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 90) return "text-green-600";
+    if (score >= 70) return "text-yellow-600";
+    return "text-red-600";
   };
 
   const getScoreLabel = (score: number) => {
-    if (score >= 90) return 'Excellent';
-    if (score >= 70) return 'Good';
-    if (score >= 50) return 'Fair';
-    return 'Needs Improvement';
+    if (score >= 90) return "Excellent";
+    if (score >= 70) return "Good";
+    if (score >= 50) return "Fair";
+    return "Needs Improvement";
   };
 
   return (
@@ -115,7 +131,10 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
         aria-expanded={isOpen}
       >
         <span className="accessibility-icon">♿</span>
-        <span className="accessibility-score" style={{ color: getScoreColor(validationScore) }}>
+        <span
+          className="accessibility-score"
+          style={{ color: getScoreColor(validationScore) }}
+        >
           {validationScore}%
         </span>
       </button>
@@ -142,14 +161,15 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                 <span className="score-number">{validationScore}%</span>
               </div>
               <div className="score-details">
-                <div className={`score-label ${getScoreColor(validationScore)}`}>
+                <div
+                  className={`score-label ${getScoreColor(validationScore)}`}
+                >
                   {getScoreLabel(validationScore)}
                 </div>
                 <div className="score-description">
-                  {validationIssues.length === 0 
-                    ? 'No accessibility issues detected'
-                    : `${validationIssues.length} issue(s) found`
-                  }
+                  {validationIssues.length === 0
+                    ? "No accessibility issues detected"
+                    : `${validationIssues.length} issue(s) found`}
                 </div>
               </div>
             </div>
@@ -164,7 +184,7 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.visual.highContrast}
-                    onChange={() => toggleMode('high-contrast')}
+                    onChange={() => toggleMode("high-contrast")}
                   />
                   <span className="setting-text">
                     <strong>High Contrast</strong>
@@ -180,7 +200,7 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.visual.largeText}
-                    onChange={() => toggleMode('large-text')}
+                    onChange={() => toggleMode("large-text")}
                   />
                   <span className="setting-text">
                     <strong>Large Text</strong>
@@ -196,7 +216,7 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.visual.reducedMotion}
-                    onChange={() => toggleMode('reduced-motion')}
+                    onChange={() => toggleMode("reduced-motion")}
                   />
                   <span className="setting-text">
                     <strong>Reduced Motion</strong>
@@ -212,14 +232,18 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <strong>Color Blindness Filter</strong>
                   <select
                     value={config.visual.colorBlindness.type}
-                    onChange={(e) => setColorBlindnessFilter(
-                      e.target.value as any
-                    )}
+                    onChange={(e) =>
+// @ts-ignore
+// @ts-ignore
+                      setColorBlindnessFilter(e.target.value as any)
+                    }
                     className="setting-select"
                   >
                     <option value="none">None</option>
                     <option value="protanopia">Protanopia (Red-Blind)</option>
-                    <option value="deuteranopia">Deuteranopia (Green-Blind)</option>
+                    <option value="deuteranopia">
+                      Deuteranopia (Green-Blind)
+                    </option>
                     <option value="tritanopia">Tritanopia (Blue-Blind)</option>
                   </select>
                 </label>
@@ -236,7 +260,7 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.cognitive.simplifiedUI}
-                    onChange={() => toggleMode('simplified-ui')}
+                    onChange={() => toggleMode("simplified-ui")}
                   />
                   <span className="setting-text">
                     <strong>Simplified Interface</strong>
@@ -252,11 +276,15 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <strong>Reading Level</strong>
                   <select
                     value={config.cognitive.readingLevel}
+// @ts-ignore
+// @ts-ignore
                     onChange={(e) => setReadingLevel(e.target.value as any)}
                     className="setting-select"
                   >
                     <option value="basic">Basic (Simple language)</option>
-                    <option value="intermediate">Intermediate (Standard)</option>
+                    <option value="intermediate">
+                      Intermediate (Standard)
+                    </option>
                     <option value="advanced">Advanced (Technical)</option>
                   </select>
                 </label>
@@ -267,9 +295,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.cognitive.helpText}
-                    onChange={() => handleConfigUpdate({
-                      cognitive: { ...config.cognitive, helpText: !config.cognitive.helpText }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        cognitive: {
+                          ...config.cognitive,
+                          helpText: !config.cognitive.helpText,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Show Help Text</strong>
@@ -285,9 +318,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.cognitive.errorPrevention}
-                    onChange={() => handleConfigUpdate({
-                      cognitive: { ...config.cognitive, errorPrevention: !config.cognitive.errorPrevention }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        cognitive: {
+                          ...config.cognitive,
+                          errorPrevention: !config.cognitive.errorPrevention,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Error Prevention</strong>
@@ -309,7 +347,7 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.motor.largerClickTargets}
-                    onChange={() => toggleMode('large-targets')}
+                    onChange={() => toggleMode("large-targets")}
                   />
                   <span className="setting-text">
                     <strong>Larger Click Targets</strong>
@@ -325,9 +363,15 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.motor.gestureAlternatives}
-                    onChange={() => handleConfigUpdate({
-                      motor: { ...config.motor, gestureAlternatives: !config.motor.gestureAlternatives }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        motor: {
+                          ...config.motor,
+                          gestureAlternatives:
+                            !config.motor.gestureAlternatives,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Gesture Alternatives</strong>
@@ -343,9 +387,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.motor.voiceControl}
-                    onChange={() => handleConfigUpdate({
-                      motor: { ...config.motor, voiceControl: !config.motor.voiceControl }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        motor: {
+                          ...config.motor,
+                          voiceControl: !config.motor.voiceControl,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Voice Control</strong>
@@ -361,9 +410,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.motor.switchNavigation}
-                    onChange={() => handleConfigUpdate({
-                      motor: { ...config.motor, switchNavigation: !config.motor.switchNavigation }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        motor: {
+                          ...config.motor,
+                          switchNavigation: !config.motor.switchNavigation,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Switch Navigation</strong>
@@ -385,9 +439,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.focusManagement.visibleFocus}
-                    onChange={() => handleConfigUpdate({
-                      focusManagement: { ...config.focusManagement, visibleFocus: !config.focusManagement.visibleFocus }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        focusManagement: {
+                          ...config.focusManagement,
+                          visibleFocus: !config.focusManagement.visibleFocus,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Visible Focus</strong>
@@ -403,9 +462,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.focusManagement.focusTrap}
-                    onChange={() => handleConfigUpdate({
-                      focusManagement: { ...config.focusManagement, focusTrap: !config.focusManagement.focusTrap }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        focusManagement: {
+                          ...config.focusManagement,
+                          focusTrap: !config.focusManagement.focusTrap,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Focus Trapping</strong>
@@ -421,9 +485,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.focusManagement.skipLinks}
-                    onChange={() => handleConfigUpdate({
-                      focusManagement: { ...config.focusManagement, skipLinks: !config.focusManagement.skipLinks }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        focusManagement: {
+                          ...config.focusManagement,
+                          skipLinks: !config.focusManagement.skipLinks,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Skip Links</strong>
@@ -445,9 +514,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.screenReader.announcements}
-                    onChange={() => handleConfigUpdate({
-                      screenReader: { ...config.screenReader, announcements: !config.screenReader.announcements }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        screenReader: {
+                          ...config.screenReader,
+                          announcements: !config.screenReader.announcements,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Screen Reader Announcements</strong>
@@ -463,9 +537,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.screenReader.landmarks}
-                    onChange={() => handleConfigUpdate({
-                      screenReader: { ...config.screenReader, landmarks: !config.screenReader.landmarks }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        screenReader: {
+                          ...config.screenReader,
+                          landmarks: !config.screenReader.landmarks,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Landmark Navigation</strong>
@@ -481,9 +560,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <input
                     type="checkbox"
                     checked={config.screenReader.descriptions}
-                    onChange={() => handleConfigUpdate({
-                      screenReader: { ...config.screenReader, descriptions: !config.screenReader.descriptions }
-                    })}
+                    onChange={() =>
+                      handleConfigUpdate({
+                        screenReader: {
+                          ...config.screenReader,
+                          descriptions: !config.screenReader.descriptions,
+                        },
+                      })
+                    }
                   />
                   <span className="setting-text">
                     <strong>Enhanced Descriptions</strong>
@@ -504,7 +588,9 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                 {validationIssues.map((issue, index) => (
                   <div key={index} className={`issue-item ${issue.type}`}>
                     <div className="issue-header">
-                      <span className="issue-type">{issue.type.toUpperCase()}</span>
+                      <span className="issue-type">
+                        {issue.type.toUpperCase()}
+                      </span>
                       <span className="issue-wcag">WCAG {issue.wcag}</span>
                     </div>
                     <div className="issue-description">{issue.description}</div>

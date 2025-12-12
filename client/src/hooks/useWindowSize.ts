@@ -1,4 +1,11 @@
-import { useState, useEffect } from 'react';
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import { useState, useEffect } from "react";
 
 interface WindowSize {
   width: number;
@@ -7,12 +14,12 @@ interface WindowSize {
 
 export function useWindowSize(): WindowSize {
   const [windowSize, setWindowSize] = useState<WindowSize>({
-    width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+    height: typeof window !== "undefined" ? window.innerHeight : 0,
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     const handleResize = () => {
       setWindowSize({
@@ -21,10 +28,10 @@ export function useWindowSize(): WindowSize {
       });
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     handleResize(); // Call initially to set size
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return windowSize;

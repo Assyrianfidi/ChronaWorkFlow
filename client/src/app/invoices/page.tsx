@@ -1,98 +1,122 @@
-'use client';
+import React from 'react';
+"use client";
 
-import { MainLayout } from '../components/layout/MainLayout';
-import { EnterpriseDataTable, type Column } from '../components/ui/EnterpriseDataTable';
-import { EnterpriseButton } from '../components/ui/EnterpriseButton';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { 
-  FileText, 
-  Plus, 
-  Download, 
-  Send, 
-  Edit, 
-  Eye, 
+import { MainLayout } from '../components/layout/MainLayout.js';
+import {
+  EnterpriseDataTable,
+  type Column,
+} from '../components/ui/EnterpriseDataTable.js';
+import { EnterpriseButton } from '../components/ui/EnterpriseButton.js';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js';
+import {
+  FileText,
+  Plus,
+  Download,
+  Send,
+  Edit,
+  Eye,
   CreditCard,
   Calendar,
   DollarSign,
   User,
-  AlertCircle
-} from 'lucide-react';
-import { useState } from 'react';
+  AlertCircle,
+} from "lucide-react";
+import { useState } from "react";
 
 // Mock data
 const invoicesData = [
-  { 
-    id: "INV-001", 
-    customer: "ABC Corporation", 
-    amount: "$2,500.00", 
-    status: "Paid", 
+  {
+    id: "INV-001",
+    customer: "ABC Corporation",
+    amount: "$2,500.00",
+    status: "Paid",
     dueDate: "2024-01-15",
     issueDate: "2024-01-01",
     items: [
-      { description: "Consulting Services", quantity: 40, rate: 50, total: 2000 },
-      { description: "Additional Support", quantity: 5, rate: 100, total: 500 }
+      {
+        description: "Consulting Services",
+        quantity: 40,
+        rate: 50,
+        total: 2000,
+      },
+      { description: "Additional Support", quantity: 5, rate: 100, total: 500 },
     ],
     subtotal: 2500,
     tax: 250,
-    total: 2750
+    total: 2750,
   },
-  { 
-    id: "INV-002", 
-    customer: "XYZ Industries", 
-    amount: "$1,800.00", 
-    status: "Pending", 
+  {
+    id: "INV-002",
+    customer: "XYZ Industries",
+    amount: "$1,800.00",
+    status: "Pending",
     dueDate: "2024-01-20",
     issueDate: "2024-01-05",
     items: [
       { description: "Software License", quantity: 1, rate: 1500, total: 1500 },
-      { description: "Support Package", quantity: 1, rate: 300, total: 300 }
+      { description: "Support Package", quantity: 1, rate: 300, total: 300 },
     ],
     subtotal: 1800,
     tax: 180,
-    total: 1980
+    total: 1980,
   },
-  { 
-    id: "INV-003", 
-    customer: "Global Tech Ltd", 
-    amount: "$3,200.00", 
-    status: "Paid", 
+  {
+    id: "INV-003",
+    customer: "Global Tech Ltd",
+    amount: "$3,200.00",
+    status: "Paid",
     dueDate: "2024-01-10",
     issueDate: "2024-01-02",
     items: [
-      { description: "Development Services", quantity: 80, rate: 40, total: 3200 }
+      {
+        description: "Development Services",
+        quantity: 80,
+        rate: 40,
+        total: 3200,
+      },
     ],
     subtotal: 3200,
     tax: 320,
-    total: 3520
+    total: 3520,
   },
-  { 
-    id: "INV-004", 
-    customer: "StartUp Inc", 
-    amount: "$950.00", 
-    status: "Overdue", 
+  {
+    id: "INV-004",
+    customer: "StartUp Inc",
+    amount: "$950.00",
+    status: "Overdue",
     dueDate: "2024-01-08",
     issueDate: "2023-12-25",
     items: [
-      { description: "Design Services", quantity: 10, rate: 95, total: 950 }
+      { description: "Design Services", quantity: 10, rate: 95, total: 950 },
     ],
     subtotal: 950,
     tax: 95,
-    total: 1045
+    total: 1045,
   },
-  { 
-    id: "INV-005", 
-    customer: "Enterprise Co", 
-    amount: "$5,100.00", 
-    status: "Sent", 
+  {
+    id: "INV-005",
+    customer: "Enterprise Co",
+    amount: "$5,100.00",
+    status: "Sent",
     dueDate: "2024-01-25",
     issueDate: "2024-01-10",
     items: [
-      { description: "Enterprise Package", quantity: 1, rate: 5000, total: 5000 },
-      { description: "Setup Fee", quantity: 1, rate: 100, total: 100 }
+      {
+        description: "Enterprise Package",
+        quantity: 1,
+        rate: 5000,
+        total: 5000,
+      },
+      { description: "Setup Fee", quantity: 1, rate: 100, total: 100 },
     ],
     subtotal: 5100,
     tax: 510,
-    total: 5610
+    total: 5610,
   },
 ];
 
@@ -102,7 +126,7 @@ export default function InvoicesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-  const invoiceColumns: Column<typeof invoicesData[0]>[] = [
+  const invoiceColumns: Column<(typeof invoicesData)[0]>[] = [
     {
       key: "id",
       title: "Invoice ID",
@@ -112,9 +136,11 @@ export default function InvoicesPage() {
       render: (value) => (
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4 text-gray-400" />
-          <span className="font-mono text-sm font-medium text-primary">{value}</span>
+          <span className="font-mono text-sm font-medium text-primary">
+            {value}
+          </span>
         </div>
-      )
+      ),
     },
     {
       key: "customer",
@@ -126,7 +152,7 @@ export default function InvoicesPage() {
           <User className="h-4 w-4 text-gray-400" />
           <div className="font-medium">{value}</div>
         </div>
-      )
+      ),
     },
     {
       key: "amount",
@@ -137,7 +163,7 @@ export default function InvoicesPage() {
           <DollarSign className="h-4 w-4" />
           {value}
         </div>
-      )
+      ),
     },
     {
       key: "status",
@@ -150,14 +176,17 @@ export default function InvoicesPage() {
           Pending: "bg-yellow-100 text-yellow-800",
           Overdue: "bg-red-100 text-red-800",
           Sent: "bg-blue-100 text-blue-800",
-          Draft: "bg-gray-100 text-gray-800"
+          Draft: "bg-gray-100 text-gray-800",
         };
         return (
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[value as keyof typeof statusColors]}`}>
+          <span
+// @ts-ignore
+            className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[value as keyof typeof statusColors]}`}
+          >
             {value}
           </span>
         );
-      }
+      },
     },
     {
       key: "dueDate",
@@ -171,12 +200,14 @@ export default function InvoicesPage() {
             <Calendar className="h-4 w-4 text-gray-400" />
             <span className={isOverdue ? "text-danger font-medium" : ""}>
               {value}
-              {isOverdue && <AlertCircle className="h-3 w-3 ml-1 text-danger" />}
+              {isOverdue && (
+                <AlertCircle className="h-3 w-3 ml-1 text-danger" />
+              )}
             </span>
           </div>
         );
-      }
-    }
+      },
+    },
   ];
 
   const handleSendInvoice = (invoice: any) => {
@@ -265,23 +296,40 @@ export default function InvoicesPage() {
                   {/* Invoice Header */}
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <h3 className="font-semibold text-primary mb-2">Bill To</h3>
-                      <p className="text-gray-700">{selectedInvoice.customer}</p>
+                      <h3 className="font-semibold text-primary mb-2">
+                        Bill To
+                      </h3>
+                      <p className="text-gray-700">
+                        {selectedInvoice.customer}
+                      </p>
                       <p className="text-sm text-gray-500">Customer Address</p>
                       <p className="text-sm text-gray-500">City, State ZIP</p>
                     </div>
                     <div className="text-right">
-                      <h3 className="font-semibold text-primary mb-2">Invoice Details</h3>
-                      <p className="text-sm text-gray-600">Invoice #: {selectedInvoice.id}</p>
-                      <p className="text-sm text-gray-600">Issue Date: {selectedInvoice.issueDate}</p>
-                      <p className="text-sm text-gray-600">Due Date: {selectedInvoice.dueDate}</p>
+                      <h3 className="font-semibold text-primary mb-2">
+                        Invoice Details
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Invoice #: {selectedInvoice.id}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Issue Date: {selectedInvoice.issueDate}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Due Date: {selectedInvoice.dueDate}
+                      </p>
                       <div className="mt-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          selectedInvoice.status === "Paid" ? "bg-green-100 text-green-800" :
-                          selectedInvoice.status === "Pending" ? "bg-yellow-100 text-yellow-800" :
-                          selectedInvoice.status === "Overdue" ? "bg-red-100 text-red-800" :
-                          "bg-blue-100 text-blue-800"
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            selectedInvoice.status === "Paid"
+                              ? "bg-green-100 text-green-800"
+                              : selectedInvoice.status === "Pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : selectedInvoice.status === "Overdue"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-blue-100 text-blue-800"
+                          }`}
+                        >
                           {selectedInvoice.status}
                         </span>
                       </div>
@@ -290,26 +338,46 @@ export default function InvoicesPage() {
 
                   {/* Line Items */}
                   <div>
-                    <h3 className="font-semibold text-primary mb-4">Line Items</h3>
+                    <h3 className="font-semibold text-primary mb-4">
+                      Line Items
+                    </h3>
                     <div className="border border-gray-200 rounded-lg overflow-hidden">
                       <table className="w-full">
                         <thead className="bg-gray-50">
                           <tr>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-                            <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Quantity</th>
-                            <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Rate</th>
-                            <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                              Description
+                            </th>
+                            <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                              Quantity
+                            </th>
+                            <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                              Rate
+                            </th>
+                            <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                              Total
+                            </th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                          {selectedInvoice.items.map((item: any, index: number) => (
-                            <tr key={index}>
-                              <td className="px-4 py-3 text-sm">{item.description}</td>
-                              <td className="px-4 py-3 text-sm text-center">{item.quantity}</td>
-                              <td className="px-4 py-3 text-sm text-right">${item.rate}</td>
-                              <td className="px-4 py-3 text-sm text-right font-medium">${item.total}</td>
-                            </tr>
-                          ))}
+                          {selectedInvoice.items.map(
+                            (item: any, index: number) => (
+                              <tr key={index}>
+                                <td className="px-4 py-3 text-sm">
+                                  {item.description}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-center">
+                                  {item.quantity}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-right">
+                                  ${item.rate}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-right font-medium">
+                                  ${item.total}
+                                </td>
+                              </tr>
+                            ),
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -398,7 +466,9 @@ export default function InvoicesPage() {
                   {/* Customer Information */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Customer</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Customer
+                      </label>
                       <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary">
                         <option>ABC Corporation</option>
                         <option>XYZ Industries</option>
@@ -408,7 +478,9 @@ export default function InvoicesPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Invoice Number</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Invoice Number
+                      </label>
                       <input
                         type="text"
                         placeholder="INV-XXX"
@@ -421,7 +493,9 @@ export default function InvoicesPage() {
                   {/* Dates */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Issue Date</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Issue Date
+                      </label>
                       <input
                         type="date"
                         defaultValue={selectedInvoice?.issueDate || ""}
@@ -429,7 +503,9 @@ export default function InvoicesPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Due Date
+                      </label>
                       <input
                         type="date"
                         defaultValue={selectedInvoice?.dueDate || ""}
@@ -450,9 +526,13 @@ export default function InvoicesPage() {
                         Add Item
                       </EnterpriseButton>
                     </div>
-                    
+
                     <div className="space-y-2">
-                      {(selectedInvoice?.items || [{ description: "", quantity: 1, rate: 0, total: 0 }]).map((item: any, index: number) => (
+                      {(
+                        selectedInvoice?.items || [
+                          { description: "", quantity: 1, rate: 0, total: 0 },
+                        ]
+                      ).map((item: any, index: number) => (
                         <div key={index} className="grid grid-cols-4 gap-2">
                           <input
                             type="text"

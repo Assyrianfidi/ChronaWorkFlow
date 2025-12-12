@@ -1,20 +1,20 @@
-import { User, type Account } from '../types/user';
+import { User, type Account } from '../types/user.js';
 
 const mockAccount: Account = {
-  id: 'acc_123',
-  provider: 'credentials',
-  providerAccountId: 'cred_123',
-  type: 'credentials',
-  userId: '1',
+  id: "acc_123",
+  provider: "credentials",
+  providerAccountId: "cred_123",
+  type: "credentials",
+  userId: "1",
   createdAt: new Date(),
   updatedAt: new Date(),
 };
 
 export const testUser: User = {
-  id: '1',
-  name: 'Test User',
-  email: 'test@example.com',
-  role: 'USER',
+  id: "1",
+  name: "Test User",
+  email: "test@example.com",
+  role: "USER",
   emailVerified: new Date(),
   image: null,
   accounts: [mockAccount],
@@ -24,14 +24,14 @@ export const testUser: User = {
 
 export const testAdmin: User = {
   ...testUser,
-  id: '2',
-  email: 'admin@example.com',
-  role: 'ADMIN',
+  id: "2",
+  email: "admin@example.com",
+  role: "ADMIN",
   accounts: [
     {
       ...mockAccount,
-      id: 'acc_456',
-      userId: '2',
+      id: "acc_456",
+      userId: "2",
     },
   ],
 };
@@ -41,7 +41,7 @@ export const mockSession = {
     user: testUser,
     expires: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
   },
-  status: 'authenticated',
+  status: "authenticated",
 };
 
 export const mockAdminSession = {
@@ -54,12 +54,12 @@ export const mockAdminSession = {
 
 export const mockUnauthenticatedSession = {
   data: null,
-  status: 'unauthenticated',
+  status: "unauthenticated",
 };
 
 export const mockLoadingSession = {
   data: undefined,
-  status: 'loading',
+  status: "loading",
 };
 
 // Mock API responses
@@ -67,27 +67,27 @@ export const mockApiResponses = {
   login: {
     success: {
       user: testUser,
-      token: 'test-token',
+      token: "test-token",
     },
     error: {
-      error: 'Invalid credentials',
-      message: 'Invalid email or password',
+      error: "Invalid credentials",
+      message: "Invalid email or password",
     },
   },
   register: {
     success: {
       user: testUser,
-      message: 'Registration successful',
+      message: "Registration successful",
     },
     error: {
-      error: 'Validation error',
-      message: 'Email already in use',
+      error: "Validation error",
+      message: "Email already in use",
     },
   },
   profile: {
     success: {
       ...testUser,
-      name: 'Updated Name',
+      name: "Updated Name",
     },
   },
 };
@@ -95,17 +95,17 @@ export const mockApiResponses = {
 // Mock form data
 export const mockFormData = {
   login: {
-    email: 'test@example.com',
-    password: 'password123',
+    email: "test@example.com",
+    password: "password123",
   },
   register: {
-    name: 'Test User',
-    email: 'test@example.com',
-    password: 'password123',
-    confirmPassword: 'password123',
+    name: "Test User",
+    email: "test@example.com",
+    password: "password123",
+    confirmPassword: "password123",
   },
   profile: {
-    name: 'Updated Name',
-    email: 'updated@example.com',
+    name: "Updated Name",
+    email: "updated@example.com",
   },
 };

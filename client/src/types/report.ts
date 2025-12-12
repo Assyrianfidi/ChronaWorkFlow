@@ -1,14 +1,14 @@
-import { z } from 'zod';
-import { reportFormSchema } from '../lib/validations/schemas';
+import { z } from "zod";
+import { reportFormSchema } from '../lib/validations/schemas.js';
 
 // Base report type from the form schema
 export type ReportFormData = z.infer<typeof reportFormSchema>;
 
 // Report status type
-export type ReportStatus = 'pending' | 'approved' | 'rejected';
+export type ReportStatus = "pending" | "approved" | "rejected";
 
 // Extended report type with server-generated fields
-export interface Report extends Omit<ReportFormData, 'date' | 'status'> {
+export interface Report extends Omit<ReportFormData, "date" | "status"> {
   id: string;
   createdAt: string;
   updatedAt: string;
@@ -34,7 +34,7 @@ export interface ReportListResponse {
 
 // Report filters
 export interface ReportFilters {
-  status?: Report['status'];
+  status?: Report["status"];
   startDate?: string;
   endDate?: string;
   minAmount?: number;
@@ -48,7 +48,7 @@ export interface ReportStats {
   total: number;
   totalAmount: number;
   byStatus: Array<{
-    status: Report['status'];
+    status: Report["status"];
     count: number;
     amount: number;
   }>;
@@ -60,12 +60,12 @@ export interface ReportStats {
 }
 
 // Report export formats
-export type ExportFormat = 'pdf' | 'csv' | 'excel';
+export type ExportFormat = "pdf" | "csv" | "excel";
 
 // Report update payload
-export type UpdateReportPayload = Partial<Omit<ReportFormData, 'date'>> & {
+export type UpdateReportPayload = Partial<Omit<ReportFormData, "date">> & {
   date?: string;
-  status?: Report['status'];
+  status?: Report["status"];
   rejectionReason?: string;
 };
 

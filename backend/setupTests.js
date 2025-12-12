@@ -1,5 +1,5 @@
 // setupTests.js - Global test setup for Jest
-'use strict';
+"use strict";
 
 // Store the original console methods
 const originalConsole = { ...console };
@@ -26,22 +26,22 @@ const restoreConsole = () => {
 if (global.beforeEach) {
   beforeEach(() => {
     // Enable detailed logging during tests
-    process.env.DEBUG = 'app:*';
-    
+    process.env.DEBUG = "app:*";
+
     // Mock console methods but allow errors to be logged
-    if (jest && typeof jest.spyOn === 'function') {
-      jest.spyOn(console, 'warn').mockImplementation((...args) => {
-        originalConsole.warn('Test warning:', ...args);
+    if (jest && typeof jest.spyOn === "function") {
+      jest.spyOn(console, "warn").mockImplementation((...args) => {
+        originalConsole.warn("Test warning:", ...args);
       });
-      
-      jest.spyOn(console, 'error').mockImplementation((...args) => {
-        originalConsole.error('Test error:', ...args);
+
+      jest.spyOn(console, "error").mockImplementation((...args) => {
+        originalConsole.error("Test error:", ...args);
       });
-      
+
       // Mock console.log to respect DEBUG flag
-      jest.spyOn(console, 'log').mockImplementation((...args) => {
+      jest.spyOn(console, "log").mockImplementation((...args) => {
         if (process.env.DEBUG) {
-          originalConsole.log('Test log:', ...args);
+          originalConsole.log("Test log:", ...args);
         }
       });
     }
@@ -49,11 +49,11 @@ if (global.beforeEach) {
 
   afterEach(() => {
     // Restore all mocks after each test
-    if (jest && typeof jest.restoreAllMocks === 'function') {
+    if (jest && typeof jest.restoreAllMocks === "function") {
       jest.restoreAllMocks();
       jest.clearAllMocks();
     }
-    
+
     // Restore original console methods
     restoreConsole();
   });
@@ -61,12 +61,12 @@ if (global.beforeEach) {
 
 // Global test utilities
 global.createTestUser = async (prisma, userData = {}) => {
-  const { createTestUser } = require('./src/__tests__/test-utils');
+  const { createTestUser } = require("./src/__tests__/test-utils");
   return createTestUser(prisma, userData);
 };
 
 global.generateAuthToken = (user) => {
-  const { generateAuthToken } = require('./src/__tests__/test-utils');
+  const { generateAuthToken } = require("./src/__tests__/test-utils");
   return generateAuthToken(user);
 };
 
@@ -74,5 +74,5 @@ global.generateAuthToken = (user) => {
 module.exports = {
   mockConsole,
   restoreConsole,
-  originalConsole
+  originalConsole,
 };

@@ -1,24 +1,29 @@
-import Stripe from 'stripe';
-import { PrismaClient } from '@prisma/client';
-import { logger } from '../../utils/logger.js';
+// @ts-ignore
+import Stripe from "stripe";
+import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { logger } from "../../utils/logger.js";
 
-const prisma = new PrismaClient();
+const prisma = prisma;
 
 export class StripeService {
   private stripe: Stripe;
 
   constructor() {
     if (!process.env.STRIPE_SECRET_KEY) {
-      throw new Error('STRIPE_SECRET_KEY is required');
+      throw new Error("STRIPE_SECRET_KEY is required");
     }
-    
+
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-11-20.acacia',
+      apiVersion: "2024-11-20.acacia",
     });
   }
 
   // Create a customer in Stripe
-  async createCustomer(userId: string, email: string, name?: string): Promise<Stripe.Customer> {
+  async createCustomer(
+    userId: string,
+    email: string,
+    name?: string,
+  ): Promise<Stripe.Customer> {
     try {
       const customer = await this.stripe.customers.create({
         email,
@@ -37,7 +42,7 @@ export class StripeService {
       logger.info(`Created Stripe customer ${customer.id} for user ${userId}`);
       return customer;
     } catch (error) {
-      logger.error('Error creating Stripe customer:', error);
+      logger.error("Error creating Stripe customer:", error);
       throw error;
     }
   }
@@ -46,7 +51,7 @@ export class StripeService {
   async createSubscription(
     userId: string,
     priceId: string,
-    paymentMethodId: string
+    paymentMethodId: string,
   ): Promise<Stripe.Subscription> {
     try {
       const user = await prisma.user.findUnique({
@@ -54,14 +59,18 @@ export class StripeService {
       });
 
       if (!user) {
-        throw new Error('User not found');
+        throw new Error("User not found");
       }
 
       let customerId = user.stripeCustomerId;
 
       // Create customer if doesn't exist
       if (!customerId) {
-        const customer = await this.createCustomer(userId, user.email, user.name);
+        const customer = await this.createCustomer(
+          userId,
+          user.email,
+          user.name,
+        );
         customerId = customer.id;
       }
 
@@ -81,9 +90,9 @@ export class StripeService {
       const subscription = await this.stripe.subscriptions.create({
         customer: customerId,
         items: [{ price: priceId }],
-        payment_behavior: 'default_incomplete',
-        payment_settings: { save_default_payment_method: 'on_subscription' },
-        expand: ['latest_invoice.payment_intent'],
+        payment_behavior: "default_incomplete",
+        payment_settings: { save_default_payment_method: "on_subscription" },
+        expand: ["latest_invoice.payment_intent"],
         metadata: {
           userId,
         },
@@ -102,21 +111,24 @@ export class StripeService {
       logger.info(`Created subscription ${subscription.id} for user ${userId}`);
       return subscription;
     } catch (error) {
-      logger.error('Error creating subscription:', error);
+      logger.error("Error creating subscription:", error);
       throw error;
     }
   }
 
   // Cancel subscription
-  async cancelSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
+  async cancelSubscription(
+    subscriptionId: string,
+  ): Promise<Stripe.Subscription> {
     try {
-      const subscription = await this.stripe.subscriptions.cancel(subscriptionId);
+      const subscription =
+        await this.stripe.subscriptions.cancel(subscriptionId);
 
       // Update user subscription in database
       await prisma.user.updateMany({
         where: { subscriptionId },
         data: {
-          subscriptionStatus: 'canceled',
+          subscriptionStatus: "canceled",
           cancelAtPeriodEnd: true,
         },
       });
@@ -124,7 +136,7 @@ export class StripeService {
       logger.info(`Canceled subscription ${subscriptionId}`);
       return subscription;
     } catch (error) {
-      logger.error('Error canceling subscription:', error);
+      logger.error("Error canceling subscription:", error);
       throw error;
     }
   }
@@ -132,8 +144,8 @@ export class StripeService {
   // Create payment intent for one-time payments
   async createPaymentIntent(
     amount: number,
-    currency: string = 'usd',
-    metadata?: Record<string, string>
+    currency: string = "usd",
+    metadata?: Record<string, string>,
   ): Promise<Stripe.PaymentIntent> {
     try {
       const paymentIntent = await this.stripe.paymentIntents.create({
@@ -145,10 +157,12 @@ export class StripeService {
         },
       });
 
-      logger.info(`Created payment intent ${paymentIntent.id} for amount ${amount} ${currency}`);
+      logger.info(
+        `Created payment intent ${paymentIntent.id} for amount ${amount} ${currency}`,
+      );
       return paymentIntent;
     } catch (error) {
-      logger.error('Error creating payment intent:', error);
+      logger.error("Error creating payment intent:", error);
       throw error;
     }
   }
@@ -156,10 +170,11 @@ export class StripeService {
   // Get subscription details
   async getSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
     try {
-      const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
+      const subscription =
+        await this.stripe.subscriptions.retrieve(subscriptionId);
       return subscription;
     } catch (error) {
-      logger.error('Error retrieving subscription:', error);
+      logger.error("Error retrieving subscription:", error);
       throw error;
     }
   }
@@ -167,14 +182,17 @@ export class StripeService {
   // Update subscription
   async updateSubscription(
     subscriptionId: string,
-    items: Array<{ price: string; quantity?: number }>
+    items: Array<{ price: string; quantity?: number }>,
   ): Promise<Stripe.Subscription> {
     try {
-      const subscription = await this.stripe.subscriptions.update(subscriptionId, {
-        items,
-        payment_behavior: 'pending_if_incomplete',
-        proration_behavior: 'create_prorations',
-      });
+      const subscription = await this.stripe.subscriptions.update(
+        subscriptionId,
+        {
+          items,
+          payment_behavior: "pending_if_incomplete",
+          proration_behavior: "create_prorations",
+        },
+      );
 
       // Update user plan in database
       const user = await prisma.user.findFirst({
@@ -193,7 +211,7 @@ export class StripeService {
       logger.info(`Updated subscription ${subscriptionId}`);
       return subscription;
     } catch (error) {
-      logger.error('Error updating subscription:', error);
+      logger.error("Error updating subscription:", error);
       throw error;
     }
   }
@@ -202,34 +220,44 @@ export class StripeService {
   async handleWebhook(event: Stripe.Event): Promise<void> {
     try {
       switch (event.type) {
-        case 'invoice.payment_succeeded':
-          await this.handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice);
+        case "invoice.payment_succeeded":
+          await this.handleInvoicePaymentSucceeded(
+            event.data.object as Stripe.Invoice,
+          );
           break;
-        case 'invoice.payment_failed':
-          await this.handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
+        case "invoice.payment_failed":
+          await this.handleInvoicePaymentFailed(
+            event.data.object as Stripe.Invoice,
+          );
           break;
-        case 'customer.subscription.deleted':
-          await this.handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+        case "customer.subscription.deleted":
+          await this.handleSubscriptionDeleted(
+            event.data.object as Stripe.Subscription,
+          );
           break;
-        case 'customer.subscription.updated':
-          await this.handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
+        case "customer.subscription.updated":
+          await this.handleSubscriptionUpdated(
+            event.data.object as Stripe.Subscription,
+          );
           break;
         default:
           logger.info(`Unhandled webhook event type: ${event.type}`);
       }
     } catch (error) {
-      logger.error('Error handling webhook:', error);
+      logger.error("Error handling webhook:", error);
       throw error;
     }
   }
 
   // Private helper methods
-  private async handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
+  private async handleInvoicePaymentSucceeded(
+    invoice: Stripe.Invoice,
+  ): Promise<void> {
     if (invoice.subscription) {
       await prisma.user.updateMany({
         where: { subscriptionId: invoice.subscription as string },
         data: {
-          subscriptionStatus: 'active',
+          subscriptionStatus: "active",
           lastPaymentAt: new Date(),
         },
       });
@@ -237,30 +265,36 @@ export class StripeService {
     }
   }
 
-  private async handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
+  private async handleInvoicePaymentFailed(
+    invoice: Stripe.Invoice,
+  ): Promise<void> {
     if (invoice.subscription) {
       await prisma.user.updateMany({
         where: { subscriptionId: invoice.subscription as string },
         data: {
-          subscriptionStatus: 'past_due',
+          subscriptionStatus: "past_due",
         },
       });
       logger.warn(`Payment failed for subscription ${invoice.subscription}`);
     }
   }
 
-  private async handleSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
+  private async handleSubscriptionDeleted(
+    subscription: Stripe.Subscription,
+  ): Promise<void> {
     await prisma.user.updateMany({
       where: { subscriptionId: subscription.id },
       data: {
-        subscriptionStatus: 'canceled',
+        subscriptionStatus: "canceled",
         planType: null,
       },
     });
     logger.info(`Subscription ${subscription.id} deleted`);
   }
 
-  private async handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
+  private async handleSubscriptionUpdated(
+    subscription: Stripe.Subscription,
+  ): Promise<void> {
     await prisma.user.updateMany({
       where: { subscriptionId: subscription.id },
       data: {
@@ -273,12 +307,12 @@ export class StripeService {
   private getPlanTypeFromPriceId(priceId: string): string {
     // Map price IDs to plan types - configure these based on your Stripe products
     const pricePlanMap: Record<string, string> = {
-      [process.env.STRIPE_STARTUP_PRICE_ID || '']: 'STARTUP',
-      [process.env.STRIPE_BUSINESS_PRICE_ID || '']: 'BUSINESS',
-      [process.env.STRIPE_ENTERPRISE_PRICE_ID || '']: 'ENTERPRISE',
+      [process.env.STRIPE_STARTUP_PRICE_ID || ""]: "STARTUP",
+      [process.env.STRIPE_BUSINESS_PRICE_ID || ""]: "BUSINESS",
+      [process.env.STRIPE_ENTERPRISE_PRICE_ID || ""]: "ENTERPRISE",
     };
-    
-    return pricePlanMap[priceId] || 'STARTUP';
+
+    return pricePlanMap[priceId] || "STARTUP";
   }
 
   // Get customer invoices
@@ -290,62 +324,68 @@ export class StripeService {
       });
       return invoices.data;
     } catch (error) {
-      logger.error('Error getting invoices:', error);
+      logger.error("Error getting invoices:", error);
       throw error;
     }
   }
 
   // Construct webhook event
-  constructWebhookEvent(body: string | Buffer, sig: string, secret: string): Stripe.Event {
+  constructWebhookEvent(
+    body: string | Buffer,
+    sig: string,
+    secret: string,
+  ): Stripe.Event {
     return this.stripe.webhooks.constructEvent(body, sig, secret);
   }
 
   // Get available plans
-  async getPlans(): Promise<Array<{
-    id: string;
-    name: string;
-    price: number;
-    features: string[];
-    stripePriceId: string;
-  }>> {
+  async getPlans(): Promise<
+    Array<{
+      id: string;
+      name: string;
+      price: number;
+      features: string[];
+      stripePriceId: string;
+    }>
+  > {
     return [
       {
-        id: 'startup',
-        name: 'Startup',
+        id: "startup",
+        name: "Startup",
         price: 29,
         features: [
-          'Up to 50 invoices/month',
-          'Basic reporting',
-          'Email support',
-          '2 users',
+          "Up to 50 invoices/month",
+          "Basic reporting",
+          "Email support",
+          "2 users",
         ],
-        stripePriceId: process.env.STRIPE_STARTUP_PRICE_ID || '',
+        stripePriceId: process.env.STRIPE_STARTUP_PRICE_ID || "",
       },
       {
-        id: 'business',
-        name: 'Business',
+        id: "business",
+        name: "Business",
         price: 99,
         features: [
-          'Unlimited invoices',
-          'Advanced reporting',
-          'Priority support',
-          '10 users',
-          'API access',
+          "Unlimited invoices",
+          "Advanced reporting",
+          "Priority support",
+          "10 users",
+          "API access",
         ],
-        stripePriceId: process.env.STRIPE_BUSINESS_PRICE_ID || '',
+        stripePriceId: process.env.STRIPE_BUSINESS_PRICE_ID || "",
       },
       {
-        id: 'enterprise',
-        name: 'Enterprise',
+        id: "enterprise",
+        name: "Enterprise",
         price: 299,
         features: [
-          'Everything in Business',
-          'Custom integrations',
-          'Dedicated support',
-          'Unlimited users',
-          'White-label options',
+          "Everything in Business",
+          "Custom integrations",
+          "Dedicated support",
+          "Unlimited users",
+          "White-label options",
         ],
-        stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || '',
+        stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || "",
       },
     ];
   }

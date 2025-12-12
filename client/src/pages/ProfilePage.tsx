@@ -1,133 +1,160 @@
-import * as React from "react"
-import { useNavigate } from "react-router-dom"
-import { useAuth } from "../contexts/AuthContext"
-import { MainLayout } from "../components/layout/MainLayout"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Alert, AlertDescription } from "../components/ui/alert"
-import { User, Mail, Shield, Settings, LogOut, Loader2, Save } from "lucide-react"
+import React, { useState } from 'react';
+// @ts-ignore
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+// @ts-ignore
+import { useAuth } from '../contexts/AuthContext.js.js';
+// @ts-ignore
+import { MainLayout } from '../components/layout/MainLayout.js.js';
+// @ts-ignore
+import { Button } from '../components/ui/button.js.js';
+// @ts-ignore
+import { Input } from '../components/ui/input.js.js';
+// @ts-ignore
+import { Label } from '../components/ui/label.js.js';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js.js';
+// @ts-ignore
+import { Alert, AlertDescription } from '../components/ui/alert.js.js';
+import {
+  User,
+  Mail,
+  Shield,
+  Settings,
+  LogOut,
+  Loader2,
+  Save,
+} from "lucide-react";
 
+// @ts-ignore
 const ProfilePage: React.FC = () => {
-  const { user, logout, updateUser } = useAuth()
-  const navigate = useNavigate()
-  
+  const { user, logout, updateUser } = useAuth();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = React.useState({
     name: user?.name || "",
     email: user?.email || "",
     currentPassword: "",
     newPassword: "",
-    confirmPassword: ""
-  })
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [message, setMessage] = React.useState("")
-  const [isError, setIsError] = React.useState(false)
+    confirmPassword: "",
+  });
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [message, setMessage] = React.useState("");
+  const [isError, setIsError] = React.useState(false);
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setMessage("")
-    setIsError(false)
-    
+    e.preventDefault();
+    setIsLoading(true);
+    setMessage("");
+    setIsError(false);
+
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Update user profile
       updateUser({
         name: formData.name,
-        email: formData.email
-      })
-      
-      setMessage("Profile updated successfully!")
+        email: formData.email,
+      });
+
+      setMessage("Profile updated successfully!");
     } catch (error) {
-      setMessage("Failed to update profile. Please try again.")
-      setIsError(true)
+      setMessage("Failed to update profile. Please try again.");
+      setIsError(true);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handlePasswordUpdate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setMessage("")
-    setIsError(false)
-    
-    if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
-      setMessage("Please fill in all password fields")
-      setIsError(true)
-      return
+    e.preventDefault();
+    setMessage("");
+    setIsError(false);
+
+    if (
+      !formData.currentPassword ||
+      !formData.newPassword ||
+      !formData.confirmPassword
+    ) {
+      setMessage("Please fill in all password fields");
+      setIsError(true);
+      return;
     }
 
     if (formData.newPassword !== formData.confirmPassword) {
-      setMessage("New passwords do not match")
-      setIsError(true)
-      return
+      setMessage("New passwords do not match");
+      setIsError(true);
+      return;
     }
 
     if (formData.newPassword.length < 8) {
-      setMessage("Password must be at least 8 characters long")
-      setIsError(true)
-      return
+      setMessage("Password must be at least 8 characters long");
+      setIsError(true);
+      return;
     }
 
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      setMessage("Password updated successfully!")
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      setMessage("Password updated successfully!");
+
       // Clear password fields
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         currentPassword: "",
         newPassword: "",
-        confirmPassword: ""
-      }))
+        confirmPassword: "",
+      }));
     } catch (error) {
-      setMessage("Failed to update password. Please try again.")
-      setIsError(true)
+      setMessage("Failed to update password. Please try again.");
+      setIsError(true);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleLogout = () => {
-    logout()
-    navigate("/login")
-  }
+    logout();
+    navigate("/login");
+  };
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case "admin":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       case "accountant":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       case "business_owner":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const getRoleDisplayName = (role: string) => {
     switch (role) {
       case "admin":
-        return "Administrator"
+        return "Administrator";
       case "accountant":
-        return "Accountant"
+        return "Accountant";
       case "business_owner":
-        return "Business Owner"
+        return "Business Owner";
       default:
-        return "User"
+        return "User";
     }
-  }
+  };
 
   if (!user) {
-    return <div>Please log in to view your profile.</div>
+    return <div>Please log in to view your profile.</div>;
   }
 
   return (
@@ -169,7 +196,12 @@ const ProfilePage: React.FC = () => {
                       <Input
                         id="name"
                         value={formData.name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                          }))
+                        }
                         disabled={isLoading}
                       />
                     </div>
@@ -179,12 +211,17 @@ const ProfilePage: React.FC = () => {
                         id="email"
                         type="email"
                         value={formData.email}
-                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            email: e.target.value,
+                          }))
+                        }
                         disabled={isLoading}
                       />
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-end">
                     <Button
                       type="submit"
@@ -227,11 +264,16 @@ const ProfilePage: React.FC = () => {
                       id="currentPassword"
                       type="password"
                       value={formData.currentPassword}
-                      onChange={(e) => setFormData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          currentPassword: e.target.value,
+                        }))
+                      }
                       disabled={isLoading}
                     />
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="newPassword">New Password</Label>
@@ -239,22 +281,34 @@ const ProfilePage: React.FC = () => {
                         id="newPassword"
                         type="password"
                         value={formData.newPassword}
-                        onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            newPassword: e.target.value,
+                          }))
+                        }
                         disabled={isLoading}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                      <Label htmlFor="confirmPassword">
+                        Confirm New Password
+                      </Label>
                       <Input
                         id="confirmPassword"
                         type="password"
                         value={formData.confirmPassword}
-                        onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            confirmPassword: e.target.value,
+                          }))
+                        }
                         disabled={isLoading}
                       />
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-end">
                     <Button
                       type="submit"
@@ -284,17 +338,22 @@ const ProfilePage: React.FC = () => {
                 <div className="text-center space-y-4">
                   <div className="w-20 h-20 bg-ocean-accent rounded-full flex items-center justify-center mx-auto">
                     <span className="text-white font-bold text-2xl">
-                      {user.name.split(' ').map(n => n[0]).join('')}
+                      {user.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
                     </span>
                   </div>
-                  
+
                   <div>
                     <h3 className="font-semibold text-lg">{user.name}</h3>
                     <p className="text-gray-600 text-sm">{user.email}</p>
                   </div>
-                  
+
                   <div className="flex justify-center">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeColor(user.role)}`}>
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeColor(user.role)}`}
+                    >
                       <Shield className="w-3 h-3 mr-1" />
                       {getRoleDisplayName(user.role)}
                     </span>
@@ -320,8 +379,8 @@ const ProfilePage: React.FC = () => {
                   <Mail className="w-4 h-4 mr-2" />
                   Email Preferences
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
                   onClick={handleLogout}
                 >
@@ -334,7 +393,7 @@ const ProfilePage: React.FC = () => {
         </div>
       </div>
     </MainLayout>
-  )
-}
+  );
+};
 
-export default ProfilePage
+export default ProfilePage;

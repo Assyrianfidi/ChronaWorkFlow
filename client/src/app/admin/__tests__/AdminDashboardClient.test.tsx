@@ -1,39 +1,47 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import AdminDashboardClient from '../AdminDashboardClient';
-import userEvent from '@testing-library/user-event';
-import { User } from '../types/user';
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import AdminDashboardClient from '../AdminDashboardClient.js';
+import userEvent from "@testing-library/user-event";
+import { User } from '../types/user.js';
 
 // Mock fetch
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
 // Mock next-auth/react
-vi.mock('next-auth/react');
+vi.mock("next-auth/react");
 
 // Mock next/navigation
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
 }));
 
-describe('AdminDashboardClient', () => {
+describe("AdminDashboardClient", () => {
   const mockUsers: User[] = [
     {
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@example.com',
-      role: 'ADMIN',
+      id: "1",
+      name: "Admin User",
+      email: "admin@example.com",
+      role: "ADMIN",
       emailVerified: new Date(),
       image: null,
       createdAt: new Date(),
       updatedAt: new Date(),
-      accounts: [{ 
-          provider: 'google',
-          providerAccountId: '123456789',
-          type: 'oauth',
-          userId: '1',
-          id: 'acc1',
+      accounts: [
+        {
+          provider: "google",
+          providerAccountId: "123456789",
+          type: "oauth",
+          userId: "1",
+          id: "acc1",
           refresh_token: undefined,
           access_token: undefined,
           expires_at: undefined,
@@ -42,24 +50,26 @@ describe('AdminDashboardClient', () => {
           id_token: undefined,
           session_state: undefined,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }],
+          updatedAt: new Date(),
+        },
+      ],
     },
     {
-      id: '2',
-      name: 'Regular User',
-      email: 'user@example.com',
-      role: 'USER',
+      id: "2",
+      name: "Regular User",
+      email: "user@example.com",
+      role: "USER",
       emailVerified: new Date(),
       image: null,
       createdAt: new Date(),
       updatedAt: new Date(),
-      accounts: [{ 
-          provider: 'credentials',
-          providerAccountId: '987654321',
-          type: 'credentials',
-          userId: '2',
-          id: 'acc2',
+      accounts: [
+        {
+          provider: "credentials",
+          providerAccountId: "987654321",
+          type: "credentials",
+          userId: "2",
+          id: "acc2",
           refresh_token: undefined,
           access_token: undefined,
           expires_at: undefined,
@@ -68,8 +78,9 @@ describe('AdminDashboardClient', () => {
           id_token: undefined,
           session_state: undefined,
           createdAt: new Date(),
-          updatedAt: new Date()
-        }],
+          updatedAt: new Date(),
+        },
+      ],
     },
   ];
 
@@ -78,17 +89,19 @@ describe('AdminDashboardClient', () => {
     vi.clearAllMocks();
 
     // Mock session
+// @ts-ignore
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          role: 'ADMIN',
+          role: "ADMIN",
         },
       },
-      status: 'authenticated',
+      status: "authenticated",
     });
 
     // Mock router
     const pushMock = vi.fn();
+// @ts-ignore
     (useRouter as jest.Mock).mockReturnValue({
       push: pushMock,
     });
@@ -101,54 +114,57 @@ describe('AdminDashboardClient', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders the admin dashboard with user management table', () => {
+  it("renders the admin dashboard with user management table", () => {
     render(<AdminDashboardClient users={mockUsers} />);
 
     // Check if the page title is rendered
-    expect(screen.getByText('User Management')).toBeInTheDocument();
+    expect(screen.getByText("User Management")).toBeInTheDocument();
 
     // Check if the table headers are rendered
-    expect(screen.getByText('Name')).toBeInTheDocument();
-    expect(screen.getByText('Email')).toBeInTheDocument();
-    expect(screen.getByText('Role')).toBeInTheDocument();
-    expect(screen.getByText('Actions')).toBeInTheDocument();
+    expect(screen.getByText("Name")).toBeInTheDocument();
+    expect(screen.getByText("Email")).toBeInTheDocument();
+    expect(screen.getByText("Role")).toBeInTheDocument();
+    expect(screen.getByText("Actions")).toBeInTheDocument();
 
     // Check if user data is rendered
-    expect(screen.getByText('Admin User')).toBeInTheDocument();
-    expect(screen.getByText('admin@example.com')).toBeInTheDocument();
-    expect(screen.getByText('Regular User')).toBeInTheDocument();
-    expect(screen.getByText('user@example.com')).toBeInTheDocument();
+    expect(screen.getByText("Admin User")).toBeInTheDocument();
+    expect(screen.getByText("admin@example.com")).toBeInTheDocument();
+    expect(screen.getByText("Regular User")).toBeInTheDocument();
+    expect(screen.getByText("user@example.com")).toBeInTheDocument();
   });
 
-  it('shows loading state while session is loading', () => {
+  it("shows loading state while session is loading", () => {
+// @ts-ignore
     (useSession as jest.Mock).mockReturnValue({
       data: null,
-      status: 'loading',
+      status: "loading",
     });
 
     render(<AdminDashboardClient users={[]} />);
-    expect(screen.getByText('Loading users...')).toBeInTheDocument();
+    expect(screen.getByText("Loading users...")).toBeInTheDocument();
   });
 
-  it('redirects to unauthorized if user is not admin', () => {
+  it("redirects to unauthorized if user is not admin", () => {
     // Mock non-admin user
+// @ts-ignore
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          role: 'USER',
+          role: "USER",
         },
       },
-      status: 'authenticated',
+      status: "authenticated",
     });
 
     const pushMock = vi.fn();
+// @ts-ignore
     (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
 
     render(<AdminDashboardClient users={mockUsers} />);
-    expect(pushMock).toHaveBeenCalledWith('/unauthorized');
+    expect(pushMock).toHaveBeenCalledWith("/unauthorized");
   });
 
-  it('allows changing user roles', async () => {
+  it("allows changing user roles", async () => {
     // Mock successful fetch response
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -157,9 +173,13 @@ describe('AdminDashboardClient', () => {
 
     // Store the original window.location
     const originalLocation = window.location;
-    
+
     // Mock window.location.reload
+// @ts-ignore
+// @ts-ignore
     delete (window as any).location;
+// @ts-ignore
+// @ts-ignore
     (window as any).location = {
       ...originalLocation,
       reload: vi.fn(),
@@ -168,28 +188,30 @@ describe('AdminDashboardClient', () => {
     render(<AdminDashboardClient users={mockUsers} />);
 
     // Find and change the role select for the regular user
-    const roleSelects = screen.getAllByRole('combobox');
+    const roleSelects = screen.getAllByRole("combobox");
     const regularUserSelect = roleSelects[1]; // Second user in the list
-    
-    fireEvent.change(regularUserSelect, { target: { value: 'ADMIN' } });
+
+    fireEvent.change(regularUserSelect, { target: { value: "ADMIN" } });
 
     // Check if fetch was called with the correct arguments
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith('/api/admin/users/role', {
-        method: 'POST',
+      expect(mockFetch).toHaveBeenCalledWith("/api/admin/users/role", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userId: '2', role: 'ADMIN' }),
+        body: JSON.stringify({ userId: "2", role: "ADMIN" }),
       });
     });
 
     // Check if the page was reloaded
     expect(window.location.reload).toHaveBeenCalled();
-    
+
     // Restore the original window.location
+// @ts-ignore
+// @ts-ignore
     (window as any).location = originalLocation;
-    
+
     // Clean up mocks
     mockFetch.mockClear();
   });

@@ -1,15 +1,42 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
-import { Button } from '../ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
-import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { useReports, useDeleteReport } from '../../hooks/useReports';
-import { useToast } from '../ui/use-toast';
-import { Loader2, Plus, Search, Trash2, Edit, FileText } from 'lucide-react';
-import { Report, ReportStatus } from '../../types/report';
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React from 'react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
+import { Button } from '../ui/button.js';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table.js';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '../ui/card.js';
+import { Input } from '../ui/input.js';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select.js';
+import { useReports, useDeleteReport } from '../../hooks/useReports.js';
+import { useToast } from '../ui/use-toast.js';
+import { Loader2, Plus, Search, Trash2, Edit, FileText } from "lucide-react";
+import { Report, ReportStatus } from '../../types/report.js';
 
 type ReportWithMeta = {
   data: Report[];
@@ -24,13 +51,13 @@ type ReportWithMeta = {
 export function ReportList() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<ReportStatus | 'all'>('all');
-  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
+
   // Fetch reports with pagination and filtering
   const { data, isLoading, isError } = useReports({
     search: searchTerm,
-    status: statusFilter === 'all' ? undefined : statusFilter,
+    status: statusFilter === "all" ? undefined : statusFilter,
     page: 1,
     limit: 10,
   });
@@ -39,12 +66,12 @@ export function ReportList() {
   const { mutate: deleteReport, isPending: isDeleting } = useDeleteReport();
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this report?')) {
+    if (window.confirm("Are you sure you want to delete this report?")) {
       deleteReport(id, {
         onSuccess: () => {
           toast({
-            title: 'Success',
-            description: 'Report deleted successfully',
+            title: "Success",
+            description: "Report deleted successfully",
           });
         },
       });
@@ -67,7 +94,9 @@ export function ReportList() {
     );
   }
 
+// @ts-ignore
   const reports = (data as ReportWithMeta)?.data || [];
+// @ts-ignore
   const total = (data as ReportWithMeta)?.meta?.total || 0;
 
   return (
@@ -79,7 +108,7 @@ export function ReportList() {
             View and manage your financial reports
           </p>
         </div>
-        <Button onClick={() => navigate('/reports/new')}>
+        <Button onClick={() => navigate("/reports/new")}>
           <Plus className="mr-2 h-4 w-4" />
           New Report
         </Button>
@@ -88,7 +117,9 @@ export function ReportList() {
       <Card>
         <CardHeader>
           <CardTitle>Reports</CardTitle>
-          <CardDescription>View and manage your financial reports</CardDescription>
+          <CardDescription>
+            View and manage your financial reports
+          </CardDescription>
         </CardHeader>
         <CardContent className="pb-3">
           <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
@@ -107,7 +138,9 @@ export function ReportList() {
             <div className="flex items-center space-x-2">
               <Select
                 value={statusFilter}
-                onValueChange={(value: ReportStatus | 'all') => setStatusFilter(value)}
+                onValueChange={(value: ReportStatus | "all") =>
+                  setStatusFilter(value)
+                }
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Filter by status" />
@@ -146,9 +179,9 @@ export function ReportList() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {new Intl.NumberFormat('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
+                        {new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
                         }).format(report.amount)}
                       </TableCell>
                       <TableCell>
@@ -156,8 +189,8 @@ export function ReportList() {
                       </TableCell>
                       <TableCell>
                         {report.createdAt
-                          ? format(new Date(report.createdAt), 'MMM dd, yyyy')
-                          : 'N/A'}
+                          ? format(new Date(report.createdAt), "MMM dd, yyyy")
+                          : "N/A"}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end space-x-2">
@@ -192,7 +225,7 @@ export function ReportList() {
               </TableBody>
             </Table>
           </div>
-          
+
           {/* Pagination would go here */}
           {total > 10 && (
             <div className="mt-4 flex items-center justify-end space-x-2">
@@ -213,12 +246,15 @@ export function ReportList() {
 // Status badge component
 function StatusBadge({ status }: { status: ReportStatus }) {
   const statusMap = {
-    pending: { label: 'Pending', className: 'bg-amber-100 text-amber-800' },
-    approved: { label: 'Approved', className: 'bg-green-100 text-green-800' },
-    rejected: { label: 'Rejected', className: 'bg-red-100 text-red-800' },
+    pending: { label: "Pending", className: "bg-amber-100 text-amber-800" },
+    approved: { label: "Approved", className: "bg-green-100 text-green-800" },
+    rejected: { label: "Rejected", className: "bg-red-100 text-red-800" },
   } as const;
 
-  const statusInfo = statusMap[status] || { label: status, className: 'bg-gray-100 text-gray-800' };
+  const statusInfo = statusMap[status] || {
+    label: status,
+    className: "bg-gray-100 text-gray-800",
+  };
 
   return (
     <span

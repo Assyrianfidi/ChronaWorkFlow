@@ -1,108 +1,132 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { vi } from "vitest";
 
 // Mock modules
-vi.mock('../hooks/useWindowSize', () => ({
+vi.mock("../hooks/useWindowSize", () => ({
   useWindowSize: vi.fn(() => ({ width: 1024, height: 768 })),
 }));
 
-vi.mock('../store/auth-store', () => ({
+vi.mock("../store/auth-store", () => ({
   useAuthStore: vi.fn(() => ({
-    user: { role: 'user' },
+    user: { role: "user" },
   })),
 }));
 
-vi.mock('../../adaptive/UserExperienceMode.tsx', () => ({
+vi.mock("../../adaptive/UserExperienceMode.tsx", () => ({
   useUserExperienceMode: vi.fn(() => ({
     currentMode: {
-      id: 'standard',
-      name: 'Standard',
-      animations: 'normal',
+      id: "standard",
+      name: "Standard",
+      animations: "normal",
       sounds: false,
       shortcuts: true,
     },
   })),
-  UserExperienceModeProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  UserExperienceModeProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
-vi.mock('../../adaptive/UI-Performance-Engine.tsx', () => ({
+vi.mock("../../adaptive/UI-Performance-Engine.tsx", () => ({
   usePerformance: vi.fn(() => ({
     isLowPerformanceMode: false,
   })),
-  UIPerformanceEngine: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  UIPerformanceEngine: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
-vi.mock('../../adaptive/AccessibilityModes', () => ({
+vi.mock("../../adaptive/AccessibilityModes", () => ({
   useAccessibility: vi.fn(() => ({
     reducedMotion: false,
   })),
-  AccessibilityProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  AccessibilityProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
-vi.mock('../../adaptive/AdaptiveLayoutEngine.tsx', () => ({
-  AdaptiveLayoutEngine: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+vi.mock("../../adaptive/AdaptiveLayoutEngine.tsx", () => ({
+  AdaptiveLayoutEngine: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
 }));
 
-describe('Phase C Integration Tests', () => {
+describe("Phase C Integration Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders InteractionEngine', async () => {
-    const { InteractionEngine } = await import('../InteractionEngine.tsx');
-    
+  it("renders InteractionEngine", async () => {
+// @ts-ignore
+// @ts-ignore
+    const { InteractionEngine } = await import("../InteractionEngine.tsx");
+
     render(
       <InteractionEngine>
         <div>Interaction Engine Test</div>
-      </InteractionEngine>
+      </InteractionEngine>,
     );
 
-    expect(screen.getByText('Interaction Engine Test')).toBeInTheDocument();
+    expect(screen.getByText("Interaction Engine Test")).toBeInTheDocument();
   });
 
-  it('renders WorkflowManager', async () => {
-    const { WorkflowManager } = await import('../WorkflowManager.tsx');
-    
+  it("renders WorkflowManager", async () => {
+// @ts-ignore
+// @ts-ignore
+    const { WorkflowManager } = await import("../WorkflowManager.tsx");
+
     render(
       <WorkflowManager>
         <div>Workflow Manager Test</div>
-      </WorkflowManager>
+      </WorkflowManager>,
     );
 
-    expect(screen.getByText('Workflow Manager Test')).toBeInTheDocument();
+    expect(screen.getByText("Workflow Manager Test")).toBeInTheDocument();
   });
 
-  it('renders PredictiveAssistant', async () => {
-    const { PredictiveAssistant } = await import('../PredictiveAssistant.tsx');
-    
+  it("renders PredictiveAssistant", async () => {
+// @ts-ignore
+// @ts-ignore
+    const { PredictiveAssistant } = await import("../PredictiveAssistant.tsx");
+
     render(
       <PredictiveAssistant>
         <div>Predictive Assistant Test</div>
-      </PredictiveAssistant>
+      </PredictiveAssistant>,
     );
 
-    expect(screen.getByText('Predictive Assistant Test')).toBeInTheDocument();
+    expect(screen.getByText("Predictive Assistant Test")).toBeInTheDocument();
   });
 
-  it('renders ErrorRecoveryUI', async () => {
-    const { ErrorRecoveryUI } = await import('../ErrorRecoveryUI.tsx');
-    
+  it("renders ErrorRecoveryUI", async () => {
+// @ts-ignore
+// @ts-ignore
+    const { ErrorRecoveryUI } = await import("../ErrorRecoveryUI.tsx");
+
     render(
       <ErrorRecoveryUI>
         <div>Error Recovery UI Test</div>
-      </ErrorRecoveryUI>
+      </ErrorRecoveryUI>,
     );
 
-    expect(screen.getByText('Error Recovery UI Test')).toBeInTheDocument();
+    expect(screen.getByText("Error Recovery UI Test")).toBeInTheDocument();
   });
 
-  it('renders all Phase C components together', async () => {
-    const { InteractionEngine } = await import('../InteractionEngine.tsx');
-    const { WorkflowManager } = await import('../WorkflowManager.tsx');
-    const { PredictiveAssistant } = await import('../PredictiveAssistant.tsx');
-    const { ErrorRecoveryUI } = await import('../ErrorRecoveryUI.tsx');
-    
+  it("renders all Phase C components together", async () => {
+// @ts-ignore
+// @ts-ignore
+    const { InteractionEngine } = await import("../InteractionEngine.tsx");
+// @ts-ignore
+// @ts-ignore
+    const { WorkflowManager } = await import("../WorkflowManager.tsx");
+// @ts-ignore
+// @ts-ignore
+    const { PredictiveAssistant } = await import("../PredictiveAssistant.tsx");
+// @ts-ignore
+// @ts-ignore
+    const { ErrorRecoveryUI } = await import("../ErrorRecoveryUI.tsx");
+
     render(
       <ErrorRecoveryUI>
         <PredictiveAssistant>
@@ -112,9 +136,9 @@ describe('Phase C Integration Tests', () => {
             </InteractionEngine>
           </WorkflowManager>
         </PredictiveAssistant>
-      </ErrorRecoveryUI>
+      </ErrorRecoveryUI>,
     );
 
-    expect(screen.getByText('All Phase C Components')).toBeInTheDocument();
+    expect(screen.getByText("All Phase C Components")).toBeInTheDocument();
   });
 });

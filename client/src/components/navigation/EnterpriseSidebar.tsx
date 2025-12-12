@@ -3,10 +3,18 @@
  * Advanced navigation with search, keyboard shortcuts, collapsible sections, and motion optimization
  */
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAdaptiveUI } from '../../state/ui/UserExperienceMode';
-import { useAdvancedFeedback } from '../../hooks/useInteractiveFeedback';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
+import { motion, AnimatePresence } from "framer-motion";
+// @ts-ignore
+import { useAdaptiveUI } from '../../state/ui/UserExperienceMode.js.js';
+// @ts-ignore
+import { useAdvancedFeedback } from '../../hooks/useInteractiveFeedback.js.js';
 
 // Types
 export interface NavigationItem {
@@ -19,7 +27,7 @@ export interface NavigationItem {
   children?: NavigationItem[];
   description?: string;
   shortcuts?: string[];
-  category?: 'main' | 'secondary' | 'tools' | 'settings';
+  category?: "main" | "secondary" | "tools" | "settings";
   permissions?: string[];
   featured?: boolean;
   new?: boolean;
@@ -69,13 +77,13 @@ class KeyboardShortcutManager {
     if (!this.enabled) return;
 
     const keys = [];
-    if (e.ctrlKey || e.metaKey) keys.push('ctrl');
-    if (e.altKey) keys.push('alt');
-    if (e.shiftKey) keys.push('shift');
+    if (e.ctrlKey || e.metaKey) keys.push("ctrl");
+    if (e.altKey) keys.push("alt");
+    if (e.shiftKey) keys.push("shift");
     if (e.key.length === 1) keys.push(e.key.toLowerCase());
     else keys.push(e.key.toLowerCase());
 
-    const combo = keys.join('+');
+    const combo = keys.join("+");
     const callback = this.shortcuts.get(combo);
 
     if (callback) {
@@ -106,7 +114,7 @@ class NavigationSearch {
       this.searchIndex.get(normalizedTerm)!.push(item);
     };
 
-    this.items.forEach(item => {
+    this.items.forEach((item) => {
       // Add label and description
       addToIndex(item.label, item);
       if (item.description) {
@@ -120,7 +128,7 @@ class NavigationSearch {
 
       // Add children
       if (item.children) {
-        item.children.forEach(child => {
+        item.children.forEach((child) => {
           addToIndex(child.label, child);
           if (child.description) {
             addToIndex(child.description, child);
@@ -140,7 +148,7 @@ class NavigationSearch {
     // Exact matches first
     this.searchIndex.forEach((items, term) => {
       if (term.includes(normalizedQuery)) {
-        items.forEach(item => {
+        items.forEach((item) => {
           if (!seen.has(item.id)) {
             results.push(item);
             seen.add(item.id);
@@ -160,14 +168,14 @@ class RecentItemsManager {
 
   public addItem(item: NavigationItem): void {
     // Remove if already exists
-    this.recentItems = this.recentItems.filter(i => i.id !== item.id);
-    
+    this.recentItems = this.recentItems.filter((i) => i.id !== item.id);
+
     // Add to beginning
     this.recentItems.unshift(item);
-    
+
     // Limit to max items
     this.recentItems = this.recentItems.slice(0, this.maxItems);
-    
+
     this.saveToStorage();
   }
 
@@ -182,20 +190,23 @@ class RecentItemsManager {
 
   private saveToStorage(): void {
     try {
-      localStorage.setItem('recent-nav-items', JSON.stringify(this.recentItems));
+      localStorage.setItem(
+        "recent-nav-items",
+        JSON.stringify(this.recentItems),
+      );
     } catch (error) {
-      console.warn('Failed to save recent items to storage');
+      console.warn("Failed to save recent items to storage");
     }
   }
 
   private loadFromStorage(): void {
     try {
-      const stored = localStorage.getItem('recent-nav-items');
+      const stored = localStorage.getItem("recent-nav-items");
       if (stored) {
         this.recentItems = JSON.parse(stored);
       }
     } catch (error) {
-      console.warn('Failed to load recent items from storage');
+      console.warn("Failed to load recent items from storage");
     }
   }
 
@@ -222,25 +233,28 @@ class FavoritesManager {
   }
 
   public getFavoriteItems(allItems: NavigationItem[]): NavigationItem[] {
-    return allItems.filter(item => this.favorites.has(item.id));
+    return allItems.filter((item) => this.favorites.has(item.id));
   }
 
   private saveToStorage(): void {
     try {
-      localStorage.setItem('favorite-nav-items', JSON.stringify(Array.from(this.favorites)));
+      localStorage.setItem(
+        "favorite-nav-items",
+        JSON.stringify(Array.from(this.favorites)),
+      );
     } catch (error) {
-      console.warn('Failed to save favorites to storage');
+      console.warn("Failed to save favorites to storage");
     }
   }
 
   private loadFromStorage(): void {
     try {
-      const stored = localStorage.getItem('favorite-nav-items');
+      const stored = localStorage.getItem("favorite-nav-items");
       if (stored) {
         this.favorites = new Set(JSON.parse(stored));
       }
     } catch (error) {
-      console.warn('Failed to load favorites from storage');
+      console.warn("Failed to load favorites from storage");
     }
   }
 
@@ -250,57 +264,59 @@ class FavoritesManager {
 }
 
 // Main Component
+// @ts-ignore
 const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   items,
   config,
   collapsed = false,
   onCollapseChange,
   onNavigation,
-  className = ''
+  className = "",
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-  const [activeItem, setActiveItem] = useState<string>('');
-  const [hoveredItem, setHoveredItem] = useState<string>('');
+  const [activeItem, setActiveItem] = useState<string>("");
+  const [hoveredItem, setHoveredItem] = useState<string>("");
   const [showSearch, setShowSearch] = useState(false);
-  
+
   const sidebarRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  
+
   const { config: uiConfig } = useAdaptiveUI({
-    userId: 'user-123',
-    role: 'professional',
-    experienceLevel: 'intermediate',
-    preferredTaskTypes: ['reporting'],
+    userId: "user-123",
+    role: "professional",
+    experienceLevel: "intermediate",
+    preferredTaskTypes: ["reporting"],
     usagePatterns: {
       averageSessionDuration: 1800,
-      mostUsedFeatures: ['dashboard', 'reports'],
+      mostUsedFeatures: ["dashboard", "reports"],
       keyboardShortcutUsage: 0.6,
       mouseClickFrequency: 0.4,
-      errorRate: 0.02
+      errorRate: 0.02,
     },
     accessibilityPreferences: {
       reducedMotion: false,
       highContrast: false,
       largeText: false,
-      screenReader: false
+      screenReader: false,
     },
     uiPreferences: {
-      density: 'comfortable',
-      theme: 'dark',
+      density: "comfortable",
+      theme: "dark",
       sidebarCollapsed: false,
       showTooltips: true,
-      showKeyboardShortcuts: true
-    }
+      showKeyboardShortcuts: true,
+    },
   });
 
-  const { elementRef, triggerClick, setInteractionEnabled } = useAdvancedFeedback({
-    visualFeedback: true,
-    hapticFeedback: uiConfig.features.keyboardShortcuts,
-    soundFeedback: false,
-    glow: true,
-    parallax: true
-  });
+  const { elementRef, triggerClick, setInteractionEnabled } =
+    useAdvancedFeedback({
+      visualFeedback: true,
+      hapticFeedback: uiConfig.features.keyboardShortcuts,
+      soundFeedback: false,
+      glow: true,
+      parallax: true,
+    });
 
   // Managers
   const [keyboardManager] = useState(() => new KeyboardShortcutManager());
@@ -311,29 +327,29 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   // Initialize
   useEffect(() => {
     searchManager.setItems(items);
-    
+
     // Register keyboard shortcuts
     if (config.keyboardShortcuts) {
-      keyboardManager.registerShortcut('ctrl+k', () => {
+      keyboardManager.registerShortcut("ctrl+k", () => {
         setShowSearch(true);
         setTimeout(() => searchInputRef.current?.focus(), 100);
       });
-      
-      keyboardManager.registerShortcut('escape', () => {
+
+      keyboardManager.registerShortcut("escape", () => {
         setShowSearch(false);
-        setSearchQuery('');
+        setSearchQuery("");
       });
-      
-      keyboardManager.registerShortcut('ctrl+b', () => {
+
+      keyboardManager.registerShortcut("ctrl+b", () => {
         onCollapseChange?.(!collapsed);
       });
     }
 
     // Add keyboard event listener
-    document.addEventListener('keydown', keyboardManager.handleKeyDown);
-    
+    document.addEventListener("keydown", keyboardManager.handleKeyDown);
+
     return () => {
-      document.removeEventListener('keydown', keyboardManager.handleKeyDown);
+      document.removeEventListener("keydown", keyboardManager.handleKeyDown);
     };
   }, [items, config.keyboardShortcuts, collapsed, onCollapseChange]);
 
@@ -349,11 +365,11 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       main: [],
       secondary: [],
       tools: [],
-      settings: []
+      settings: [],
     };
 
-    filteredItems.forEach(item => {
-      const category = item.category || 'main';
+    filteredItems.forEach((item) => {
+      const category = item.category || "main";
       groups[category].push(item);
     });
 
@@ -361,32 +377,38 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   }, [filteredItems]);
 
   // Navigation handlers
-  const handleItemClick = useCallback((item: NavigationItem) => {
-    setActiveItem(item.id);
-    onNavigation?.(item);
-    recentManager.addItem(item);
-    triggerClick();
-    
-    if (item.children && item.children.length > 0) {
-      setExpandedItems(prev => {
-        const newSet = new Set(prev);
-        if (newSet.has(item.id)) {
-          newSet.delete(item.id);
-        } else {
-          newSet.add(item.id);
-        }
-        return newSet;
-      });
-    }
-  }, [onNavigation, recentManager, triggerClick]);
+  const handleItemClick = useCallback(
+    (item: NavigationItem) => {
+      setActiveItem(item.id);
+      onNavigation?.(item);
+      recentManager.addItem(item);
+      triggerClick();
 
-  const toggleFavorite = useCallback((e: React.MouseEvent, itemId: string) => {
-    e.stopPropagation();
-    favoritesManager.toggleFavorite(itemId);
-  }, [favoritesManager]);
+      if (item.children && item.children.length > 0) {
+        setExpandedItems((prev) => {
+          const newSet = new Set(prev);
+          if (newSet.has(item.id)) {
+            newSet.delete(item.id);
+          } else {
+            newSet.add(item.id);
+          }
+          return newSet;
+        });
+      }
+    },
+    [onNavigation, recentManager, triggerClick],
+  );
+
+  const toggleFavorite = useCallback(
+    (e: React.MouseEvent, itemId: string) => {
+      e.stopPropagation();
+      favoritesManager.toggleFavorite(itemId);
+    },
+    [favoritesManager],
+  );
 
   const toggleExpand = useCallback((itemId: string) => {
-    setExpandedItems(prev => {
+    setExpandedItems((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(itemId)) {
         newSet.delete(itemId);
@@ -404,7 +426,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     const isExpanded = expandedItems.has(item.id);
     const isFavorite = favoritesManager.isFavorite(item.id);
     const hasChildren = item.children && item.children.length > 0;
-    
+
     const paddingLeft = level * (config.compactMode ? 12 : 20);
 
     return (
@@ -416,84 +438,86 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
         transition={{ duration: 0.2, delay: level * 0.05 }}
       >
         <motion.div
-          className={`navigation-item ${isActive ? 'active' : ''} ${isHovered ? 'hovered' : ''}`}
+          className={`navigation-item ${isActive ? "active" : ""} ${isHovered ? "hovered" : ""}`}
           style={{ paddingLeft: `${paddingLeft}px` }}
           onClick={() => handleItemClick(item)}
           onMouseEnter={() => setHoveredItem(item.id)}
-          onMouseLeave={() => setHoveredItem('')}
+          onMouseLeave={() => setHoveredItem("")}
           whileHover={{ x: 4 }}
           whileTap={{ scale: 0.98 }}
         >
           <div className="navigation-item-content">
-            <div className="navigation-item-icon">
-              {item.icon}
-            </div>
-            
+            <div className="navigation-item-icon">{item.icon}</div>
+
             {!collapsed && (
               <>
                 <div className="navigation-item-text">
                   <div className="navigation-item-label">
                     {item.label}
                     {item.new && <span className="new-badge">NEW</span>}
-                    {item.featured && <span className="featured-badge">⭐</span>}
+                    {item.featured && (
+                      <span className="featured-badge">⭐</span>
+                    )}
                   </div>
-                  
+
                   {config.showDescriptions && item.description && (
                     <div className="navigation-item-description">
                       {item.description}
                     </div>
                   )}
                 </div>
-                
+
                 <div className="navigation-item-meta">
                   {config.showBadges && item.badge && (
                     <span className="navigation-badge">
-                      {typeof item.badge === 'number' && item.badge > 99 ? '99+' : item.badge}
+                      {typeof item.badge === "number" && item.badge > 99
+                        ? "99+"
+                        : item.badge}
                     </span>
                   )}
-                  
+
                   {config.favorites && (
                     <button
-                      className={`favorite-button ${isFavorite ? 'active' : ''}`}
+                      className={`favorite-button ${isFavorite ? "active" : ""}`}
                       onClick={(e) => toggleFavorite(e, item.id)}
                     >
-                      {isFavorite ? '⭐' : '☆'}
+                      {isFavorite ? "⭐" : "☆"}
                     </button>
                   )}
-                  
+
                   {hasChildren && (
                     <button
-                      className={`expand-button ${isExpanded ? 'expanded' : ''}`}
+                      className={`expand-button ${isExpanded ? "expanded" : ""}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleExpand(item.id);
                       }}
                     >
-                      {isExpanded ? '▼' : '▶'}
+                      {isExpanded ? "▼" : "▶"}
                     </button>
                   )}
-                  
+
                   {config.showShortcuts && item.shortcuts && (
-                    <div className="shortcut-hint">
-                      {item.shortcuts[0]}
-                    </div>
+                    <div className="shortcut-hint">{item.shortcuts[0]}</div>
                   )}
                 </div>
               </>
             )}
           </div>
         </motion.div>
-        
+
         <AnimatePresence>
           {hasChildren && isExpanded && !collapsed && (
             <motion.div
               className="navigation-children"
               initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
+              animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              {item.children!.map(child => renderNavigationItem(child, level + 1))}
+              {item.children!.map((child) =>
+                renderNavigationItem(child, level + 1),
+              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -504,9 +528,12 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   return (
     <motion.div
       ref={elementRef}
-      className={`enterprise-sidebar ${collapsed ? 'collapsed' : ''} ${className}`}
+      className={`enterprise-sidebar ${collapsed ? "collapsed" : ""} ${className}`}
       layout
-      transition={{ duration: config.animationDuration / 1000, ease: 'easeInOut' }}
+      transition={{
+        duration: config.animationDuration / 1000,
+        ease: "easeInOut",
+      }}
     >
       {/* Header */}
       <div className="sidebar-header">
@@ -520,13 +547,13 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             AccuBooks
           </motion.div>
         )}
-        
+
         {config.collapsible && (
           <button
             className="collapse-toggle"
             onClick={() => onCollapseChange?.(!collapsed)}
           >
-            {collapsed ? '→' : '←'}
+            {collapsed ? "→" : "←"}
           </button>
         )}
       </div>
@@ -563,23 +590,24 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
 
       {/* Navigation Items */}
       <div className="sidebar-navigation">
-        {Object.entries(groupedItems).map(([category, categoryItems]) => (
-          categoryItems.length > 0 && (
-            <div key={category} className="navigation-category">
-              {!collapsed && (
-                <div className="category-header">
-                  <h4 className="category-title">
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </h4>
+        {Object.entries(groupedItems).map(
+          ([category, categoryItems]) =>
+            categoryItems.length > 0 && (
+              <div key={category} className="navigation-category">
+                {!collapsed && (
+                  <div className="category-header">
+                    <h4 className="category-title">
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </h4>
+                  </div>
+                )}
+
+                <div className="category-items">
+                  {categoryItems.map((item) => renderNavigationItem(item))}
                 </div>
-              )}
-              
-              <div className="category-items">
-                {categoryItems.map(item => renderNavigationItem(item))}
               </div>
-            </div>
-          )
-        ))}
+            ),
+        )}
       </div>
 
       {/* Footer */}
@@ -594,16 +622,19 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             <div className="recent-items">
               <h4 className="footer-title">Recent</h4>
               <div className="recent-items-list">
-                {recentManager.getRecentItems().slice(0, 3).map(item => (
-                  <button
-                    key={item.id}
-                    className="recent-item"
-                    onClick={() => handleItemClick(item)}
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </button>
-                ))}
+                {recentManager
+                  .getRecentItems()
+                  .slice(0, 3)
+                  .map((item) => (
+                    <button
+                      key={item.id}
+                      className="recent-item"
+                      onClick={() => handleItemClick(item)}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </button>
+                  ))}
               </div>
             </div>
           )}
@@ -612,7 +643,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
 
       <style jsx>{`
         .enterprise-sidebar {
-          width: ${collapsed ? '60px' : '280px'};
+          width: ${collapsed ? "60px" : "280px"};
           height: 100vh;
           background: rgba(255, 255, 255, 0.05);
           backdrop-filter: blur(16px);

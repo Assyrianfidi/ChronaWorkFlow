@@ -1,13 +1,26 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { useAuthStore } from '../../store/auth-store';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+} from "axios";
+import { useAuthStore } from '../../store/auth-store.js';
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "import.meta.env.VITE_APP_URL/api";
 
 // Create an Axios instance with default config
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -22,7 +35,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor to handle errors
@@ -32,10 +45,10 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // If unauthorized, clear auth and redirect to login
       useAuthStore.getState().logout();
-      window.location.href = '/login';
+      window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Helper function to handle API errors
@@ -61,7 +74,7 @@ export const apiRequest = {
   post: async <T>(
     url: string,
     data?: unknown,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<T> => {
     try {
       const response = await api.post<T>(url, data, config);
@@ -74,7 +87,7 @@ export const apiRequest = {
   put: async <T>(
     url: string,
     data?: unknown,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<T> => {
     try {
       const response = await api.put<T>(url, data, config);
@@ -87,7 +100,7 @@ export const apiRequest = {
   patch: async <T>(
     url: string,
     data?: unknown,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<T> => {
     try {
       const response = await api.patch<T>(url, data, config);
@@ -110,7 +123,7 @@ export const apiRequest = {
 // Helper to get the current company ID
 export function getCurrentCompanyId(): string {
   const { user } = useAuthStore.getState();
-  return user?.companyId || '';
+  return user?.companyId || "";
 }
 
 // Export the axios instance for direct use if needed

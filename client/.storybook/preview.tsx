@@ -1,12 +1,15 @@
+import React, { type ComponentType } from "react";
 import type { Preview } from "@storybook/react";
 import { ThemeProvider } from "../src/theme";
 import { BrowserRouter } from "react-router-dom";
 
 export const decorators = [
-  (Story) => (
+  (Story: ComponentType) => (
     <BrowserRouter>
       <ThemeProvider>
-        <Story />
+        <div className="bg-surface0 min-h-screen p-6">
+          <Story />
+        </div>
       </ThemeProvider>
     </BrowserRouter>
   ),
@@ -20,6 +23,13 @@ const preview: Preview = {
         color: /(background|color)$/i,
         date: /Date$/,
       },
+    },
+    backgrounds: {
+      default: "surface0",
+      values: [
+        { name: "surface0", value: "var(--surface-0)" },
+        { name: "surface1", value: "var(--surface-1)" },
+      ],
     },
   },
 };

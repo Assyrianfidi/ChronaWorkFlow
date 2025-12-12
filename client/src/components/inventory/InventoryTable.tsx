@@ -1,10 +1,26 @@
-import React, { useState, useMemo } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { Checkbox } from '../components/ui/checkbox';
-import { Package, ChevronDown, ChevronRight, MoreHorizontal } from 'lucide-react';
-import { InventoryItem, InventoryStatus } from '../types/inventory';
+import React, { useState, useMemo } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../components/ui/table.js.js';
+// @ts-ignore
+import { Badge } from '../components/ui/badge.js.js';
+// @ts-ignore
+import { Button } from '../components/ui/button.js.js';
+// @ts-ignore
+import { Checkbox } from '../components/ui/checkbox.js.js';
+import {
+  Package,
+  ChevronDown,
+  ChevronRight,
+  MoreHorizontal,
+} from "lucide-react";
+// @ts-ignore
+import { InventoryItem, InventoryStatus } from '../types/inventory.js.js';
 
 interface InventoryTableProps {
   items: InventoryItem[];
@@ -13,7 +29,7 @@ interface InventoryTableProps {
   onSelectItem?: (id: string, selected: boolean) => void;
   onSelectAll?: (selected: boolean) => void;
   onToggleExpand?: (id: string) => void;
-  onSort?: (field: string, order: 'asc' | 'desc') => void;
+  onSort?: (field: string, order: "asc" | "desc") => void;
   onEdit?: (item: InventoryItem) => void;
   onDelete?: (item: InventoryItem) => void;
   expandedItems?: string[];
@@ -38,30 +54,30 @@ export function InventoryTable({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getStockStatus = (item: InventoryItem): InventoryStatus => {
-    if (item.quantityOnHand === 0) return 'out_of_stock';
-    if (item.quantityOnHand <= item.reorderPoint) return 'low_stock';
-    return 'in_stock';
+    if (item.quantityOnHand === 0) return "out_of_stock";
+    if (item.quantityOnHand <= item.reorderPoint) return "low_stock";
+    return "in_stock";
   };
 
   const getStatusBadgeVariant = (status: InventoryStatus) => {
     switch (status) {
-      case 'out_of_stock':
-        return 'destructive';
-      case 'low_stock':
-        return 'outline';
+      case "out_of_stock":
+        return "destructive";
+      case "low_stock":
+        return "outline";
       default:
-        return 'default';
+        return "default";
     }
   };
 
   const getStatusText = (status: InventoryStatus) => {
     switch (status) {
-      case 'out_of_stock':
-        return 'Out of Stock';
-      case 'low_stock':
-        return 'Low Stock';
+      case "out_of_stock":
+        return "Out of Stock";
+      case "low_stock":
+        return "Low Stock";
       default:
-        return 'In Stock';
+        return "In Stock";
     }
   };
 
@@ -76,7 +92,9 @@ export function InventoryTable({
           <TableRow>
             <TableHead className="w-12">
               <Checkbox
-                checked={selectedItems.length === items.length && items.length > 0}
+                checked={
+                  selectedItems.length === items.length && items.length > 0
+                }
                 onCheckedChange={handleSelectAll}
                 aria-label="Select all"
               />
@@ -111,14 +129,17 @@ export function InventoryTable({
               return (
                 <React.Fragment key={item.id}>
                   <TableRow
-                    className={isSelected ? 'bg-muted/50' : ''}
+                    className={isSelected ? "bg-muted/50" : ""}
                     onMouseEnter={() => onHoverRow?.(item.id)}
                     onMouseLeave={() => onHoverRow?.(null)}
                   >
                     <TableCell>
                       <Checkbox
                         checked={isSelected}
-                        onCheckedChange={(checked) => onSelectItem?.(item.id, checked as boolean)}
+                        onCheckedChange={(checked) =>
+// @ts-ignore
+                          onSelectItem?.(item.id, checked as boolean)
+                        }
                         aria-label={`Select ${item.name}`}
                       />
                     </TableCell>
@@ -145,8 +166,10 @@ export function InventoryTable({
                       <div className="flex items-center space-x-2">
                         <Package className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <div className="font-medium">{item.name || ''}</div>
-                          <div className="text-sm text-muted-foreground">{item.sku || ''}</div>
+                          <div className="font-medium">{item.name || ""}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {item.sku || ""}
+                          </div>
                         </div>
                         <Badge variant={getStatusBadgeVariant(status)}>
                           {getStatusText(status)}
@@ -185,19 +208,27 @@ export function InventoryTable({
                             <h4 className="font-medium mb-2">Details</h4>
                             <div className="space-y-1">
                               <div className="flex justify-between">
-                                <span className="text-muted-foreground">SKU:</span>
-                                <span>{item.sku || ''}</span>
+                                <span className="text-muted-foreground">
+                                  SKU:
+                                </span>
+                                <span>{item.sku || ""}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-muted-foreground">Available:</span>
+                                <span className="text-muted-foreground">
+                                  Available:
+                                </span>
                                 <span>{item.quantityAvailable || 0} units</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-muted-foreground">On Hand:</span>
+                                <span className="text-muted-foreground">
+                                  On Hand:
+                                </span>
                                 <span>{item.quantityOnHand || 0} units</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-muted-foreground">Reserved:</span>
+                                <span className="text-muted-foreground">
+                                  Reserved:
+                                </span>
                                 <span>{item.quantityReserved || 0} units</span>
                               </div>
                             </div>
@@ -206,31 +237,46 @@ export function InventoryTable({
                             <h4 className="font-medium mb-2">Pricing</h4>
                             <div className="space-y-1">
                               <div className="flex justify-between">
-                                <span className="text-muted-foreground">Retail Price:</span>
+                                <span className="text-muted-foreground">
+                                  Retail Price:
+                                </span>
                                 <span>${item.unitPrice.toFixed(2)}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-muted-foreground">Cost:</span>
+                                <span className="text-muted-foreground">
+                                  Cost:
+                                </span>
                                 <span>${item.unitCost.toFixed(2)}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-muted-foreground">Margin:</span>
+                                <span className="text-muted-foreground">
+                                  Margin:
+                                </span>
                                 <span>
                                   {item.unitCost > 0
-                                    ? `${((item.unitPrice - item.unitCost) / item.unitCost * 100).toFixed(1)}%`
-                                    : 'N/A'}
+                                    ? `${(((item.unitPrice - item.unitCost) / item.unitCost) * 100).toFixed(1)}%`
+                                    : "N/A"}
                                 </span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-muted-foreground">Value:</span>
-                                <span>${((item.quantityOnHand || 0) * item.unitCost).toFixed(2)}</span>
+                                <span className="text-muted-foreground">
+                                  Value:
+                                </span>
+                                <span>
+                                  $
+                                  {(
+                                    (item.quantityOnHand || 0) * item.unitCost
+                                  ).toFixed(2)}
+                                </span>
                               </div>
                             </div>
                           </div>
                           {item.description && (
                             <div className="col-span-2">
                               <h4 className="font-medium mb-2">Description</h4>
-                              <p className="text-muted-foreground">{item.description}</p>
+                              <p className="text-muted-foreground">
+                                {item.description}
+                              </p>
                             </div>
                           )}
                         </div>

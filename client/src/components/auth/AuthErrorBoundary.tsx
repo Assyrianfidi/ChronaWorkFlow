@@ -1,7 +1,20 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { AlertTriangle } from 'lucide-react';
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { Button } from '../components/ui/button.js';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js';
+import { AlertTriangle } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -33,15 +46,15 @@ export class AuthErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Auth Error Boundary caught an error:', error, errorInfo);
-    
+    console.error("Auth Error Boundary caught an error:", error, errorInfo);
+
     this.setState({
       error,
       errorInfo,
     });
 
     // Log error to monitoring service in production
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       // TODO: Add error logging service (Sentry, LogRocket, etc.)
     }
   }
@@ -74,7 +87,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {process.env.NODE_ENV === import.meta.env.MODE && this.state.error && (
                 <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-3">
                   <p className="text-sm text-red-800 dark:text-red-200 font-mono">
                     {this.state.error.message}
@@ -87,7 +100,7 @@ export class AuthErrorBoundary extends Component<Props, State> {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => window.location.href = '/'}
+                  onClick={() => (window.location.href = "/")}
                   className="w-full"
                 >
                   Go to Homepage

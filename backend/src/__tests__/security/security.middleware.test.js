@@ -1,291 +1,482 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+var __awaiter =
+  (this && this.__awaiter) ||
+  function (thisArg, _arguments, P, generator) {
+    function adopt(value) {
+      return value instanceof P
+        ? value
+        : new P(function (resolve) {
+            resolve(value);
+          });
     }
-};
+    return new (P || (P = Promise))(function (resolve, reject) {
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator["throw"](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done
+          ? resolve(result.value)
+          : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+  };
+var __generator =
+  (this && this.__generator) ||
+  function (thisArg, body) {
+    var _ = {
+        label: 0,
+        sent: function () {
+          if (t[0] & 1) throw t[1];
+          return t[1];
+        },
+        trys: [],
+        ops: [],
+      },
+      f,
+      y,
+      t,
+      g = Object.create(
+        (typeof Iterator === "function" ? Iterator : Object).prototype,
+      );
+    return (
+      (g.next = verb(0)),
+      (g["throw"] = verb(1)),
+      (g["return"] = verb(2)),
+      typeof Symbol === "function" &&
+        (g[Symbol.iterator] = function () {
+          return this;
+        }),
+      g
+    );
+    function verb(n) {
+      return function (v) {
+        return step([n, v]);
+      };
+    }
+    function step(op) {
+      if (f) throw new TypeError("Generator is already executing.");
+      while ((g && ((g = 0), op[0] && (_ = 0)), _))
+        try {
+          if (
+            ((f = 1),
+            y &&
+              (t =
+                op[0] & 2
+                  ? y["return"]
+                  : op[0]
+                    ? y["throw"] || ((t = y["return"]) && t.call(y), 0)
+                    : y.next) &&
+              !(t = t.call(y, op[1])).done)
+          )
+            return t;
+          if (((y = 0), t)) op = [op[0] & 2, t.value];
+          switch (op[0]) {
+            case 0:
+            case 1:
+              t = op;
+              break;
+            case 4:
+              _.label++;
+              return { value: op[1], done: false };
+            case 5:
+              _.label++;
+              y = op[1];
+              op = [0];
+              continue;
+            case 7:
+              op = _.ops.pop();
+              _.trys.pop();
+              continue;
+            default:
+              if (
+                !((t = _.trys), (t = t.length > 0 && t[t.length - 1])) &&
+                (op[0] === 6 || op[0] === 2)
+              ) {
+                _ = 0;
+                continue;
+              }
+              if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                _.label = op[1];
+                break;
+              }
+              if (op[0] === 6 && _.label < t[1]) {
+                _.label = t[1];
+                t = op;
+                break;
+              }
+              if (t && _.label < t[2]) {
+                _.label = t[2];
+                _.ops.push(op);
+                break;
+              }
+              if (t[2]) _.ops.pop();
+              _.trys.pop();
+              continue;
+          }
+          op = body.call(thisArg, _);
+        } catch (e) {
+          op = [6, e];
+          y = 0;
+        } finally {
+          f = t = 0;
+        }
+      if (op[0] & 5) throw op[1];
+      return { value: op[0] ? op[1] : void 0, done: true };
+    }
+  };
 Object.defineProperty(exports, "__esModule", { value: true });
 var supertest_1 = require("supertest");
 var express_1 = require("express");
 var security_1 = require("../../middleware/security");
-describe('Security Middleware', function () {
-    var app;
-    beforeEach(function () {
-        app = (0, express_1.default)();
-        // Apply security middleware first
-        (0, security_1.default)(app);
-        // Add test routes BEFORE applying specific rate limiters
-        app.get('/test', function (req, res) { return res.json({ message: 'test' }); });
-        app.post('/test', function (req, res) { return res.json(req.body); });
-        // Apply auth rate limiter to auth routes
-        app.use('/api/v1/auth/login', security_1.authRateLimiter);
-        app.use('/api/v1/auth/register', security_1.authRateLimiter);
-        app.use('/api/v1/accounts', security_1.sensitiveRouteLimiter);
-        app.use('/api/v1/transactions', security_1.sensitiveRouteLimiter);
-        // Add auth routes after rate limiters
-        app.post('/api/v1/auth/login', function (req, res) { return res.json({ success: true }); });
-        app.post('/api/v1/auth/register', function (req, res) { return res.json({ success: true }); });
-        app.post('/api/v1/accounts', function (req, res) { return res.json({ success: true }); });
-        app.post('/api/v1/transactions', function (req, res) { return res.json({ success: true }); });
+describe("Security Middleware", function () {
+  var app;
+  beforeEach(function () {
+    app = (0, express_1.default)();
+    // Apply security middleware first
+    (0, security_1.default)(app);
+    // Add test routes BEFORE applying specific rate limiters
+    app.get("/test", function (req, res) {
+      return res.json({ message: "test" });
     });
-    describe('Rate Limiting', function () {
-        it('should allow normal requests', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, supertest_1.default)(app).get('/test')];
-                    case 1:
-                        response = _a.sent();
-                        expect(response.status).toBe(200);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should limit auth login attempts to 5 per minute', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var promises, i, results, successCount, rateLimitCount;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        promises = [];
-                        for (i = 0; i < 7; i++) {
-                            promises.push((0, supertest_1.default)(app).post('/api/v1/auth/login').send({ email: 'test@example.com', password: 'password' }));
-                        }
-                        return [4 /*yield*/, Promise.all(promises)];
-                    case 1:
-                        results = _a.sent();
-                        successCount = results.filter(function (r) { return r.status === 200; }).length;
-                        rateLimitCount = results.filter(function (r) { return r.status === 429; }).length;
-                        expect(successCount).toBeLessThanOrEqual(5);
-                        expect(rateLimitCount).toBeGreaterThan(0);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should limit auth register attempts to 5 per minute', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var promises, i, results, successCount, rateLimitCount;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        promises = [];
-                        for (i = 0; i < 7; i++) {
-                            promises.push((0, supertest_1.default)(app).post('/api/v1/auth/register').send({ email: "test".concat(i, "@example.com"), password: 'password' }));
-                        }
-                        return [4 /*yield*/, Promise.all(promises)];
-                    case 1:
-                        results = _a.sent();
-                        successCount = results.filter(function (r) { return r.status === 200; }).length;
-                        rateLimitCount = results.filter(function (r) { return r.status === 429; }).length;
-                        expect(successCount).toBeLessThanOrEqual(5);
-                        expect(rateLimitCount).toBeGreaterThan(0);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should limit sensitive operations to 10 per 30 seconds', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var promises, i, results, successCount, rateLimitCount;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        promises = [];
-                        for (i = 0; i < 12; i++) {
-                            promises.push((0, supertest_1.default)(app).post('/api/v1/accounts').send({ name: 'Test Account' }));
-                        }
-                        return [4 /*yield*/, Promise.all(promises)];
-                    case 1:
-                        results = _a.sent();
-                        successCount = results.filter(function (r) { return r.status === 200; }).length;
-                        rateLimitCount = results.filter(function (r) { return r.status === 429; }).length;
-                        expect(successCount).toBeLessThanOrEqual(10);
-                        expect(rateLimitCount).toBeGreaterThan(0);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
+    app.post("/test", function (req, res) {
+      return res.json(req.body);
     });
-    describe('CORS Enforcement', function () {
-        it('should allow requests from allowed origin', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        process.env.ALLOWED_ORIGINS = 'http://localhost:3000';
-                        return [4 /*yield*/, (0, supertest_1.default)(app)
-                                .get('/test')
-                                .set('Origin', 'http://localhost:3000')];
-                    case 1:
-                        response = _a.sent();
-                        expect(response.status).toBe(200);
-                        expect(response.headers['access-control-allow-origin']).toBe('http://localhost:3000');
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should reject requests from disallowed origin', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        process.env.ALLOWED_ORIGINS = 'http://localhost:3000';
-                        return [4 /*yield*/, (0, supertest_1.default)(app)
-                                .get('/test')
-                                .set('Origin', 'http://malicious-site.com')];
-                    case 1:
-                        response = _a.sent();
-                        expect(response.status).not.toBe(200);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
+    // Apply auth rate limiter to auth routes
+    app.use("/api/v1/auth/login", security_1.authRateLimiter);
+    app.use("/api/v1/auth/register", security_1.authRateLimiter);
+    app.use("/api/v1/accounts", security_1.sensitiveRouteLimiter);
+    app.use("/api/v1/transactions", security_1.sensitiveRouteLimiter);
+    // Add auth routes after rate limiters
+    app.post("/api/v1/auth/login", function (req, res) {
+      return res.json({ success: true });
     });
-    describe('JSON Content Type Enforcement', function () {
-        it('should allow application/json content type', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, supertest_1.default)(app)
-                            .post('/test')
-                            .set('Content-Type', 'application/json')
-                            .send({ test: 'data' })];
-                    case 1:
-                        response = _a.sent();
-                        expect(response.status).toBe(200);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should reject text/html content type', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, supertest_1.default)(app)
-                            .post('/test')
-                            .set('Content-Type', 'text/html')
-                            .send('<html>test</html>')];
-                    case 1:
-                        response = _a.sent();
-                        expect(response.status).toBe(415);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should reject XML content type', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, supertest_1.default)(app)
-                            .post('/test')
-                            .set('Content-Type', 'application/xml')
-                            .send('<xml>test</xml>')];
-                    case 1:
-                        response = _a.sent();
-                        expect(response.status).toBe(415);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
+    app.post("/api/v1/auth/register", function (req, res) {
+      return res.json({ success: true });
     });
-    describe('Body Size Limits', function () {
-        it('should accept requests under 100kb', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var smallData, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        smallData = { data: 'x'.repeat(1000) };
-                        return [4 /*yield*/, (0, supertest_1.default)(app)
-                                .post('/test')
-                                .send(smallData)];
-                    case 1:
-                        response = _a.sent();
-                        expect(response.status).toBe(200);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-        it('should reject requests over 100kb', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var largeData, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        largeData = { data: 'x'.repeat(102400) };
-                        return [4 /*yield*/, (0, supertest_1.default)(app)
-                                .post('/test')
-                                .send(largeData)];
-                    case 1:
-                        response = _a.sent();
-                        expect(response.status).toBe(413);
-                        return [2 /*return*/];
-                }
-            });
-        }); });
+    app.post("/api/v1/accounts", function (req, res) {
+      return res.json({ success: true });
     });
-    describe('XSS Payload Blocking', function () {
-        it('should sanitize XSS payloads in JSON', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var xssPayload, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        xssPayload = {
-                            message: '<script>alert("xss")</script>',
-                            comment: '<iframe src="javascript:alert(1)"></iframe>'
-                        };
-                        return [4 /*yield*/, (0, supertest_1.default)(app)
-                                .post('/test')
-                                .send(xssPayload)];
-                    case 1:
-                        response = _a.sent();
-                        expect(response.status).toBe(200);
-                        expect(response.body.message).not.toContain('<script>');
-                        expect(response.body.comment).not.toContain('<iframe>');
-                        return [2 /*return*/];
-                }
-            });
-        }); });
+    app.post("/api/v1/transactions", function (req, res) {
+      return res.json({ success: true });
     });
-    describe('Security Headers', function () {
-        it('should include security headers', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, supertest_1.default)(app).get('/test')];
-                    case 1:
-                        response = _a.sent();
-                        expect(response.headers['x-frame-options']).toBeDefined();
-                        expect(response.headers['x-content-type-options']).toBeDefined();
-                        expect(response.headers['x-xss-protection']).toBeDefined();
-                        return [2 /*return*/];
-                }
-            });
-        }); });
+  });
+  describe("Rate Limiting", function () {
+    it("should allow normal requests", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              return [4 /*yield*/, (0, supertest_1.default)(app).get("/test")];
+            case 1:
+              response = _a.sent();
+              expect(response.status).toBe(200);
+              return [2 /*return*/];
+          }
+        });
+      });
     });
+    it("should limit auth login attempts to 5 per minute", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var promises, i, results, successCount, rateLimitCount;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              promises = [];
+              for (i = 0; i < 7; i++) {
+                promises.push(
+                  (0, supertest_1.default)(app)
+                    .post("/api/v1/auth/login")
+                    .send({ email: "test@example.com", password: "password" }),
+                );
+              }
+              return [4 /*yield*/, Promise.all(promises)];
+            case 1:
+              results = _a.sent();
+              successCount = results.filter(function (r) {
+                return r.status === 200;
+              }).length;
+              rateLimitCount = results.filter(function (r) {
+                return r.status === 429;
+              }).length;
+              expect(successCount).toBeLessThanOrEqual(5);
+              expect(rateLimitCount).toBeGreaterThan(0);
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+    it("should limit auth register attempts to 5 per minute", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var promises, i, results, successCount, rateLimitCount;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              promises = [];
+              for (i = 0; i < 7; i++) {
+                promises.push(
+                  (0, supertest_1.default)(app)
+                    .post("/api/v1/auth/register")
+                    .send({
+                      email: "test".concat(i, "@example.com"),
+                      password: "password",
+                    }),
+                );
+              }
+              return [4 /*yield*/, Promise.all(promises)];
+            case 1:
+              results = _a.sent();
+              successCount = results.filter(function (r) {
+                return r.status === 200;
+              }).length;
+              rateLimitCount = results.filter(function (r) {
+                return r.status === 429;
+              }).length;
+              expect(successCount).toBeLessThanOrEqual(5);
+              expect(rateLimitCount).toBeGreaterThan(0);
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+    it("should limit sensitive operations to 10 per 30 seconds", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var promises, i, results, successCount, rateLimitCount;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              promises = [];
+              for (i = 0; i < 12; i++) {
+                promises.push(
+                  (0, supertest_1.default)(app)
+                    .post("/api/v1/accounts")
+                    .send({ name: "Test Account" }),
+                );
+              }
+              return [4 /*yield*/, Promise.all(promises)];
+            case 1:
+              results = _a.sent();
+              successCount = results.filter(function (r) {
+                return r.status === 200;
+              }).length;
+              rateLimitCount = results.filter(function (r) {
+                return r.status === 429;
+              }).length;
+              expect(successCount).toBeLessThanOrEqual(10);
+              expect(rateLimitCount).toBeGreaterThan(0);
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+  });
+  describe("CORS Enforcement", function () {
+    it("should allow requests from allowed origin", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              process.env.ALLOWED_ORIGINS = "http://localhost:3000";
+              return [
+                4 /*yield*/,
+                (0, supertest_1.default)(app)
+                  .get("/test")
+                  .set("Origin", "http://localhost:3000"),
+              ];
+            case 1:
+              response = _a.sent();
+              expect(response.status).toBe(200);
+              expect(response.headers["access-control-allow-origin"]).toBe(
+                "http://localhost:3000",
+              );
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+    it("should reject requests from disallowed origin", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              process.env.ALLOWED_ORIGINS = "http://localhost:3000";
+              return [
+                4 /*yield*/,
+                (0, supertest_1.default)(app)
+                  .get("/test")
+                  .set("Origin", "http://malicious-site.com"),
+              ];
+            case 1:
+              response = _a.sent();
+              expect(response.status).not.toBe(200);
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+  });
+  describe("JSON Content Type Enforcement", function () {
+    it("should allow application/json content type", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              return [
+                4 /*yield*/,
+                (0, supertest_1.default)(app)
+                  .post("/test")
+                  .set("Content-Type", "application/json")
+                  .send({ test: "data" }),
+              ];
+            case 1:
+              response = _a.sent();
+              expect(response.status).toBe(200);
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+    it("should reject text/html content type", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              return [
+                4 /*yield*/,
+                (0, supertest_1.default)(app)
+                  .post("/test")
+                  .set("Content-Type", "text/html")
+                  .send("<html>test</html>"),
+              ];
+            case 1:
+              response = _a.sent();
+              expect(response.status).toBe(415);
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+    it("should reject XML content type", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              return [
+                4 /*yield*/,
+                (0, supertest_1.default)(app)
+                  .post("/test")
+                  .set("Content-Type", "application/xml")
+                  .send("<xml>test</xml>"),
+              ];
+            case 1:
+              response = _a.sent();
+              expect(response.status).toBe(415);
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+  });
+  describe("Body Size Limits", function () {
+    it("should accept requests under 100kb", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var smallData, response;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              smallData = { data: "x".repeat(1000) };
+              return [
+                4 /*yield*/,
+                (0, supertest_1.default)(app).post("/test").send(smallData),
+              ];
+            case 1:
+              response = _a.sent();
+              expect(response.status).toBe(200);
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+    it("should reject requests over 100kb", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var largeData, response;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              largeData = { data: "x".repeat(102400) };
+              return [
+                4 /*yield*/,
+                (0, supertest_1.default)(app).post("/test").send(largeData),
+              ];
+            case 1:
+              response = _a.sent();
+              expect(response.status).toBe(413);
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+  });
+  describe("XSS Payload Blocking", function () {
+    it("should sanitize XSS payloads in JSON", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var xssPayload, response;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              xssPayload = {
+                message: '<script>alert("xss")</script>',
+                comment: '<iframe src="javascript:alert(1)"></iframe>',
+              };
+              return [
+                4 /*yield*/,
+                (0, supertest_1.default)(app).post("/test").send(xssPayload),
+              ];
+            case 1:
+              response = _a.sent();
+              expect(response.status).toBe(200);
+              expect(response.body.message).not.toContain("<script>");
+              expect(response.body.comment).not.toContain("<iframe>");
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+  });
+  describe("Security Headers", function () {
+    it("should include security headers", function () {
+      return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+          switch (_a.label) {
+            case 0:
+              return [4 /*yield*/, (0, supertest_1.default)(app).get("/test")];
+            case 1:
+              response = _a.sent();
+              expect(response.headers["x-frame-options"]).toBeDefined();
+              expect(response.headers["x-content-type-options"]).toBeDefined();
+              expect(response.headers["x-xss-protection"]).toBeDefined();
+              return [2 /*return*/];
+          }
+        });
+      });
+    });
+  });
 });

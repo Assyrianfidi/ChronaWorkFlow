@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export interface User {
   id: string | number;
@@ -23,17 +23,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   token: null,
   isAuthenticated: false,
   isLoading: false,
-  
+
   login: async (email: string, password: string) => {
     set({ isLoading: true });
     try {
       // Mock login - replace with actual API call
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         set({
@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       throw error;
     }
   },
-  
+
   logout: () => {
     set({
       user: null,
@@ -57,7 +57,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       isLoading: false,
     });
   },
-  
+
   setUser: (user: User) => set({ user }),
   setToken: (token: string) => set({ token }),
 }));

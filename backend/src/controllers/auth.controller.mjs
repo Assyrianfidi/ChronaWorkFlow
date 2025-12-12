@@ -1,18 +1,16 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { StatusCodes } from 'http-status-codes';
-import { prisma } from '../config/prisma.js';
-import { ROLES } from '../constants/roles.js';
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { StatusCodes } from "http-status-codes";
+import { prisma } from "../config/prisma.js";
+import { ROLES } from "../constants/roles.js";
 
 /**
  * Generate JWT token
  */
 const generateToken = (userId) => {
-  return jwt.sign(
-    { userId },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN }
-  );
+  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
 };
 
 /**
@@ -28,7 +26,7 @@ export const register = async (req, res) => {
     if (!name || !email || !password) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: 'Please provide name, email, and password',
+        message: "Please provide name, email, and password",
       });
     }
 
@@ -40,7 +38,7 @@ export const register = async (req, res) => {
     if (existingUser) {
       return res.status(StatusCodes.CONFLICT).json({
         success: false,
-        message: 'User already exists',
+        message: "User already exists",
       });
     }
 
@@ -71,10 +69,10 @@ export const register = async (req, res) => {
       user: userWithoutPassword,
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: 'An error occurred during registration',
+      message: "An error occurred during registration",
     });
   }
 };
@@ -92,7 +90,7 @@ export const login = async (req, res) => {
     if (!email || !password) {
       return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
-        message: 'Please provide email and password',
+        message: "Please provide email and password",
       });
     }
 
@@ -104,7 +102,7 @@ export const login = async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
         success: false,
-        message: 'Invalid credentials',
+        message: "Invalid credentials",
       });
     }
 
@@ -112,7 +110,7 @@ export const login = async (req, res) => {
     if (!user.isActive) {
       return res.status(StatusCodes.FORBIDDEN).json({
         success: false,
-        message: 'Account is deactivated',
+        message: "Account is deactivated",
       });
     }
 
@@ -128,10 +126,10 @@ export const login = async (req, res) => {
       user: userWithoutPassword,
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: 'An error occurred during login',
+      message: "An error occurred during login",
     });
   }
 };
@@ -147,7 +145,7 @@ export const getMe = async (req, res) => {
     if (!req.user) {
       return res.status(StatusCodes.UNAUTHORIZED).json({
         success: false,
-        message: 'Not authorized',
+        message: "Not authorized",
       });
     }
 
@@ -168,7 +166,7 @@ export const getMe = async (req, res) => {
     if (!user) {
       return res.status(StatusCodes.NOT_FOUND).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
       });
     }
 
@@ -177,10 +175,10 @@ export const getMe = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    console.error('Get me error:', error);
+    console.error("Get me error:", error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: 'An error occurred while fetching user data',
+      message: "An error occurred while fetching user data",
     });
   }
 };

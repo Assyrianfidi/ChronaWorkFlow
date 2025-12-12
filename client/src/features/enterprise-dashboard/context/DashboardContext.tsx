@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 
-type DashboardView = 'overview' | 'analytics' | 'workflows' | 'reports';
+type DashboardView = "overview" | "analytics" | "workflows" | "reports";
 
 interface Kpi {
   id: string;
@@ -8,7 +14,7 @@ interface Kpi {
   value: string | number;
   change?: number;
   target?: number;
-  format?: 'currency' | 'number' | 'percent';
+  format?: "currency" | "number" | "percent";
   chartData?: Array<{ date: string; value: number }>;
 }
 
@@ -30,42 +36,47 @@ interface DashboardContextType {
   refreshDashboard: () => Promise<void>;
 }
 
-const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
+const DashboardContext = createContext<DashboardContextType | undefined>(
+  undefined,
+);
 
 // Mock data - in a real app, this would be fetched from an API
 const mockKpis: Kpi[] = [
   {
-    id: 'revenue',
-    title: 'Total Revenue',
+    id: "revenue",
+    title: "Total Revenue",
     value: 1250000,
     change: 12.5,
-    format: 'currency',
+    format: "currency",
   },
   {
-    id: 'expenses',
-    title: 'Total Expenses',
+    id: "expenses",
+    title: "Total Expenses",
     value: 785000,
     change: -3.2,
-    format: 'currency',
+    format: "currency",
   },
   {
-    id: 'profit-margin',
-    title: 'Profit Margin',
+    id: "profit-margin",
+    title: "Profit Margin",
     value: 37.2,
     change: 2.1,
-    format: 'percent',
+    format: "percent",
   },
   {
-    id: 'invoices-outstanding',
-    title: 'Invoices Outstanding',
+    id: "invoices-outstanding",
+    title: "Invoices Outstanding",
     value: 42,
     change: -5.6,
-    format: 'number',
+    format: "number",
   },
 ];
 
-export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [activeView, setActiveView] = useState<DashboardView>('overview');
+// @ts-ignore
+export const DashboardProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [activeView, setActiveView] = useState<DashboardView>("overview");
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
   const [config, setConfig] = useState<DashboardConfig | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -75,8 +86,8 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
     try {
       setLoading(true);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       setConfig({
         kpis: mockKpis,
         widgets: [],
@@ -85,8 +96,10 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
       });
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to load dashboard'));
-      console.error('Error fetching dashboard config:', err);
+      setError(
+        err instanceof Error ? err : new Error("Failed to load dashboard"),
+      );
+      console.error("Error fetching dashboard config:", err);
     } finally {
       setLoading(false);
     }
@@ -117,7 +130,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
 export const useDashboard = () => {
   const context = useContext(DashboardContext);
   if (context === undefined) {
-    throw new Error('useDashboard must be used within a DashboardProvider');
+    throw new Error("useDashboard must be used within a DashboardProvider");
   }
   return context;
 };

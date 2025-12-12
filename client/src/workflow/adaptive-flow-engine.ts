@@ -1,3 +1,11 @@
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React, { useState } from 'react';
 /**
  * Omniflow Adaptive Flow Engine
  * Modular workflows that adjust based on user behavior and context
@@ -7,7 +15,13 @@ export interface WorkflowStep {
   id: string;
   name: string;
   description: string;
-  type: 'action' | 'decision' | 'data_input' | 'validation' | 'notification' | 'integration';
+  type:
+    | "action"
+    | "decision"
+    | "data_input"
+    | "validation"
+    | "notification"
+    | "integration";
   required: boolean;
   skippable: boolean;
   estimatedDuration: number; // in seconds
@@ -18,7 +32,7 @@ export interface WorkflowStep {
   ui: {
     component: string;
     props: Record<string, any>;
-    layout: 'full' | 'sidebar' | 'modal' | 'inline';
+    layout: "full" | "sidebar" | "modal" | "inline";
   };
   adaptive: {
     canBeSkipped: boolean;
@@ -29,27 +43,46 @@ export interface WorkflowStep {
 }
 
 export interface WorkflowCondition {
-  type: 'user_role' | 'data_state' | 'time_based' | 'performance' | 'contextual';
+  type:
+    | "user_role"
+    | "data_state"
+    | "time_based"
+    | "performance"
+    | "contextual";
   field: string;
-  operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than' | 'exists' | 'custom';
+  operator:
+    | "equals"
+    | "not_equals"
+    | "contains"
+    | "greater_than"
+    | "less_than"
+    | "exists"
+    | "custom";
   value: any;
   customLogic?: (context: WorkflowContext) => boolean;
 }
 
 export interface WorkflowAction {
-  type: 'create' | 'update' | 'delete' | 'send' | 'calculate' | 'navigate' | 'custom';
+  type:
+    | "create"
+    | "update"
+    | "delete"
+    | "send"
+    | "calculate"
+    | "navigate"
+    | "custom";
   target: string;
   parameters: Record<string, any>;
   async: boolean;
   retryPolicy: {
     maxAttempts: number;
-    backoffStrategy: 'linear' | 'exponential';
+    backoffStrategy: "linear" | "exponential";
     delay: number;
   };
 }
 
 export interface WorkflowValidation {
-  type: 'required' | 'format' | 'business_rule' | 'custom';
+  type: "required" | "format" | "business_rule" | "custom";
   field: string;
   rule: string;
   errorMessage: string;
@@ -79,13 +112,13 @@ export interface AdaptiveWorkflow {
   id: string;
   name: string;
   description: string;
-  category: 'billing' | 'invoicing' | 'receipts' | 'reports' | 'tax' | 'custom';
+  category: "billing" | "invoicing" | "receipts" | "reports" | "tax" | "custom";
   version: string;
   steps: WorkflowStep[];
   defaultFlow: string[]; // default step order
   adaptiveFlow: string[]; // current adaptive step order
   context: WorkflowContext;
-  state: 'draft' | 'active' | 'paused' | 'completed' | 'failed';
+  state: "draft" | "active" | "paused" | "completed" | "failed";
   progress: {
     currentStep: string;
     completedSteps: string[];
@@ -127,24 +160,24 @@ export class AdaptiveFlowEngine {
   }
 
   private initializeWorkflows(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // Start continuous adaptation
     this.startContinuousAdaptation();
-    
+
     // Load workflow templates
     this.loadWorkflowTemplates();
-    
+
     // Register default steps
     this.registerDefaultSteps();
-    
+
     // Initialize active workflows
     this.initializeActiveWorkflows();
   }
 
   private startContinuousAdaptation(): void {
     this.isRunning = true;
-    
+
     // Analyze and adapt workflows every 30 seconds
     this.adaptationInterval = window.setInterval(() => {
       this.analyzeAllWorkflows();
@@ -155,291 +188,308 @@ export class AdaptiveFlowEngine {
   private loadWorkflowTemplates(): void {
     // Billing workflow template
     const billingTemplate: Partial<AdaptiveWorkflow> = {
-      name: 'Invoice Creation & Payment',
-      description: 'Complete billing workflow from invoice creation to payment collection',
-      category: 'billing',
-      version: '1.0',
+      name: "Invoice Creation & Payment",
+      description:
+        "Complete billing workflow from invoice creation to payment collection",
+      category: "billing",
+      version: "1.0",
       defaultFlow: [
-        'customer-selection',
-        'invoice-details',
-        'line-items',
-        'tax-calculation',
-        'discount-application',
-        'review-invoice',
-        'send-invoice',
-        'payment-tracking'
-      ]
+        "customer-selection",
+        "invoice-details",
+        "line-items",
+        "tax-calculation",
+        "discount-application",
+        "review-invoice",
+        "send-invoice",
+        "payment-tracking",
+      ],
     };
 
     // Invoicing workflow template
     const invoicingTemplate: Partial<AdaptiveWorkflow> = {
-      name: 'Recurring Invoice Management',
-      description: 'Manage recurring invoices and automated billing',
-      category: 'invoicing',
-      version: '1.0',
+      name: "Recurring Invoice Management",
+      description: "Manage recurring invoices and automated billing",
+      category: "invoicing",
+      version: "1.0",
       defaultFlow: [
-        'customer-selection',
-        'invoice-template',
-        'schedule-setup',
-        'payment-methods',
-        'review-configuration',
-        'activate-recurring'
-      ]
+        "customer-selection",
+        "invoice-template",
+        "schedule-setup",
+        "payment-methods",
+        "review-configuration",
+        "activate-recurring",
+      ],
     };
 
     // Reports workflow template
     const reportsTemplate: Partial<AdaptiveWorkflow> = {
-      name: 'Financial Report Generation',
-      description: 'Generate comprehensive financial reports',
-      category: 'reports',
-      version: '1.0',
+      name: "Financial Report Generation",
+      description: "Generate comprehensive financial reports",
+      category: "reports",
+      version: "1.0",
       defaultFlow: [
-        'report-type-selection',
-        'date-range',
-        'data-filters',
-        'format-options',
-        'preview-report',
-        'generate-report',
-        'distribution'
-      ]
+        "report-type-selection",
+        "date-range",
+        "data-filters",
+        "format-options",
+        "preview-report",
+        "generate-report",
+        "distribution",
+      ],
     };
 
-    this.workflowTemplates.set('billing', billingTemplate);
-    this.workflowTemplates.set('invoicing', invoicingTemplate);
-    this.workflowTemplates.set('reports', reportsTemplate);
+    this.workflowTemplates.set("billing", billingTemplate);
+    this.workflowTemplates.set("invoicing", invoicingTemplate);
+    this.workflowTemplates.set("reports", reportsTemplate);
   }
 
   private registerDefaultSteps(): void {
     // Customer Selection Step
     const customerSelectionStep: WorkflowStep = {
-      id: 'customer-selection',
-      name: 'Select Customer',
-      description: 'Choose the customer for this transaction',
-      type: 'data_input',
+      id: "customer-selection",
+      name: "Select Customer",
+      description: "Choose the customer for this transaction",
+      type: "data_input",
       required: true,
       skippable: false,
       estimatedDuration: 30,
       dependencies: [],
       conditions: [
         {
-          type: 'user_role',
-          field: 'role',
-          operator: 'not_equals',
-          value: 'viewer'
-        }
+          type: "user_role",
+          field: "role",
+          operator: "not_equals",
+          value: "viewer",
+        },
       ],
       actions: [
         {
-          type: 'navigate',
-          target: '/customers/select',
+          type: "navigate",
+          target: "/customers/select",
           parameters: {},
           async: false,
-          retryPolicy: { maxAttempts: 3, backoffStrategy: 'linear', delay: 1000 }
-        }
+          retryPolicy: {
+            maxAttempts: 3,
+            backoffStrategy: "linear",
+            delay: 1000,
+          },
+        },
       ],
       validations: [
         {
-          type: 'required',
-          field: 'customerId',
-          rule: 'notEmpty',
-          errorMessage: 'Customer selection is required'
-        }
+          type: "required",
+          field: "customerId",
+          rule: "notEmpty",
+          errorMessage: "Customer selection is required",
+        },
       ],
       ui: {
-        component: 'CustomerSelector',
+        component: "CustomerSelector",
         props: { multiSelect: false, allowCreate: true },
-        layout: 'full'
+        layout: "full",
       },
       adaptive: {
         canBeSkipped: false,
         canBeAdded: false,
         priority: 10,
-        userBehaviorInfluence: 0.8
-      }
+        userBehaviorInfluence: 0.8,
+      },
     };
 
     // Invoice Details Step
     const invoiceDetailsStep: WorkflowStep = {
-      id: 'invoice-details',
-      name: 'Invoice Details',
-      description: 'Enter basic invoice information',
-      type: 'data_input',
+      id: "invoice-details",
+      name: "Invoice Details",
+      description: "Enter basic invoice information",
+      type: "data_input",
       required: true,
       skippable: false,
       estimatedDuration: 60,
-      dependencies: ['customer-selection'],
+      dependencies: ["customer-selection"],
       conditions: [],
       actions: [
         {
-          type: 'create',
-          target: 'invoice',
+          type: "create",
+          target: "invoice",
           parameters: {},
           async: false,
-          retryPolicy: { maxAttempts: 3, backoffStrategy: 'linear', delay: 1000 }
-        }
+          retryPolicy: {
+            maxAttempts: 3,
+            backoffStrategy: "linear",
+            delay: 1000,
+          },
+        },
       ],
       validations: [
         {
-          type: 'required',
-          field: 'invoiceNumber',
-          rule: 'notEmpty',
-          errorMessage: 'Invoice number is required'
+          type: "required",
+          field: "invoiceNumber",
+          rule: "notEmpty",
+          errorMessage: "Invoice number is required",
         },
         {
-          type: 'required',
-          field: 'dueDate',
-          rule: 'notEmpty',
-          errorMessage: 'Due date is required'
-        }
+          type: "required",
+          field: "dueDate",
+          rule: "notEmpty",
+          errorMessage: "Due date is required",
+        },
       ],
       ui: {
-        component: 'InvoiceDetailsForm',
+        component: "InvoiceDetailsForm",
         props: { autoGenerateNumber: true },
-        layout: 'full'
+        layout: "full",
       },
       adaptive: {
         canBeSkipped: false,
         canBeAdded: false,
         priority: 9,
-        userBehaviorInfluence: 0.7
-      }
+        userBehaviorInfluence: 0.7,
+      },
     };
 
     // Line Items Step
     const lineItemsStep: WorkflowStep = {
-      id: 'line-items',
-      name: 'Add Line Items',
-      description: 'Add products or services to the invoice',
-      type: 'data_input',
+      id: "line-items",
+      name: "Add Line Items",
+      description: "Add products or services to the invoice",
+      type: "data_input",
       required: true,
       skippable: false,
       estimatedDuration: 120,
-      dependencies: ['invoice-details'],
+      dependencies: ["invoice-details"],
       conditions: [],
       actions: [
         {
-          type: 'create',
-          target: 'lineItems',
+          type: "create",
+          target: "lineItems",
           parameters: {},
           async: false,
-          retryPolicy: { maxAttempts: 3, backoffStrategy: 'linear', delay: 1000 }
-        }
+          retryPolicy: {
+            maxAttempts: 3,
+            backoffStrategy: "linear",
+            delay: 1000,
+          },
+        },
       ],
       validations: [
         {
-          type: 'business_rule',
-          field: 'totalAmount',
-          rule: 'greaterThan 0',
-          errorMessage: 'Invoice must have at least one line item'
-        }
+          type: "business_rule",
+          field: "totalAmount",
+          rule: "greaterThan 0",
+          errorMessage: "Invoice must have at least one line item",
+        },
       ],
       ui: {
-        component: 'LineItemsEditor',
+        component: "LineItemsEditor",
         props: { allowCustomItems: true, taxCalculation: true },
-        layout: 'full'
+        layout: "full",
       },
       adaptive: {
         canBeSkipped: false,
         canBeAdded: false,
         priority: 8,
-        userBehaviorInfluence: 0.9
-      }
+        userBehaviorInfluence: 0.9,
+      },
     };
 
     // Tax Calculation Step
     const taxCalculationStep: WorkflowStep = {
-      id: 'tax-calculation',
-      name: 'Tax Calculation',
-      description: 'Calculate applicable taxes',
-      type: 'action',
+      id: "tax-calculation",
+      name: "Tax Calculation",
+      description: "Calculate applicable taxes",
+      type: "action",
       required: true,
       skippable: true,
       estimatedDuration: 10,
-      dependencies: ['line-items'],
+      dependencies: ["line-items"],
       conditions: [
         {
-          type: 'data_state',
-          field: 'taxEnabled',
-          operator: 'equals',
-          value: true
-        }
+          type: "data_state",
+          field: "taxEnabled",
+          operator: "equals",
+          value: true,
+        },
       ],
       actions: [
         {
-          type: 'calculate',
-          target: 'tax',
-          parameters: { jurisdiction: 'auto', rate: 'auto' },
+          type: "calculate",
+          target: "tax",
+          parameters: { jurisdiction: "auto", rate: "auto" },
           async: true,
-          retryPolicy: { maxAttempts: 3, backoffStrategy: 'exponential', delay: 2000 }
-        }
+          retryPolicy: {
+            maxAttempts: 3,
+            backoffStrategy: "exponential",
+            delay: 2000,
+          },
+        },
       ],
       validations: [],
       ui: {
-        component: 'TaxCalculationDisplay',
+        component: "TaxCalculationDisplay",
         props: { editable: true },
-        layout: 'sidebar'
+        layout: "sidebar",
       },
       adaptive: {
         canBeSkipped: true,
         canBeAdded: false,
         priority: 5,
-        userBehaviorInfluence: 0.3
-      }
+        userBehaviorInfluence: 0.3,
+      },
     };
 
     // Review Invoice Step
     const reviewInvoiceStep: WorkflowStep = {
-      id: 'review-invoice',
-      name: 'Review Invoice',
-      description: 'Review and confirm invoice details',
-      type: 'validation',
+      id: "review-invoice",
+      name: "Review Invoice",
+      description: "Review and confirm invoice details",
+      type: "validation",
       required: true,
       skippable: false,
       estimatedDuration: 45,
-      dependencies: ['line-items', 'tax-calculation'],
+      dependencies: ["line-items", "tax-calculation"],
       conditions: [],
       actions: [
         {
-          type: 'validate',
-          target: 'invoice',
+          type: "validate",
+          target: "invoice",
           parameters: { businessRules: true, dataIntegrity: true },
           async: false,
-          retryPolicy: { maxAttempts: 1, backoffStrategy: 'linear', delay: 0 }
-        }
+          retryPolicy: { maxAttempts: 1, backoffStrategy: "linear", delay: 0 },
+        },
       ],
       validations: [
         {
-          type: 'business_rule',
-          field: 'approvalRequired',
-          rule: 'custom',
-          errorMessage: 'Manager approval required for invoices over $10,000',
-          customLogic: (data) => data.totalAmount <= 10000 || data.hasApproval
-        }
+          type: "business_rule",
+          field: "approvalRequired",
+          rule: "custom",
+          errorMessage: "Manager approval required for invoices over $10,000",
+          customLogic: (data) => data.totalAmount <= 10000 || data.hasApproval,
+        },
       ],
       ui: {
-        component: 'InvoiceReview',
+        component: "InvoiceReview",
         props: { allowEdit: true, showWarnings: true },
-        layout: 'full'
+        layout: "full",
       },
       adaptive: {
         canBeSkipped: false,
         canBeAdded: false,
         priority: 7,
-        userBehaviorInfluence: 0.6
-      }
+        userBehaviorInfluence: 0.6,
+      },
     };
 
-    this.stepRegistry.set('customer-selection', customerSelectionStep);
-    this.stepRegistry.set('invoice-details', invoiceDetailsStep);
-    this.stepRegistry.set('line-items', lineItemsStep);
-    this.stepRegistry.set('tax-calculation', taxCalculationStep);
-    this.stepRegistry.set('review-invoice', reviewInvoiceStep);
+    this.stepRegistry.set("customer-selection", customerSelectionStep);
+    this.stepRegistry.set("invoice-details", invoiceDetailsStep);
+    this.stepRegistry.set("line-items", lineItemsStep);
+    this.stepRegistry.set("tax-calculation", taxCalculationStep);
+    this.stepRegistry.set("review-invoice", reviewInvoiceStep);
   }
 
   private initializeActiveWorkflows(): void {
     // Load active workflows from storage
     try {
-      const stored = localStorage.getItem('active-workflows');
+      const stored = localStorage.getItem("active-workflows");
       if (stored) {
         const workflows = JSON.parse(stored);
         workflows.forEach((workflow: AdaptiveWorkflow) => {
@@ -447,12 +497,15 @@ export class AdaptiveFlowEngine {
         });
       }
     } catch (error) {
-      console.warn('Failed to load active workflows:', error);
+      console.warn("Failed to load active workflows:", error);
     }
   }
 
   // Public API methods
-  createWorkflow(templateId: string, context: WorkflowContext): AdaptiveWorkflow {
+  createWorkflow(
+    templateId: string,
+    context: WorkflowContext,
+  ): AdaptiveWorkflow {
     const template = this.workflowTemplates.get(templateId);
     if (!template) {
       throw new Error(`Workflow template ${templateId} not found`);
@@ -460,30 +513,30 @@ export class AdaptiveFlowEngine {
 
     const workflow: AdaptiveWorkflow = {
       id: this.generateWorkflowId(),
-      name: template.name || 'New Workflow',
-      description: template.description || '',
-      category: template.category || 'custom',
-      version: template.version || '1.0',
+      name: template.name || "New Workflow",
+      description: template.description || "",
+      category: template.category || "custom",
+      version: template.version || "1.0",
       steps: this.buildWorkflowSteps(template.defaultFlow || []),
       defaultFlow: template.defaultFlow || [],
       adaptiveFlow: [...(template.defaultFlow || [])],
       context,
-      state: 'draft',
+      state: "draft",
       progress: {
-        currentStep: '',
+        currentStep: "",
         completedSteps: [],
         skippedSteps: [],
         addedSteps: [],
         startTime: new Date(),
         estimatedCompletion: new Date(Date.now() + 3600000), // 1 hour from now
-        actualDuration: 0
+        actualDuration: 0,
       },
       performance: {
         efficiency: 0.8,
         userSatisfaction: 0.8,
         errorRate: 0,
-        adaptationScore: 0.5
-      }
+        adaptationScore: 0.5,
+      },
     };
 
     this.workflows.set(workflow.id, workflow);
@@ -493,7 +546,7 @@ export class AdaptiveFlowEngine {
   }
 
   private buildWorkflowSteps(stepIds: string[]): WorkflowStep[] {
-    return stepIds.map(id => {
+    return stepIds.map((id) => {
       const step = this.stepRegistry.get(id);
       if (!step) {
         throw new Error(`Workflow step ${id} not found`);
@@ -512,23 +565,23 @@ export class AdaptiveFlowEngine {
       throw new Error(`Workflow ${workflowId} not found`);
     }
 
-    workflow.state = 'active';
+    workflow.state = "active";
     workflow.progress.startTime = new Date();
-    workflow.progress.currentStep = workflow.adaptiveFlow[0] || '';
-    
+    workflow.progress.currentStep = workflow.adaptiveFlow[0] || "";
+
     this.saveWorkflows();
     this.executeCurrentStep(workflowId);
   }
 
   async executeCurrentStep(workflowId: string): Promise<void> {
     const workflow = this.workflows.get(workflowId);
-    if (!workflow || workflow.state !== 'active') {
+    if (!workflow || workflow.state !== "active") {
       return;
     }
 
     const currentStepId = workflow.progress.currentStep;
-    const step = workflow.steps.find(s => s.id === currentStepId);
-    
+    const step = workflow.steps.find((s) => s.id === currentStepId);
+
     if (!step) {
       // Workflow completed
       this.completeWorkflow(workflowId);
@@ -545,31 +598,39 @@ export class AdaptiveFlowEngine {
     // Execute step actions
     try {
       await this.executeStepActions(step, workflow.context);
-      
+
       // Record step completion
       this.completeStep(workflowId, currentStepId);
-      
+
       // Move to next step
       this.moveToNextStep(workflowId);
-      
     } catch (error) {
       console.error(`Error executing step ${currentStepId}:`, error);
       this.handleStepError(workflowId, currentStepId, error);
     }
   }
 
-  private checkStepConditions(step: WorkflowStep, context: WorkflowContext): boolean {
-    return step.conditions.every(condition => {
+  private checkStepConditions(
+    step: WorkflowStep,
+    context: WorkflowContext,
+  ): boolean {
+    return step.conditions.every((condition) => {
       switch (condition.type) {
-        case 'user_role':
+        case "user_role":
           return this.evaluateCondition(condition.userRole, context.userRole);
-        case 'data_state':
-          return this.evaluateCondition(condition.value, context.data[condition.field]);
-        case 'time_based':
+        case "data_state":
+          return this.evaluateCondition(
+            condition.value,
+            context.data[condition.field],
+          );
+        case "time_based":
           return this.evaluateTimeCondition(condition, context.timestamp);
-        case 'performance':
-          return this.evaluatePerformanceCondition(condition, context.metadata.behavior);
-        case 'contextual':
+        case "performance":
+          return this.evaluatePerformanceCondition(
+            condition,
+            context.metadata.behavior,
+          );
+        case "contextual":
           return condition.customLogic ? condition.customLogic(context) : true;
         default:
           return true;
@@ -579,17 +640,17 @@ export class AdaptiveFlowEngine {
 
   private evaluateCondition(expected: any, actual: any): boolean {
     switch (this.getOperator(expected)) {
-      case 'equals':
+      case "equals":
         return actual === expected;
-      case 'not_equals':
+      case "not_equals":
         return actual !== expected;
-      case 'contains':
+      case "contains":
         return actual && actual.toString().includes(expected.toString());
-      case 'greater_than':
+      case "greater_than":
         return Number(actual) > Number(expected);
-      case 'less_than':
+      case "less_than":
         return Number(actual) < Number(expected);
-      case 'exists':
+      case "exists":
         return actual !== undefined && actual !== null;
       default:
         return true;
@@ -597,66 +658,98 @@ export class AdaptiveFlowEngine {
   }
 
   private getOperator(value: any): string {
-    if (typeof value === 'object' && value.operator) {
+    if (typeof value === "object" && value.operator) {
       return value.operator;
     }
-    return 'equals';
+    return "equals";
   }
 
-  private evaluateTimeCondition(condition: WorkflowCondition, timestamp: Date): boolean {
+  private evaluateTimeCondition(
+    condition: WorkflowCondition,
+    timestamp: Date,
+  ): boolean {
     // Implement time-based condition evaluation
     const hour = timestamp.getHours();
     const dayOfWeek = timestamp.getDay();
-    
+
     switch (condition.field) {
-      case 'businessHours':
+      case "businessHours":
         return hour >= 9 && hour <= 17;
-      case 'weekdays':
+      case "weekdays":
         return dayOfWeek >= 1 && dayOfWeek <= 5;
       default:
         return true;
     }
   }
 
-  private evaluatePerformanceCondition(condition: WorkflowCondition, behavior: WorkflowContext['metadata']['behavior']): boolean {
+  private evaluatePerformanceCondition(
+    condition: WorkflowCondition,
+    behavior: WorkflowContext["metadata"]["behavior"],
+  ): boolean {
     switch (condition.field) {
-      case 'completionRate':
+      case "completionRate":
         return behavior.completionRate >= condition.value;
-      case 'errorRate':
+      case "errorRate":
         return behavior.errorRate <= condition.value;
-      case 'averageTime':
+      case "averageTime":
         return behavior.averageTime <= condition.value;
       default:
         return true;
     }
   }
 
-  private async executeStepActions(step: WorkflowStep, context: WorkflowContext): Promise<void> {
+  private async executeStepActions(
+    step: WorkflowStep,
+    context: WorkflowContext,
+  ): Promise<void> {
     for (const action of step.actions) {
       await this.executeAction(action, context);
     }
   }
 
-  private async executeAction(action: WorkflowAction, context: WorkflowContext): Promise<any> {
+  private async executeAction(
+    action: WorkflowAction,
+    context: WorkflowContext,
+  ): Promise<any> {
     let attempts = 0;
     const maxAttempts = action.retryPolicy.maxAttempts;
 
     while (attempts < maxAttempts) {
       try {
         switch (action.type) {
-          case 'create':
-            return await this.createResource(action.target, action.parameters, context);
-          case 'update':
-            return await this.updateResource(action.target, action.parameters, context);
-          case 'delete':
-            return await this.deleteResource(action.target, action.parameters, context);
-          case 'send':
-            return await this.sendData(action.target, action.parameters, context);
-          case 'calculate':
-            return await this.calculateValue(action.target, action.parameters, context);
-          case 'navigate':
+          case "create":
+            return await this.createResource(
+              action.target,
+              action.parameters,
+              context,
+            );
+          case "update":
+            return await this.updateResource(
+              action.target,
+              action.parameters,
+              context,
+            );
+          case "delete":
+            return await this.deleteResource(
+              action.target,
+              action.parameters,
+              context,
+            );
+          case "send":
+            return await this.sendData(
+              action.target,
+              action.parameters,
+              context,
+            );
+          case "calculate":
+            return await this.calculateValue(
+              action.target,
+              action.parameters,
+              context,
+            );
+          case "navigate":
             return this.navigate(action.target, action.parameters);
-          case 'custom':
+          case "custom":
             return await this.executeCustomAction(action, context);
           default:
             throw new Error(`Unknown action type: ${action.type}`);
@@ -666,39 +759,59 @@ export class AdaptiveFlowEngine {
         if (attempts >= maxAttempts) {
           throw error;
         }
-        
+
         // Apply backoff delay
         const delay = this.calculateBackoffDelay(attempts, action.retryPolicy);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   }
 
-  private async createResource(target: string, parameters: any, context: WorkflowContext): Promise<any> {
+  private async createResource(
+    target: string,
+    parameters: any,
+    context: WorkflowContext,
+  ): Promise<any> {
     // Simulate resource creation
     console.log(`Creating resource: ${target}`, parameters);
     return { id: this.generateId(), ...parameters };
   }
 
-  private async updateResource(target: string, parameters: any, context: WorkflowContext): Promise<any> {
+  private async updateResource(
+    target: string,
+    parameters: any,
+    context: WorkflowContext,
+  ): Promise<any> {
     // Simulate resource update
     console.log(`Updating resource: ${target}`, parameters);
     return { success: true, ...parameters };
   }
 
-  private async deleteResource(target: string, parameters: any, context: WorkflowContext): Promise<any> {
+  private async deleteResource(
+    target: string,
+    parameters: any,
+    context: WorkflowContext,
+  ): Promise<any> {
     // Simulate resource deletion
     console.log(`Deleting resource: ${target}`, parameters);
     return { success: true };
   }
 
-  private async sendData(target: string, parameters: any, context: WorkflowContext): Promise<any> {
+  private async sendData(
+    target: string,
+    parameters: any,
+    context: WorkflowContext,
+  ): Promise<any> {
     // Simulate data sending
     console.log(`Sending data to: ${target}`, parameters);
     return { success: true, delivered: true };
   }
 
-  private async calculateValue(target: string, parameters: any, context: WorkflowContext): Promise<any> {
+  private async calculateValue(
+    target: string,
+    parameters: any,
+    context: WorkflowContext,
+  ): Promise<any> {
     // Simulate calculation
     console.log(`Calculating: ${target}`, parameters);
     return { result: Math.random() * 1000 };
@@ -707,22 +820,28 @@ export class AdaptiveFlowEngine {
   private navigate(target: string, parameters: any): void {
     // Navigate to target
     console.log(`Navigating to: ${target}`, parameters);
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       window.location.href = target;
     }
   }
 
-  private async executeCustomAction(action: WorkflowAction, context: WorkflowContext): Promise<any> {
+  private async executeCustomAction(
+    action: WorkflowAction,
+    context: WorkflowContext,
+  ): Promise<any> {
     // Execute custom action logic
     console.log(`Executing custom action: ${action.target}`, action.parameters);
     return { success: true };
   }
 
-  private calculateBackoffDelay(attempt: number, retryPolicy: WorkflowAction['retryPolicy']): number {
+  private calculateBackoffDelay(
+    attempt: number,
+    retryPolicy: WorkflowAction["retryPolicy"],
+  ): number {
     switch (retryPolicy.backoffStrategy) {
-      case 'linear':
+      case "linear":
         return retryPolicy.delay * attempt;
-      case 'exponential':
+      case "exponential":
         return retryPolicy.delay * Math.pow(2, attempt - 1);
       default:
         return retryPolicy.delay;
@@ -755,9 +874,11 @@ export class AdaptiveFlowEngine {
     const workflow = this.workflows.get(workflowId);
     if (!workflow) return;
 
-    const currentIndex = workflow.adaptiveFlow.indexOf(workflow.progress.currentStep);
+    const currentIndex = workflow.adaptiveFlow.indexOf(
+      workflow.progress.currentStep,
+    );
     const nextIndex = currentIndex + 1;
-    
+
     if (nextIndex < workflow.adaptiveFlow.length) {
       workflow.progress.currentStep = workflow.adaptiveFlow[nextIndex];
       this.executeCurrentStep(workflowId);
@@ -770,41 +891,46 @@ export class AdaptiveFlowEngine {
     const workflow = this.workflows.get(workflowId);
     if (!workflow) return;
 
-    workflow.state = 'completed';
-    workflow.progress.actualDuration = Date.now() - workflow.progress.startTime.getTime();
-    
+    workflow.state = "completed";
+    workflow.progress.actualDuration =
+      Date.now() - workflow.progress.startTime.getTime();
+
     this.behaviorAnalyzer.recordWorkflowCompletion(workflowId);
     this.saveWorkflows();
   }
 
-  private handleStepError(workflowId: string, stepId: string, error: any): void {
+  private handleStepError(
+    workflowId: string,
+    stepId: string,
+    error: any,
+  ): void {
     const workflow = this.workflows.get(workflowId);
     if (!workflow) return;
 
     workflow.performance.errorRate += 0.1;
     this.behaviorAnalyzer.recordStepError(workflowId, stepId, error);
-    
+
     // Decide whether to retry, skip, or fail workflow
-    const step = workflow.steps.find(s => s.id === stepId);
+    const step = workflow.steps.find((s) => s.id === stepId);
     if (step && step.skippable) {
       this.skipStep(workflowId, stepId);
     } else {
-      workflow.state = 'failed';
+      workflow.state = "failed";
       this.saveWorkflows();
     }
   }
 
   private analyzeAllWorkflows(): void {
-    this.workflows.forEach(workflow => {
-      if (workflow.state === 'active') {
+    this.workflows.forEach((workflow) => {
+      if (workflow.state === "active") {
         this.behaviorAnalyzer.analyzeWorkflow(workflow);
       }
     });
   }
 
   private adaptWorkflows(): void {
-    this.workflows.forEach(workflow => {
-      if (workflow.state === 'active') {
+    this.workflows.forEach((workflow) => {
+      if (workflow.state === "active") {
         const adaptations = this.adaptationEngine.generateAdaptations(workflow);
         this.applyAdaptations(workflow.id, adaptations);
       }
@@ -815,32 +941,42 @@ export class AdaptiveFlowEngine {
     const workflow = this.workflows.get(workflowId);
     if (!workflow) return;
 
-    adaptations.forEach(adaptation => {
+    adaptations.forEach((adaptation) => {
       switch (adaptation.type) {
-        case 'skip_step':
-          if (adaptation.stepId && !workflow.progress.completedSteps.includes(adaptation.stepId)) {
+        case "skip_step":
+          if (
+            adaptation.stepId &&
+            !workflow.progress.completedSteps.includes(adaptation.stepId)
+          ) {
             this.skipStep(workflowId, adaptation.stepId);
           }
           break;
-        case 'add_step':
+        case "add_step":
           if (adaptation.step) {
             this.addStep(workflowId, adaptation.step);
           }
           break;
-        case 'reorder_steps':
+        case "reorder_steps":
           if (adaptation.newOrder) {
             this.reorderSteps(workflowId, adaptation.newOrder);
           }
           break;
-        case 'modify_step':
+        case "modify_step":
           if (adaptation.stepId && adaptation.modifications) {
-            this.modifyStep(workflowId, adaptation.stepId, adaptation.modifications);
+            this.modifyStep(
+              workflowId,
+              adaptation.stepId,
+              adaptation.modifications,
+            );
           }
           break;
       }
     });
 
-    workflow.performance.adaptationScore = Math.min(1, workflow.performance.adaptationScore + 0.1);
+    workflow.performance.adaptationScore = Math.min(
+      1,
+      workflow.performance.adaptationScore + 0.1,
+    );
     this.saveWorkflows();
   }
 
@@ -860,11 +996,15 @@ export class AdaptiveFlowEngine {
     workflow.adaptiveFlow = newOrder;
   }
 
-  private modifyStep(workflowId: string, stepId: string, modifications: Partial<WorkflowStep>): void {
+  private modifyStep(
+    workflowId: string,
+    stepId: string,
+    modifications: Partial<WorkflowStep>,
+  ): void {
     const workflow = this.workflows.get(workflowId);
     if (!workflow) return;
 
-    const step = workflow.steps.find(s => s.id === stepId);
+    const step = workflow.steps.find((s) => s.id === stepId);
     if (step) {
       Object.assign(step, modifications);
     }
@@ -873,9 +1013,9 @@ export class AdaptiveFlowEngine {
   private saveWorkflows(): void {
     try {
       const workflows = Array.from(this.workflows.values());
-      localStorage.setItem('active-workflows', JSON.stringify(workflows));
+      localStorage.setItem("active-workflows", JSON.stringify(workflows));
     } catch (error) {
-      console.warn('Failed to save workflows:', error);
+      console.warn("Failed to save workflows:", error);
     }
   }
 
@@ -885,25 +1025,29 @@ export class AdaptiveFlowEngine {
   }
 
   getWorkflowsByCategory(category: string): AdaptiveWorkflow[] {
-    return Array.from(this.workflows.values()).filter(w => w.category === category);
+    return Array.from(this.workflows.values()).filter(
+      (w) => w.category === category,
+    );
   }
 
   getActiveWorkflows(): AdaptiveWorkflow[] {
-    return Array.from(this.workflows.values()).filter(w => w.state === 'active');
+    return Array.from(this.workflows.values()).filter(
+      (w) => w.state === "active",
+    );
   }
 
   pauseWorkflow(workflowId: string): void {
     const workflow = this.workflows.get(workflowId);
     if (workflow) {
-      workflow.state = 'paused';
+      workflow.state = "paused";
       this.saveWorkflows();
     }
   }
 
   resumeWorkflow(workflowId: string): void {
     const workflow = this.workflows.get(workflowId);
-    if (workflow && workflow.state === 'paused') {
-      workflow.state = 'active';
+    if (workflow && workflow.state === "paused") {
+      workflow.state = "active";
       this.saveWorkflows();
       this.executeCurrentStep(workflowId);
     }
@@ -914,8 +1058,13 @@ export class AdaptiveFlowEngine {
     this.saveWorkflows();
   }
 
-  getWorkflowTemplates(): Array<{ id: string; template: Partial<AdaptiveWorkflow> }> {
-    return Array.from(this.workflowTemplates.entries()).map(([id, template]) => ({ id, template }));
+  getWorkflowTemplates(): Array<{
+    id: string;
+    template: Partial<AdaptiveWorkflow>;
+  }> {
+    return Array.from(this.workflowTemplates.entries()).map(
+      ([id, template]) => ({ id, template }),
+    );
   }
 
   addWorkflowTemplate(id: string, template: Partial<AdaptiveWorkflow>): void {
@@ -965,7 +1114,7 @@ class WorkflowBehaviorAnalyzer {
 
   analyzeWorkflow(workflow: AdaptiveWorkflow): void {
     const data = this.getBehaviorData(workflow.id);
-    
+
     // Analyze patterns and update metrics
     const completionRate = this.calculateCompletionRate(data);
     const averageTime = this.calculateAverageTime(data);
@@ -976,7 +1125,7 @@ class WorkflowBehaviorAnalyzer {
       completionRate,
       averageTime,
       errorRate,
-      skipRate
+      skipRate,
     };
   }
 
@@ -986,7 +1135,7 @@ class WorkflowBehaviorAnalyzer {
         stepCompletions: [],
         stepSkips: [],
         stepErrors: [],
-        workflowCompletions: []
+        workflowCompletions: [],
       });
     }
     return this.behaviorData.get(workflowId);
@@ -998,7 +1147,10 @@ class WorkflowBehaviorAnalyzer {
   }
 
   private calculateCompletionRate(data: any): number {
-    const totalSteps = data.stepCompletions.length + data.stepSkips.length + data.stepErrors.length;
+    const totalSteps =
+      data.stepCompletions.length +
+      data.stepSkips.length +
+      data.stepErrors.length;
     return totalSteps > 0 ? data.stepCompletions.length / totalSteps : 0;
   }
 
@@ -1026,12 +1178,15 @@ class WorkflowAdaptationEngine {
 
     // Skip steps that are frequently skipped
     if (behavior.skipRate > 0.7) {
-      workflow.steps.forEach(step => {
-        if (step.adaptive.canBeSkipped && step.adaptive.userBehaviorInfluence > 0.5) {
+      workflow.steps.forEach((step) => {
+        if (
+          step.adaptive.canBeSkipped &&
+          step.adaptive.userBehaviorInfluence > 0.5
+        ) {
           adaptations.push({
-            type: 'skip_step',
+            type: "skip_step",
             stepId: step.id,
-            reason: 'High skip rate detected'
+            reason: "High skip rate detected",
           });
         }
       });
@@ -1040,12 +1195,12 @@ class WorkflowAdaptationEngine {
     // Add recommended steps for high error rates
     if (behavior.errorRate > 0.3) {
       adaptations.push({
-        type: 'add_step',
+        type: "add_step",
         step: {
-          id: 'validation-check',
-          name: 'Additional Validation',
-          description: 'Extra validation step to reduce errors',
-          type: 'validation',
+          id: "validation-check",
+          name: "Additional Validation",
+          description: "Extra validation step to reduce errors",
+          type: "validation",
           required: false,
           skippable: true,
           estimatedDuration: 30,
@@ -1053,19 +1208,24 @@ class WorkflowAdaptationEngine {
           conditions: [],
           actions: [],
           validations: [],
-          ui: { component: 'ValidationCheck', props: {}, layout: 'modal' },
-          adaptive: { canBeSkipped: true, canBeAdded: true, priority: 6, userBehaviorInfluence: 0.4 }
+          ui: { component: "ValidationCheck", props: {}, layout: "modal" },
+          adaptive: {
+            canBeSkipped: true,
+            canBeAdded: true,
+            priority: 6,
+            userBehaviorInfluence: 0.4,
+          },
         },
-        reason: 'High error rate detected'
+        reason: "High error rate detected",
       });
     }
 
     // Reorder steps based on user behavior
     if (behavior.completionRate < 0.5) {
       adaptations.push({
-        type: 'reorder_steps',
+        type: "reorder_steps",
         newOrder: this.optimizeStepOrder(workflow),
-        reason: 'Low completion rate - optimizing flow'
+        reason: "Low completion rate - optimizing flow",
       });
     }
 
@@ -1080,7 +1240,7 @@ class WorkflowAdaptationEngine {
         const bScore = b.adaptive.priority + b.adaptive.userBehaviorInfluence;
         return bScore - aScore;
       })
-      .map(step => step.id);
+      .map((step) => step.id);
   }
 }
 
@@ -1106,7 +1266,7 @@ export function useAdaptiveFlowEngine() {
     resumeWorkflow: engine.resumeWorkflow.bind(engine),
     deleteWorkflow: engine.deleteWorkflow.bind(engine),
     getWorkflow: engine.getWorkflow.bind(engine),
-    getWorkflowTemplates: engine.getWorkflowTemplates.bind(engine)
+    getWorkflowTemplates: engine.getWorkflowTemplates.bind(engine),
   };
 }
 

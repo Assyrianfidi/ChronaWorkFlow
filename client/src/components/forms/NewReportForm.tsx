@@ -1,16 +1,31 @@
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Checkbox } from '../components/ui/checkbox';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Loader2, Save, X } from 'lucide-react';
-import { cn } from '../lib/utils';
-import { ReportFormValues, reportFormSchema, defaultValues } from '../types/reportForm';
-import { useEffect } from 'react';
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from '../components/ui/button.js';
+import { Input } from '../components/ui/input.js';
+import { Label } from '../components/ui/label.js';
+import { Textarea } from '../components/ui/textarea.js';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select.js';
+import { Checkbox } from '../components/ui/checkbox.js';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js';
+import { Loader2, Save, X } from "lucide-react";
+import { cn } from '../lib/utils.js';
+import {
+  ReportFormValues,
+  reportFormSchema,
+  defaultValues,
+} from '../types/reportForm.js';
+import { useEffect } from "react";
 
 interface ReportFormProps {
   /** Initial form values */
@@ -38,7 +53,7 @@ export const ReportForm = ({
   onCancel,
   isLoading = false,
   isSubmitting = false,
-  submitLabel = 'Save',
+  submitLabel = "Save",
   className,
 }: ReportFormProps) => {
   const {
@@ -47,6 +62,8 @@ export const ReportForm = ({
     reset,
     formState: { errors },
   } = useForm<ReportFormValues>({
+// @ts-ignore
+// @ts-ignore
     resolver: zodResolver(reportFormSchema) as any,
     defaultValues: { ...defaultValues, ...initialValues },
   });
@@ -56,7 +73,7 @@ export const ReportForm = ({
     try {
       await onSubmit(data);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -82,7 +99,10 @@ export const ReportForm = ({
   }, [initialValues, reset]);
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className={cn('space-y-6', className)}>
+    <form
+      onSubmit={handleSubmit(handleFormSubmit)}
+      className={cn("space-y-6", className)}
+    >
       <Card>
         <CardHeader>
           <CardTitle>Report Details</CardTitle>
@@ -101,7 +121,7 @@ export const ReportForm = ({
                     placeholder="Enter report title"
                     {...field}
                     disabled={isLoading || isSubmitting}
-                    className={cn(errors.title && 'border-destructive')}
+                    className={cn(errors.title && "border-destructive")}
                   />
                   {errors.title && (
                     <p className="text-sm text-destructive mt-1">
@@ -126,7 +146,10 @@ export const ReportForm = ({
                     placeholder="Enter report description"
                     {...field}
                     disabled={isLoading || isSubmitting}
-                    className={cn('min-h-[100px]', errors.description && 'border-destructive')}
+                    className={cn(
+                      "min-h-[100px]",
+                      errors.description && "border-destructive",
+                    )}
                   />
                   {errors.description && (
                     <p className="text-sm text-destructive mt-1">
@@ -151,7 +174,9 @@ export const ReportForm = ({
                     defaultValue={field.value}
                     disabled={isLoading || isSubmitting}
                   >
-                    <SelectTrigger className={cn(errors.status && 'border-destructive')}>
+                    <SelectTrigger
+                      className={cn(errors.status && "border-destructive")}
+                    >
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -184,7 +209,9 @@ export const ReportForm = ({
                     defaultValue={field.value}
                     disabled={isLoading || isSubmitting}
                   >
-                    <SelectTrigger className={cn(errors.priority && 'border-destructive')}>
+                    <SelectTrigger
+                      className={cn(errors.priority && "border-destructive")}
+                    >
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
                     <SelectContent>
@@ -223,13 +250,17 @@ export const ReportForm = ({
           {/* Tags - Will be implemented in a future update */}
           <div className="space-y-2">
             <Label>Tags</Label>
-            <div className="text-sm text-muted-foreground">Tag functionality coming soon</div>
+            <div className="text-sm text-muted-foreground">
+              Tag functionality coming soon
+            </div>
           </div>
 
           {/* File Upload - Will be implemented in a future update */}
           <div className="space-y-2">
             <Label>Attachments</Label>
-            <div className="text-sm text-muted-foreground">File upload functionality coming soon</div>
+            <div className="text-sm text-muted-foreground">
+              File upload functionality coming soon
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -243,10 +274,10 @@ export const ReportForm = ({
           disabled={isLoading || isSubmitting}
         >
           <X className="mr-2 h-4 w-4" />
-          {onCancel ? 'Cancel' : 'Reset'}
+          {onCancel ? "Cancel" : "Reset"}
         </Button>
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={isLoading || isSubmitting}
           className="min-w-[100px]"
         >

@@ -53,12 +53,8 @@
           "name": "reconciliation_reports_user_id_users_id_fk",
           "tableFrom": "reconciliation_reports",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -68,10 +64,7 @@
         "title_user_id": {
           "name": "title_user_id",
           "nullsNotDistinct": false,
-          "columns": [
-            "title",
-            "user_id"
-          ]
+          "columns": ["title", "user_id"]
         }
       },
       "policies": {},
@@ -142,9 +135,7 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},

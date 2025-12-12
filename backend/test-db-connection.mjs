@@ -1,15 +1,16 @@
-import { Client } from 'pg';
+import { Client } from "pg";
 
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
 });
 
-client.connect()
+client
+  .connect()
   .then(() => {
-    console.log('Database connection successful');
+    console.log("Database connection successful");
     return client.end();
   })
-  .catch(err => {
-    console.error('Database connection error:', err.stack);
+  .catch((err) => {
+    console.error("Database connection error:", err.stack);
     process.exit(1);
   });

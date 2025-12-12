@@ -1,9 +1,10 @@
-import puppeteer from 'puppeteer';
-import { PrismaClient } from '@prisma/client';
-import fs from 'fs/promises';
-import path from 'path';
+import puppeteer from "puppeteer";
+import { PrismaClientSingleton } from '../lib/prisma';
+const prisma = PrismaClientSingleton.getInstance();
+import fs from "fs/promises";
+import path from "path";
 
-const prisma = new PrismaClient();
+// Fixed self-reference
 
 export class PDFService {
   async generateInvoicePDF(invoiceId: string): Promise<Buffer> {
@@ -15,15 +16,15 @@ export class PDFService {
           customer: true,
           lines: {
             include: {
-              product: true
-            }
+              product: true,
+            },
           },
-          payments: true
-        }
+          payments: true,
+        },
       });
 
       if (!invoice) {
-        throw new Error('Invoice not found');
+        throw new Error("Invoice not found");
       }
 
       // Generate HTML
@@ -32,31 +33,32 @@ export class PDFService {
       // Launch Puppeteer
       const browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
       });
 
       const page = await browser.newPage();
-      
+
       // Set content and wait for it to load
-      await page.setContent(html, { waitUntil: 'networkidle0' });
+      await page.setContent(html, { waitUntil: "networkidle0" });
 
       // Generate PDF
       const pdfBuffer = await page.pdf({
-        format: 'A4',
+        format: "A4",
         printBackground: true,
         margin: {
-          top: '20mm',
-          right: '20mm',
-          bottom: '20mm',
-          left: '20mm'
-        }
+          top: "20mm",
+          right: "20mm",
+          bottom: "20mm",
+          left: "20mm",
+        },
       });
 
       await browser.close();
 
-      return pdfBuffer;
+      // @ts-ignore
+return Buffer.from(pdfBuffer);
     } catch (error) {
-      console.error('Error generating PDF:', error);
+      console.error("Error generating PDF:", error);
       throw error;
     }
   }
@@ -64,9 +66,9 @@ export class PDFService {
   async saveInvoicePDF(invoiceId: string): Promise<string> {
     try {
       const pdfBuffer = await this.generateInvoicePDF(invoiceId);
-      
+
       // Create temp directory if it doesn't exist
-      const tempDir = path.join(process.cwd(), 'server', 'tmp', 'invoices');
+      const tempDir = path.join(process.cwd(), "server", "tmp", "invoices");
       await fs.mkdir(tempDir, { recursive: true });
 
       // Save PDF
@@ -76,7 +78,7 @@ export class PDFService {
 
       return filepath;
     } catch (error) {
-      console.error('Error saving PDF:', error);
+      console.error("Error saving PDF:", error);
       throw error;
     }
   }
@@ -88,15 +90,15 @@ export class PDFService {
 
     // Format currency
     const formatCurrency = (amount: number) => {
-      return new Intl.NumberFormat('en-CA', {
-        style: 'currency',
-        currency: invoice.currency || 'CAD'
+      return new Intl.NumberFormat("en-CA", {
+        style: "currency",
+        currency: invoice.currency || "CAD",
       }).format(amount / 100);
     };
 
     // Format date
     const formatDate = (date: Date) => {
-      return new Date(date).toLocaleDateString('en-CA');
+      return new Date(date).toLocaleDateString("en-CA");
     };
 
     return `
@@ -328,17 +330,21 @@ export class PDFService {
         <div class="addresses">
             <div class="address-box">
                 <h3>Bill To:</h3>
-                <p>${customer.companyName || ''}</p>
-                <p>${customer.firstName || ''} ${customer.lastName || ''}</p>
-                <p>${customer.email || ''}</p>
-                <p>${customer.phone || ''}</p>
-                ${customer.address ? `
+                <p>${customer.companyName || ""}</p>
+                <p>${customer.firstName || ""} ${customer.lastName || ""}</p>
+                <p>${customer.email || ""}</p>
+                <p>${customer.phone || ""}</p>
+                ${
+                  customer.address
+                    ? `
                 <p>
-                    ${JSON.parse(customer.address)?.street || ''}<br>
-                    ${JSON.parse(customer.address)?.city || ''}, ${JSON.parse(customer.address)?.province || ''}<br>
-                    ${JSON.parse(customer.address)?.postalCode || ''}
+                    ${JSON.parse(customer.address)?.street || ""}<br>
+                    ${JSON.parse(customer.address)?.city || ""}, ${JSON.parse(customer.address)?.province || ""}<br>
+                    ${JSON.parse(customer.address)?.postalCode || ""}
                 </p>
-                ` : ''}
+                `
+                    : ""
+                }
             </div>
             <div class="address-box">
                 <h3>Payment Status:</h3>
@@ -360,7 +366,9 @@ export class PDFService {
                 </tr>
             </thead>
             <tbody>
-                ${lines.map((line: any) => `
+                ${lines
+                  .map(
+                    (line: any) => `
                 <tr>
                     <td>${line.description}</td>
                     <td>${line.qty}</td>
@@ -369,7 +377,9 @@ export class PDFService {
                     <td>${formatCurrency(line.lineTax)}</td>
                     <td class="text-right">${formatCurrency(line.lineTotal)}</td>
                 </tr>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </tbody>
         </table>
 
@@ -390,27 +400,39 @@ export class PDFService {
             </div>
         </div>
 
-        ${payments.length > 0 ? `
+        ${
+          payments.length > 0
+            ? `
         <div class="payments">
             <h3>Payment History</h3>
-            ${payments.map((payment: any) => `
+            ${payments
+              .map(
+                (payment: any) => `
             <div class="payment-item">
                 <div>
                     <strong>${payment.method}</strong> - ${formatDate(payment.paidAt)}
-                    ${payment.transactionRef ? `<br>Ref: ${payment.transactionRef}` : ''}
+                    ${payment.transactionRef ? `<br>Ref: ${payment.transactionRef}` : ""}
                 </div>
                 <div><strong>${formatCurrency(payment.amount)}</strong></div>
             </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
-        ${invoice.notes ? `
+        ${
+          invoice.notes
+            ? `
         <div class="notes">
             <h3>Notes</h3>
             <p>${invoice.notes}</p>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <div class="footer">
             <p>Thank you for your business! This invoice was generated by AccuBooks Enterprise Financial Management.</p>

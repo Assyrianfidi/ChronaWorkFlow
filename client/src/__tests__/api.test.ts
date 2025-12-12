@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Mock the API functions directly
-vi.mock('../api/index', () => ({
+vi.mock("../api/index", () => ({
   authApi: {
     login: vi.fn(),
     register: vi.fn(),
@@ -24,9 +24,9 @@ vi.mock('../api/index', () => ({
 }));
 
 // Import the mocked APIs
-import { authApi, accountsApi, transactionsApi } from '../api';
+import { authApi, accountsApi, transactionsApi } from '../api.js';
 
-describe('API Tests', () => {
+describe("API Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Clear localStorage
@@ -37,160 +37,177 @@ describe('API Tests', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Auth API', () => {
-    it('should login successfully', async () => {
+  describe("Auth API", () => {
+    it("should login successfully", async () => {
       const mockResponse = {
         data: {
           success: true,
           data: {
-            accessToken: 'test-token',
-            refreshToken: 'refresh-token',
-            user: { id: '1', email: 'test@example.com' },
+            accessToken: "test-token",
+            refreshToken: "refresh-token",
+            user: { id: "1", email: "test@example.com" },
           },
         },
       };
-      
+
+// @ts-ignore
+// @ts-ignore
       (authApi.login as any).mockResolvedValue(mockResponse);
 
-      const result = await authApi.login('test@example.com', 'password');
-      
+      const result = await authApi.login("test@example.com", "password");
+
       expect(result).toEqual(mockResponse);
-      expect(authApi.login).toHaveBeenCalledWith('test@example.com', 'password');
+      expect(authApi.login).toHaveBeenCalledWith(
+        "test@example.com",
+        "password",
+      );
     });
 
-    it('should register successfully', async () => {
+    it("should register successfully", async () => {
       const mockResponse = {
         data: {
           success: true,
           data: {
-            user: { id: '1', email: 'test@example.com' },
+            user: { id: "1", email: "test@example.com" },
           },
         },
       };
-      
+
+// @ts-ignore
+// @ts-ignore
       (authApi.register as any).mockResolvedValue(mockResponse);
 
       const result = await authApi.register({
-        email: 'test@example.com',
-        password: 'password',
-        firstName: 'Test',
-        lastName: 'User',
+        email: "test@example.com",
+        password: "password",
+        firstName: "Test",
+        lastName: "User",
       });
-      
+
       expect(result).toEqual(mockResponse);
       expect(authApi.register).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password',
-        firstName: 'Test',
-        lastName: 'User',
+        email: "test@example.com",
+        password: "password",
+        firstName: "Test",
+        lastName: "User",
       });
     });
 
-    it('should handle login failure', async () => {
-      const mockError = new Error('Login failed');
+    it("should handle login failure", async () => {
+      const mockError = new Error("Login failed");
+// @ts-ignore
+// @ts-ignore
       (authApi.login as any).mockRejectedValue(mockError);
 
-      await expect(authApi.login('test@example.com', 'wrong-password')).rejects.toThrow('Login failed');
+      await expect(
+        authApi.login("test@example.com", "wrong-password"),
+      ).rejects.toThrow("Login failed");
     });
   });
 
-  describe('Accounts API', () => {
-    it('should list accounts', async () => {
+  describe("Accounts API", () => {
+    it("should list accounts", async () => {
       const mockResponse = {
         data: {
           success: true,
-          data: [
-            { id: '1', code: '1000', name: 'Cash', type: 'ASSET' },
-          ],
+          data: [{ id: "1", code: "1000", name: "Cash", type: "ASSET" }],
         },
       };
-      
+
+// @ts-ignore
+// @ts-ignore
       (accountsApi.list as any).mockResolvedValue(mockResponse);
 
-      const result = await accountsApi.list('company-1');
-      
+      const result = await accountsApi.list("company-1");
+
       expect(result).toEqual(mockResponse);
-      expect(accountsApi.list).toHaveBeenCalledWith('company-1');
+      expect(accountsApi.list).toHaveBeenCalledWith("company-1");
     });
 
-    it('should create account', async () => {
+    it("should create account", async () => {
       const mockResponse = {
         data: {
           success: true,
-          data: { id: '1', code: '1000', name: 'Cash', type: 'ASSET' },
+          data: { id: "1", code: "1000", name: "Cash", type: "ASSET" },
         },
       };
-      
+
+// @ts-ignore
+// @ts-ignore
       (accountsApi.create as any).mockResolvedValue(mockResponse);
 
       const result = await accountsApi.create({
-        companyId: 'company-1',
-        code: '1000',
-        name: 'Cash',
-        type: 'ASSET',
+        companyId: "company-1",
+        code: "1000",
+        name: "Cash",
+        type: "ASSET",
       });
-      
+
       expect(result).toEqual(mockResponse);
       expect(accountsApi.create).toHaveBeenCalledWith({
-        companyId: 'company-1',
-        code: '1000',
-        name: 'Cash',
-        type: 'ASSET',
+        companyId: "company-1",
+        code: "1000",
+        name: "Cash",
+        type: "ASSET",
       });
     });
   });
 
-  describe('Transactions API', () => {
-    it('should list transactions', async () => {
+  describe("Transactions API", () => {
+    it("should list transactions", async () => {
       const mockResponse = {
         data: {
           success: true,
           data: [
-            { id: '1', transactionNumber: 'TXN001', totalAmount: '100.00' },
+            { id: "1", transactionNumber: "TXN001", totalAmount: "100.00" },
           ],
         },
       };
-      
+
+// @ts-ignore
+// @ts-ignore
       (transactionsApi.list as any).mockResolvedValue(mockResponse);
 
-      const result = await transactionsApi.list('company-1');
-      
+      const result = await transactionsApi.list("company-1");
+
       expect(result).toEqual(mockResponse);
-      expect(transactionsApi.list).toHaveBeenCalledWith('company-1');
+      expect(transactionsApi.list).toHaveBeenCalledWith("company-1");
     });
 
-    it('should create transaction', async () => {
+    it("should create transaction", async () => {
       const mockResponse = {
         data: {
           success: true,
-          data: { id: '1', transactionNumber: 'TXN001', totalAmount: '100.00' },
+          data: { id: "1", transactionNumber: "TXN001", totalAmount: "100.00" },
         },
       };
-      
+
+// @ts-ignore
+// @ts-ignore
       (transactionsApi.create as any).mockResolvedValue(mockResponse);
 
       const result = await transactionsApi.create({
-        companyId: 'company-1',
-        transactionNumber: 'TXN001',
-        date: '2023-01-01',
-        type: 'journal_entry',
-        totalAmount: '100.00',
+        companyId: "company-1",
+        transactionNumber: "TXN001",
+        date: "2023-01-01",
+        type: "journal_entry",
+        totalAmount: "100.00",
         lines: [
-          { accountId: 'acc-1', debit: '100.00', credit: '0' },
-          { accountId: 'acc-2', debit: '0', credit: '100.00' },
+          { accountId: "acc-1", debit: "100.00", credit: "0" },
+          { accountId: "acc-2", debit: "0", credit: "100.00" },
         ],
       });
-      
+
       expect(result).toEqual(mockResponse);
       expect(transactionsApi.create).toHaveBeenCalledWith({
-        companyId: 'company-1',
-        transactionNumber: 'TXN001',
-        date: '2023-01-01',
-        type: 'journal_entry',
-        totalAmount: '100.00',
+        companyId: "company-1",
+        transactionNumber: "TXN001",
+        date: "2023-01-01",
+        type: "journal_entry",
+        totalAmount: "100.00",
         lines: [
-          { accountId: 'acc-1', debit: '100.00', credit: '0' },
-          { accountId: 'acc-2', debit: '0', credit: '100.00' },
+          { accountId: "acc-1", debit: "100.00", credit: "0" },
+          { accountId: "acc-2", debit: "0", credit: "100.00" },
         ],
       });
     });

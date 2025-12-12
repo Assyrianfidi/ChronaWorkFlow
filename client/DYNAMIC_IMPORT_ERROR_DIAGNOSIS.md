@@ -3,6 +3,7 @@
 ## Current Status: ⚠️ PARTIALLY RESOLVED
 
 ### Error Description
+
 **TypeError: Failed to fetch dynamically imported module: http://localhost:6006/.storybook/preview.ts?t=1764217519064**
 
 This error indicates that Storybook is attempting to fetch the preview.ts file as a dynamic ES module, which should not happen in normal operation.
@@ -16,6 +17,7 @@ This error indicates that Storybook is attempting to fetch the preview.ts file a
 ### Fixes Applied
 
 #### 1. Fixed preview.ts Structure
+
 ```typescript
 // BEFORE (causing dynamic import error)
 export const decorators = [...]
@@ -36,6 +38,7 @@ export default preview;
 ```
 
 #### 2. Enhanced main.ts Configuration
+
 ```typescript
 // Added proper Vite optimization
 viteFinal: async (config) => {
@@ -48,19 +51,20 @@ viteFinal: async (config) => {
       '@storybook/react'
     ],
   };
-  
+
   config.server = {
     ...config.server,
     fs: {
       allow: ['..'],
     },
   };
-  
+
   return config;
 },
 ```
 
 #### 3. Corrected Framework Configuration
+
 - Changed from object format to string format: `framework: '@storybook/react-vite'`
 - Added proper viteFinal configuration for module resolution
 
@@ -73,7 +77,7 @@ viteFinal: async (config) => {
 
 ### Browser Testing Recommendations
 
-1. **Clear Browser Cache**: 
+1. **Clear Browser Cache**:
    - Open DevTools → Application → Storage → Clear site data
    - Or use incognito/private mode
 

@@ -3,24 +3,37 @@
  * Real-time performance monitoring and optimization interface
  */
 
-import React, { useState, useEffect } from 'react';
-import PerformanceEngine, { PerformanceReport, PerformanceMetrics } from '../../performance/performance-engine';
+import React, { useState, useEffect } from "react";
+import PerformanceEngine, {
+  PerformanceReport,
+  PerformanceMetrics,
+} from '../../performance/performance-engine.js.js';
 
 interface PerformanceDashboardProps {
   engine: PerformanceEngine;
   className?: string;
 }
 
+// @ts-ignore
 const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   engine,
-  className = ''
+  className = "",
 }) => {
-  const [currentMetrics, setCurrentMetrics] = useState<PerformanceMetrics>(engine.getCurrentMetrics());
-  const [latestReport, setLatestReport] = useState<PerformanceReport | null>(engine.getLatestReport());
-  const [historicalReports, setHistoricalReports] = useState<PerformanceReport[]>(engine.getHistoricalReports());
-  const [averageMetrics, setAverageMetrics] = useState<PerformanceMetrics | null>(engine.getAverageMetrics());
+  const [currentMetrics, setCurrentMetrics] = useState<PerformanceMetrics>(
+    engine.getCurrentMetrics(),
+  );
+  const [latestReport, setLatestReport] = useState<PerformanceReport | null>(
+    engine.getLatestReport(),
+  );
+  const [historicalReports, setHistoricalReports] = useState<
+    PerformanceReport[]
+  >(engine.getHistoricalReports());
+  const [averageMetrics, setAverageMetrics] =
+    useState<PerformanceMetrics | null>(engine.getAverageMetrics());
   const [isOptimizing, setIsOptimizing] = useState(false);
-  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(
+    null,
+  );
 
   useEffect(() => {
     // Set up real-time updates
@@ -42,7 +55,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
     setIsOptimizing(true);
     engine.startOptimization();
     engine.optimizeImages();
-    
+
     setTimeout(() => {
       setIsOptimizing(false);
     }, 2000);
@@ -65,33 +78,46 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   };
 
   const getScoreColor = (score: number): string => {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 80) return 'text-yellow-600';
-    if (score >= 70) return 'text-orange-600';
-    return 'text-red-600';
+    if (score >= 90) return "text-green-600";
+    if (score >= 80) return "text-yellow-600";
+    if (score >= 70) return "text-orange-600";
+    return "text-red-600";
   };
 
   const getGradeColor = (grade: string): string => {
     switch (grade) {
-      case 'A': return 'bg-green-100 text-green-800';
-      case 'B': return 'bg-yellow-100 text-yellow-800';
-      case 'C': return 'bg-orange-100 text-orange-800';
-      case 'D': return 'bg-red-100 text-red-800';
-      default: return 'bg-red-100 text-red-800';
+      case "A":
+        return "bg-green-100 text-green-800";
+      case "B":
+        return "bg-yellow-100 text-yellow-800";
+      case "C":
+        return "bg-orange-100 text-orange-800";
+      case "D":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-red-100 text-red-800";
     }
   };
 
-  const getMetricStatus = (value: number, threshold: number): 'good' | 'warning' | 'critical' => {
-    if (value <= threshold) return 'good';
-    if (value <= threshold * 1.5) return 'warning';
-    return 'critical';
+  const getMetricStatus = (
+    value: number,
+    threshold: number,
+  ): "good" | "warning" | "critical" => {
+    if (value <= threshold) return "good";
+    if (value <= threshold * 1.5) return "warning";
+    return "critical";
   };
 
-  const getMetricStatusColor = (status: 'good' | 'warning' | 'critical'): string => {
+  const getMetricStatusColor = (
+    status: "good" | "warning" | "critical",
+  ): string => {
     switch (status) {
-      case 'good': return 'text-green-600';
-      case 'warning': return 'text-yellow-600';
-      default: return 'text-red-600';
+      case "good":
+        return "text-green-600";
+      case "warning":
+        return "text-yellow-600";
+      default:
+        return "text-red-600";
     }
   };
 
@@ -104,19 +130,25 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         <h1>Performance Dashboard</h1>
         <div className="header-actions">
           <button
-            className={`optimize-button ${isOptimizing ? 'optimizing' : ''}`}
+            className={`optimize-button ${isOptimizing ? "optimizing" : ""}`}
             onClick={handleOptimizePerformance}
             disabled={isOptimizing}
           >
-            {isOptimizing ? '⚡ Optimizing...' : '🚀 Optimize Performance'}
+            {isOptimizing ? "⚡ Optimizing..." : "🚀 Optimize Performance"}
           </button>
-          <button className="performance-mode-button" onClick={handleEnablePerformanceMode}>
+          <button
+            className="performance-mode-button"
+            onClick={handleEnablePerformanceMode}
+          >
             ⚡ Enable Performance Mode
           </button>
-          <button className="refresh-button" onClick={() => {
-            setCurrentMetrics(engine.getCurrentMetrics());
-            setLatestReport(engine.getLatestReport());
-          }}>
+          <button
+            className="refresh-button"
+            onClick={() => {
+              setCurrentMetrics(engine.getCurrentMetrics());
+              setLatestReport(engine.getLatestReport());
+            }}
+          >
             🔄 Refresh
           </button>
         </div>
@@ -127,14 +159,18 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         <div className="score-section">
           <div className="score-card">
             <div className="score-circle">
-              <div className={`score-value ${getScoreColor(latestReport.score)}`}>
+              <div
+                className={`score-value ${getScoreColor(latestReport.score)}`}
+              >
                 {latestReport.score.toFixed(0)}
               </div>
               <div className="score-max">/ 100</div>
             </div>
             <div className="score-details">
               <h2>Performance Score</h2>
-              <div className={`grade-badge ${getGradeColor(latestReport.grade)}`}>
+              <div
+                className={`grade-badge ${getGradeColor(latestReport.grade)}`}
+              >
                 Grade {latestReport.grade}
               </div>
               <div className="score-timestamp">
@@ -149,39 +185,67 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
             <div className="vitals-grid">
               <div className="vital-item">
                 <div className="vital-name">FCP</div>
-                <div className={`vital-value ${getMetricStatusColor(
-                  getMetricStatus(currentMetrics.firstContentfulPaint, thresholds.firstContentfulPaint)
-                )}`}>
+                <div
+                  className={`vital-value ${getMetricStatusColor(
+                    getMetricStatus(
+                      currentMetrics.firstContentfulPaint,
+                      thresholds.firstContentfulPaint,
+                    ),
+                  )}`}
+                >
                   {formatTime(currentMetrics.firstContentfulPaint)}
                 </div>
-                <div className="vital-threshold">≤ {formatTime(thresholds.firstContentfulPaint)}</div>
+                <div className="vital-threshold">
+                  ≤ {formatTime(thresholds.firstContentfulPaint)}
+                </div>
               </div>
               <div className="vital-item">
                 <div className="vital-name">LCP</div>
-                <div className={`vital-value ${getMetricStatusColor(
-                  getMetricStatus(currentMetrics.largestContentfulPaint, thresholds.largestContentfulPaint)
-                )}`}>
+                <div
+                  className={`vital-value ${getMetricStatusColor(
+                    getMetricStatus(
+                      currentMetrics.largestContentfulPaint,
+                      thresholds.largestContentfulPaint,
+                    ),
+                  )}`}
+                >
                   {formatTime(currentMetrics.largestContentfulPaint)}
                 </div>
-                <div className="vital-threshold">≤ {formatTime(thresholds.largestContentfulPaint)}</div>
+                <div className="vital-threshold">
+                  ≤ {formatTime(thresholds.largestContentfulPaint)}
+                </div>
               </div>
               <div className="vital-item">
                 <div className="vital-name">FID</div>
-                <div className={`vital-value ${getMetricStatusColor(
-                  getMetricStatus(currentMetrics.firstInputDelay, thresholds.firstInputDelay)
-                )}`}>
+                <div
+                  className={`vital-value ${getMetricStatusColor(
+                    getMetricStatus(
+                      currentMetrics.firstInputDelay,
+                      thresholds.firstInputDelay,
+                    ),
+                  )}`}
+                >
                   {formatTime(currentMetrics.firstInputDelay)}
                 </div>
-                <div className="vital-threshold">≤ {formatTime(thresholds.firstInputDelay)}</div>
+                <div className="vital-threshold">
+                  ≤ {formatTime(thresholds.firstInputDelay)}
+                </div>
               </div>
               <div className="vital-item">
                 <div className="vital-name">CLS</div>
-                <div className={`vital-value ${getMetricStatusColor(
-                  getMetricStatus(currentMetrics.cumulativeLayoutShift * 1000, thresholds.cumulativeLayoutShift * 1000)
-                )}`}>
+                <div
+                  className={`vital-value ${getMetricStatusColor(
+                    getMetricStatus(
+                      currentMetrics.cumulativeLayoutShift * 1000,
+                      thresholds.cumulativeLayoutShift * 1000,
+                    ),
+                  )}`}
+                >
                   {currentMetrics.cumulativeLayoutShift.toFixed(3)}
                 </div>
-                <div className="vital-threshold">≤ {thresholds.cumulativeLayoutShift}</div>
+                <div className="vital-threshold">
+                  ≤ {thresholds.cumulativeLayoutShift}
+                </div>
               </div>
             </div>
           </div>
@@ -193,10 +257,18 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         <div className="metric-card">
           <div className="metric-header">
             <h3>Page Load Time</h3>
-            <div className={`metric-status ${getMetricStatusColor(
-              getMetricStatus(currentMetrics.pageLoadTime, thresholds.pageLoadTime)
-            )}`}>
-              {getMetricStatus(currentMetrics.pageLoadTime, thresholds.pageLoadTime)}
+            <div
+              className={`metric-status ${getMetricStatusColor(
+                getMetricStatus(
+                  currentMetrics.pageLoadTime,
+                  thresholds.pageLoadTime,
+                ),
+              )}`}
+            >
+              {getMetricStatus(
+                currentMetrics.pageLoadTime,
+                thresholds.pageLoadTime,
+              )}
             </div>
           </div>
           <div className="metric-value">
@@ -215,10 +287,18 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         <div className="metric-card">
           <div className="metric-header">
             <h3>Time to Interactive</h3>
-            <div className={`metric-status ${getMetricStatusColor(
-              getMetricStatus(currentMetrics.timeToInteractive, thresholds.timeToInteractive)
-            )}`}>
-              {getMetricStatus(currentMetrics.timeToInteractive, thresholds.timeToInteractive)}
+            <div
+              className={`metric-status ${getMetricStatusColor(
+                getMetricStatus(
+                  currentMetrics.timeToInteractive,
+                  thresholds.timeToInteractive,
+                ),
+              )}`}
+            >
+              {getMetricStatus(
+                currentMetrics.timeToInteractive,
+                thresholds.timeToInteractive,
+              )}
             </div>
           </div>
           <div className="metric-value">
@@ -237,10 +317,18 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         <div className="metric-card">
           <div className="metric-header">
             <h3>API Response Time</h3>
-            <div className={`metric-status ${getMetricStatusColor(
-              getMetricStatus(currentMetrics.apiResponseTime, thresholds.apiResponseTime)
-            )}`}>
-              {getMetricStatus(currentMetrics.apiResponseTime, thresholds.apiResponseTime)}
+            <div
+              className={`metric-status ${getMetricStatusColor(
+                getMetricStatus(
+                  currentMetrics.apiResponseTime,
+                  thresholds.apiResponseTime,
+                ),
+              )}`}
+            >
+              {getMetricStatus(
+                currentMetrics.apiResponseTime,
+                thresholds.apiResponseTime,
+              )}
             </div>
           </div>
           <div className="metric-value">
@@ -260,7 +348,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           <div className="metric-header">
             <h3>Bundle Size</h3>
             <div className="metric-status text-blue-600">
-              {currentMetrics.bundleSize < engine.getConfig().budget.bundleSize ? 'good' : 'warning'}
+              {currentMetrics.bundleSize < engine.getConfig().budget.bundleSize
+                ? "good"
+                : "warning"}
             </div>
           </div>
           <div className="metric-value">
@@ -274,31 +364,33 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         <div className="metric-card">
           <div className="metric-header">
             <h3>Memory Usage</h3>
-            <div className={`metric-status ${currentMetrics.memoryUsage > 50 * 1024 * 1024 ? 'text-red-600' : 'text-green-600'}`}>
-              {currentMetrics.memoryUsage > 50 * 1024 * 1024 ? 'high' : 'normal'}
+            <div
+              className={`metric-status ${currentMetrics.memoryUsage > 50 * 1024 * 1024 ? "text-red-600" : "text-green-600"}`}
+            >
+              {currentMetrics.memoryUsage > 50 * 1024 * 1024
+                ? "high"
+                : "normal"}
             </div>
           </div>
           <div className="metric-value">
             {formatBytes(currentMetrics.memoryUsage)}
           </div>
-          <div className="metric-threshold">
-            Recommended: ≤ 50MB
-          </div>
+          <div className="metric-threshold">Recommended: ≤ 50MB</div>
         </div>
 
         <div className="metric-card">
           <div className="metric-header">
             <h3>Perceived Performance</h3>
-            <div className={`metric-status ${getScoreColor(currentMetrics.perceivedPerformance)}`}>
-              {currentMetrics.perceivedPerformance >= 80 ? 'excellent' : 'good'}
+            <div
+              className={`metric-status ${getScoreColor(currentMetrics.perceivedPerformance)}`}
+            >
+              {currentMetrics.perceivedPerformance >= 80 ? "excellent" : "good"}
             </div>
           </div>
           <div className="metric-value">
             {currentMetrics.perceivedPerformance.toFixed(0)}%
           </div>
-          <div className="metric-threshold">
-            Target: ≥ 80%
-          </div>
+          <div className="metric-threshold">Target: ≥ 80%</div>
         </div>
       </div>
 
@@ -312,8 +404,12 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                 <div className="recommendation-header">
                   <h3>{rec.title}</h3>
                   <div className="recommendation-meta">
-                    <span className={`impact ${rec.impact}`}>{rec.impact} impact</span>
-                    <span className={`effort ${rec.effort}`}>{rec.effort} effort</span>
+                    <span className={`impact ${rec.impact}`}>
+                      {rec.impact} impact
+                    </span>
+                    <span className={`effort ${rec.effort}`}>
+                      {rec.effort} effort
+                    </span>
                   </div>
                 </div>
                 <p className="recommendation-description">{rec.description}</p>
@@ -326,7 +422,11 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                     <ul>
                       {rec.resources.map((resource, i) => (
                         <li key={i}>
-                          <a href={resource} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={resource}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             {resource}
                           </a>
                         </li>
@@ -346,9 +446,16 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           <h2>Performance Violations</h2>
           <div className="violations-list">
             {latestReport.violations.map((violation, index) => (
-              <div key={index} className={`violation-item ${violation.severity}`}>
+              <div
+                key={index}
+                className={`violation-item ${violation.severity}`}
+              >
                 <div className="violation-header">
-                  <h3>{violation.metric.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</h3>
+                  <h3>
+                    {violation.metric
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/^./, (str) => str.toUpperCase())}
+                  </h3>
                   <div className={`violation-severity ${violation.severity}`}>
                     {violation.severity.toUpperCase()}
                   </div>
@@ -357,7 +464,10 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                 <div className="violation-details">
                   <span>Actual: {formatTime(violation.actual)}</span>
                   <span>Threshold: {formatTime(violation.threshold)}</span>
-                  <span>Over by: {formatTime(violation.actual - violation.threshold)}</span>
+                  <span>
+                    Over by:{" "}
+                    {formatTime(violation.actual - violation.threshold)}
+                  </span>
                 </div>
               </div>
             ))}
@@ -375,14 +485,25 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
               <div className="chart-data">
                 {historicalReports.slice(-10).map((report, index) => (
                   <div key={index} className="chart-point">
-                    <div className="chart-bar" style={{
-                      height: `${report.score}%`,
-                      backgroundColor: report.score >= 90 ? '#10b981' : 
-                                     report.score >= 80 ? '#f59e0b' : 
-                                     report.score >= 70 ? '#f97316' : '#ef4444'
-                    }}></div>
+                    <div
+                      className="chart-bar"
+                      style={{
+                        height: `${report.score}%`,
+                        backgroundColor:
+                          report.score >= 90
+                            ? "#10b981"
+                            : report.score >= 80
+                              ? "#f59e0b"
+                              : report.score >= 70
+                                ? "#f97316"
+                                : "#ef4444",
+                      }}
+                    ></div>
                     <div className="chart-label">
-                      {report.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {report.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </div>
                     <div className="chart-value">{report.score.toFixed(0)}</div>
                   </div>
@@ -482,7 +603,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         }
 
         .score-circle::before {
-          content: '';
+          content: "";
           position: absolute;
           width: 80px;
           height: 80px;
@@ -841,21 +962,47 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         }
 
         /* Status colors */
-        .text-green-600 { color: #10b981; }
-        .text-yellow-600 { color: #f59e0b; }
-        .text-orange-600 { color: #f97316; }
-        .text-red-600 { color: #ef4444; }
-        .text-blue-600 { color: #3b82f6; }
+        .text-green-600 {
+          color: #10b981;
+        }
+        .text-yellow-600 {
+          color: #f59e0b;
+        }
+        .text-orange-600 {
+          color: #f97316;
+        }
+        .text-red-600 {
+          color: #ef4444;
+        }
+        .text-blue-600 {
+          color: #3b82f6;
+        }
 
         /* Grade colors */
-        .bg-green-100 { background: #dcfce7; }
-        .text-green-800 { color: #166534; }
-        .bg-yellow-100 { background: #fef3c7; }
-        .text-yellow-800 { color: #92400e; }
-        .bg-orange-100 { background: #fed7aa; }
-        .text-orange-800 { color: #9a3412; }
-        .bg-red-100 { background: #fee2e2; }
-        .text-red-800 { color: #991b1b; }
+        .bg-green-100 {
+          background: #dcfce7;
+        }
+        .text-green-800 {
+          color: #166534;
+        }
+        .bg-yellow-100 {
+          background: #fef3c7;
+        }
+        .text-yellow-800 {
+          color: #92400e;
+        }
+        .bg-orange-100 {
+          background: #fed7aa;
+        }
+        .text-orange-800 {
+          color: #9a3412;
+        }
+        .bg-red-100 {
+          background: #fee2e2;
+        }
+        .text-red-800 {
+          color: #991b1b;
+        }
       `}</style>
     </div>
   );

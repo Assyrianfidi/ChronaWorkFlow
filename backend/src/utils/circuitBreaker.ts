@@ -4,17 +4,17 @@
  */
 
 export enum CircuitState {
-  CLOSED = 'CLOSED',
-  OPEN = 'OPEN',
-  HALF_OPEN = 'HALF_OPEN',
+  CLOSED = "CLOSED",
+  OPEN = "OPEN",
+  HALF_OPEN = "HALF_OPEN",
 }
 
 export interface CircuitBreakerOptions {
-  failureThreshold?: number;      // Number of failures before opening
-  resetTimeout?: number;          // Milliseconds to wait before trying again
-  monitoringPeriod?: number;      // Milliseconds to monitor for failures
-  expectedErrorRate?: number;      // Error rate threshold (0-1)
-  halfOpenMaxCalls?: number;       // Max calls in half-open state
+  failureThreshold?: number; // Number of failures before opening
+  resetTimeout?: number; // Milliseconds to wait before trying again
+  monitoringPeriod?: number; // Milliseconds to monitor for failures
+  expectedErrorRate?: number; // Error rate threshold (0-1)
+  halfOpenMaxCalls?: number; // Max calls in half-open state
 }
 
 export class CircuitBreaker {
@@ -27,7 +27,7 @@ export class CircuitBreaker {
 
   constructor(
     private service: string,
-    private options: CircuitBreakerOptions = {}
+    private options: CircuitBreakerOptions = {},
   ) {
     // Default options
     this.options = {
@@ -50,31 +50,40 @@ export class CircuitBreaker {
     if (this.state === CircuitState.OPEN && now >= this.nextAttempt) {
       this.state = CircuitState.HALF_OPEN;
       this.halfOpenCalls = 0;
-      console.log(`[CIRCUIT_BREAKER] ${this.service}: Opening to HALF_OPEN state`);
+      console.log(
+        `[CIRCUIT_BREAKER] ${this.service}: Opening to HALF_OPEN state`,
+      );
     }
 
     // Reject calls if circuit is open
     if (this.state === CircuitState.OPEN) {
-      throw new Error(`Circuit breaker OPEN for ${this.service}. Next attempt at ${new Date(this.nextAttempt).toISOString()}`);
+      throw new Error(
+        `Circuit breaker OPEN for ${this.service}. Next attempt at ${new Date(this.nextAttempt).toISOString()}`,
+      );
     }
 
     // Limit calls in half-open state
-    if (this.state === CircuitState.HALF_OPEN && this.halfOpenCalls >= this.options.halfOpenMaxCalls!) {
-      throw new Error(`Circuit breaker HALF_OPEN for ${this.service}. Max calls exceeded.`);
+    if (
+      this.state === CircuitState.HALF_OPEN &&
+      this.halfOpenCalls >= this.options.halfOpenMaxCalls!
+    ) {
+      throw new Error(
+        `Circuit breaker HALF_OPEN for ${this.service}. Max calls exceeded.`,
+      );
     }
 
     try {
       // Execute the function
       const result = await fn();
-      
+
       // Record success
       this.onSuccess(now);
-      
+
       return result;
     } catch (error) {
       // Record failure
       this.onFailure(now);
-      
+
       // Re-throw the error
       throw error;
     }
@@ -89,15 +98,19 @@ export class CircuitBreaker {
 
     if (this.state === CircuitState.HALF_OPEN) {
       this.halfOpenCalls++;
-      
+
       // If enough successful calls in half-open, close the circuit
       if (this.halfOpenCalls >= this.options.halfOpenMaxCalls!) {
         this.state = CircuitState.CLOSED;
-        console.log(`[CIRCUIT_BREAKER] ${this.service}: Circuit CLOSED after successful half-open period`);
+        console.log(
+          `[CIRCUIT_BREAKER] ${this.service}: Circuit CLOSED after successful half-open period`,
+        );
       }
     }
 
-    console.log(`[CIRCUIT_BREAKER] ${this.service}: Success recorded. State: ${this.state}`);
+    console.log(
+      `[CIRCUIT_BREAKER] ${this.service}: Success recorded. State: ${this.state}`,
+    );
   }
 
   /**
@@ -111,20 +124,28 @@ export class CircuitBreaker {
       // Any failure in half-open opens the circuit again
       this.state = CircuitState.OPEN;
       this.nextAttempt = now + this.options.resetTimeout!;
-      console.log(`[CIRCUIT_BREAKER] ${this.service}: Circuit OPEN after failure in half-open state`);
+      console.log(
+        `[CIRCUIT_BREAKER] ${this.service}: Circuit OPEN after failure in half-open state`,
+      );
     } else if (this.state === CircuitState.CLOSED) {
       // Check if we should open the circuit
       const errorRate = this.getErrorRate(now);
-      
-      if (this.failures >= this.options.failureThreshold! || 
-          errorRate >= this.options.expectedErrorRate!) {
+
+      if (
+        this.failures >= this.options.failureThreshold! ||
+        errorRate >= this.options.expectedErrorRate!
+      ) {
         this.state = CircuitState.OPEN;
         this.nextAttempt = now + this.options.resetTimeout!;
-        console.log(`[CIRCUIT_BREAKER] ${this.service}: Circuit OPEN. Failures: ${this.failures}, Error Rate: ${(errorRate * 100).toFixed(2)}%`);
+        console.log(
+          `[CIRCUIT_BREAKER] ${this.service}: Circuit OPEN. Failures: ${this.failures}, Error Rate: ${(errorRate * 100).toFixed(2)}%`,
+        );
       }
     }
 
-    console.log(`[CIRCUIT_BREAKER] ${this.service}: Failure recorded. State: ${this.state}, Total Failures: ${this.failures}`);
+    console.log(
+      `[CIRCUIT_BREAKER] ${this.service}: Failure recorded. State: ${this.state}, Total Failures: ${this.failures}`,
+    );
   }
 
   /**
@@ -133,14 +154,14 @@ export class CircuitBreaker {
   private getErrorRate(now: number): number {
     const period = this.options.monitoringPeriod!;
     const totalCalls = this.successes + this.failures;
-    
+
     if (totalCalls === 0) return 0;
-    
+
     // Only consider failures within the monitoring period
     if (now - this.lastFailureTime > period) {
       return 0;
     }
-    
+
     return this.failures / totalCalls;
   }
 
@@ -165,7 +186,8 @@ export class CircuitBreaker {
       state: this.state,
       failures: this.failures,
       successes: this.successes,
-      nextAttempt: this.state === CircuitState.OPEN ? new Date(this.nextAttempt) : null,
+      nextAttempt:
+        this.state === CircuitState.OPEN ? new Date(this.nextAttempt) : null,
       errorRate: this.getErrorRate(Date.now()),
     };
   }
@@ -180,7 +202,9 @@ export class CircuitBreaker {
     this.nextAttempt = Date.now();
     this.lastFailureTime = 0;
     this.halfOpenCalls = 0;
-    console.log(`[CIRCUIT_BREAKER] ${this.service}: Circuit manually reset to CLOSED`);
+    console.log(
+      `[CIRCUIT_BREAKER] ${this.service}: Circuit manually reset to CLOSED`,
+    );
   }
 
   /**
@@ -222,14 +246,14 @@ export class CircuitBreakerRegistry {
    */
   static getAllStatuses(): Record<string, any> {
     const statuses: Record<string, any> = {};
-    
+
     for (const [service, breaker] of this.breakers) {
       statuses[service] = {
         state: breaker.getState(),
-        stats: breaker.getStats()
+        stats: breaker.getStats(),
       };
     }
-    
+
     return statuses;
   }
 
@@ -238,11 +262,11 @@ export class CircuitBreakerRegistry {
    */
   static getAllStats(): Record<string, any> {
     const stats: Record<string, any> = {};
-    
+
     for (const [service, breaker] of this.breakers) {
       stats[service] = breaker.getStats();
     }
-    
+
     return stats;
   }
 
@@ -271,8 +295,15 @@ export class CircuitBreakerRegistry {
 /**
  * Decorator to apply circuit breaker to a method
  */
-export function withCircuitBreaker(service: string, options?: CircuitBreakerOptions) {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export function withCircuitBreaker(
+  service: string,
+  options?: CircuitBreakerOptions,
+) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {

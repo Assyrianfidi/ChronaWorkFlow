@@ -1,21 +1,21 @@
-import { db } from '../src/db';
-import { sql } from 'drizzle-orm';
-import 'dotenv/config';
+import { db } from "../src/db";
+import { sql } from "drizzle-orm";
+import "dotenv/config";
 
 async function resetDatabase() {
   try {
-    console.log('Dropping existing tables...');
-    
+    console.log("Dropping existing tables...");
+
     // Drop tables if they exist
     await db.execute(sql`
       DROP TABLE IF EXISTS reconciliation_reports CASCADE;
       DROP TABLE IF EXISTS users CASCADE;
     `);
-    
-    console.log('Dropped existing tables.');
-    
-    console.log('Creating new tables...');
-    
+
+    console.log("Dropped existing tables.");
+
+    console.log("Creating new tables...");
+
     // Create users table
     await db.execute(sql`
       CREATE TABLE users (
@@ -29,7 +29,7 @@ async function resetDatabase() {
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
     `);
-    
+
     // Create reconciliation_reports table
     await db.execute(sql`
       CREATE TABLE reconciliation_reports (
@@ -42,11 +42,10 @@ async function resetDatabase() {
         CONSTRAINT title_user_id UNIQUE (title, user_id)
       );
     `);
-    
-    console.log('Successfully created new tables.');
-    
+
+    console.log("Successfully created new tables.");
   } catch (error) {
-    console.error('Error resetting database:', error);
+    console.error("Error resetting database:", error);
     process.exit(1);
   } finally {
     process.exit(0);

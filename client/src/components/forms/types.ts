@@ -1,8 +1,8 @@
 export interface ReportFormValues {
   title: string;
   description: string;
-  status: 'draft' | 'in_review' | 'approved' | 'rejected';
-  priority: 'low' | 'medium' | 'high';
+  status: "draft" | "in_review" | "approved" | "rejected";
+  priority: "low" | "medium" | "high";
   dueDate: string;
   isPublic: boolean;
   tags: string[];

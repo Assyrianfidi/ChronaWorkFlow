@@ -1,6 +1,6 @@
 // Vitest setup file
-import '@testing-library/jest-dom/vitest';
-import { cleanup } from '@testing-library/react';
+import "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/react";
 
 // Mock browser APIs
 declare global {
@@ -12,20 +12,24 @@ declare global {
 }
 
 // Add missing globals for Node.js environment
-if (typeof TextEncoder === 'undefined') {
-  const { TextEncoder, TextDecoder } = require('util');
+if (typeof TextEncoder === "undefined") {
+  const { TextEncoder, TextDecoder } = require("util");
   global.TextEncoder = TextEncoder;
+// @ts-ignore
   global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 }
 
 // Mock IntersectionObserver
 class MockIntersectionObserver implements IntersectionObserver {
   readonly root: Element | null = null;
-  readonly rootMargin: string = '';
+  readonly rootMargin: string = "";
   readonly thresholds: ReadonlyArray<number> = [];
-  
-  constructor(public callback: IntersectionObserverCallback, _options?: IntersectionObserverInit) {}
-  
+
+  constructor(
+    public callback: IntersectionObserverCallback,
+    _options?: IntersectionObserverInit,
+  ) {}
+
   observe(_target: Element): void {}
   unobserve(_target: Element): void {}
   disconnect(): void {}
@@ -45,7 +49,7 @@ class MockResizeObserver implements ResizeObserver {
 // Setup mocks
 beforeAll(() => {
   // Mock window.matchMedia
-  Object.defineProperty(window, 'matchMedia', {
+  Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: (query: string) => ({
       matches: false,
@@ -61,10 +65,12 @@ beforeAll(() => {
 
   // Mock IntersectionObserver
   window.IntersectionObserver = MockIntersectionObserver;
-  
+
   // Mock ResizeObserver
+// @ts-ignore
+// @ts-ignore
   window.ResizeObserver = MockResizeObserver as any;
-  
+
   // Mock window.scrollTo
   window.scrollTo = vi.fn();
 });
@@ -76,7 +82,7 @@ afterEach(() => {
 });
 
 // Mock next/navigation
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),
@@ -85,11 +91,11 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => ({
     get: vi.fn(),
   }),
-  usePathname: () => '/',
+  usePathname: () => "/",
 }));
 
 // Mock react-hot-toast
-vi.mock('react-hot-toast', () => ({
+vi.mock("react-hot-toast", () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
@@ -98,8 +104,18 @@ vi.mock('react-hot-toast', () => ({
   },
 }));
 
+// Mock Next.js intersection hook to avoid relying on real IntersectionObserver behavior in tests
+vi.mock("next/dist/client/use-intersection", () => ({
+  useIntersection: () => {
+    const setElement = () => {};
+    const visible = true;
+    const resetVisible = () => {};
+    return [setElement, visible, resetVisible] as const;
+  },
+}));
+
 // Mock react-dropzone
-vi.mock('react-dropzone', () => ({
+vi.mock("react-dropzone", () => ({
   useDropzone: () => ({
     getRootProps: vi.fn().mockReturnValue({}),
     getInputProps: vi.fn().mockReturnValue({}),
@@ -109,11 +125,12 @@ vi.mock('react-dropzone', () => ({
 }));
 
 // Mock date-fns
-vi.mock('date-fns', async () => {
-  const actual = await vi.importActual('date-fns');
+vi.mock("date-fns", async () => {
+  const actual = await vi.importActual("date-fns");
   return {
+// @ts-ignore
     ...(actual as object),
-    format: vi.fn().mockReturnValue('2023-01-01'),
+    format: vi.fn().mockReturnValue("2023-01-01"),
   };
 });
 
@@ -123,7 +140,8 @@ const mockFetch = vi.fn().mockImplementation(() =>
     ok: true,
     status: 200,
     json: async () => ({}),
-  } as Response)
+// @ts-ignore
+  } as Response),
 );
 
 global.fetch = mockFetch;
@@ -144,14 +162,14 @@ beforeAll(() => {
   // Mock IntersectionObserver
   class MockIntersectionObserver implements IntersectionObserver {
     readonly root: Element | null = null;
-    readonly rootMargin: string = '';
+    readonly rootMargin: string = "";
     readonly thresholds: ReadonlyArray<number> = [];
-    
+
     constructor(
       public callback: IntersectionObserverCallback,
-      _options?: IntersectionObserverInit
+      _options?: IntersectionObserverInit,
     ) {}
-    
+
     observe(_target: Element): void {}
     unobserve(_target: Element): void {}
     disconnect(): void {}
@@ -159,9 +177,9 @@ beforeAll(() => {
       return [];
     }
   }
-  
+
   window.IntersectionObserver = MockIntersectionObserver;
-  
+
   // Mock ResizeObserver
   class MockResizeObserver implements ResizeObserver {
     constructor(public callback: ResizeObserverCallback) {}
@@ -169,6 +187,6 @@ beforeAll(() => {
     unobserve(_target: Element): void {}
     disconnect(): void {}
   }
-  
+
   window.ResizeObserver = MockResizeObserver;
 });

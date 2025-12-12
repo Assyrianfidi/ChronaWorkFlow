@@ -1,358 +1,179 @@
-import { useForm, Controller, SubmitHandler, useController } from 'react-hook-form';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChangeEvent, useCallback, useEffect } from 'react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Textarea } from '../ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Loader2, Save, X } from 'lucide-react';
-import { cn } from '../../lib/utils';
-import { z } from 'zod';
-import type { ReportFormValues as ReportFormValuesType, ReportFormProps as ReportFormPropsType } from './types';
+import * as z from 'zod';
+import { Button } from '@/components/ui';
+import { Input } from '@/components/ui';
+import Form, { FormField, FormActions } from './Form';
 
-// Define form schema with required fields
-const reportFormSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters'),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
-  status: z.enum(['draft', 'in_review', 'approved', 'rejected'] as const),
-  dueDate: z.string(),
-  priority: z.enum(['low', 'medium', 'high'] as const),
-  attachments: z.array(z.any()).default([]),
-  tags: z.array(z.string()).default([]),
-  isPublic: z.boolean().default(false),
+const reportSchema = z.object({
+  title: z.string().min(1, 'Title is required').min(3, 'Title must be at least 3 characters'),
+  type: z.enum(['financial', 'sales', 'inventory', 'payroll', 'custom']),
+  startDate: z.string().min(1, 'Start date is required'),
+  endDate: z.string().min(1, 'End date is required'),
+  parameters: z.record(z.any()).optional(),
 });
 
-type LocalReportFormValues = {
-  title: string;
-  description: string;
-  status: 'draft' | 'in_review' | 'approved' | 'rejected';
-  dueDate: string;
-  priority: 'low' | 'medium' | 'high';
-  attachments: any[];
-  tags: string[];
-  isPublic: boolean;
-};
+type ReportFormData = z.infer<typeof reportSchema>;
 
-const defaultValues: LocalReportFormValues = {
-  title: '',
-  description: '',
-  status: 'draft',
-  dueDate: new Date().toISOString().split('T')[0],
-  priority: 'medium',
-  isPublic: false,
-  attachments: [],
-  tags: [],
-};
-
-interface LocalReportFormProps {
-  /** Initial form values */
-  initialValues?: Partial<LocalReportFormValues>;
-  /** Form submission handler */
-  onSubmit: SubmitHandler<LocalReportFormValues>;
-  /** Cancel handler */
-  onCancel?: () => void;
-  /** Loading state for the form */
-  isLoading?: boolean;
-  /** Submitting state for the form */
-  isSubmitting?: boolean;
-  /** Custom submit button label */
-  submitLabel?: string;
-  /** Additional class names */
-  className?: string;
+interface ReportFormProps {
+  initialData?: Partial<ReportFormData>;
+  onSubmit: (data: ReportFormData) => Promise<void>;
+  loading?: boolean;
+  error?: string;
+  success?: string;
 }
 
-/**
- * A form component for creating and editing reports with validation and error handling.
- */
-export const ReportForm = ({
-  initialValues,
+const ReportForm: React.FC<ReportFormProps> = ({
+  initialData,
   onSubmit,
-  onCancel,
-  isLoading = false,
-  isSubmitting = false,
-  submitLabel = 'Save',
-  className,
-}: LocalReportFormProps) => {
+  loading = false,
+  error,
+  success,
+}) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const {
-    control,
+    register,
     handleSubmit,
+    formState: { errors, isDirty, isValid },
     reset,
-    formState: { errors },
-  } = useForm<LocalReportFormValues>({
-    resolver: zodResolver(reportFormSchema) as any, // Type assertion to handle zodResolver return type
-    defaultValues: { ...defaultValues, ...initialValues } as LocalReportFormValues,
+    watch,
+    setValue,
+  } = useForm<ReportFormData>({
+    resolver: zodResolver(reportSchema),
+    defaultValues: {
+      title: '',
+      type: 'financial',
+      startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      endDate: new Date().toISOString().split('T')[0],
+      parameters: {},
+      ...initialData,
+    },
+    mode: 'onChange',
   });
 
-  const statusController = useController({ name: 'status', control });
-  const priorityController = useController({ name: 'priority', control });
-  const statusField = statusController.field;
-  const priorityField = priorityController.field;
-  const isTestEnv = process.env.NODE_ENV === 'test';
-
-  // Form submission handler
-  const handleFormSubmit = useCallback(async (data: LocalReportFormValues) => {
+  const handleFormSubmit = async (data: ReportFormData) => {
+    setIsSubmitting(true);
     try {
       await onSubmit(data);
-    } catch (error) {
-      console.error('Error submitting form:', error);
-    }
-  }, [onSubmit]);
-
-  useEffect(() => {
-    if (isTestEnv) {
-      (global as any).__REPORTFORM_SUBMIT__ = handleFormSubmit;
-      return () => {
-        delete (global as any).__REPORTFORM_SUBMIT__;
-      };
-    }
-    return undefined;
-  }, [handleFormSubmit, isTestEnv]);
-
-  // Reset form to initial values
-  const handleReset = () => {
-    reset({ ...defaultValues, ...initialValues });
-  };
-
-  // Handle form actions
-  const handleCancel = () => {
-    if (onCancel) {
-      onCancel();
-    } else {
-      handleReset();
+      reset();
+    } catch (err) {
+      // Error handled by parent
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  // Reset form when initialValues change
-  useEffect(() => {
-    if (initialValues) {
-      reset({ ...defaultValues, ...initialValues });
-    }
-  }, [initialValues, reset]);
 
   return (
-    <form
-      data-testid="report-form"
+    <Form
+      title={initialData ? 'Edit Report' : 'Generate New Report'}
+      description="Configure your report parameters below"
+      loading={loading || isSubmitting}
+      error={error}
+      success={success}
       onSubmit={handleSubmit(handleFormSubmit)}
-      className={cn('space-y-6', className)}
     >
-      <Card>
-        <CardHeader>
-          <CardTitle>Report Details</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
-            <Controller
-              name="title"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  id="title"
-                  placeholder="Enter report title"
-                  disabled={isLoading || isSubmitting}
-                  className={errors.title ? 'border-destructive' : ''}
-                />
-              )}
-            />
-            {errors.title && (
-              <p className="text-sm font-medium text-destructive">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
+      <FormField
+        label="Report Title"
+        error={errors.title?.message}
+        required
+      >
+        <Input
+          {...register('title')}
+          placeholder="Enter report title"
+          aria-label="Report title"
+          aria-invalid={errors.title ? 'true' : 'false'}
+        />
+      </FormField>
 
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <Textarea
-                  {...field}
-                  id="description"
-                  placeholder="Enter report description"
-                  disabled={isLoading || isSubmitting}
-                  className={cn('min-h-[100px]', errors.description && 'border-destructive')}
-                />
-              )}
-            />
-            {errors.description && (
-              <p className="text-sm font-medium text-destructive">
-                {errors.description.message}
-              </p>
-            )}
-          </div>
+      <FormField
+        label="Report Type"
+        error={errors.type?.message}
+        required
+      >
+        <select
+          {...register('type')}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          aria-label="Report type"
+          aria-invalid={errors.type ? 'true' : 'false'}
+        >
+          <option value="financial">Financial Report</option>
+          <option value="sales">Sales Report</option>
+          <option value="inventory">Inventory Report</option>
+          <option value="payroll">Payroll Report</option>
+          <option value="custom">Custom Report</option>
+        </select>
+      </FormField>
 
-          {/* Status */}
-          <div className="space-y-2">
-            <Label htmlFor="status">Status *</Label>
-            <Controller
-              name="status"
-              control={control}
-              render={() => (
-                <>
-                  <Select
-                    value={statusField.value}
-                    onValueChange={statusField.onChange}
-                    disabled={isLoading || isSubmitting}
-                  >
-                    <SelectTrigger className={errors.status ? 'border-destructive' : ''}>
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="in_review">In Review</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="rejected">Rejected</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <select
-                    data-testid="__REPORTFORM_SELECT_CATEGORY__"
-                    value={statusField.value}
-                    onChange={(event: ChangeEvent<HTMLSelectElement>) => statusField.onChange(event.target.value)}
-                    className="sr-only"
-                    aria-hidden="true"
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="in_review">In Review</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                </>
-              )}
-            />
-            {errors.status && (
-              <p className="text-sm font-medium text-destructive">
-                {errors.status.message}
-              </p>
-            )}
-          </div>
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          label="Start Date"
+          error={errors.startDate?.message}
+          required
+        >
+          <Input
+            {...register('startDate')}
+            type="date"
+            aria-label="Report start date"
+            aria-invalid={errors.startDate ? 'true' : 'false'}
+          />
+        </FormField>
 
-          {/* Priority */}
-          <div className="space-y-2">
-            <Label htmlFor="priority">Priority *</Label>
-            <>
-              <Select
-                value={priorityField.value}
-                onValueChange={priorityField.onChange}
-                disabled={isLoading || isSubmitting}
-              >
-                <SelectTrigger className={errors.priority ? 'border-destructive' : ''}>
-                  <SelectValue placeholder="Select priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-              </Select>
-              <select
-                data-testid="__REPORTFORM_SELECT_REASON__"
-                value={priorityField.value}
-                onChange={(event: ChangeEvent<HTMLSelectElement>) => priorityField.onChange(event.target.value)}
-                className="sr-only"
-                aria-hidden="true"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-              <select
-                data-testid="__REPORTFORM_SELECT_PRIORITY__"
-                value={priorityField.value}
-                onChange={(event: ChangeEvent<HTMLSelectElement>) => priorityField.onChange(event.target.value)}
-                className="sr-only"
-                aria-hidden="true"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </>
-            {errors.priority && (
-              <p className="text-sm font-medium text-destructive">
-                {errors.priority.message}
-              </p>
-            )}
-          </div>
+        <FormField
+          label="End Date"
+          error={errors.endDate?.message}
+          required
+        >
+          <Input
+            {...register('endDate')}
+            type="date"
+            aria-label="Report end date"
+            aria-invalid={errors.endDate ? 'true' : 'false'}
+          />
+        </FormField>
+      </div>
 
-          {/* Due Date */}
-          <div className="space-y-2">
-            <Label htmlFor="dueDate">Due Date *</Label>
-            <Controller
-              name="dueDate"
-              control={control}
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  type="date"
-                  id="dueDate"
-                  data-testid="dueDate"
-                  disabled={isLoading || isSubmitting}
-                  className={errors.dueDate ? 'border-destructive' : ''}
-                />
-              )}
-            />
-            {errors.dueDate && (
-              <p className="text-sm font-medium text-destructive">
-                {errors.dueDate.message}
-              </p>
-            )}
-          </div>
+      <FormField
+        label="Additional Parameters"
+        error={errors.parameters?.message}
+        description="JSON format for additional report parameters"
+      >
+        <textarea
+          {...register('parameters')}
+          rows={4}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          placeholder='{"key": "value"}'
+          aria-label="Report parameters"
+        />
+      </FormField>
 
-          {/* Is Public */}
-          <div className="flex items-center space-x-2">
-            <Controller
-              name="isPublic"
-              control={control}
-              render={({ field }) => (
-                <input
-                  type="checkbox"
-                  id="isPublic"
-                  data-testid="isPublic"
-                  checked={field.value}
-                  onChange={field.onChange}
-                  disabled={isLoading || isSubmitting}
-                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                />
-              )}
-            />
-            <Label htmlFor="isPublic">Make this report public</Label>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Form Actions */}
-      <div className="flex justify-end space-x-2">
+      <FormActions>
+        <Button
+          type="submit"
+          disabled={!isDirty || !isValid || isSubmitting}
+          loading={isSubmitting}
+          aria-label={initialData ? 'Update report' : 'Generate report'}
+        >
+          {isSubmitting 
+            ? 'Generating...' 
+            : initialData 
+              ? 'Update Report' 
+              : 'Generate Report'
+          }
+        </Button>
+        
         <Button
           type="button"
           variant="outline"
-          onClick={handleCancel}
-          disabled={isLoading || isSubmitting}
+          onClick={() => reset(initialData)}
+          disabled={isSubmitting}
+          aria-label="Reset form"
         >
-          <X className="mr-2 h-4 w-4" />
-          Cancel
+          Reset
         </Button>
-        <Button type="submit" disabled={isLoading || isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="mr-2 h-4 w-4" />
-              {submitLabel}
-            </>
-          )}
-        </Button>
-      </div>
-    </form>
+      </FormActions>
+    </Form>
   );
 };
 

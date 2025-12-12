@@ -34,6 +34,10 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
   },
+  publicDir: false,
+  optimizeDeps: {
+    exclude: ['storybook-static'],
+  },
   server: {
     fs: {
       strict: true,

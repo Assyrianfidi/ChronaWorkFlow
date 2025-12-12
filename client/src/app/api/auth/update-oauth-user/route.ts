@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
-import { prisma } from '../lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { prisma } from '../lib/prisma.js';
 
 /**
  * API endpoint to update OAuth user information
@@ -9,16 +9,13 @@ import { prisma } from '../lib/prisma';
 export async function POST(request: NextRequest) {
   try {
     // Get the token from the request
-    const token = await getToken({ 
-      req: request, 
-      secret: process.env.NEXTAUTH_SECRET 
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
     });
-    
+
     if (!token?.sub) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -26,15 +23,15 @@ export async function POST(request: NextRequest) {
 
     if (!id || !role) {
       return NextResponse.json(
-        { error: 'Missing required fields: id, role' },
-        { status: 400 }
+        { error: "Missing required fields: id, role" },
+        { status: 400 },
       );
     }
 
     // Update the user's role if they don't have one
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: { 
+      data: {
         role: role.toUpperCase(),
         isActive: true,
       },
@@ -51,10 +48,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ user: updatedUser });
   } catch (error) {
-    console.error('Error updating OAuth user:', error);
+    console.error("Error updating OAuth user:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
 }

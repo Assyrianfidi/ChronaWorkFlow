@@ -6,7 +6,14 @@
 export interface ValidationRule {
   field: string;
   required?: boolean;
-  type?: 'string' | 'number' | 'boolean' | 'array' | 'object' | 'email' | 'date';
+  type?:
+    | "string"
+    | "number"
+    | "boolean"
+    | "array"
+    | "object"
+    | "email"
+    | "date";
   minLength?: number;
   maxLength?: number;
   min?: number;
@@ -39,12 +46,12 @@ export class Validator {
     const errors: ValidationError[] = [];
     const validatedData: any = {};
 
-    this.validateObject(data, schema, '', errors, validatedData);
+    this.validateObject(data, schema, "", errors, validatedData);
 
     return {
       isValid: errors.length === 0,
       errors,
-      data: validatedData
+      data: validatedData,
     };
   }
 
@@ -56,24 +63,36 @@ export class Validator {
     schema: ValidationSchema,
     prefix: string,
     errors: ValidationError[],
-    validatedData: any
+    validatedData: any,
   ): void {
     for (const [field, rule] of Object.entries(schema)) {
       const fieldPath = prefix ? `${prefix}.${field}` : field;
       const value = data?.[field];
 
       if (this.isValidationRule(rule)) {
-        this.validateField(value, rule as ValidationRule, fieldPath, errors, validatedData);
+        this.validateField(
+          value,
+          rule as ValidationRule,
+          fieldPath,
+          errors,
+          validatedData,
+        );
       } else {
         // Nested object
-        if (value && typeof value === 'object') {
+        if (value && typeof value === "object") {
           validatedData[field] = {};
-          this.validateObject(value, rule as ValidationSchema, fieldPath, errors, validatedData[field]);
+          this.validateObject(
+            value,
+            rule as ValidationSchema,
+            fieldPath,
+            errors,
+            validatedData[field],
+          );
         } else if ((rule as ValidationSchema)[field]?.required) {
           errors.push({
             field: fieldPath,
-            message: 'This field is required',
-            value
+            message: "This field is required",
+            value,
           });
         }
       }
@@ -88,16 +107,19 @@ export class Validator {
     rule: ValidationRule,
     fieldPath: string,
     errors: ValidationError[],
-    validatedData: any
+    validatedData: any,
   ): void {
-    const fieldName = fieldPath.split('.').pop()!;
+    const fieldName = fieldPath.split(".").pop()!;
 
     // Required validation
-    if (rule.required && (value === undefined || value === null || value === '')) {
+    if (
+      rule.required &&
+      (value === undefined || value === null || value === "")
+    ) {
       errors.push({
         field: fieldPath,
         message: `${fieldName} is required`,
-        value
+        value,
       });
       return;
     }
@@ -112,18 +134,18 @@ export class Validator {
       errors.push({
         field: fieldPath,
         message: `${fieldName} must be a ${rule.type}`,
-        value
+        value,
       });
       return;
     }
 
     // String validations
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       if (rule.minLength && value.length < rule.minLength) {
         errors.push({
           field: fieldPath,
           message: `${fieldName} must be at least ${rule.minLength} characters long`,
-          value
+          value,
         });
       }
 
@@ -131,7 +153,7 @@ export class Validator {
         errors.push({
           field: fieldPath,
           message: `${fieldName} must be no more than ${rule.maxLength} characters long`,
-          value
+          value,
         });
       }
 
@@ -139,18 +161,18 @@ export class Validator {
         errors.push({
           field: fieldPath,
           message: `${fieldName} format is invalid`,
-          value
+          value,
         });
       }
     }
 
     // Number validations
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       if (rule.min !== undefined && value < rule.min) {
         errors.push({
           field: fieldPath,
           message: `${fieldName} must be at least ${rule.min}`,
-          value
+          value,
         });
       }
 
@@ -158,7 +180,7 @@ export class Validator {
         errors.push({
           field: fieldPath,
           message: `${fieldName} must be no more than ${rule.max}`,
-          value
+          value,
         });
       }
     }
@@ -169,14 +191,17 @@ export class Validator {
       if (customResult !== true) {
         errors.push({
           field: fieldPath,
-          message: typeof customResult === 'string' ? customResult : `${fieldName} is invalid`,
-          value
+          message:
+            typeof customResult === "string"
+              ? customResult
+              : `${fieldName} is invalid`,
+          value,
         });
       }
     }
 
     // If no errors, add to validated data
-    if (errors.filter(e => e.field === fieldPath).length === 0) {
+    if (errors.filter((e) => e.field === fieldPath).length === 0) {
       validatedData[fieldName] = value;
     }
   }
@@ -186,20 +211,27 @@ export class Validator {
    */
   private validateType(value: any, type: string): boolean {
     switch (type) {
-      case 'string':
-        return typeof value === 'string';
-      case 'number':
-        return typeof value === 'number' && !isNaN(value);
-      case 'boolean':
-        return typeof value === 'boolean';
-      case 'array':
+      case "string":
+        return typeof value === "string";
+      case "number":
+        return typeof value === "number" && !isNaN(value);
+      case "boolean":
+        return typeof value === "boolean";
+      case "array":
         return Array.isArray(value);
-      case 'object':
-        return typeof value === 'object' && value !== null && !Array.isArray(value);
-      case 'email':
-        return typeof value === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-      case 'date':
-        return value instanceof Date || (typeof value === 'string' && !isNaN(Date.parse(value)));
+      case "object":
+        return (
+          typeof value === "object" && value !== null && !Array.isArray(value)
+        );
+      case "email":
+        return (
+          typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+        );
+      case "date":
+        return (
+          value instanceof Date ||
+          (typeof value === "string" && !isNaN(Date.parse(value)))
+        );
       default:
         return true;
     }
@@ -209,17 +241,27 @@ export class Validator {
    * Check if rule is a ValidationRule
    */
   private isValidationRule(rule: any): rule is ValidationRule {
-    return rule && typeof rule === 'object' && !Array.isArray(rule) && !this.isSchema(rule);
+    return (
+      rule &&
+      typeof rule === "object" &&
+      !Array.isArray(rule) &&
+      !this.isSchema(rule)
+    );
   }
 
   /**
    * Check if rule is a schema
    */
   private isSchema(rule: any): rule is ValidationSchema {
-    return rule && typeof rule === 'object' && !Array.isArray(rule) && Object.keys(rule).some(key => {
-      const value = rule[key];
-      return value && typeof value === 'object' && !Array.isArray(value);
-    });
+    return (
+      rule &&
+      typeof rule === "object" &&
+      !Array.isArray(rule) &&
+      Object.keys(rule).some((key) => {
+        const value = rule[key];
+        return value && typeof value === "object" && !Array.isArray(value);
+      })
+    );
   }
 
   /**
@@ -227,32 +269,32 @@ export class Validator {
    */
   static schemas = {
     email: {
-      type: 'email' as const,
-      required: true
+      type: "email" as const,
+      required: true,
     },
     password: {
-      type: 'string' as const,
+      type: "string" as const,
       required: true,
       minLength: 8,
       pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       custom: (value: string) => {
         if (!/(?=.*[!@#$%^&*])/.test(value)) {
-          return 'Password must contain at least one special character';
+          return "Password must contain at least one special character";
         }
         return true;
-      }
+      },
     },
     name: {
-      type: 'string' as const,
+      type: "string" as const,
       required: true,
       minLength: 2,
-      maxLength: 100
+      maxLength: 100,
     },
     positiveNumber: {
-      type: 'number' as const,
+      type: "number" as const,
       required: true,
-      min: 0
-    }
+      min: 0,
+    },
   };
 }
 

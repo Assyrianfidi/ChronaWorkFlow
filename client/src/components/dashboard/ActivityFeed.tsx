@@ -1,68 +1,94 @@
-import * as React from "react"
-import { Activity, User, FileText, Settings, AlertTriangle } from "lucide-react"
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React from 'react';
+// @ts-ignore
+import * as React from "react";
+import {
+  Activity,
+  User,
+  FileText,
+  Settings,
+  AlertTriangle,
+} from "lucide-react";
 
 interface ActivityItem {
-  id: string
-  type: 'login' | 'report' | 'user_created' | 'system' | 'document' | 'task' | 'notification' | 'approval' | 'expense' | 'target'
-  message: string
-  timestamp: string
-  user?: string
+  id: string;
+  type:
+    | "login"
+    | "report"
+    | "user_created"
+    | "system"
+    | "document"
+    | "task"
+    | "notification"
+    | "approval"
+    | "expense"
+    | "target";
+  message: string;
+  timestamp: string;
+  user?: string;
 }
 
 interface ActivityFeedProps {
-  activities: ActivityItem[]
-  isLoading?: boolean
-  error?: Error
+  activities: ActivityItem[];
+  isLoading?: boolean;
+  error?: Error;
 }
 
+// @ts-ignore
 const ActivityFeed: React.FC<ActivityFeedProps> = ({
   activities,
   isLoading = false,
-  error
+  error,
 }) => {
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'login':
-      case 'user_created':
-        return User
-      case 'report':
-      case 'document':
-        return FileText
-      case 'system':
-      case 'notification':
-        return Settings
-      case 'task':
-      case 'target':
-        return Activity
-      case 'approval':
-      case 'expense':
-        return AlertTriangle
+      case "login":
+      case "user_created":
+        return User;
+      case "report":
+      case "document":
+        return FileText;
+      case "system":
+      case "notification":
+        return Settings;
+      case "task":
+      case "target":
+        return Activity;
+      case "approval":
+      case "expense":
+        return AlertTriangle;
       default:
-        return Activity
+        return Activity;
     }
-  }
+  };
 
   const getActivityColor = (type: string) => {
     switch (type) {
-      case 'login':
-      case 'user_created':
-        return 'text-blue-600 bg-blue-50'
-      case 'report':
-      case 'document':
-        return 'text-green-600 bg-green-50'
-      case 'system':
-      case 'notification':
-        return 'text-purple-600 bg-purple-50'
-      case 'task':
-      case 'target':
-        return 'text-orange-600 bg-orange-50'
-      case 'approval':
-      case 'expense':
-        return 'text-red-600 bg-red-50'
+      case "login":
+      case "user_created":
+        return "text-blue-600 bg-blue-50";
+      case "report":
+      case "document":
+        return "text-green-600 bg-green-50";
+      case "system":
+      case "notification":
+        return "text-purple-600 bg-purple-50";
+      case "task":
+      case "target":
+        return "text-orange-600 bg-orange-50";
+      case "approval":
+      case "expense":
+        return "text-red-600 bg-red-50";
       default:
-        return 'text-gray-600 bg-gray-50'
+        return "text-gray-600 bg-gray-50";
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -77,21 +103,21 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
       <div className="text-center py-8">
         <div className="text-red-600 mb-2">Failed to load activity</div>
-        <button 
+        <button
           onClick={() => window.location.reload()}
           className="text-sm text-blue-600 hover:text-blue-700"
         >
           Try again
         </button>
       </div>
-    )
+    );
   }
 
   if (activities.length === 0) {
@@ -99,18 +125,20 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
       <div className="text-center py-8 text-gray-500">
         No recent activity to display
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-4">
       {activities.map((activity) => {
-        const Icon = getActivityIcon(activity.type)
-        const colorClass = getActivityColor(activity.type)
-        
+        const Icon = getActivityIcon(activity.type);
+        const colorClass = getActivityColor(activity.type);
+
         return (
           <div key={activity.id} className="flex items-start space-x-3">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${colorClass}`}>
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${colorClass}`}
+            >
               <Icon className="w-4 h-4" />
             </div>
             <div className="flex-1 min-w-0">
@@ -120,15 +148,13 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
                   <span className="font-medium"> by {activity.user}</span>
                 )}
               </div>
-              <div className="text-xs text-gray-500">
-                {activity.timestamp}
-              </div>
+              <div className="text-xs text-gray-500">{activity.timestamp}</div>
             </div>
           </div>
-        )
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
-export default ActivityFeed
+export default ActivityFeed;

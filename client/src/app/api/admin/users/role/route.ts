@@ -1,28 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '../lib/auth';
-import { authConfig } from '../lib/auth';
-import { prisma } from '../lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from '../lib/auth.js';
+import { authConfig } from '../lib/auth.js';
+import { prisma } from '../lib/prisma.js';
 
 export async function POST(req: NextRequest) {
   try {
     // Verify admin access
     const session = await auth();
-    
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+
+    if (!session || session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { userId, role } = await req.json();
 
     // Validate role
-    if (!['ADMIN', 'USER'].includes(role)) {
-      return NextResponse.json(
-        { error: 'Invalid role' },
-        { status: 400 }
-      );
+    if (!["ADMIN", "USER"].includes(role)) {
+      return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
 
     // Update user role
@@ -33,10 +27,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(updatedUser);
   } catch (error) {
-    console.error('Error updating user role:', error);
+    console.error("Error updating user role:", error);
     return NextResponse.json(
-      { error: 'Failed to update user role' },
-      { status: 500 }
+      { error: "Failed to update user role" },
+      { status: 500 },
     );
   }
 }

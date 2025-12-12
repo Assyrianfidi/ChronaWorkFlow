@@ -1,15 +1,16 @@
-'use client';
-
-import { useSession } from 'next-auth/react';
+import { useAuth as useAuthContext } from "@/contexts/AuthContext";
 
 export function useAuth() {
-  const { data: session, status } = useSession();
-  
+  const { user, isLoading, isAuthenticated, login, logout, register } = useAuthContext();
+
   return {
-    user: session?.user,
-    isLoading: status === 'loading',
-    isAuthenticated: status === 'authenticated',
-    session,
-    status,
+    user,
+    isLoading,
+    isAuthenticated,
+    login,
+    logout,
+    register,
+    session: user ? { user } : null,
+    status: isLoading ? "loading" : isAuthenticated ? "authenticated" : "unauthenticated",
   };
 }

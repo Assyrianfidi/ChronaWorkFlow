@@ -4,15 +4,31 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Welcome to AccuBooks</title>
     <style>
-      body { font-family: Arial, sans-serif; color: #111; line-height:1.4 }
-      .container{max-width:600px;margin:0 auto;padding:20px}
-      .btn{display:inline-block;background:#2563eb;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none}
+      body {
+        font-family: Arial, sans-serif;
+        color: #111;
+        line-height: 1.4;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .btn {
+        display: inline-block;
+        background: #2563eb;
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>Welcome, {{name}}!</h1>
-      <p>Thanks for creating an account with AccuBooks. Get started by visiting your dashboard:</p>
+      <p>Thanks for creating an account with AccuBooks. Get started by visiting
+        your dashboard:</p>
       <p><a class="btn" href="{{link}}">Go to your dashboard</a></p>
       <p>If you didn't sign up, ignore this message.</p>
       <hr />

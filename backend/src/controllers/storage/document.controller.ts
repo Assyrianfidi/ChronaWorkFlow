@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import { body, param, query, validationResult } from 'express-validator';
-import { documentService } from '../../services/storage/document.service';
-import { logger } from '../../utils/logger.js';
+import { Request, Response } from "express";
+import { body, param, query, validationResult } from "express-validator";
+import { documentService } from "../../services/storage/document.service";
+import { logger } from "../../utils/logger.js";
 
 // Extend Request interface to include file
 interface AuthenticatedRequest extends Request {
@@ -21,7 +21,7 @@ export class DocumentController {
       if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
-          message: 'Validation failed',
+          message: "Validation failed",
           errors: errors.array(),
         });
       }
@@ -29,7 +29,7 @@ export class DocumentController {
       if (!req.file) {
         return res.status(400).json({
           success: false,
-          message: 'No file uploaded',
+          message: "No file uploaded",
         });
       }
 
@@ -41,7 +41,7 @@ export class DocumentController {
         fileName: req.file.originalname,
         mimeType: req.file.mimetype,
         size: req.file.size,
-        category: category || 'other',
+        category: category || "other",
         description,
       });
 
@@ -50,10 +50,11 @@ export class DocumentController {
         data: result,
       });
     } catch (error) {
-      logger.error('Error uploading document:', error);
+      logger.error("Error uploading document:", error);
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to upload document',
+        message:
+          error instanceof Error ? error.message : "Failed to upload document",
       });
     }
   }
@@ -65,7 +66,7 @@ export class DocumentController {
       if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
-          message: 'Validation failed',
+          message: "Validation failed",
           errors: errors.array(),
         });
       }
@@ -73,22 +74,23 @@ export class DocumentController {
       const { documentId } = req.params;
       const userId = req.user.id;
 
-      const { file, mimeType, fileName } = await documentService.downloadDocument(
-        documentId,
-        userId.toString()
-      );
+      const { file, mimeType, fileName } =
+        await documentService.downloadDocument(documentId, userId.toString());
 
       res.set({
-        'Content-Type': mimeType,
-        'Content-Disposition': `attachment; filename="${fileName}"`,
+        "Content-Type": mimeType,
+        "Content-Disposition": `attachment; filename="${fileName}"`,
       });
-      
+
       res.send(file);
     } catch (error) {
-      logger.error('Error downloading document:', error);
+      logger.error("Error downloading document:", error);
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to download document',
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to download document",
       });
     }
   }
@@ -100,19 +102,19 @@ export class DocumentController {
       if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
-          message: 'Validation failed',
+          message: "Validation failed",
           errors: errors.array(),
         });
       }
 
-      const { category, page = '1', limit = '20' } = req.query;
+      const { category, page = "1", limit = "20" } = req.query;
       const userId = (req as any).user.id;
 
       const result = await documentService.listDocuments(
         userId.toString(),
         category as string,
         parseInt(page as string),
-        parseInt(limit as string)
+        parseInt(limit as string),
       );
 
       res.json({
@@ -120,10 +122,10 @@ export class DocumentController {
         data: result,
       });
     } catch (error) {
-      logger.error('Error listing documents:', error);
+      logger.error("Error listing documents:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to list documents',
+        message: "Failed to list documents",
       });
     }
   }
@@ -135,7 +137,7 @@ export class DocumentController {
       if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
-          message: 'Validation failed',
+          message: "Validation failed",
           errors: errors.array(),
         });
       }
@@ -147,13 +149,14 @@ export class DocumentController {
 
       res.json({
         success: true,
-        message: 'Document deleted successfully',
+        message: "Document deleted successfully",
       });
     } catch (error) {
-      logger.error('Error deleting document:', error);
+      logger.error("Error deleting document:", error);
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to delete document',
+        message:
+          error instanceof Error ? error.message : "Failed to delete document",
       });
     }
   }
@@ -165,7 +168,7 @@ export class DocumentController {
       if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
-          message: 'Validation failed',
+          message: "Validation failed",
           errors: errors.array(),
         });
       }
@@ -182,13 +185,14 @@ export class DocumentController {
 
       res.json({
         success: true,
-        message: 'Document updated successfully',
+        message: "Document updated successfully",
       });
     } catch (error) {
-      logger.error('Error updating document:', error);
+      logger.error("Error updating document:", error);
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to update document',
+        message:
+          error instanceof Error ? error.message : "Failed to update document",
       });
     }
   }
@@ -205,10 +209,10 @@ export class DocumentController {
         data: stats,
       });
     } catch (error) {
-      logger.error('Error getting document stats:', error);
+      logger.error("Error getting document stats:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to get document statistics',
+        message: "Failed to get document statistics",
       });
     }
   }
@@ -218,18 +222,42 @@ export const documentController = new DocumentController();
 
 // Validation middleware
 export const validateUploadDocument = [
-  body('category').optional().isIn(['invoice', 'receipt', 'contract', 'other']).withMessage('Invalid category'),
-  body('description').optional().isString().withMessage('Description must be a string'),
+  body("category")
+    .optional()
+    .isIn(["invoice", "receipt", "contract", "other"])
+    .withMessage("Invalid category"),
+  body("description")
+    .optional()
+    .isString()
+    .withMessage("Description must be a string"),
 ];
 
 export const validateUpdateDocument = [
-  body('fileName').optional().isString().withMessage('File name must be a string'),
-  body('description').optional().isString().withMessage('Description must be a string'),
-  body('category').optional().isIn(['invoice', 'receipt', 'contract', 'other']).withMessage('Invalid category'),
+  body("fileName")
+    .optional()
+    .isString()
+    .withMessage("File name must be a string"),
+  body("description")
+    .optional()
+    .isString()
+    .withMessage("Description must be a string"),
+  body("category")
+    .optional()
+    .isIn(["invoice", "receipt", "contract", "other"])
+    .withMessage("Invalid category"),
 ];
 
 export const validateListDocuments = [
-  query('category').optional().isIn(['INVOICE', 'RECEIPT', 'CONTRACT', 'OTHER']).withMessage('Invalid category'),
-  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+  query("category")
+    .optional()
+    .isIn(["INVOICE", "RECEIPT", "CONTRACT", "OTHER"])
+    .withMessage("Invalid category"),
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer"),
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage("Limit must be between 1 and 100"),
 ];

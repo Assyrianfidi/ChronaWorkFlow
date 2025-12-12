@@ -1,13 +1,61 @@
 {
-  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES6"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/components/*": [
+        "./src/components/*"
+      ],
+      "@/lib/*": [
+        "./src/lib/*"
+      ],
+      "@/hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@/utils/*": [
+        "./src/utils/*"
+      ],
+      "@/types/*": [
+        "./src/types/*"
+      ],
+      "@/pages/*": [
+        "./src/pages/*"
+      ],
+      "@/store/*": [
+        "./src/store/*"
+      ],
+      "@/services/*": [
+        "./src/services/*"
+      ]
+    }
+  },
   "include": [
-    "src",
-    "tests",
-    "generated",
-    "vite.config.ts",
-    "vitest.config.ts",
-    "vitest.setup.ts",
-    "vitest.shims.d.ts",
-    "jest.setup.ts"
+    "src/**/*",
+    "scripts/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

@@ -19,11 +19,11 @@ export class Serializer {
 
     // Handle arrays
     if (Array.isArray(data)) {
-      return data.map(item => this.serialize(type, item, options));
+      return data.map((item) => this.serialize(type, item, options));
     }
 
     // Handle objects
-    if (typeof data === 'object' && data !== null) {
+    if (typeof data === "object" && data !== null) {
       return this.serializeObject(data, options);
     }
 
@@ -40,7 +40,7 @@ export class Serializer {
 
     // Prevent infinite recursion
     if (depth > 10) {
-      return '[Circular]';
+      return "[Circular]";
     }
 
     for (const [key, value] of Object.entries(obj)) {
@@ -55,12 +55,15 @@ export class Serializer {
       }
 
       // Skip private fields
-      if (key.startsWith('_')) {
+      if (key.startsWith("_")) {
         continue;
       }
 
       // Serialize the value
-      serialized[key] = this.serializeValue(value, { ...options, depth: depth + 1 });
+      serialized[key] = this.serializeValue(value, {
+        ...options,
+        depth: depth + 1,
+      });
     }
 
     // Apply transformation
@@ -80,10 +83,10 @@ export class Serializer {
     }
 
     if (Array.isArray(value)) {
-      return value.map(item => this.serializeValue(item, options));
+      return value.map((item) => this.serializeValue(item, options));
     }
 
-    if (typeof value === 'object') {
+    if (typeof value === "object") {
       // Handle Date objects
       if (value instanceof Date) {
         return value.toISOString();
@@ -91,11 +94,11 @@ export class Serializer {
 
       // Handle Buffer objects
       if (Buffer.isBuffer(value)) {
-        return value.toString('base64');
+        return value.toString("base64");
       }
 
       // Handle objects with toJSON method
-      if (typeof value.toJSON === 'function') {
+      if (typeof value.toJSON === "function") {
         return value.toJSON();
       }
 
@@ -111,12 +114,12 @@ export class Serializer {
    */
   private serializePrimitive(value: any): any {
     // Handle BigInt
-    if (typeof value === 'bigint') {
+    if (typeof value === "bigint") {
       return value.toString();
     }
 
     // Handle functions (skip)
-    if (typeof value === 'function') {
+    if (typeof value === "function") {
       return undefined;
     }
 
@@ -131,11 +134,11 @@ export class Serializer {
 
     // Handle arrays
     if (Array.isArray(data)) {
-      return data.map(item => this.deserialize(type, item));
+      return data.map((item) => this.deserialize(type, item));
     }
 
     // Handle objects
-    if (typeof data === 'object' && data !== null) {
+    if (typeof data === "object" && data !== null) {
       return this.deserializeObject(data);
     }
 
@@ -164,12 +167,12 @@ export class Serializer {
     }
 
     if (Array.isArray(value)) {
-      return value.map(item => this.deserializeValue(item));
+      return value.map((item) => this.deserializeValue(item));
     }
 
-    if (typeof value === 'object') {
+    if (typeof value === "object") {
       // Handle date strings
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         const date = new Date(value);
         if (!isNaN(date.getTime())) {
           return date;
@@ -194,9 +197,12 @@ export class Serializer {
   /**
    * Sanitize data for output (remove sensitive fields)
    */
-  sanitize(data: any, sensitiveFields: string[] = ['password', 'token', 'secret', 'key']): any {
-    return this.serialize('default', data, {
-      exclude: sensitiveFields
+  sanitize(
+    data: any,
+    sensitiveFields: string[] = ["password", "token", "secret", "key"],
+  ): any {
+    return this.serialize("default", data, {
+      exclude: sensitiveFields,
     });
   }
 
@@ -209,16 +215,20 @@ export class Serializer {
     } catch (error) {
       // Handle circular references
       const seen = new WeakSet();
-      const jsonString = JSON.stringify(data, (key, val) => {
-        if (val != null && typeof val === 'object') {
-          if (seen.has(val)) {
-            return '[Circular]';
+      const jsonString = JSON.stringify(
+        data,
+        (key, val) => {
+          if (val != null && typeof val === "object") {
+            if (seen.has(val)) {
+              return "[Circular]";
+            }
+            seen.add(val);
           }
-          seen.add(val);
-        }
-        return val;
-      }, space);
-      
+          return val;
+        },
+        space,
+      );
+
       return jsonString;
     }
   }
@@ -230,7 +240,9 @@ export class Serializer {
     try {
       return JSON.parse(jsonString);
     } catch (error) {
-      throw new Error(`Invalid JSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Invalid JSON: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 }

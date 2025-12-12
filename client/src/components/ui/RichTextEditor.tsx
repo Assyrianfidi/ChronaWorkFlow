@@ -1,8 +1,8 @@
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
-import { cn } from '../../lib/utils';
-import { useEffect } from 'react';
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
+import { cn } from '../../lib/utils.js';
+import { useEffect } from "react";
 
 type RichTextEditorProps = {
   value: string;
@@ -16,7 +16,7 @@ type RichTextEditorProps = {
 export function RichTextEditor({
   value,
   onChange,
-  placeholder = 'Write something...',
+  placeholder = "Write something...",
   className,
   readOnly = false,
   error,
@@ -34,11 +34,11 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class: cn(
-          'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none p-4',
-          'min-h-[200px] max-w-none',
-          readOnly ? 'bg-gray-50' : 'bg-white',
-          error ? 'border border-red-500 rounded' : 'border rounded',
-          className
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none p-4",
+          "min-h-[200px] max-w-none",
+          readOnly ? "bg-gray-50" : "bg-white",
+          error ? "border border-red-500 rounded" : "border rounded",
+          className,
         ),
       },
     },

@@ -13,9 +13,14 @@ export interface Account {
   updatedAt: string;
 }
 
-export type AccountType = 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+export type AccountType =
+  | "asset"
+  | "liability"
+  | "equity"
+  | "revenue"
+  | "expense";
 
-export interface AccountWithChildren extends Omit<Account, 'type'> {
+export interface AccountWithChildren extends Omit<Account, "type"> {
   type: AccountType;
   children: AccountWithChildren[];
   level?: number;
@@ -45,29 +50,31 @@ export interface AccountRowProps {
 }
 
 // Type guards
-export function isAccountWithChildren(account: any): account is AccountWithChildren {
+export function isAccountWithChildren(
+  account: any,
+): account is AccountWithChildren {
   return account && Array.isArray(account.children);
 }
 
 // Utility functions
 export const getAccountTypeLabel = (type: AccountType): string => {
   const typeLabels = {
-    asset: 'Asset',
-    liability: 'Liability',
-    equity: 'Equity',
-    revenue: 'Revenue',
-    expense: 'Expense',
+    asset: "Asset",
+    liability: "Liability",
+    equity: "Equity",
+    revenue: "Revenue",
+    expense: "Expense",
   };
   return typeLabels[type] || type;
 };
 
 export const getAccountTypeVariant = (type: AccountType) => {
   const variants = {
-    asset: 'default',
-    liability: 'destructive',
-    equity: 'secondary',
-    revenue: 'default',
-    expense: 'secondary',
+    asset: "default",
+    liability: "destructive",
+    equity: "secondary",
+    revenue: "default",
+    expense: "secondary",
   } as const;
-  return variants[type] || 'default';
+  return variants[type] || "default";
 };

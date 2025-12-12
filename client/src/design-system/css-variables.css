@@ -1,16 +1,17 @@
 :root {
-  --colors-bg-50: #FFFFFF;
-  --colors-bg-90: #0B1220;
-  --colors-bg-100: #0F1724;
-  --colors-primary-50: #E6F4FF;
-  --colors-primary-100: #BEE6FF;
-  --colors-primary-500: #0B72FF;
-  --colors-primary-700: #084FCC;
-  --colors-accent-500: #FF8A00;
-  --colors-success-500: #18A558;
-  --colors-danger-500: #D64545;
-  --colors-muted-500: #94A3B8;
-  --typography-fontFamily: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  --colors-bg-50: #ffffff;
+  --colors-bg-90: #0b1220;
+  --colors-bg-100: #0f1724;
+  --colors-primary-50: #e6f4ff;
+  --colors-primary-100: #bee6ff;
+  --colors-primary-500: #0b72ff;
+  --colors-primary-700: #084fcc;
+  --colors-accent-500: #ff8a00;
+  --colors-success-500: #18a558;
+  --colors-danger-500: #d64545;
+  --colors-muted-500: #94a3b8;
+  --typography-fontFamily:
+    Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   --typography-sizes-xs: 12px;
   --typography-sizes-sm: 14px;
   --typography-sizes-md: 16px;
@@ -27,9 +28,9 @@
   --radii-sm: 4px;
   --radii-md: 8px;
   --radii-lg: 12px;
-  --elevation-low: 0 1px 3px rgba(2,6,23,.05);
-  --elevation-medium: 0 6px 18px rgba(2,6,23,.08);
+  --elevation-low: 0 1px 3px rgba(2, 6, 23, 0.05);
+  --elevation-medium: 0 6px 18px rgba(2, 6, 23, 0.08);
   --motion-duration-fast: 120ms;
   --motion-duration-medium: 240ms;
-  --motion-ease: cubic-bezier(.2,.9,.2,1);
+  --motion-ease: cubic-bezier(0.2, 0.9, 0.2, 1);
 }

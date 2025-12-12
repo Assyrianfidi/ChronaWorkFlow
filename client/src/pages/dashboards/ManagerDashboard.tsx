@@ -1,12 +1,29 @@
-import * as React from "react"
-import { useAuth } from "../../contexts/AuthContext"
-import useSWR from "swr"
-import { DashboardMetricCard, QuickActions, ActivityFeed } from "../../components/dashboard"
-import { TrendingUp, DollarSign, Target, FileText, Users, Calendar } from "lucide-react"
-import { cn } from "../../lib/utils"
+import React from 'react';
+// @ts-ignore
+import * as React from "react";
+// @ts-ignore
+import { useAuth } from '../../contexts/AuthContext.js.js';
+import useSWR from "swr";
+import {
+  DashboardMetricCard,
+  QuickActions,
+  ActivityFeed,
+} from '../../components/dashboard.js.js';
+import {
+  TrendingUp,
+  DollarSign,
+  Target,
+  FileText,
+  Users,
+  Calendar,
+} from "lucide-react";
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
+// @ts-ignore
+import { DashboardShell } from '../../components/ui/layout/DashboardShell.js.js';
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "elevated" | "outlined" | "glass"
+  variant?: "default" | "elevated" | "outlined" | "glass";
 }
 
 const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
@@ -14,80 +31,96 @@ const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-lg border bg-white shadow-sm transition-all duration-200",
+        "rounded-2xl border border-border-gray bg-surface2 shadow-soft transition-transform transition-shadow duration-150",
         {
-          "border-gray-200 hover:shadow-md": variant === "default",
-          "border-gray-100 shadow-lg hover:shadow-xl": variant === "elevated",
-          "border-2 border-gray-300 hover:border-primary-300": variant === "outlined",
-          "border-transparent bg-white/80 backdrop-blur-sm hover:bg-white/90": variant === "glass",
+          "hover:-translate-y-[1px] hover:shadow-elevated":
+            variant === "default",
+          "hover:-translate-y-[2px] hover:shadow-elevated":
+            variant === "elevated",
+          "border-2 hover:-translate-y-[2px] hover:shadow-elevated":
+            variant === "outlined",
+          "bg-surface2/90 backdrop-blur-sm hover:-translate-y-[1px] hover:shadow-elevated":
+            variant === "glass",
         },
-        className
+        className,
       )}
       {...props}
     />
-  )
-)
+  ),
+);
 
-EnterpriseCard.displayName = "EnterpriseCard"
+EnterpriseCard.displayName = "EnterpriseCard";
 
 interface FinancialKPIs {
-  monthlyRevenue: number
-  profitMargin: number
-  expensesTotal: number
-  revenueGrowth: number
-  pendingApprovals: number
-  teamPerformance: number
+  monthlyRevenue: number;
+  profitMargin: number;
+  expensesTotal: number;
+  revenueGrowth: number;
+  pendingApprovals: number;
+  teamPerformance: number;
 }
 
 interface TeamActivity {
-  id: string
-  type: 'approval' | 'report' | 'expense' | 'target'
-  message: string
-  timestamp: string
-  priority: 'high' | 'medium' | 'low'
+  id: string;
+  type: "approval" | "report" | "expense" | "target";
+  message: string;
+  timestamp: string;
+  priority: "high" | "medium" | "low";
 }
 
+// @ts-ignore
 const ManagerDashboard: React.FC = () => {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   // Fetch financial KPIs
-  const { data: kpis, error: kpisError, isLoading: kpisLoading } = useSWR<FinancialKPIs>(
-    '/api/dashboard/financial-kpis',
+  const {
+    data: kpis,
+    error: kpisError,
+    isLoading: kpisLoading,
+  } = useSWR<FinancialKPIs>(
+    "/api/dashboard/financial-kpis",
     async (url: string) => {
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (!response.ok) throw new Error('Failed to fetch financial KPIs')
-      return response.json()
-    }
-  )
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch financial KPIs");
+      return response.json();
+    },
+  );
 
   // Fetch team activity
-  const { data: activity, error: activityError, isLoading: activityLoading } = useSWR<TeamActivity[]>(
-    '/api/dashboard/team-activity',
+  const {
+    data: activity,
+    error: activityError,
+    isLoading: activityLoading,
+  } = useSWR<TeamActivity[]>(
+    "/api/dashboard/team-activity",
     async (url: string) => {
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      if (!response.ok) throw new Error('Failed to fetch team activity')
-      return response.json()
-    }
-  )
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch team activity");
+      return response.json();
+    },
+  );
 
   const metrics = [
     {
       title: "Monthly Revenue",
-      value: `$${( (kpis?.monthlyRevenue || 0) / 1000 ).toFixed(1)}K`,
+      value: `$${((kpis?.monthlyRevenue || 0) / 1000).toFixed(1)}K`,
       change: `${kpis?.revenueGrowth || 0}%`,
-      changeType: kpis?.revenueGrowth && kpis.revenueGrowth > 0 ? "increase" : "decrease" as const,
+      changeType: (kpis?.revenueGrowth && kpis.revenueGrowth > 0
+        ? "increase"
+// @ts-ignore
+        : "decrease") as "increase" | "decrease",
       icon: DollarSign,
-      color: "text-green-600"
+      color: "text-muted-foreground",
     },
     {
       title: "Profit Margin",
@@ -95,15 +128,15 @@ const ManagerDashboard: React.FC = () => {
       change: "+2.1%",
       changeType: "increase" as const,
       icon: TrendingUp,
-      color: "text-blue-600"
+      color: "text-muted-foreground",
     },
     {
       title: "Total Expenses",
-      value: `$${( (kpis?.expensesTotal || 0) / 1000 ).toFixed(1)}K`,
+      value: `$${((kpis?.expensesTotal || 0) / 1000).toFixed(1)}K`,
       change: "-5%",
       changeType: "decrease" as const,
       icon: FileText,
-      color: "text-orange-600"
+      color: "text-muted-foreground",
     },
     {
       title: "Team Performance",
@@ -111,137 +144,235 @@ const ManagerDashboard: React.FC = () => {
       change: "+8%",
       changeType: "increase" as const,
       icon: Target,
-      color: "text-purple-600"
-    }
-  ]
+      color: "text-purple-600",
+    },
+  ];
 
   const quickActions = [
-    { label: "Approve Expenses", icon: DollarSign, href: "/expenses/approve" },
-    { label: "Generate Reports", icon: FileText, href: "/reports/generate" },
-    { label: "Team Management", icon: Users, href: "/team" },
-    { label: "Set Targets", icon: Target, href: "/targets" }
-  ]
+    { label: "Approve Reports", icon: FileText, href: "/reports/approve" },
+    { label: "Assign Tasks", icon: Target, href: "/tasks" },
+    { label: "Review Team Performance", icon: Users, href: "/team" },
+    { label: "Financial Overview", icon: DollarSign, href: "/analytics" },
+  ];
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Manager Dashboard</h1>
-          <p className="text-gray-600 mt-1">Financial performance and team management</p>
-        </div>
-        <div className="text-sm text-gray-500">
-          Welcome back, {user?.name}
-        </div>
-      </div>
+    <DashboardShell>
+      <div className="container mx-auto max-w-7xl px-6 py-6 space-y-6">
+        {/* Header */}
+        <header className="bg-surface1 border border-border-gray rounded-2xl shadow-soft px-6 py-5 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+              Manager Dashboard
+            </h1>
+            <p className="mt-1 text-sm opacity-80">
+              Financial performance, approvals, and team management for your
+              operating area.
+            </p>
+          </div>
+          <div className="text-xs md:text-sm opacity-80 text-right">
+            <div>Signed in as</div>
+            <div className="font-medium">{user?.name}</div>
+          </div>
+        </header>
 
-      {/* KPIs Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric, index) => (
-          <DashboardMetricCard
-            key={index}
-            title={metric.title}
-            value={metric.value}
-            change={metric.change}
-            changeType={metric.changeType}
-            icon={metric.icon}
-            color={metric.color}
-            isLoading={kpisLoading}
-          />
-        ))}
-      </div>
+        {/* Manager KPI Metrics */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {kpisLoading
+            ? [0, 1, 2, 3].map((key) => (
+                <div
+                  key={key}
+                  className="bg-surface2 border border-border-gray rounded-2xl shadow-soft p-6 animate-pulse flex flex-col gap-3"
+                >
+                  <div className="h-4 w-24 bg-surface1 rounded" />
+                  <div className="h-7 w-20 bg-surface1 rounded" />
+                  <div className="h-3 w-16 bg-surface1 rounded" />
+                </div>
+              ))
+            : metrics.map((metric, index) => (
+                <DashboardMetricCard
+                  key={index}
+                  title={metric.title}
+                  value={metric.value}
+                  change={metric.change}
+                  changeType={metric.changeType}
+                  icon={metric.icon}
+                  color={metric.color}
+                  isLoading={kpisLoading}
+                />
+              ))}
+        </section>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Actions */}
-        <div className="lg:col-span-1">
-          <EnterpriseCard className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-            <QuickActions actions={quickActions} />
-          </EnterpriseCard>
-
-          {/* Pending Approvals */}
-          <EnterpriseCard className="p-6 mt-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Pending Approvals</h2>
-            <div className="text-center py-8">
-              <div className="text-3xl font-bold text-orange-600 mb-2">
-                {kpis?.pendingApprovals || 0}
+        {/* Main Content Grid */}
+        <section className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+          {/* Manager Quick Actions + Approvals Summary */}
+          <div className="space-y-6 xl:col-span-1">
+            <EnterpriseCard variant="elevated" className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-semibold tracking-wide uppercase opacity-80">
+                  Manager Quick Actions
+                </h2>
+                <span className="text-xs opacity-60">Day-to-day controls</span>
               </div>
-              <div className="text-sm text-gray-500">Awaiting your review</div>
-              <button className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
-                Review Now
-              </button>
-            </div>
-          </EnterpriseCard>
-        </div>
+              <QuickActions actions={quickActions} />
+            </EnterpriseCard>
 
-        {/* Team Activity */}
-        <div className="lg:col-span-2">
-          <EnterpriseCard className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Team Activity</h2>
-            <div className="space-y-4">
-              {activityLoading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                    </div>
-                  ))}
+            <EnterpriseCard className="p-6">
+              <h2 className="text-sm font-semibold tracking-wide uppercase opacity-80 mb-4">
+                Pending Approvals & Reviews
+              </h2>
+              <div className="text-center py-4">
+                <div className="text-3xl font-semibold mb-1">
+                  {kpis?.pendingApprovals || 0}
                 </div>
-              ) : activityError ? (
-                <div className="text-center py-8 text-red-600">
-                  Failed to load team activity
+                <div className="text-xs opacity-70">
+                  Items awaiting your decision
                 </div>
-              ) : (
-                activity?.map((item) => (
-                  <div key={item.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className={`w-2 h-2 rounded-full mt-2 ${
-                      item.priority === 'high' ? 'bg-red-500' :
-                      item.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                    }`}></div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-900">{item.message}</div>
-                      <div className="text-xs text-gray-500">{item.timestamp}</div>
-                    </div>
+              </div>
+            </EnterpriseCard>
+          </div>
+
+          {/* Team Activity & Team Financials */}
+          <div className="xl:col-span-2 space-y-6">
+            {/* Team Activity & Performance Logs */}
+            <EnterpriseCard className="p-0 overflow-hidden">
+              <div className="px-6 pt-6 pb-3 flex items-center justify-between">
+                <h2 className="text-sm font-semibold tracking-wide uppercase opacity-80">
+                  Team Activity & Performance Logs
+                </h2>
+                <span className="text-xs opacity-60">Last 24 hours</span>
+              </div>
+              <div className="px-6 pb-6">
+                {activityLoading ? (
+                  <div className="space-y-3">
+                    {[0, 1, 2, 3].map((key) => (
+                      <div
+                        key={key}
+                        className="flex items-start gap-3 bg-surface2 border border-border-gray rounded-xl p-3 animate-pulse shadow-soft"
+                      >
+                        <div className="w-2 h-2 rounded-full bg-surface1 mt-2" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-3 w-40 bg-surface1 rounded" />
+                          <div className="h-2 w-24 bg-surface1 rounded" />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                )) || (
-                  <div className="text-center py-8 text-gray-500">
+                ) : activityError ? (
+                  <div className="text-center py-8 text-red-600">
+                    Failed to load team activity
+                  </div>
+                ) : activity && activity.length > 0 ? (
+                  <div className="space-y-2">
+                    {activity.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-start gap-3 p-3 rounded-xl border border-border-gray bg-surface2 hover:bg-surface1 hover:-translate-y-[1px] hover:shadow-elevated transition-transform transition-shadow duration-150"
+                      >
+                        <div
+                          className={cn(
+                            "w-2 h-2 rounded-full mt-2",
+                            item.priority === "high"
+                              ? "bg-red-500"
+                              : item.priority === "medium"
+                                ? "bg-amber-400"
+                                : "bg-emerald-500",
+                          )}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium truncate">
+                            {item.message}
+                          </div>
+                          <div className="text-xs opacity-70">
+                            {item.timestamp}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 opacity-70">
                     No recent team activity
                   </div>
-                )
-              )}
-            </div>
-          </EnterpriseCard>
-        </div>
+                )}
+              </div>
+            </EnterpriseCard>
+
+            {/* Team Financials & KPIs Panel */}
+            <EnterpriseCard className="p-6">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div>
+                  <h2 className="text-sm font-semibold tracking-wide uppercase opacity-80">
+                    Team Financials Overview
+                  </h2>
+                  <p className="mt-1 text-sm opacity-80 max-w-xl">
+                    Track your teams revenue, budget utilization, and output
+                    metrics at a glance.
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-1 text-xs opacity-70">
+                  <span className="inline-flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    Rolling 30 days
+                  </span>
+                  <span>Manager view</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                  <span className="text-xs font-medium uppercase tracking-wide opacity-70">
+                    Revenue
+                  </span>
+                  <span className="text-xl font-semibold">
+                    {kpis?.monthlyRevenue
+                      ? `$${((kpis.monthlyRevenue || 0) / 1000).toFixed(1)}K`
+                      : "$0.0K"}
+                  </span>
+                  <span className="text-xs opacity-70">
+                    Current month billings
+                  </span>
+                </div>
+                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                  <span className="text-xs font-medium uppercase tracking-wide opacity-70">
+                    Budget Usage
+                  </span>
+                  <span className="text-xl font-semibold">
+                    {kpis?.expensesTotal
+                      ? `${Math.min(100, Math.round((kpis.expensesTotal / (kpis.monthlyRevenue || 1)) * 100))}%`
+                      : "0%"}
+                  </span>
+                  <span className="text-xs opacity-70">
+                    Of allocated spend consumed
+                  </span>
+                </div>
+                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                  <span className="text-xs font-medium uppercase tracking-wide opacity-70">
+                    Expense Flags
+                  </span>
+                  <span className="text-xl font-semibold">
+                    {kpisError ? "—" : (kpis?.pendingApprovals ?? 0)}
+                  </span>
+                  <span className="text-xs opacity-70">
+                    Items requiring financial review
+                  </span>
+                </div>
+                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                  <span className="text-xs font-medium uppercase tracking-wide opacity-70">
+                    Team Output
+                  </span>
+                  <span className="text-xl font-semibold">
+                    {kpis?.teamPerformance ?? 0}%
+                  </span>
+                  <span className="text-xs opacity-70">
+                    Goal attainment this period
+                  </span>
+                </div>
+              </div>
+            </EnterpriseCard>
+          </div>
+        </section>
       </div>
+    </DashboardShell>
+  );
+};
 
-      {/* Performance Overview */}
-      <EnterpriseCard className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Performance Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Revenue Target</span>
-              <span className="text-sm text-gray-500">85%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-blue-600 h-2 rounded-full" style={{ width: '85%' }}></div>
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Expense Budget</span>
-              <span className="text-sm text-gray-500">72%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-green-600 h-2 rounded-full" style={{ width: '72%' }}></div>
-            </div>
-          </div>
-        </div>
-      </EnterpriseCard>
-    </div>
-  )
-}
-
-export default ManagerDashboard
+export default ManagerDashboard;

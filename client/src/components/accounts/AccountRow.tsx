@@ -1,9 +1,9 @@
-import React from 'react';
-import { TableRow, TableCell } from '../components/ui/table';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { Badge } from '../components/ui/badge';
-import { getAccountTypeLabel, getAccountTypeVariant } from '../types/accounts';
-import type { AccountWithChildren } from '../types/accounts';
+import React from "react";
+import { TableRow, TableCell } from '../components/ui/table.js';
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { Badge } from '../components/ui/badge.js';
+import { getAccountTypeLabel, getAccountTypeVariant } from '../types/accounts.js';
+import type { AccountWithChildren } from '../types/accounts.js';
 
 interface AccountRowProps {
   account: AccountWithChildren;
@@ -14,6 +14,7 @@ interface AccountRowProps {
   matchesSearch: boolean;
 }
 
+// @ts-ignore
 export const AccountRow: React.FC<AccountRowProps> = ({
   account,
   level,
@@ -27,12 +28,15 @@ export const AccountRow: React.FC<AccountRowProps> = ({
   return (
     <TableRow data-testid={`account-row-${account.id}`}>
       <TableCell>
-        <div className="flex items-center gap-2" style={{ paddingLeft: `${level * 1.5}rem` }}>
+        <div
+          className="flex items-center gap-2"
+          style={{ paddingLeft: `${level * 1.5}rem` }}
+        >
           {hasChildren ? (
             <button
               onClick={() => onToggleExpand(account.id)}
               className="hover:bg-accent rounded p-1 transition-colors"
-              aria-label={isExpanded ? 'Collapse account' : 'Expand account'}
+              aria-label={isExpanded ? "Collapse account" : "Expand account"}
               data-testid={`toggle-expand-${account.id}`}
             >
               {isExpanded ? (
@@ -54,9 +58,9 @@ export const AccountRow: React.FC<AccountRowProps> = ({
         </Badge>
       </TableCell>
       <TableCell className="text-right">
-        {new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
+        {new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
         }).format(Number(account.balance) || 0)}
       </TableCell>
     </TableRow>

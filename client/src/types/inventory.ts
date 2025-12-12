@@ -1,5 +1,5 @@
-export type InventoryStatus = 'in_stock' | 'low_stock' | 'out_of_stock';
-export type SortDirection = 'asc' | 'desc';
+export type InventoryStatus = "in_stock" | "low_stock" | "out_of_stock";
+export type SortDirection = "asc" | "desc";
 
 export interface InventoryStats {
   totalItems: number;
@@ -38,7 +38,7 @@ export interface BulkUpdatePayload {
 }
 
 export interface ExportOptions {
-  format: 'csv' | 'pdf' | 'excel';
+  format: "csv" | "pdf" | "excel";
   filters: InventoryFilters;
 }
 
@@ -72,8 +72,12 @@ export interface InventoryItem {
   updatedAt: string;
 }
 
-export interface InventoryItemCreateDTO extends Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt' | 'companyId'> {}
-export interface InventoryItemUpdateDTO extends Partial<Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt' | 'companyId'>> {}
+export interface InventoryItemCreateDTO
+  extends Omit<InventoryItem, "id" | "createdAt" | "updatedAt" | "companyId"> {}
+export interface InventoryItemUpdateDTO
+  extends Partial<
+    Omit<InventoryItem, "id" | "createdAt" | "updatedAt" | "companyId">
+  > {}
 
 export interface InventoryAdjustment {
   id: string;
@@ -81,9 +85,9 @@ export interface InventoryAdjustment {
   quantityChange: number;
   previousQuantity: number;
   newQuantity: number;
-  adjustmentType: 'purchase' | 'sale' | 'adjustment' | 'return' | 'damage';
+  adjustmentType: "purchase" | "sale" | "adjustment" | "return" | "damage";
   referenceId?: string;
-  referenceType?: 'purchase_order' | 'sale' | 'inventory_count' | 'adjustment';
+  referenceType?: "purchase_order" | "sale" | "inventory_count" | "adjustment";
   notes?: string;
   adjustedBy: string;
   adjustedAt: string;
@@ -120,34 +124,42 @@ export interface DateRange {
 export interface InventoryFilterOptions {
   // Search
   searchTerm?: string;
-  
+
   // Category filtering
   categoryId?: string | string[];
-  
+
   // Status filtering
   status?: InventoryStatus | InventoryStatus[];
-  
+
   // Quantity filtering
   quantityRange?: QuantityRange;
   minQuantity?: number; // For backward compatibility
   maxQuantity?: number; // For backward compatibility
-  
+
   // Status and activity
   isActive?: boolean;
-  
+
   // Sorting
-  sortBy?: 'name' | 'quantity' | 'value' | 'category' | 'sku' | 'unitCost' | 'unitPrice' | 'lastStockUpdate';
+  sortBy?:
+    | "name"
+    | "quantity"
+    | "value"
+    | "category"
+    | "sku"
+    | "unitCost"
+    | "unitPrice"
+    | "lastStockUpdate";
   sortOrder?: SortDirection;
-  
+
   // Pagination
   page?: number;
   pageSize?: number;
-  
+
   // Date range
   dateRange?: DateRange;
   startDate?: string; // For backward compatibility
-  endDate?: string;   // For backward compatibility
-  
+  endDate?: string; // For backward compatibility
+
   // Additional filters
   hasImage?: boolean;
   lowStockOnly?: boolean;
@@ -155,25 +167,28 @@ export interface InventoryFilterOptions {
 }
 
 // Utility functions
-export function getInventoryStatus(item: { quantityOnHand: number; reorderPoint: number }): InventoryStatus {
-  if (item.quantityOnHand <= 0) return 'out_of_stock';
-  if (item.quantityOnHand <= item.reorderPoint) return 'low_stock';
-  return 'in_stock';
+export function getInventoryStatus(item: {
+  quantityOnHand: number;
+  reorderPoint: number;
+}): InventoryStatus {
+  if (item.quantityOnHand <= 0) return "out_of_stock";
+  if (item.quantityOnHand <= item.reorderPoint) return "low_stock";
+  return "in_stock";
 }
 
 export function getInventoryValue(items: InventoryItem[]): number {
   return items.reduce((total, item) => {
-    return total + (item.quantityOnHand * item.unitCost);
+    return total + item.quantityOnHand * item.unitCost;
   }, 0);
 }
 
 export function getLowStockItems(items: InventoryItem[]): InventoryItem[] {
-  return items.filter(item => 
-    item.quantityOnHand > 0 && 
-    item.quantityOnHand <= item.reorderPoint
+  return items.filter(
+    (item) =>
+      item.quantityOnHand > 0 && item.quantityOnHand <= item.reorderPoint,
   );
 }
 
 export function getOutOfStockItems(items: InventoryItem[]): InventoryItem[] {
-  return items.filter(item => item.quantityOnHand <= 0);
+  return items.filter((item) => item.quantityOnHand <= 0);
 }

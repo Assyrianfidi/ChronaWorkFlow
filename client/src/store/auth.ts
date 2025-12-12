@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { apiRequest } from '../lib/api';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { apiRequest } from '../lib/api.js';
 
 interface User {
   id: string;
@@ -36,43 +36,45 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
-      
+
       login: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
         try {
-          const { token, user } = await apiRequest.post<LoginResponse>('/auth/login', { email, password });
-          
+          const { token, user } = await apiRequest.post<LoginResponse>(
+            "/auth/login",
+            { email, password },
+          );
+
           set({
             user,
             token,
             isAuthenticated: true,
             isLoading: false,
           });
-          
+
           // Store token in localStorage for persistence
-          localStorage.setItem('token', token);
-          
+          localStorage.setItem("token", token);
         } catch (error) {
           set({
-            error: error instanceof Error ? error.message : 'Login failed',
+            error: error instanceof Error ? error.message : "Login failed",
             isLoading: false,
           });
           throw error;
         }
       },
-      
+
       logout: () => {
-        localStorage.removeItem('token');
+        localStorage.removeItem("token");
         set({
           user: null,
           token: null,
           isAuthenticated: false,
         });
       },
-      
+
       checkAuth: async () => {
-        const token = localStorage.getItem('token');
-        
+        const token = localStorage.getItem("token");
+
         if (!token) {
           set({
             user: null,
@@ -81,22 +83,21 @@ export const useAuthStore = create<AuthState>()(
           });
           return;
         }
-        
+
         try {
           set({ isLoading: true });
           // Set the token in the API client
-          const user = await apiRequest.get<User>('/auth/me');
-          
+          const user = await apiRequest.get<User>("/auth/me");
+
           set({
             user,
             token,
             isAuthenticated: true,
             isLoading: false,
           });
-          
         } catch (error) {
-          console.error('Auth check failed:', error);
-          localStorage.removeItem('token');
+          console.error("Auth check failed:", error);
+          localStorage.removeItem("token");
           set({
             user: null,
             token: null,
@@ -107,12 +108,12 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       partialize: (state) => ({
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

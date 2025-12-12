@@ -6,7 +6,7 @@ export interface QueryParams {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
   [key: string]: string | number | boolean | undefined;
 }
 
@@ -45,7 +45,8 @@ export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 /**
  * Utility type for making specific properties optional
  */
-export type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+export type WithOptional<T, K extends keyof T> = Omit<T, K> &
+  Partial<Pick<T, K>>;
 
 /**
  * Type for API response with pagination

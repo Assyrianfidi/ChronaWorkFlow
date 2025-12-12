@@ -1,5 +1,5 @@
-import { Prisma } from '@prisma/client';
-import { ApiError, ErrorCodes } from './errorHandler.js';
+import { Prisma } from "@prisma/client";
+import { ApiError, ErrorCodes } from "./errorHandler.js";
 
 /**
  * Pagination options interface
@@ -8,7 +8,7 @@ export interface PaginationOptions {
   page?: number;
   limit?: number;
   cursor?: string;
-  direction?: 'forward' | 'backward';
+  direction?: "forward" | "backward";
 }
 
 /**
@@ -16,8 +16,8 @@ export interface PaginationOptions {
  */
 export interface SortOptions {
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-  nulls?: 'first' | 'last';
+  sortOrder?: "asc" | "desc";
+  nulls?: "first" | "last";
 }
 
 /**
@@ -46,7 +46,10 @@ export interface PaginationResult<T> {
 /**
  * Complete query options
  */
-export interface QueryOptions extends PaginationOptions, SortOptions, FilterOptions {
+export interface QueryOptions
+  extends PaginationOptions,
+    SortOptions,
+    FilterOptions {
   include?: any;
   select?: any;
 }
@@ -55,14 +58,13 @@ export interface QueryOptions extends PaginationOptions, SortOptions, FilterOpti
  * Pagination and sorting utilities
  */
 export class PaginationEngine {
-
   /**
    * Server-side pagination with offset
    */
   static async paginateWithOffset<T>(
     model: any,
     options: QueryOptions,
-    whereClause: any = {}
+    whereClause: any = {},
   ): Promise<{
     data: T[];
     pagination: {
@@ -92,9 +94,9 @@ export class PaginationEngine {
           skip,
           take: limit,
           include: options.include,
-          select: options.select
+          select: options.select,
         }),
-        model.count({ where: enhancedWhere })
+        model.count({ where: enhancedWhere }),
       ]);
 
       return {
@@ -105,16 +107,16 @@ export class PaginationEngine {
           total,
           totalPages: Math.ceil(total / limit),
           hasNext: page * limit < total,
-          hasPrev: page > 1
-        }
+          hasPrev: page > 1,
+        },
       };
     } catch (error) {
       throw new ApiError(
-        'Failed to fetch paginated data',
+        "Failed to fetch paginated data",
         500,
         ErrorCodes.DATABASE_ERROR,
         true,
-        error instanceof Error ? error.message : 'Unknown error'
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -126,7 +128,7 @@ export class PaginationEngine {
     model: any,
     options: QueryOptions,
     whereClause: any = {},
-    cursorField: string = 'id'
+    cursorField: string = "id",
   ): Promise<{
     data: T[];
     pagination: {
@@ -137,18 +139,22 @@ export class PaginationEngine {
     };
   }> {
     const limit = Math.min(100, Math.max(1, options.limit || 20));
-    const direction = options.direction || 'forward';
+    const direction = options.direction || "forward";
 
     // Build where clause with cursor
     const enhancedWhere = this.buildCursorWhereClause(
       whereClause,
       options,
       cursorField,
-      direction
+      direction,
     );
 
     // Build order by clause
-    const orderBy = this.buildCursorOrderByClause(options, cursorField, direction);
+    const orderBy = this.buildCursorOrderByClause(
+      options,
+      cursorField,
+      direction,
+    );
 
     try {
       const data = await model.findMany({
@@ -156,7 +162,7 @@ export class PaginationEngine {
         orderBy,
         take: limit + 1, // Fetch one extra to determine if there's more
         include: options.include,
-        select: options.select
+        select: options.select,
       });
 
       const hasNext = data.length > limit;
@@ -168,18 +174,18 @@ export class PaginationEngine {
       }
 
       // Reverse data if going backward
-      if (direction === 'backward') {
+      if (direction === "backward") {
         data.reverse();
       }
 
       const pagination: any = {
         hasNext,
-        hasPrev
+        hasPrev,
       };
 
       // Set cursors
       if (data.length > 0) {
-        if (direction === 'forward') {
+        if (direction === "forward") {
           pagination.nextCursor = data[data.length - 1][cursorField];
         } else {
           pagination.prevCursor = data[0][cursorField];
@@ -189,11 +195,11 @@ export class PaginationEngine {
       return { data, pagination };
     } catch (error) {
       throw new ApiError(
-        'Failed to fetch cursor paginated data',
+        "Failed to fetch cursor paginated data",
         500,
         ErrorCodes.DATABASE_ERROR,
         true,
-        error instanceof Error ? error.message : 'Unknown error'
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -207,8 +213,8 @@ export class PaginationEngine {
     // Search filter
     if (options.search) {
       where.OR = [
-        { name: { contains: options.search, mode: 'insensitive' } },
-        { description: { contains: options.search, mode: 'insensitive' } }
+        { name: { contains: options.search, mode: "insensitive" } },
+        { description: { contains: options.search, mode: "insensitive" } },
       ];
     }
 
@@ -225,7 +231,10 @@ export class PaginationEngine {
 
     // Numeric range filter
     if (options.numericRange) {
-      if (options.numericRange.min !== undefined || options.numericRange.max !== undefined) {
+      if (
+        options.numericRange.min !== undefined ||
+        options.numericRange.max !== undefined
+      ) {
         where.amount = {};
         if (options.numericRange.min !== undefined) {
           where.amount.gte = options.numericRange.min;
@@ -254,12 +263,12 @@ export class PaginationEngine {
     baseWhere: any,
     options: QueryOptions,
     cursorField: string,
-    direction: 'forward' | 'backward'
+    direction: "forward" | "backward",
   ): any {
     const where = this.buildWhereClause(baseWhere, options);
 
     if (options.cursor) {
-      const cursorOperator = direction === 'forward' ? '>' : '<';
+      const cursorOperator = direction === "forward" ? ">" : "<";
       where[cursorField] = { [cursorOperator]: options.cursor };
     }
 
@@ -270,12 +279,16 @@ export class PaginationEngine {
    * Build order by clause
    */
   private static buildOrderByClause(options: SortOptions): any[] {
-    const { sortBy = 'createdAt', sortOrder = 'desc', nulls = 'last' } = options;
+    const {
+      sortBy = "createdAt",
+      sortOrder = "desc",
+      nulls = "last",
+    } = options;
 
     return [
       {
-        [sortBy]: sortOrder
-      }
+        [sortBy]: sortOrder,
+      },
     ];
   }
 
@@ -285,23 +298,28 @@ export class PaginationEngine {
   private static buildCursorOrderByClause(
     options: SortOptions,
     cursorField: string,
-    direction: 'forward' | 'backward'
+    direction: "forward" | "backward",
   ): any[] {
-    const { sortBy = 'createdAt', sortOrder = 'desc' } = options;
+    const { sortBy = "createdAt", sortOrder = "desc" } = options;
 
     // For cursor pagination, we need consistent ordering
-    const primaryOrder = direction === 'forward' ? sortOrder : sortOrder === 'asc' ? 'desc' : 'asc';
+    const primaryOrder =
+      direction === "forward"
+        ? sortOrder
+        : sortOrder === "asc"
+          ? "desc"
+          : "asc";
 
     const orderBy = [
       {
-        [sortBy]: primaryOrder
-      }
+        [sortBy]: primaryOrder,
+      },
     ];
 
     // Add cursor field as secondary sort for uniqueness
     if (sortBy !== cursorField) {
       orderBy.push({
-        [cursorField]: primaryOrder
+        [cursorField]: primaryOrder,
       });
     }
 
@@ -314,25 +332,28 @@ export class PaginationEngine {
   static validatePaginationParams(params: any): void {
     if (params.page && (isNaN(params.page) || params.page < 1)) {
       throw new ApiError(
-        'Invalid page parameter. Must be a positive integer.',
+        "Invalid page parameter. Must be a positive integer.",
         400,
-        ErrorCodes.INVALID_INPUT
+        ErrorCodes.INVALID_INPUT,
       );
     }
 
-    if (params.limit && (isNaN(params.limit) || params.limit < 1 || params.limit > 100)) {
+    if (
+      params.limit &&
+      (isNaN(params.limit) || params.limit < 1 || params.limit > 100)
+    ) {
       throw new ApiError(
-        'Invalid limit parameter. Must be between 1 and 100.',
+        "Invalid limit parameter. Must be between 1 and 100.",
         400,
-        ErrorCodes.INVALID_INPUT
+        ErrorCodes.INVALID_INPUT,
       );
     }
 
-    if (params.cursor && typeof params.cursor !== 'string') {
+    if (params.cursor && typeof params.cursor !== "string") {
       throw new ApiError(
-        'Invalid cursor parameter. Must be a string.',
+        "Invalid cursor parameter. Must be a string.",
         400,
-        ErrorCodes.INVALID_INPUT
+        ErrorCodes.INVALID_INPUT,
       );
     }
   }
@@ -340,23 +361,20 @@ export class PaginationEngine {
   /**
    * Validate sort parameters
    */
-  static validateSortParams(
-    params: any,
-    allowedFields: string[]
-  ): void {
+  static validateSortParams(params: any, allowedFields: string[]): void {
     if (params.sortBy && !allowedFields.includes(params.sortBy)) {
       throw new ApiError(
-        `Invalid sort field. Allowed fields: ${allowedFields.join(', ')}`,
+        `Invalid sort field. Allowed fields: ${allowedFields.join(", ")}`,
         400,
-        ErrorCodes.INVALID_INPUT
+        ErrorCodes.INVALID_INPUT,
       );
     }
 
-    if (params.sortOrder && !['asc', 'desc'].includes(params.sortOrder)) {
+    if (params.sortOrder && !["asc", "desc"].includes(params.sortOrder)) {
       throw new ApiError(
         'Invalid sort order. Must be "asc" or "desc".',
         400,
-        ErrorCodes.INVALID_INPUT
+        ErrorCodes.INVALID_INPUT,
       );
     }
   }
@@ -367,10 +385,10 @@ export class PaginationEngine {
   static createPaginationMeta(
     pagination: any,
     baseUrl: string,
-    queryParams: any
+    queryParams: any,
   ): any {
     const meta: any = {
-      ...pagination
+      ...pagination,
     };
 
     // Add navigation links if using offset pagination
@@ -379,26 +397,26 @@ export class PaginationEngine {
       const searchParams = new URLSearchParams(queryParams);
 
       // Self link
-      searchParams.set('page', page.toString());
+      searchParams.set("page", page.toString());
       meta.self = `${baseUrl}?${searchParams.toString()}`;
 
       // First page
-      searchParams.set('page', '1');
+      searchParams.set("page", "1");
       meta.first = `${baseUrl}?${searchParams.toString()}`;
 
       // Last page
-      searchParams.set('page', totalPages.toString());
+      searchParams.set("page", totalPages.toString());
       meta.last = `${baseUrl}?${searchParams.toString()}`;
 
       // Previous page
       if (page > 1) {
-        searchParams.set('page', (page - 1).toString());
+        searchParams.set("page", (page - 1).toString());
         meta.prev = `${baseUrl}?${searchParams.toString()}`;
       }
 
       // Next page
       if (page < totalPages) {
-        searchParams.set('page', (page + 1).toString());
+        searchParams.set("page", (page + 1).toString());
         meta.next = `${baseUrl}?${searchParams.toString()}`;
       }
     }
@@ -426,7 +444,7 @@ export class FilterEngine {
     if (query.startDate || query.endDate) {
       filters.dateRange = {
         start: query.startDate ? new Date(query.startDate) : undefined,
-        end: query.endDate ? new Date(query.endDate) : undefined
+        end: query.endDate ? new Date(query.endDate) : undefined,
       };
     }
 
@@ -434,19 +452,19 @@ export class FilterEngine {
     if (query.minAmount !== undefined || query.maxAmount !== undefined) {
       filters.numericRange = {
         min: query.minAmount ? parseFloat(query.minAmount) : undefined,
-        max: query.maxAmount ? parseFloat(query.maxAmount) : undefined
+        max: query.maxAmount ? parseFloat(query.maxAmount) : undefined,
       };
     }
 
     // Array filters
     if (query.ids) {
-      filters.in = Array.isArray(query.ids) ? query.ids : query.ids.split(',');
+      filters.in = Array.isArray(query.ids) ? query.ids : query.ids.split(",");
     }
 
     if (query.excludeIds) {
-      filters.notIn = Array.isArray(query.excludeIds) 
-        ? query.excludeIds 
-        : query.excludeIds.split(',');
+      filters.notIn = Array.isArray(query.excludeIds)
+        ? query.excludeIds
+        : query.excludeIds.split(",");
     }
 
     return filters;
@@ -460,9 +478,9 @@ export class FilterEngine {
       const { start, end } = filters.dateRange;
       if (start && end && start > end) {
         throw new ApiError(
-          'Start date must be before end date.',
+          "Start date must be before end date.",
           400,
-          ErrorCodes.INVALID_INPUT
+          ErrorCodes.INVALID_INPUT,
         );
       }
     }
@@ -471,9 +489,9 @@ export class FilterEngine {
       const { min, max } = filters.numericRange;
       if (min !== undefined && max !== undefined && min > max) {
         throw new ApiError(
-          'Minimum value must be less than or equal to maximum value.',
+          "Minimum value must be less than or equal to maximum value.",
           400,
-          ErrorCodes.INVALID_INPUT
+          ErrorCodes.INVALID_INPUT,
         );
       }
     }

@@ -1,4 +1,4 @@
 // Re-export from auth.ts for backward compatibility
-export * from './auth';
+export * from './auth.js';
 
-export { default } from './auth';
+export { default } from './auth.js';

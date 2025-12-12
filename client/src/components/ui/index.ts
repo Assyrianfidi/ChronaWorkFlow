@@ -1,30 +1,9 @@
-// Enterprise UI Components
-export { EnterpriseButton } from './EnterpriseButton'
-export { EnterpriseKPICard, RevenueKPI, ExpensesKPI, TransactionsKPI, InvoicesKPI, CustomersKPI, AlertsKPI } from './EnterpriseKPICard'
-export { EnterpriseInput } from './EnterpriseInput'
-export { EnterpriseDataTable } from './EnterpriseDataTable'
-export { EnterpriseCard, EnterpriseCardHeader, EnterpriseCardTitle, EnterpriseCardDescription, EnterpriseCardContent, EnterpriseCardFooter } from './EnterpriseCard'
-export { EnterpriseModal, EnterpriseModalPortal, EnterpriseModalOverlay, EnterpriseModalClose, EnterpriseModalTrigger, EnterpriseModalContent, EnterpriseModalHeader, EnterpriseModalFooter, EnterpriseModalTitle, EnterpriseModalDescription } from './EnterpriseModal'
-export { Form, FormItem, FormLabel, FormControl, FormDescription, FormMessage, FormField, useFormField } from './EnterpriseFormField'
-export { AccuBooksLogo } from './AccuBooksLogo'
-export { ThemeToggle } from '../ThemeProvider'
+// Clean UI Components Index
+// Essential UI components for AccuBooks
 
-// Re-export commonly used components
-export * from './accordion'
-export * from './alert'
-export * from './badge'
-export * from './button'
-export * from './card'
-export * from './checkbox'
-export * from './dialog'
-export * from './dropdown-menu'
-export * from './input'
-export * from './toast'
-export * from './tooltip'
-export * from './label'
+export { default as Button } from './Button';
+export { default as Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
+export { default as Input } from './Input';
 
-// Component types - Note: These types may not exist in the component files yet
-// export type { EnterpriseButtonProps } from './EnterpriseButton'
-// export type { EnterpriseKPICardProps } from './EnterpriseKPICard'
-// export type { EnterpriseInputProps } from './EnterpriseInput'
-// export type { EnterpriseDataTableProps } from './EnterpriseDataTable'
+// Utility exports
+export { cn } from '../../lib/utils';

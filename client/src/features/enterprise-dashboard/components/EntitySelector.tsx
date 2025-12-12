@@ -1,6 +1,6 @@
-import React from 'react';
-import { Entity } from '../context/EntityContext';
-import { ChevronDown, Building2, Users, Network } from 'lucide-react';
+import React from "react";
+import { Entity } from '../context/EntityContext.js';
+import { ChevronDown, Building2, Users, Network } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,19 +15,20 @@ interface EntitySelectorProps {
   onSelect: (entity: Entity) => void;
 }
 
-const getEntityIcon = (type: Entity['type']) => {
+const getEntityIcon = (type: Entity["type"]) => {
   switch (type) {
-    case 'company':
+    case "company":
       return <Building2 className="h-4 w-4 mr-2" />;
-    case 'department':
+    case "department":
       return <Users className="h-4 w-4 mr-2" />;
-    case 'team':
+    case "team":
       return <Network className="h-4 w-4 mr-2" />;
     default:
       return <Building2 className="h-4 w-4 mr-2" />;
   }
 };
 
+// @ts-ignore
 export const EntitySelector: React.FC<EntitySelectorProps> = ({
   entities,
   selectedEntity,

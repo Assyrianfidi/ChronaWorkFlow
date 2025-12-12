@@ -1,8 +1,9 @@
-import { PrismaClient } from '@prisma/client';
-import crypto from 'crypto';
-import { logger } from '../utils/logger.js';
+import { PrismaClientSingleton } from '../lib/prisma';
+const prisma = PrismaClientSingleton.getInstance();
+import crypto from "crypto";
+import { logger } from "../utils/logger.js";
 
-const prisma = new PrismaClient();
+// Fixed self-reference
 
 export class RefreshTokenService {
   private static readonly REFRESH_TOKEN_EXPIRY_DAYS = 30;
@@ -12,14 +13,14 @@ export class RefreshTokenService {
    * Generate a secure refresh token
    */
   static generateRefreshToken(): string {
-    return crypto.randomBytes(64).toString('hex');
+    return crypto.randomBytes(64).toString("hex");
   }
 
   /**
    * Hash a refresh token for storage
    */
   static hashToken(token: string): string {
-    return crypto.createHash('sha256').update(token).digest('hex');
+    return crypto.createHash("sha256").update(token).digest("hex");
   }
 
   /**
@@ -47,14 +48,16 @@ export class RefreshTokenService {
       return token;
     } catch (error) {
       logger.error(`Failed to create refresh token for user ${userId}:`, error);
-      throw new Error('Failed to create refresh token');
+      throw new Error("Failed to create refresh token");
     }
   }
 
   /**
    * Verify a refresh token and return the user
    */
-  static async verifyRefreshToken(token: string): Promise<{ userId: number; user: any }> {
+  static async verifyRefreshToken(
+    token: string,
+  ): Promise<{ userId: number; user: any }> {
     const tokenHash = this.hashToken(token);
 
     try {
@@ -64,18 +67,18 @@ export class RefreshTokenService {
       });
 
       if (!refreshToken) {
-        throw new Error('Invalid refresh token');
+        throw new Error("Invalid refresh token");
       }
 
       if (refreshToken.expiresAt < new Date()) {
         // Clean up expired token
         await prisma.refreshToken.delete({ where: { id: refreshToken.id } });
-        throw new Error('Refresh token expired');
+        throw new Error("Refresh token expired");
       }
 
       return { userId: refreshToken.userId, user: refreshToken.user };
     } catch (error) {
-      logger.error('Refresh token verification failed:', error);
+      logger.error("Refresh token verification failed:", error);
       throw error;
     }
   }
@@ -85,7 +88,7 @@ export class RefreshTokenService {
    */
   static async rotateRefreshToken(oldToken: string): Promise<string> {
     const { userId } = await this.verifyRefreshToken(oldToken);
-    
+
     // Delete the old token
     const tokenHash = this.hashToken(oldToken);
     await prisma.refreshToken.deleteMany({ where: { tokenHash } });
@@ -102,8 +105,11 @@ export class RefreshTokenService {
       await prisma.refreshToken.deleteMany({ where: { userId } });
       logger.info(`All refresh tokens invalidated for user ${userId}`);
     } catch (error) {
-      logger.error(`Failed to invalidate refresh tokens for user ${userId}:`, error);
-      throw new Error('Failed to invalidate refresh tokens');
+      logger.error(
+        `Failed to invalidate refresh tokens for user ${userId}:`,
+        error,
+      );
+      throw new Error("Failed to invalidate refresh tokens");
     }
   }
 
@@ -112,15 +118,17 @@ export class RefreshTokenService {
    */
   static async invalidateRefreshToken(token: string): Promise<void> {
     const tokenHash = this.hashToken(token);
-    
+
     try {
-      const deleted = await prisma.refreshToken.deleteMany({ where: { tokenHash } });
+      const deleted = await prisma.refreshToken.deleteMany({
+        where: { tokenHash },
+      });
       if (deleted.count === 0) {
-        throw new Error('Refresh token not found');
+        throw new Error("Refresh token not found");
       }
-      logger.info('Refresh token invalidated');
+      logger.info("Refresh token invalidated");
     } catch (error) {
-      logger.error('Failed to invalidate refresh token:', error);
+      logger.error("Failed to invalidate refresh token:", error);
       throw error;
     }
   }
@@ -144,8 +152,8 @@ export class RefreshTokenService {
 
       return deleted.count;
     } catch (error) {
-      logger.error('Failed to cleanup expired refresh tokens:', error);
-      throw new Error('Failed to cleanup expired tokens');
+      logger.error("Failed to cleanup expired refresh tokens:", error);
+      throw new Error("Failed to cleanup expired tokens");
     }
   }
 

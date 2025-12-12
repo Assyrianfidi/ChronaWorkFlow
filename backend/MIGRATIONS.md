@@ -50,8 +50,8 @@ Migrations are written in TypeScript and should export two functions:
 Example migration:
 
 ```typescript
-import { sql } from 'drizzle-orm';
-import { db } from '../index';
+import { sql } from "drizzle-orm";
+import { db } from "../index";
 
 export async function up() {
   await db.execute(sql`

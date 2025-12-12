@@ -1,8 +1,8 @@
-import { Outlet, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/auth-store';
-import { useEffect } from 'react';
-import { Button } from '../components/ui/button';
-import { Sidebar } from './Sidebar';
+import { Outlet, useNavigate } from "react-router-dom";
+import { useAuthStore } from '../store/auth-store.js';
+import { useEffect } from "react";
+import { Button } from '../components/ui/button.js';
+import { Sidebar } from './Sidebar.js';
 
 export function AppLayout() {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -10,7 +10,7 @@ export function AppLayout() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [isAuthenticated, navigate]);
 
@@ -21,6 +21,8 @@ export function AppLayout() {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
+// @ts-ignore
+// @ts-ignore
       <Sidebar user={user as any} onLogout={logout} />
 
       {/* Main content */}

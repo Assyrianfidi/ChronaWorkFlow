@@ -1,3 +1,11 @@
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React, { useState } from 'react';
 /**
  * Smart Auto-Lazy Loading System
  * Predictive preloading, intelligent resource prioritization, adaptive loading strategies
@@ -51,7 +59,7 @@ export interface SmartAutoLazyConfig {
   // Cache management
   cacheManagement: {
     enabled: boolean;
-    strategy: 'lru' | 'lfu' | 'fifo' | 'custom';
+    strategy: "lru" | "lfu" | "fifo" | "custom";
     maxSize: number;
     ttl: number;
     compressionEnabled: boolean;
@@ -73,7 +81,12 @@ export interface SmartAutoLazyConfig {
 export interface PreloadStrategy {
   id: string;
   name: string;
-  type: 'navigation' | 'interaction' | 'time_based' | 'scroll_based' | 'ml_based';
+  type:
+    | "navigation"
+    | "interaction"
+    | "time_based"
+    | "scroll_based"
+    | "ml_based";
   priority: number;
   conditions: PreloadCondition[];
   resources: string[];
@@ -82,8 +95,13 @@ export interface PreloadStrategy {
 }
 
 export interface PreloadCondition {
-  type: 'user_action' | 'time_delay' | 'scroll_position' | 'network_condition' | 'device_type';
-  operator: 'eq' | 'ne' | 'gt' | 'lt' | 'contains' | 'regex';
+  type:
+    | "user_action"
+    | "time_delay"
+    | "scroll_position"
+    | "network_condition"
+    | "device_type";
+  operator: "eq" | "ne" | "gt" | "lt" | "contains" | "regex";
   value: any;
   weight: number;
 }
@@ -101,15 +119,20 @@ export interface PriorityLevel {
 export interface LoadingStrategy {
   id: string;
   name: string;
-  type: 'lazy' | 'eager' | 'progressive' | 'adaptive' | 'conditional';
+  type: "lazy" | "eager" | "progressive" | "adaptive" | "conditional";
   conditions: LoadingCondition[];
   parameters: LoadingParameters;
   fallback: string;
 }
 
 export interface LoadingCondition {
-  type: 'network_speed' | 'device_type' | 'user_preference' | 'time_of_day' | 'battery_level';
-  operator: 'eq' | 'ne' | 'gt' | 'lt';
+  type:
+    | "network_speed"
+    | "device_type"
+    | "user_preference"
+    | "time_of_day"
+    | "battery_level";
+  operator: "eq" | "ne" | "gt" | "lt";
   value: any;
   priority: number;
 }
@@ -126,18 +149,18 @@ export interface FallbackMechanism {
   id: string;
   name: string;
   trigger: string;
-  action: 'retry' | 'fallback' | 'skip' | 'placeholder';
+  action: "retry" | "fallback" | "skip" | "placeholder";
   parameters: Record<string, any>;
   priority: number;
 }
 
 export interface PerformanceBudget {
-  type: 'javascript' | 'css' | 'images' | 'fonts' | 'total';
+  type: "javascript" | "css" | "images" | "fonts" | "total";
   budget: number;
-  unit: 'kb' | 'ms' | 'requests';
+  unit: "kb" | "ms" | "requests";
   warningThreshold: number;
   criticalThreshold: number;
-  enforcement: 'warning' | 'block' | 'compress';
+  enforcement: "warning" | "block" | "compress";
 }
 
 export interface ResourceMetrics {
@@ -150,9 +173,9 @@ export interface ResourceMetrics {
   endTime: number;
   cached: boolean;
   priority: number;
-  userIntent: 'critical' | 'important' | 'normal' | 'low';
-  networkCondition: 'slow' | 'medium' | 'fast';
-  deviceType: 'mobile' | 'tablet' | 'desktop';
+  userIntent: "critical" | "important" | "normal" | "low";
+  networkCondition: "slow" | "medium" | "fast";
+  deviceType: "mobile" | "tablet" | "desktop";
   preloaded: boolean;
   lazy: boolean;
   error?: string;
@@ -218,12 +241,20 @@ export class SmartAutoLazyEngine {
 
   private constructor() {
     this.config = this.getDefaultConfig();
-    this.predictivePreloader = new PredictivePreloader(this.config.predictivePreloading);
-    this.resourcePrioritizer = new ResourcePrioritizer(this.config.resourcePrioritization);
+    this.predictivePreloader = new PredictivePreloader(
+      this.config.predictivePreloading,
+    );
+    this.resourcePrioritizer = new ResourcePrioritizer(
+      this.config.resourcePrioritization,
+    );
     this.adaptiveLoader = new AdaptiveLoader(this.config.adaptiveLoading);
-    this.intersectionOptimizer = new IntersectionOptimizer(this.config.intersectionOptimization);
+    this.intersectionOptimizer = new IntersectionOptimizer(
+      this.config.intersectionOptimization,
+    );
     this.cacheManager = new CacheManager(this.config.cacheManagement);
-    this.performanceMonitor = new PerformanceMonitor(this.config.performanceMonitoring);
+    this.performanceMonitor = new PerformanceMonitor(
+      this.config.performanceMonitoring,
+    );
     this.behaviorAnalyzer = new BehaviorAnalyzer();
     this.metrics = this.initializeMetrics();
     this.initializeSmartAutoLazy();
@@ -246,7 +277,7 @@ export class SmartAutoLazyEngine {
         preloadStrategies: [],
         userBehaviorAnalysis: true,
         machineLearningEnabled: true,
-        cacheSize: 100
+        cacheSize: 100,
       },
       resourcePrioritization: {
         enabled: true,
@@ -255,7 +286,7 @@ export class SmartAutoLazyEngine {
         bandwidthAdaptive: true,
         deviceAdaptive: true,
         networkAware: true,
-        userIntentDetection: true
+        userIntentDetection: true,
       },
       adaptiveLoading: {
         enabled: true,
@@ -263,25 +294,25 @@ export class SmartAutoLazyEngine {
         fallbackMechanisms: [],
         progressiveEnhancement: true,
         gracefulDegradation: true,
-        performanceBudgets: []
+        performanceBudgets: [],
       },
       intersectionOptimization: {
         enabled: true,
-        rootMargin: '50px',
+        rootMargin: "50px",
         threshold: [0, 0.1, 0.5, 1.0],
         delayMs: 100,
         batchSize: 5,
         adaptiveThreshold: true,
-        performanceOptimized: true
+        performanceOptimized: true,
       },
       cacheManagement: {
         enabled: true,
-        strategy: 'lru',
+        strategy: "lru",
         maxSize: 50 * 1024 * 1024, // 50MB
         ttl: 24 * 60 * 60 * 1000, // 24 hours
         compressionEnabled: true,
         encryptionEnabled: false,
-        persistentStorage: true
+        persistentStorage: true,
       },
       performanceMonitoring: {
         enabled: true,
@@ -289,8 +320,8 @@ export class SmartAutoLazyEngine {
         realTimeAnalysis: true,
         bottleneckDetection: true,
         userExperienceTracking: true,
-        resourceTimingAnalysis: true
-      }
+        resourceTimingAnalysis: true,
+      },
     };
   }
 
@@ -309,34 +340,34 @@ export class SmartAutoLazyEngine {
       userExperienceScore: 100,
       networkEfficiency: 100,
       devicePerformance: 100,
-      bottleneckResources: []
+      bottleneckResources: [],
     };
   }
 
   private initializeSmartAutoLazy(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // Initialize priority levels
     this.initializePriorityLevels();
-    
+
     // Initialize preload strategies
     this.initializePreloadStrategies();
-    
+
     // Initialize loading strategies
     this.initializeLoadingStrategies();
-    
+
     // Initialize performance budgets
     this.initializePerformanceBudgets();
-    
+
     // Set up event listeners
     this.setupEventListeners();
-    
+
     // Start behavior analysis
     this.behaviorAnalyzer.startAnalysis();
-    
+
     // Load existing patterns
     this.loadExistingPatterns();
-    
+
     // Start performance monitoring
     if (this.config.performanceMonitoring.enabled) {
       this.performanceMonitor.startMonitoring();
@@ -347,40 +378,40 @@ export class SmartAutoLazyEngine {
     const levels: PriorityLevel[] = [
       {
         level: 1,
-        name: 'Critical',
-        color: '#dc3545',
+        name: "Critical",
+        color: "#dc3545",
         maxConcurrent: 6,
         timeout: 5000,
         retryAttempts: 3,
-        resources: ['critical-css', 'critical-js', 'fonts', 'hero-images']
+        resources: ["critical-css", "critical-js", "fonts", "hero-images"],
       },
       {
         level: 2,
-        name: 'High',
-        color: '#fd7e14',
+        name: "High",
+        color: "#fd7e14",
         maxConcurrent: 4,
         timeout: 8000,
         retryAttempts: 2,
-        resources: ['above-fold-images', 'important-js', 'stylesheets']
+        resources: ["above-fold-images", "important-js", "stylesheets"],
       },
       {
         level: 3,
-        name: 'Normal',
-        color: '#28a745',
+        name: "Normal",
+        color: "#28a745",
         maxConcurrent: 3,
         timeout: 10000,
         retryAttempts: 2,
-        resources: ['below-fold-images', 'components', 'data']
+        resources: ["below-fold-images", "components", "data"],
       },
       {
         level: 4,
-        name: 'Low',
-        color: '#6c757d',
+        name: "Low",
+        color: "#6c757d",
         maxConcurrent: 2,
         timeout: 15000,
         retryAttempts: 1,
-        resources: ['analytics', 'tracking', 'optional-content']
-      }
+        resources: ["analytics", "tracking", "optional-content"],
+      },
     ];
 
     this.config.resourcePrioritization.priorityLevels = levels;
@@ -389,79 +420,79 @@ export class SmartAutoLazyEngine {
   private initializePreloadStrategies(): void {
     const strategies: PreloadStrategy[] = [
       {
-        id: 'navigation-prediction',
-        name: 'Navigation Prediction',
-        type: 'navigation',
+        id: "navigation-prediction",
+        name: "Navigation Prediction",
+        type: "navigation",
         priority: 1,
         conditions: [
           {
-            type: 'user_action',
-            operator: 'contains',
-            value: 'hover',
-            weight: 0.8
+            type: "user_action",
+            operator: "contains",
+            value: "hover",
+            weight: 0.8,
           },
           {
-            type: 'time_delay',
-            operator: 'gt',
+            type: "time_delay",
+            operator: "gt",
             value: 500,
-            weight: 0.6
-          }
+            weight: 0.6,
+          },
         ],
-        resources: ['next-page-components', 'route-data'],
+        resources: ["next-page-components", "route-data"],
         maxConcurrent: 3,
-        timeout: 3000
+        timeout: 3000,
       },
       {
-        id: 'scroll-prediction',
-        name: 'Scroll Prediction',
-        type: 'scroll_based',
+        id: "scroll-prediction",
+        name: "Scroll Prediction",
+        type: "scroll_based",
         priority: 2,
         conditions: [
           {
-            type: 'scroll_position',
-            operator: 'gt',
+            type: "scroll_position",
+            operator: "gt",
             value: 0.8,
-            weight: 0.9
-          }
+            weight: 0.9,
+          },
         ],
-        resources: ['below-fold-content', 'infinite-scroll-items'],
+        resources: ["below-fold-content", "infinite-scroll-items"],
         maxConcurrent: 5,
-        timeout: 2000
+        timeout: 2000,
       },
       {
-        id: 'interaction-prediction',
-        name: 'Interaction Prediction',
-        type: 'interaction',
+        id: "interaction-prediction",
+        name: "Interaction Prediction",
+        type: "interaction",
         priority: 1,
         conditions: [
           {
-            type: 'user_action',
-            operator: 'contains',
-            value: 'click',
-            weight: 0.7
-          }
+            type: "user_action",
+            operator: "contains",
+            value: "click",
+            weight: 0.7,
+          },
         ],
-        resources: ['modal-content', 'dropdown-items'],
+        resources: ["modal-content", "dropdown-items"],
         maxConcurrent: 2,
-        timeout: 1000
+        timeout: 1000,
       },
       {
-        id: 'ml-prediction',
-        name: 'Machine Learning Prediction',
-        type: 'ml_based',
+        id: "ml-prediction",
+        name: "Machine Learning Prediction",
+        type: "ml_based",
         priority: 3,
         conditions: [
           {
-            type: 'user_action',
-            operator: 'regex',
-            value: '.*',
-            weight: 0.5
-          }
+            type: "user_action",
+            operator: "regex",
+            value: ".*",
+            weight: 0.5,
+          },
         ],
-        resources: ['predicted-resources'],
+        resources: ["predicted-resources"],
         maxConcurrent: 4,
-        timeout: 5000
-      }
+        timeout: 5000,
+      },
     ];
 
     this.config.predictivePreloading.preloadStrategies = strategies;
@@ -470,68 +501,68 @@ export class SmartAutoLazyEngine {
   private initializeLoadingStrategies(): void {
     const strategies: LoadingStrategy[] = [
       {
-        id: 'progressive-images',
-        name: 'Progressive Image Loading',
-        type: 'progressive',
+        id: "progressive-images",
+        name: "Progressive Image Loading",
+        type: "progressive",
         conditions: [
           {
-            type: 'network_speed',
-            operator: 'lt',
-            value: 'fast',
-            priority: 1
-          }
+            type: "network_speed",
+            operator: "lt",
+            value: "fast",
+            priority: 1,
+          },
         ],
         parameters: {
           timeout: 8000,
           retryAttempts: 2,
           retryDelay: 1000,
           batchSize: 3,
-          compressionEnabled: true
+          compressionEnabled: true,
         },
-        fallback: 'placeholder'
+        fallback: "placeholder",
       },
       {
-        id: 'adaptive-javascript',
-        name: 'Adaptive JavaScript Loading',
-        type: 'adaptive',
+        id: "adaptive-javascript",
+        name: "Adaptive JavaScript Loading",
+        type: "adaptive",
         conditions: [
           {
-            type: 'device_type',
-            operator: 'eq',
-            value: 'mobile',
-            priority: 2
-          }
+            type: "device_type",
+            operator: "eq",
+            value: "mobile",
+            priority: 2,
+          },
         ],
         parameters: {
           timeout: 10000,
           retryAttempts: 1,
           retryDelay: 2000,
           batchSize: 1,
-          compressionEnabled: true
+          compressionEnabled: true,
         },
-        fallback: 'critical-only'
+        fallback: "critical-only",
       },
       {
-        id: 'conditional-components',
-        name: 'Conditional Component Loading',
-        type: 'conditional',
+        id: "conditional-components",
+        name: "Conditional Component Loading",
+        type: "conditional",
         conditions: [
           {
-            type: 'user_preference',
-            operator: 'eq',
-            value: 'reduced-data',
-            priority: 3
-          }
+            type: "user_preference",
+            operator: "eq",
+            value: "reduced-data",
+            priority: 3,
+          },
         ],
         parameters: {
           timeout: 5000,
           retryAttempts: 1,
           retryDelay: 500,
           batchSize: 2,
-          compressionEnabled: true
+          compressionEnabled: true,
         },
-        fallback: 'essential-only'
-      }
+        fallback: "essential-only",
+      },
     ];
 
     this.config.adaptiveLoading.strategies = strategies;
@@ -540,45 +571,45 @@ export class SmartAutoLazyEngine {
   private initializePerformanceBudgets(): void {
     const budgets: PerformanceBudget[] = [
       {
-        type: 'javascript',
+        type: "javascript",
         budget: 250,
-        unit: 'kb',
+        unit: "kb",
         warningThreshold: 200,
         criticalThreshold: 300,
-        enforcement: 'compress'
+        enforcement: "compress",
       },
       {
-        type: 'css',
+        type: "css",
         budget: 100,
-        unit: 'kb',
+        unit: "kb",
         warningThreshold: 80,
         criticalThreshold: 150,
-        enforcement: 'compress'
+        enforcement: "compress",
       },
       {
-        type: 'images',
+        type: "images",
         budget: 500,
-        unit: 'kb',
+        unit: "kb",
         warningThreshold: 400,
         criticalThreshold: 800,
-        enforcement: 'compress'
+        enforcement: "compress",
       },
       {
-        type: 'fonts',
+        type: "fonts",
         budget: 100,
-        unit: 'kb',
+        unit: "kb",
         warningThreshold: 80,
         criticalThreshold: 150,
-        enforcement: 'warning'
+        enforcement: "warning",
       },
       {
-        type: 'total',
+        type: "total",
         budget: 1000,
-        unit: 'kb',
+        unit: "kb",
         warningThreshold: 800,
         criticalThreshold: 1500,
-        enforcement: 'warning'
-      }
+        enforcement: "warning",
+      },
     ];
 
     this.config.adaptiveLoading.performanceBudgets = budgets;
@@ -586,63 +617,78 @@ export class SmartAutoLazyEngine {
 
   private setupEventListeners(): void {
     // Monitor user interactions for predictive preloading
-    document.addEventListener('mouseover', this.handleMouseOver.bind(this));
-    document.addEventListener('touchstart', this.handleTouchStart.bind(this));
-    document.addEventListener('click', this.handleClick.bind(this));
-    document.addEventListener('scroll', this.handleScroll.bind(this));
-    
+    document.addEventListener("mouseover", this.handleMouseOver.bind(this));
+    document.addEventListener("touchstart", this.handleTouchStart.bind(this));
+    document.addEventListener("click", this.handleClick.bind(this));
+    document.addEventListener("scroll", this.handleScroll.bind(this));
+
     // Monitor network changes
-    if ('connection' in navigator) {
-      (navigator as any).connection.addEventListener('change', this.handleNetworkChange.bind(this));
+    if ("connection" in navigator) {
+// @ts-ignore
+// @ts-ignore
+      (navigator as any).connection.addEventListener(
+        "change",
+        this.handleNetworkChange.bind(this),
+      );
     }
-    
+
     // Monitor page visibility
-    document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
-    
+    document.addEventListener(
+      "visibilitychange",
+      this.handleVisibilityChange.bind(this),
+    );
+
     // Monitor performance entries
-    if ('PerformanceObserver' in window) {
-      const observer = new PerformanceObserver(this.handlePerformanceEntry.bind(this));
-      observer.observe({ entryTypes: ['resource', 'navigation', 'paint'] });
+    if ("PerformanceObserver" in window) {
+      const observer = new PerformanceObserver(
+        this.handlePerformanceEntry.bind(this),
+      );
+      observer.observe({ entryTypes: ["resource", "navigation", "paint"] });
     }
   }
 
   private handleMouseOver(event: MouseEvent): void {
+// @ts-ignore
     const target = event.target as HTMLElement;
-    const link = target.closest('a');
-    
+    const link = target.closest("a");
+
     if (link && this.config.predictivePreloading.enabled) {
-      const href = link.getAttribute('href');
+      const href = link.getAttribute("href");
       if (href && this.shouldPreload(href)) {
         this.predictivePreloader.preloadForNavigation(href);
       }
     }
-    
+
     // Track behavior for pattern analysis
-    this.behaviorAnalyzer.trackInteraction('mouseover', target);
+    this.behaviorAnalyzer.trackInteraction("mouseover", target);
   }
 
   private handleTouchStart(event: TouchEvent): void {
+// @ts-ignore
     const target = event.target as HTMLElement;
-    this.behaviorAnalyzer.trackInteraction('touchstart', target);
+    this.behaviorAnalyzer.trackInteraction("touchstart", target);
   }
 
   private handleClick(event: MouseEvent): void {
+// @ts-ignore
     const target = event.target as HTMLElement;
-    this.behaviorAnalyzer.trackInteraction('click', target);
+    this.behaviorAnalyzer.trackInteraction("click", target);
   }
 
   private handleScroll(event: Event): void {
     if (this.config.intersectionOptimization.enabled) {
       this.intersectionOptimizer.handleScroll();
     }
-    
-    this.behaviorAnalyzer.trackInteraction('scroll', document.body);
+
+    this.behaviorAnalyzer.trackInteraction("scroll", document.body);
   }
 
   private handleNetworkChange(): void {
+// @ts-ignore
+// @ts-ignore
     const connection = (navigator as any).connection;
     const networkCondition = this.getNetworkCondition(connection);
-    
+
     // Adjust loading strategies based on network condition
     this.resourcePrioritizer.adaptToNetworkCondition(networkCondition);
     this.adaptiveLoader.adaptToNetworkCondition(networkCondition);
@@ -659,7 +705,8 @@ export class SmartAutoLazyEngine {
   }
 
   private handlePerformanceEntry(entry: PerformanceEntry): void {
-    if (entry.entryType === 'resource') {
+    if (entry.entryType === "resource") {
+// @ts-ignore
       const resourceEntry = entry as PerformanceResourceTiming;
       this.processResourceTiming(resourceEntry);
     }
@@ -676,11 +723,11 @@ export class SmartAutoLazyEngine {
       endTime: entry.responseEnd,
       cached: entry.transferSize === 0 && entry.decodedBodySize > 0,
       priority: this.getResourcePriority(entry.name),
-      userIntent: 'normal',
+      userIntent: "normal",
       networkCondition: this.getNetworkCondition(),
       deviceType: this.getDeviceType(),
       preloaded: false,
-      lazy: false
+      lazy: false,
     };
 
     this.resourceMetrics.set(metrics.id, metrics);
@@ -692,172 +739,182 @@ export class SmartAutoLazyEngine {
   }
 
   private getResourceType(url: string): string {
-    const extension = url.split('.').pop()?.toLowerCase();
-    
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(extension || '')) {
-      return 'image';
-    } else if (['css'].includes(extension || '')) {
-      return 'css';
-    } else if (['js'].includes(extension || '')) {
-      return 'javascript';
-    } else if (['woff', 'woff2', 'ttf', 'otf'].includes(extension || '')) {
-      return 'font';
+    const extension = url.split(".").pop()?.toLowerCase();
+
+    if (
+      ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(extension || "")
+    ) {
+      return "image";
+    } else if (["css"].includes(extension || "")) {
+      return "css";
+    } else if (["js"].includes(extension || "")) {
+      return "javascript";
+    } else if (["woff", "woff2", "ttf", "otf"].includes(extension || "")) {
+      return "font";
     } else {
-      return 'other';
+      return "other";
     }
   }
 
   private getResourcePriority(url: string): number {
     // Determine resource priority based on URL patterns
-    if (url.includes('critical') || url.includes('above-fold')) {
+    if (url.includes("critical") || url.includes("above-fold")) {
       return 1;
-    } else if (url.includes('important') || url.includes('hero')) {
+    } else if (url.includes("important") || url.includes("hero")) {
       return 2;
-    } else if (url.includes('optional') || url.includes('below-fold')) {
+    } else if (url.includes("optional") || url.includes("below-fold")) {
       return 4;
     } else {
       return 3;
     }
   }
 
-  private getNetworkCondition(connection?: any): 'slow' | 'medium' | 'fast' {
-    if (!connection) return 'medium';
-    
+  private getNetworkCondition(connection?: any): "slow" | "medium" | "fast" {
+    if (!connection) return "medium";
+
     const effectiveType = connection.effectiveType;
     switch (effectiveType) {
-      case 'slow-2g':
-      case '2g':
-        return 'slow';
-      case '3g':
-        return 'medium';
-      case '4g':
-        return 'fast';
+      case "slow-2g":
+      case "2g":
+        return "slow";
+      case "3g":
+        return "medium";
+      case "4g":
+        return "fast";
       default:
-        return 'medium';
+        return "medium";
     }
   }
 
-  private getDeviceType(): 'mobile' | 'tablet' | 'desktop' {
+  private getDeviceType(): "mobile" | "tablet" | "desktop" {
     const width = window.innerWidth;
-    if (width < 768) return 'mobile';
-    if (width < 1024) return 'tablet';
-    return 'desktop';
+    if (width < 768) return "mobile";
+    if (width < 1024) return "tablet";
+    return "desktop";
   }
 
   private shouldPreload(url: string): boolean {
     // Check if URL should be preloaded based on patterns and conditions
     const patterns = this.userPatterns.values();
-    
+
     for (const pattern of patterns) {
       if (pattern.resources.includes(url) && pattern.confidence > 0.7) {
         return true;
       }
     }
-    
+
     return false;
   }
 
   private pauseNonCriticalLoading(): void {
     // Pause non-critical loading when page is hidden
     this.loadingQueue
-      .filter(item => item.priority > 2)
-      .forEach(item => item.paused = true);
+      .filter((item) => item.priority > 2)
+      .forEach((item) => (item.paused = true));
   }
 
   private resumeLoading(): void {
     // Resume loading when page is visible
-    this.loadingQueue.forEach(item => item.paused = false);
+    this.loadingQueue.forEach((item) => (item.paused = false));
     this.processLoadingQueue();
   }
 
   private updatePerformanceMetrics(metrics: ResourceMetrics): void {
     this.metrics.totalResources++;
-    
+
     if (metrics.error) {
       this.metrics.failedResources++;
     } else {
       this.metrics.loadedResources++;
     }
-    
+
     if (metrics.preloaded) {
       this.metrics.preloadedResources++;
     }
-    
+
     if (metrics.lazy) {
       this.metrics.lazyLoadedResources++;
     }
-    
+
     this.metrics.totalSize += metrics.size;
-    
+
     // Update average load time
-    const totalLoadTime = Array.from(this.resourceMetrics.values())
-      .reduce((sum, m) => sum + m.loadTime, 0);
+    const totalLoadTime = Array.from(this.resourceMetrics.values()).reduce(
+      (sum, m) => sum + m.loadTime,
+      0,
+    );
     this.metrics.averageLoadTime = totalLoadTime / this.resourceMetrics.size;
-    
+
     // Update cache hit rate
-    const cachedCount = Array.from(this.resourceMetrics.values())
-      .filter(m => m.cached).length;
+    const cachedCount = Array.from(this.resourceMetrics.values()).filter(
+      (m) => m.cached,
+    ).length;
     this.metrics.cacheHitRate = cachedCount / this.resourceMetrics.size;
-    
+
     // Update user experience score
     this.metrics.userExperienceScore = this.calculateUserExperienceScore();
-    
+
     // Update network efficiency
     this.metrics.networkEfficiency = this.calculateNetworkEfficiency();
-    
+
     // Update device performance
     this.metrics.devicePerformance = this.calculateDevicePerformance();
   }
 
   private calculateUserExperienceScore(): number {
     let score = 100;
-    
+
     // Deduct points for slow loading
     if (this.metrics.averageLoadTime > 3000) score -= 20;
     else if (this.metrics.averageLoadTime > 2000) score -= 10;
     else if (this.metrics.averageLoadTime > 1000) score -= 5;
-    
+
     // Deduct points for failures
-    const failureRate = this.metrics.failedResources / this.metrics.totalResources;
+    const failureRate =
+      this.metrics.failedResources / this.metrics.totalResources;
     score -= failureRate * 30;
-    
+
     // Add points for cache hits
     score += this.metrics.cacheHitRate * 10;
-    
+
     return Math.max(0, Math.min(100, score));
   }
 
   private calculateNetworkEfficiency(): number {
+// @ts-ignore
+// @ts-ignore
     const connection = (navigator as any).connection;
     if (!connection) return 80;
-    
+
     let efficiency = 50;
-    
+
     // Add points for fast connection
     const effectiveType = connection.effectiveType;
     switch (effectiveType) {
-      case '4g':
+      case "4g":
         efficiency += 40;
         break;
-      case '3g':
+      case "3g":
         efficiency += 20;
         break;
-      case '2g':
+      case "2g":
         efficiency += 0;
         break;
     }
-    
+
     // Add points for low RTT
     if (connection.rtt < 100) efficiency += 10;
     else if (connection.rtt < 300) efficiency += 5;
-    
+
     return Math.min(100, efficiency);
   }
 
   private calculateDevicePerformance(): number {
     let performance = 50;
-    
+
     // Add points for device capabilities
+// @ts-ignore
+// @ts-ignore
     const memory = (performance as any).memory;
     if (memory) {
       const memoryGB = memory.jsHeapSizeLimit / (1024 * 1024 * 1024);
@@ -865,19 +922,19 @@ export class SmartAutoLazyEngine {
       else if (memoryGB > 2) performance += 20;
       else if (memoryGB > 1) performance += 10;
     }
-    
+
     // Add points for CPU cores
     if (navigator.hardwareConcurrency) {
       if (navigator.hardwareConcurrency >= 8) performance += 20;
       else if (navigator.hardwareConcurrency >= 4) performance += 10;
     }
-    
+
     return Math.min(100, performance);
   }
 
   private loadExistingPatterns(): void {
     try {
-      const stored = localStorage.getItem('user-behavior-patterns');
+      const stored = localStorage.getItem("user-behavior-patterns");
       if (stored) {
         const patterns = JSON.parse(stored);
         patterns.forEach((pattern: UserBehaviorPattern) => {
@@ -885,12 +942,15 @@ export class SmartAutoLazyEngine {
         });
       }
     } catch (error) {
-      console.warn('Failed to load behavior patterns:', error);
+      console.warn("Failed to load behavior patterns:", error);
     }
   }
 
   // Public API: Lazy loading methods
-  public lazyLoadElement(element: HTMLElement, options: LazyLoadOptions = {}): Promise<void> {
+  public lazyLoadElement(
+    element: HTMLElement,
+    options: LazyLoadOptions = {},
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.config.intersectionOptimization.enabled) {
         // Load immediately if intersection optimization is disabled
@@ -899,43 +959,54 @@ export class SmartAutoLazyEngine {
       }
 
       const observerOptions: IntersectionObserverInit = {
-        rootMargin: options.rootMargin || this.config.intersectionOptimization.rootMargin,
-        threshold: options.threshold || this.config.intersectionOptimization.threshold
+        rootMargin:
+          options.rootMargin || this.config.intersectionOptimization.rootMargin,
+        threshold:
+          options.threshold || this.config.intersectionOptimization.threshold,
       };
 
       const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            this.loadElementContent(element).then(() => {
-              observer.unobserve(element);
-              resolve();
-            }).catch(reject);
+            this.loadElementContent(element)
+              .then(() => {
+                observer.unobserve(element);
+                resolve();
+              })
+              .catch(reject);
           }
         });
       }, observerOptions);
 
       observer.observe(element);
-      this.observers.set(element.id || this.generateElementId(element), observer);
+      this.observers.set(
+        element.id || this.generateElementId(element),
+        observer,
+      );
     });
   }
 
   private async loadElementContent(element: HTMLElement): Promise<void> {
     const startTime = performance.now();
-    
+
     try {
       // Determine loading strategy
       const strategy = this.adaptiveLoader.selectStrategy(element);
-      
+
       // Apply loading strategy
       await this.adaptiveLoader.applyStrategy(element, strategy);
-      
+
       // Update metrics
       const loadTime = performance.now() - startTime;
       this.updateElementMetrics(element, loadTime, true);
-      
     } catch (error) {
       const loadTime = performance.now() - startTime;
-      this.updateElementMetrics(element, loadTime, false, error instanceof Error ? error.message : 'Unknown error');
+      this.updateElementMetrics(
+        element,
+        loadTime,
+        false,
+        error instanceof Error ? error.message : "Unknown error",
+      );
       throw error;
     }
   }
@@ -944,11 +1015,17 @@ export class SmartAutoLazyEngine {
     return `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private updateElementMetrics(element: HTMLElement, loadTime: number, success: boolean, error?: string): void {
+  private updateElementMetrics(
+    element: HTMLElement,
+    loadTime: number,
+    success: boolean,
+    error?: string,
+  ): void {
     const metrics: ResourceMetrics = {
       id: element.id || this.generateElementId(element),
-      url: element.getAttribute('data-src') || element.getAttribute('src') || '',
-      type: 'element',
+      url:
+        element.getAttribute("data-src") || element.getAttribute("src") || "",
+      type: "element",
       size: 0,
       loadTime,
       startTime: performance.now() - loadTime,
@@ -960,7 +1037,7 @@ export class SmartAutoLazyEngine {
       deviceType: this.getDeviceType(),
       preloaded: false,
       lazy: true,
-      error
+      error,
     };
 
     this.resourceMetrics.set(metrics.id, metrics);
@@ -968,37 +1045,49 @@ export class SmartAutoLazyEngine {
   }
 
   private getElementPriority(element: HTMLElement): number {
-    const priority = element.getAttribute('data-priority');
+    const priority = element.getAttribute("data-priority");
     if (priority) {
       return parseInt(priority);
     }
-    
+
     // Determine priority based on element attributes
-    if (element.hasAttribute('data-critical')) return 1;
-    if (element.hasAttribute('data-important')) return 2;
-    if (element.hasAttribute('data-optional')) return 4;
-    
+    if (element.hasAttribute("data-critical")) return 1;
+    if (element.hasAttribute("data-important")) return 2;
+    if (element.hasAttribute("data-optional")) return 4;
+
     return 3;
   }
 
-  private getElementUserIntent(element: HTMLElement): 'critical' | 'important' | 'normal' | 'low' {
-    const intent = element.getAttribute('data-user-intent');
+  private getElementUserIntent(
+    element: HTMLElement,
+  ): "critical" | "important" | "normal" | "low" {
+    const intent = element.getAttribute("data-user-intent");
     if (intent) {
+// @ts-ignore
+// @ts-ignore
       return intent as any;
     }
-    
+
     // Determine intent based on element position and attributes
     const rect = element.getBoundingClientRect();
-    const isInViewport = rect.top >= 0 && rect.left >= 0 && rect.bottom <= window.innerHeight && rect.right <= window.innerWidth;
-    
-    if (isInViewport && element.hasAttribute('data-critical')) return 'critical';
-    if (isInViewport) return 'important';
-    if (element.hasAttribute('data-optional')) return 'low';
-    
-    return 'normal';
+    const isInViewport =
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= window.innerHeight &&
+      rect.right <= window.innerWidth;
+
+    if (isInViewport && element.hasAttribute("data-critical"))
+      return "critical";
+    if (isInViewport) return "important";
+    if (element.hasAttribute("data-optional")) return "low";
+
+    return "normal";
   }
 
-  public preloadResource(url: string, options: PreloadOptions = {}): Promise<void> {
+  public preloadResource(
+    url: string,
+    options: PreloadOptions = {},
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       // Check if already cached
       if (this.cacheManager.has(url)) {
@@ -1008,7 +1097,7 @@ export class SmartAutoLazyEngine {
 
       // Determine priority
       const priority = options.priority || this.getResourcePriority(url);
-      
+
       // Add to loading queue
       const queueItem: LoadingQueueItem = {
         id: this.generateResourceId(),
@@ -1021,29 +1110,29 @@ export class SmartAutoLazyEngine {
         timeout: options.timeout || 5000,
         retryCount: 0,
         maxRetries: options.maxRetries || 2,
-        paused: false
+        paused: false,
       };
 
       this.loadingQueue.push(queueItem);
       this.loadingQueue.sort((a, b) => a.priority - b.priority);
-      
+
       this.processLoadingQueue();
     });
   }
 
   private async processLoadingQueue(): Promise<void> {
     if (this.isLoading || this.loadingQueue.length === 0) return;
-    
+
     this.isLoading = true;
-    
+
     while (this.loadingQueue.length > 0) {
-      const item = this.loadingQueue.find(i => !i.paused);
-      
+      const item = this.loadingQueue.find((i) => !i.paused);
+
       if (!item) break;
-      
+
       // Remove from queue
       this.loadingQueue.splice(this.loadingQueue.indexOf(item), 1);
-      
+
       try {
         await this.loadResource(item);
         item.resolve();
@@ -1056,82 +1145,98 @@ export class SmartAutoLazyEngine {
         }
       }
     }
-    
+
     this.isLoading = false;
   }
 
   private async loadResource(item: LoadingQueueItem): Promise<void> {
     const startTime = performance.now();
-    
+
     try {
       // Create appropriate element based on type
       let element: HTMLElement;
-      
+
       switch (item.type) {
-        case 'image':
-          element = document.createElement('img');
+        case "image":
+          element = document.createElement("img");
           break;
-        case 'css':
-          element = document.createElement('link');
-          (element as HTMLLinkElement).rel = 'stylesheet';
+        case "css":
+          element = document.createElement("link");
+// @ts-ignore
+          (element as HTMLLinkElement).rel = "stylesheet";
           break;
-        case 'javascript':
-          element = document.createElement('script');
+        case "javascript":
+          element = document.createElement("script");
           break;
         default:
           throw new Error(`Unsupported resource type: ${item.type}`);
       }
-      
+
       // Set source
-      if (item.type === 'image') {
+      if (item.type === "image") {
+// @ts-ignore
         (element as HTMLImageElement).src = item.url;
-      } else if (item.type === 'css') {
+      } else if (item.type === "css") {
+// @ts-ignore
         (element as HTMLLinkElement).href = item.url;
-      } else if (item.type === 'javascript') {
+      } else if (item.type === "javascript") {
+// @ts-ignore
         (element as HTMLScriptElement).src = item.url;
       }
-      
+
       // Load with timeout
       await this.loadElementWithTimeout(element, item.timeout);
-      
+
       // Cache the resource
       this.cacheManager.set(item.url, element);
-      
+
       // Update metrics
       const loadTime = performance.now() - startTime;
       this.updateResourceMetrics(item, loadTime, true);
-      
     } catch (error) {
       const loadTime = performance.now() - startTime;
-      this.updateResourceMetrics(item, loadTime, false, error instanceof Error ? error.message : 'Unknown error');
+      this.updateResourceMetrics(
+        item,
+        loadTime,
+        false,
+        error instanceof Error ? error.message : "Unknown error",
+      );
       throw error;
     }
   }
 
-  private loadElementWithTimeout(element: HTMLElement, timeout: number): Promise<void> {
+  private loadElementWithTimeout(
+    element: HTMLElement,
+    timeout: number,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => {
-        reject(new Error('Resource loading timeout'));
+        reject(new Error("Resource loading timeout"));
       }, timeout);
-      
+
       element.onload = () => {
         clearTimeout(timeoutId);
         resolve();
       };
-      
+
       element.onerror = () => {
         clearTimeout(timeoutId);
-        reject(new Error('Resource loading failed'));
+        reject(new Error("Resource loading failed"));
       };
-      
+
       // For scripts, we need to append to the document
-      if (element.tagName === 'SCRIPT') {
+      if (element.tagName === "SCRIPT") {
         document.head.appendChild(element);
       }
     });
   }
 
-  private updateResourceMetrics(item: LoadingQueueItem, loadTime: number, success: boolean, error?: string): void {
+  private updateResourceMetrics(
+    item: LoadingQueueItem,
+    loadTime: number,
+    success: boolean,
+    error?: string,
+  ): void {
     const metrics: ResourceMetrics = {
       id: item.id,
       url: item.url,
@@ -1142,12 +1247,12 @@ export class SmartAutoLazyEngine {
       endTime: performance.now(),
       cached: false,
       priority: item.priority,
-      userIntent: 'normal',
+      userIntent: "normal",
       networkCondition: this.getNetworkCondition(),
       deviceType: this.getDeviceType(),
       preloaded: true,
       lazy: false,
-      error
+      error,
     };
 
     this.resourceMetrics.set(metrics.id, metrics);
@@ -1184,12 +1289,14 @@ export class SmartAutoLazyEngine {
 
   public updateConfig(newConfig: Partial<SmartAutoLazyConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Update sub-systems
     this.predictivePreloader.updateConfig(this.config.predictivePreloading);
     this.resourcePrioritizer.updateConfig(this.config.resourcePrioritization);
     this.adaptiveLoader.updateConfig(this.config.adaptiveLoading);
-    this.intersectionOptimizer.updateConfig(this.config.intersectionOptimization);
+    this.intersectionOptimizer.updateConfig(
+      this.config.intersectionOptimization,
+    );
     this.cacheManager.updateConfig(this.config.cacheManagement);
     this.performanceMonitor.updateConfig(this.config.performanceMonitoring);
   }
@@ -1198,7 +1305,7 @@ export class SmartAutoLazyEngine {
     const metrics = this.getPerformanceMetrics();
     const resourceMetrics = this.getResourceMetrics();
     const patterns = this.getUserPatterns();
-    
+
     return `
 # Smart Auto-Lazy Performance Report
 Generated: ${new Date().toISOString()}
@@ -1235,10 +1342,11 @@ ${this.generateRecommendations(metrics, resourceMetrics)}
       css: { count: 0, size: 0, avgTime: 0 },
       javascript: { count: 0, size: 0, avgTime: 0 },
       font: { count: 0, size: 0, avgTime: 0 },
-      other: { count: 0, size: 0, avgTime: 0 }
+      other: { count: 0, size: 0, avgTime: 0 },
     };
 
-    metrics.forEach(metric => {
+    metrics.forEach((metric) => {
+// @ts-ignore
       const type = metric.type as keyof typeof breakdown;
       if (breakdown[type]) {
         breakdown[type].count++;
@@ -1248,56 +1356,77 @@ ${this.generateRecommendations(metrics, resourceMetrics)}
     });
 
     // Calculate averages
-    Object.values(breakdown).forEach(type => {
+    Object.values(breakdown).forEach((type) => {
       if (type.count > 0) {
         type.avgTime = type.avgTime / type.count;
       }
     });
 
     return Object.entries(breakdown)
-      .map(([type, data]) => `- ${type.charAt(0).toUpperCase() + type.slice(1)}: ${data.count} resources, ${(data.size / 1024).toFixed(2)}KB, ${data.avgTime.toFixed(2)}ms avg`)
-      .join('\n');
+      .map(
+        ([type, data]) =>
+          `- ${type.charAt(0).toUpperCase() + type.slice(1)}: ${data.count} resources, ${(data.size / 1024).toFixed(2)}KB, ${data.avgTime.toFixed(2)}ms avg`,
+      )
+      .join("\n");
   }
 
   private generatePatternAnalysis(patterns: UserBehaviorPattern[]): string {
     if (patterns.length === 0) {
-      return '- No behavior patterns detected yet';
+      return "- No behavior patterns detected yet";
     }
 
     const topPatterns = patterns
       .sort((a, b) => b.confidence - a.confidence)
       .slice(0, 5);
 
-    return topPatterns.map(pattern => 
-      `- ${pattern.pattern}: ${(pattern.confidence * 100).toFixed(1)}% confidence, ${pattern.frequency} occurrences`
-    ).join('\n');
+    return topPatterns
+      .map(
+        (pattern) =>
+          `- ${pattern.pattern}: ${(pattern.confidence * 100).toFixed(1)}% confidence, ${pattern.frequency} occurrences`,
+      )
+      .join("\n");
   }
 
-  private generateRecommendations(metrics: LoadingPerformanceMetrics, resourceMetrics: ResourceMetrics[]): string {
+  private generateRecommendations(
+    metrics: LoadingPerformanceMetrics,
+    resourceMetrics: ResourceMetrics[],
+  ): string {
     const recommendations: string[] = [];
-    
+
     if (metrics.averageLoadTime > 3000) {
-      recommendations.push('- Consider increasing lazy loading thresholds to reduce initial load time');
+      recommendations.push(
+        "- Consider increasing lazy loading thresholds to reduce initial load time",
+      );
     }
-    
+
     if (metrics.cacheHitRate < 0.5) {
-      recommendations.push('- Optimize cache strategies to improve cache hit rate');
+      recommendations.push(
+        "- Optimize cache strategies to improve cache hit rate",
+      );
     }
-    
+
     if (metrics.failedResources > 0) {
-      recommendations.push('- Investigate and fix failed resource loading issues');
+      recommendations.push(
+        "- Investigate and fix failed resource loading issues",
+      );
     }
-    
-    const slowResources = resourceMetrics.filter(r => r.loadTime > 5000);
+
+    const slowResources = resourceMetrics.filter((r) => r.loadTime > 5000);
     if (slowResources.length > 0) {
-      recommendations.push(`- Optimize ${slowResources.length} slow-loading resources`);
+      recommendations.push(
+        `- Optimize ${slowResources.length} slow-loading resources`,
+      );
     }
-    
+
     if (metrics.userExperienceScore < 80) {
-      recommendations.push('- Implement additional performance optimizations to improve user experience');
+      recommendations.push(
+        "- Implement additional performance optimizations to improve user experience",
+      );
     }
-    
-    return recommendations.length > 0 ? recommendations.join('\n') : '- Performance is optimal';
+
+    return recommendations.length > 0
+      ? recommendations.join("\n")
+      : "- Performance is optimal";
   }
 }
 
@@ -1331,7 +1460,7 @@ interface LoadingQueueItem {
 
 // Supporting classes (simplified implementations)
 class PredictivePreloader {
-  constructor(private config: SmartAutoLazyConfig['predictivePreloading']) {}
+  constructor(private config: SmartAutoLazyConfig["predictivePreloading"]) {}
 
   preloadForNavigation(url: string): void {
     // Implement predictive preloading logic
@@ -1341,13 +1470,13 @@ class PredictivePreloader {
     // Optimize preload strategies based on usage patterns
   }
 
-  updateConfig(config: SmartAutoLazyConfig['predictivePreloading']): void {
+  updateConfig(config: SmartAutoLazyConfig["predictivePreloading"]): void {
     this.config = config;
   }
 }
 
 class ResourcePrioritizer {
-  constructor(private config: SmartAutoLazyConfig['resourcePrioritization']) {}
+  constructor(private config: SmartAutoLazyConfig["resourcePrioritization"]) {}
 
   adaptToNetworkCondition(condition: string): void {
     // Adapt priorities based on network condition
@@ -1357,27 +1486,38 @@ class ResourcePrioritizer {
     // Optimize resource priorities
   }
 
-  updateConfig(config: SmartAutoLazyConfig['resourcePrioritization']): void {
+  updateConfig(config: SmartAutoLazyConfig["resourcePrioritization"]): void {
     this.config = config;
   }
 }
 
 class AdaptiveLoader {
-  constructor(private config: SmartAutoLazyConfig['adaptiveLoading']) {}
+  constructor(private config: SmartAutoLazyConfig["adaptiveLoading"]) {}
 
   selectStrategy(element: HTMLElement): LoadingStrategy {
     // Select appropriate loading strategy for element
-    return this.config.strategies[0] || {
-      id: 'default',
-      name: 'Default',
-      type: 'lazy',
-      conditions: [],
-      parameters: { timeout: 5000, retryAttempts: 1, retryDelay: 1000, batchSize: 1, compressionEnabled: true },
-      fallback: 'placeholder'
-    };
+    return (
+      this.config.strategies[0] || {
+        id: "default",
+        name: "Default",
+        type: "lazy",
+        conditions: [],
+        parameters: {
+          timeout: 5000,
+          retryAttempts: 1,
+          retryDelay: 1000,
+          batchSize: 1,
+          compressionEnabled: true,
+        },
+        fallback: "placeholder",
+      }
+    );
   }
 
-  async applyStrategy(element: HTMLElement, strategy: LoadingStrategy): Promise<void> {
+  async applyStrategy(
+    element: HTMLElement,
+    strategy: LoadingStrategy,
+  ): Promise<void> {
     // Apply loading strategy to element
   }
 
@@ -1385,19 +1525,21 @@ class AdaptiveLoader {
     // Adapt loading strategies based on network condition
   }
 
-  updateConfig(config: SmartAutoLazyConfig['adaptiveLoading']): void {
+  updateConfig(config: SmartAutoLazyConfig["adaptiveLoading"]): void {
     this.config = config;
   }
 }
 
 class IntersectionOptimizer {
-  constructor(private config: SmartAutoLazyConfig['intersectionOptimization']) {}
+  constructor(
+    private config: SmartAutoLazyConfig["intersectionOptimization"],
+  ) {}
 
   handleScroll(): void {
     // Handle scroll events for intersection optimization
   }
 
-  updateConfig(config: SmartAutoLazyConfig['intersectionOptimization']): void {
+  updateConfig(config: SmartAutoLazyConfig["intersectionOptimization"]): void {
     this.config = config;
   }
 }
@@ -1405,7 +1547,7 @@ class IntersectionOptimizer {
 class CacheManager {
   private cache: Map<string, any> = new Map();
 
-  constructor(private config: SmartAutoLazyConfig['cacheManagement']) {}
+  constructor(private config: SmartAutoLazyConfig["cacheManagement"]) {}
 
   has(key: string): boolean {
     return this.cache.has(key);
@@ -1423,19 +1565,19 @@ class CacheManager {
     this.cache.clear();
   }
 
-  updateConfig(config: SmartAutoLazyConfig['cacheManagement']): void {
+  updateConfig(config: SmartAutoLazyConfig["cacheManagement"]): void {
     this.config = config;
   }
 }
 
 class PerformanceMonitor {
-  constructor(private config: SmartAutoLazyConfig['performanceMonitoring']) {}
+  constructor(private config: SmartAutoLazyConfig["performanceMonitoring"]) {}
 
   startMonitoring(): void {
     // Start performance monitoring
   }
 
-  updateConfig(config: SmartAutoLazyConfig['performanceMonitoring']): void {
+  updateConfig(config: SmartAutoLazyConfig["performanceMonitoring"]): void {
     this.config = config;
   }
 }
@@ -1468,7 +1610,9 @@ class BehaviorAnalyzer {
 export function useSmartAutoLazy() {
   const engine = SmartAutoLazyEngine.getInstance();
   const [metrics, setMetrics] = React.useState(engine.getPerformanceMetrics());
-  const [resourceMetrics, setResourceMetrics] = React.useState(engine.getResourceMetrics());
+  const [resourceMetrics, setResourceMetrics] = React.useState(
+    engine.getResourceMetrics(),
+  );
   const [patterns, setPatterns] = React.useState(engine.getUserPatterns());
 
   React.useEffect(() => {
@@ -1495,7 +1639,7 @@ export function useSmartAutoLazy() {
     clearCache: engine.clearCache.bind(engine),
     optimizeLoading: engine.optimizeLoading.bind(engine),
     updateConfig: engine.updateConfig.bind(engine),
-    generatePerformanceReport: engine.generatePerformanceReport.bind(engine)
+    generatePerformanceReport: engine.generatePerformanceReport.bind(engine),
   };
 }
 

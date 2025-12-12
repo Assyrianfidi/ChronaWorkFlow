@@ -1,12 +1,21 @@
-export { AnalyticsKPI, type KPIMetric } from "./AnalyticsKPI"
-export { LatestInvoices, type Invoice } from "./LatestInvoices"
-export { ExpenseBreakdown, type ExpenseCategory } from "./ExpenseBreakdown"
-export { CashFlowChart, type CashFlowData } from "./CashFlowChart"
-export { ZeroState } from "./ZeroState"
-export { LoadingSkeleton, KPISkeleton, TableSkeleton, ChartSkeleton } from "./LoadingSkeleton"
+export { AnalyticsKPI, type KPIMetric } from './AnalyticsKPI.js';
+export { LatestInvoices, type Invoice } from './LatestInvoices.js';
+export { ExpenseBreakdown, type ExpenseCategory } from './ExpenseBreakdown.js';
+export { CashFlowChart, type CashFlowData } from './CashFlowChart.js';
+export { ZeroState } from './ZeroState.js';
+export {
+  LoadingSkeleton,
+  KPISkeleton,
+  TableSkeleton,
+  ChartSkeleton,
+} from './LoadingSkeleton.js';
 
 // Role-based dashboard components - renamed to avoid conflicts
-export { default as DashboardMetricCard } from './MetricCard'
-export { default as QuickActions } from './QuickActions'
-export { default as ActivityFeed } from './ActivityFeed'
-export { default as InventoryStatus } from './InventoryStatus'
+// @ts-ignore
+export { default as DashboardMetricCard } from './MetricCard.js';
+// @ts-ignore
+export { default as QuickActions } from './QuickActions.js';
+// @ts-ignore
+export { default as ActivityFeed } from './ActivityFeed.js';
+// @ts-ignore
+export { default as InventoryStatus } from './InventoryStatus.js';

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
-import { Request, Response, NextFunction } from 'express';
-import { StatusCodes } from 'http-status-codes';
+import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
+import { Request, Response, NextFunction } from "express";
+import { StatusCodes } from "http-status-codes";
 
 // Mock all dependencies before importing auth controller
 const mockAuthService = {
@@ -26,41 +26,42 @@ const mockLogger = {
 
 const mockApiError = jest.fn();
 
-jest.mock('../services/auth.service', () => ({
+jest.mock("../services/auth.service", () => ({
   authService: mockAuthService,
 }));
 
-jest.mock('../services/refreshToken.service.ts', () => ({
+jest.mock("../services/refreshToken.service.ts", () => ({
   RefreshTokenService: mockRefreshTokenService,
 }));
 
-jest.mock('../utils/logger.ts', () => ({
+jest.mock("../utils/logger.ts", () => ({
   logger: mockLogger,
 }));
 
-jest.mock('../utils/errors', () => ({
+jest.mock("../utils/errors", () => ({
   ApiError: mockApiError,
 }));
 
-jest.mock('../middleware/errorHandler.js', () => ({}));
+jest.mock("../middleware/errorHandler.js", () => ({}));
 
-describe('Auth Controller - Unit Tests', () => {
-  let login: any, register: any, refreshToken: any, logout: any, logoutAll: any, changePassword: any;
+describe("Auth Controller - Unit Tests", () => {
+  let login: any,
+    register: any,
+    refreshToken: any,
+    logout: any,
+    logoutAll: any,
+    changePassword: any;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let nextFunction: NextFunction;
 
   beforeAll(async () => {
     // Import after mocking
-    const authControllerModule = await import('../controllers/auth.controller.js');
-    ({
-      login,
-      register,
-      refreshToken,
-      logout,
-      logoutAll,
-      changePassword
-    } = authControllerModule);
+    const authControllerModule = await import(
+      "../controllers/auth.controller.js"
+    );
+    ({ login, register, refreshToken, logout, logoutAll, changePassword } =
+      authControllerModule);
   });
 
   beforeEach(() => {
@@ -70,10 +71,10 @@ describe('Auth Controller - Unit Tests', () => {
     mockRequest = {
       body: {},
       cookies: {},
-      ip: '127.0.0.1',
-      user: { id: 1, role: 'USER' as const },
+      ip: "127.0.0.1",
+      user: { id: 1, role: "USER" as const },
     };
-    
+
     mockResponse = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -81,42 +82,53 @@ describe('Auth Controller - Unit Tests', () => {
       clearCookie: jest.fn(),
       send: jest.fn(),
     };
-    
+
     nextFunction = jest.fn();
   });
 
-  describe('login', () => {
-    it('should login user and set refresh token cookie', async () => {
-      const mockUser = { id: 1, email: 'test@example.com', name: 'Test User' };
-      const mockTokens = { accessToken: 'access-token', expiresIn: 900 };
-      const mockRefreshToken = 'refresh-token';
+  describe("login", () => {
+    it("should login user and set refresh token cookie", async () => {
+      const mockUser = { id: 1, email: "test@example.com", name: "Test User" };
+      const mockTokens = { accessToken: "access-token", expiresIn: 900 };
+      const mockRefreshToken = "refresh-token";
 
       mockRequest.body = {
-        email: 'test@example.com',
-        password: 'password123',
+        email: "test@example.com",
+        password: "password123",
       };
 
-      mockAuthService.login.mockResolvedValue({ user: mockUser, tokens: mockTokens });
-      mockRefreshTokenService.createRefreshToken.mockResolvedValue(mockRefreshToken);
+      mockAuthService.login.mockResolvedValue({
+        user: mockUser,
+        tokens: mockTokens,
+      });
+      mockRefreshTokenService.createRefreshToken.mockResolvedValue(
+        mockRefreshToken,
+      );
 
-      await login(mockRequest as Request, mockResponse as Response, nextFunction);
+      await login(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
       expect(mockAuthService.login).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password123',
+        email: "test@example.com",
+        password: "password123",
       });
 
-      expect(mockRefreshTokenService.createRefreshToken).toHaveBeenCalledWith(1);
+      expect(mockRefreshTokenService.createRefreshToken).toHaveBeenCalledWith(
+        1,
+      );
       expect(mockResponse.cookie).toHaveBeenCalledWith(
-        'refreshToken',
+        "refreshToken",
         mockRefreshToken,
         expect.objectContaining({
           httpOnly: true,
           secure: false, // NODE_ENV is test
-          sameSite: 'strict',
-          path: '/',
+          sameSite: "strict",
+          path: "/",
           maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-        })
+        }),
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(StatusCodes.OK);
@@ -124,69 +136,86 @@ describe('Auth Controller - Unit Tests', () => {
         success: true,
         data: {
           user: mockUser,
-          accessToken: 'access-token',
+          accessToken: "access-token",
           expiresIn: 900,
         },
       });
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'User logged in: test@example.com (ID: 1) from IP: 127.0.0.1'
+        "User logged in: test@example.com (ID: 1) from IP: 127.0.0.1",
       );
     });
 
-    it('should handle login failure', async () => {
+    it("should handle login failure", async () => {
       mockRequest.body = {
-        email: 'test@example.com',
-        password: 'wrongpassword',
+        email: "test@example.com",
+        password: "wrongpassword",
       };
 
-      mockAuthService.login.mockRejectedValue(new Error('Invalid credentials'));
+      mockAuthService.login.mockRejectedValue(new Error("Invalid credentials"));
 
-      await login(mockRequest as Request, mockResponse as Response, nextFunction);
+      await login(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
       expect(nextFunction).toHaveBeenCalledWith(expect.any(Error));
       expect(mockLogger.error).toHaveBeenCalledWith(
-        'Login failed for email: test@example.com from IP: 127.0.0.1'
+        "Login failed for email: test@example.com from IP: 127.0.0.1",
       );
     });
 
-    it('should validate request body', async () => {
+    it("should validate request body", async () => {
       mockRequest.body = {
-        email: 'invalid-email',
-        password: '123', // Too short
+        email: "invalid-email",
+        password: "123", // Too short
       };
 
-      await login(mockRequest as Request, mockResponse as Response, nextFunction);
+      await login(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
       expect(nextFunction).toHaveBeenCalledWith(
         expect.objectContaining({
           statusCode: StatusCodes.BAD_REQUEST,
-        })
+        }),
       );
     });
   });
 
-  describe('register', () => {
-    it('should register new user and set refresh token cookie', async () => {
-      const mockUser = { id: 2, email: 'new@example.com', name: 'New User' };
-      const mockTokens = { accessToken: 'access-token', expiresIn: 900 };
-      const mockRefreshToken = 'refresh-token';
+  describe("register", () => {
+    it("should register new user and set refresh token cookie", async () => {
+      const mockUser = { id: 2, email: "new@example.com", name: "New User" };
+      const mockTokens = { accessToken: "access-token", expiresIn: 900 };
+      const mockRefreshToken = "refresh-token";
 
       mockRequest.body = {
-        name: 'New User',
-        email: 'new@example.com',
-        password: 'password123',
+        name: "New User",
+        email: "new@example.com",
+        password: "password123",
       };
 
-      mockAuthService.register.mockResolvedValue({ user: mockUser, tokens: mockTokens });
-      mockRefreshTokenService.createRefreshToken.mockResolvedValue(mockRefreshToken);
+      mockAuthService.register.mockResolvedValue({
+        user: mockUser,
+        tokens: mockTokens,
+      });
+      mockRefreshTokenService.createRefreshToken.mockResolvedValue(
+        mockRefreshToken,
+      );
 
-      await register(mockRequest as Request, mockResponse as Response, nextFunction);
+      await register(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
       expect(mockAuthService.register).toHaveBeenCalledWith({
-        name: 'New User',
-        email: 'new@example.com',
-        password: 'password123',
+        name: "New User",
+        email: "new@example.com",
+        password: "password123",
       });
 
       expect(mockResponse.status).toHaveBeenCalledWith(StatusCodes.CREATED);
@@ -194,226 +223,300 @@ describe('Auth Controller - Unit Tests', () => {
         success: true,
         data: {
           user: mockUser,
-          accessToken: 'access-token',
+          accessToken: "access-token",
           expiresIn: 900,
         },
       });
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'User registered: new@example.com (ID: 2) from IP: 127.0.0.1'
+        "User registered: new@example.com (ID: 2) from IP: 127.0.0.1",
       );
     });
   });
 
-  describe('refreshToken', () => {
-    it('should refresh access token with valid refresh token', async () => {
-      const mockRefreshToken = 'valid-refresh-token';
-      const mockNewRefreshToken = 'new-refresh-token';
-      const mockUser = { id: 1, email: 'test@example.com', role: 'USER' };
-      const mockTokens = { accessToken: 'new-access-token', expiresIn: 900 };
+  describe("refreshToken", () => {
+    it("should refresh access token with valid refresh token", async () => {
+      const mockRefreshToken = "valid-refresh-token";
+      const mockNewRefreshToken = "new-refresh-token";
+      const mockUser = { id: 1, email: "test@example.com", role: "USER" };
+      const mockTokens = { accessToken: "new-access-token", expiresIn: 900 };
 
       mockRequest.cookies = { refreshToken: mockRefreshToken };
 
-      mockRefreshTokenService.rotateRefreshToken.mockResolvedValue(mockNewRefreshToken);
-      mockRefreshTokenService.verifyRefreshToken.mockResolvedValue({ user: mockUser });
+      mockRefreshTokenService.rotateRefreshToken.mockResolvedValue(
+        mockNewRefreshToken,
+      );
+      mockRefreshTokenService.verifyRefreshToken.mockResolvedValue({
+        user: mockUser,
+      });
       mockAuthService.generateAccessToken.mockResolvedValue(mockTokens);
 
-      await refreshToken(mockRequest as Request, mockResponse as Response, nextFunction);
+      await refreshToken(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
-      expect(mockRefreshTokenService.rotateRefreshToken).toHaveBeenCalledWith(mockRefreshToken);
-      expect(mockRefreshTokenService.verifyRefreshToken).toHaveBeenCalledWith(mockNewRefreshToken);
-      expect(mockAuthService.generateAccessToken).toHaveBeenCalledWith(mockUser);
+      expect(mockRefreshTokenService.rotateRefreshToken).toHaveBeenCalledWith(
+        mockRefreshToken,
+      );
+      expect(mockRefreshTokenService.verifyRefreshToken).toHaveBeenCalledWith(
+        mockNewRefreshToken,
+      );
+      expect(mockAuthService.generateAccessToken).toHaveBeenCalledWith(
+        mockUser,
+      );
 
       expect(mockResponse.cookie).toHaveBeenCalledWith(
-        'refreshToken',
+        "refreshToken",
         mockNewRefreshToken,
-        expect.any(Object)
+        expect.any(Object),
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(StatusCodes.OK);
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
         data: {
-          accessToken: 'new-access-token',
+          accessToken: "new-access-token",
           expiresIn: 900,
         },
       });
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Token refreshed for user: test@example.com (ID: 1) from IP: 127.0.0.1'
+        "Token refreshed for user: test@example.com (ID: 1) from IP: 127.0.0.1",
       );
     });
 
-    it('should reject missing refresh token', async () => {
+    it("should reject missing refresh token", async () => {
       mockRequest.cookies = {};
 
-      await refreshToken(mockRequest as Request, mockResponse as Response, nextFunction);
+      await refreshToken(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
       expect(nextFunction).toHaveBeenCalledWith(
         expect.objectContaining({
           statusCode: StatusCodes.UNAUTHORIZED,
-          message: 'No refresh token provided',
-        })
+          message: "No refresh token provided",
+        }),
       );
     });
 
-    it('should handle refresh token failure and clear cookie', async () => {
-      mockRequest.cookies = { refreshToken: 'invalid-token' };
+    it("should handle refresh token failure and clear cookie", async () => {
+      mockRequest.cookies = { refreshToken: "invalid-token" };
 
-      mockRefreshTokenService.rotateRefreshToken.mockRejectedValue(new Error('Invalid token'));
+      mockRefreshTokenService.rotateRefreshToken.mockRejectedValue(
+        new Error("Invalid token"),
+      );
 
-      await refreshToken(mockRequest as Request, mockResponse as Response, nextFunction);
+      await refreshToken(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
       expect(nextFunction).toHaveBeenCalledWith(expect.any(Error));
       expect(mockResponse.clearCookie).toHaveBeenCalledWith(
-        'refreshToken',
+        "refreshToken",
         expect.objectContaining({
           httpOnly: true,
           secure: false,
-          sameSite: 'strict',
-          path: '/',
-        })
+          sameSite: "strict",
+          path: "/",
+        }),
       );
 
-      expect(mockLogger.error).toHaveBeenCalledWith('Token refresh failed from IP: 127.0.0.1');
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        "Token refresh failed from IP: 127.0.0.1",
+      );
     });
   });
 
-  describe('logout', () => {
-    it('should logout user and clear refresh token', async () => {
-      const mockRefreshToken = 'valid-refresh-token';
+  describe("logout", () => {
+    it("should logout user and clear refresh token", async () => {
+      const mockRefreshToken = "valid-refresh-token";
       mockRequest.cookies = { refreshToken: mockRefreshToken };
 
-      mockRefreshTokenService.invalidateRefreshToken.mockResolvedValue(undefined);
+      mockRefreshTokenService.invalidateRefreshToken.mockResolvedValue(
+        undefined,
+      );
 
-      await logout(mockRequest as Request, mockResponse as Response, nextFunction);
+      await logout(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
-      expect(mockRefreshTokenService.invalidateRefreshToken).toHaveBeenCalledWith(mockRefreshToken);
+      expect(
+        mockRefreshTokenService.invalidateRefreshToken,
+      ).toHaveBeenCalledWith(mockRefreshToken);
       expect(mockResponse.clearCookie).toHaveBeenCalledWith(
-        'refreshToken',
+        "refreshToken",
         expect.objectContaining({
           httpOnly: true,
           secure: false,
-          sameSite: 'strict',
-          path: '/',
-        })
+          sameSite: "strict",
+          path: "/",
+        }),
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
       expect(mockResponse.send).toHaveBeenCalled();
 
-      expect(mockLogger.info).toHaveBeenCalledWith('User logged out from IP: 127.0.0.1');
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        "User logged out from IP: 127.0.0.1",
+      );
     });
 
-    it('should handle logout without refresh token', async () => {
+    it("should handle logout without refresh token", async () => {
       mockRequest.cookies = {};
 
-      await logout(mockRequest as Request, mockResponse as Response, nextFunction);
+      await logout(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
-      expect(mockRefreshTokenService.invalidateRefreshToken).not.toHaveBeenCalled();
+      expect(
+        mockRefreshTokenService.invalidateRefreshToken,
+      ).not.toHaveBeenCalled();
       expect(mockResponse.clearCookie).toHaveBeenCalled();
     });
   });
 
-  describe('logoutAll', () => {
-    it('should logout user from all sessions', async () => {
-      mockRequest.user = { id: 1, role: 'USER' as const };
+  describe("logoutAll", () => {
+    it("should logout user from all sessions", async () => {
+      mockRequest.user = { id: 1, role: "USER" as const };
 
-      mockRefreshTokenService.invalidateUserRefreshTokens.mockResolvedValue(undefined);
+      mockRefreshTokenService.invalidateUserRefreshTokens.mockResolvedValue(
+        undefined,
+      );
 
-      await logoutAll(mockRequest as Request, mockResponse as Response, nextFunction);
+      await logoutAll(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
-      expect(mockRefreshTokenService.invalidateUserRefreshTokens).toHaveBeenCalledWith(1);
+      expect(
+        mockRefreshTokenService.invalidateUserRefreshTokens,
+      ).toHaveBeenCalledWith(1);
       expect(mockResponse.clearCookie).toHaveBeenCalledWith(
-        'refreshToken',
+        "refreshToken",
         expect.objectContaining({
           httpOnly: true,
           secure: false,
-          sameSite: 'strict',
-          path: '/',
-        })
+          sameSite: "strict",
+          path: "/",
+        }),
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'User logged out from all sessions - User ID: 1 from IP: 127.0.0.1'
+        "User logged out from all sessions - User ID: 1 from IP: 127.0.0.1",
       );
     });
 
-    it('should require authentication', async () => {
+    it("should require authentication", async () => {
       mockRequest.user = undefined;
 
-      await logoutAll(mockRequest as Request, mockResponse as Response, nextFunction);
+      await logoutAll(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
       expect(nextFunction).toHaveBeenCalledWith(
         expect.objectContaining({
           statusCode: StatusCodes.UNAUTHORIZED,
-          message: 'Not authenticated',
-        })
+          message: "Not authenticated",
+        }),
       );
     });
   });
 
-  describe('changePassword', () => {
-    it('should change password and invalidate all refresh tokens', async () => {
-      mockRequest.user = { id: 1, role: 'USER' as const };
+  describe("changePassword", () => {
+    it("should change password and invalidate all refresh tokens", async () => {
+      mockRequest.user = { id: 1, role: "USER" as const };
       mockRequest.body = {
-        currentPassword: 'oldpassword',
-        newPassword: 'newpassword123',
+        currentPassword: "oldpassword",
+        newPassword: "newpassword123",
       };
 
       mockAuthService.changePassword.mockResolvedValue(undefined);
-      mockRefreshTokenService.invalidateUserRefreshTokens.mockResolvedValue(undefined);
+      mockRefreshTokenService.invalidateUserRefreshTokens.mockResolvedValue(
+        undefined,
+      );
 
-      await changePassword(mockRequest as Request, mockResponse as Response, nextFunction);
+      await changePassword(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
-      expect(mockAuthService.changePassword).toHaveBeenCalledWith(1, 'oldpassword', 'newpassword123');
-      expect(mockRefreshTokenService.invalidateUserRefreshTokens).toHaveBeenCalledWith(1);
+      expect(mockAuthService.changePassword).toHaveBeenCalledWith(
+        1,
+        "oldpassword",
+        "newpassword123",
+      );
+      expect(
+        mockRefreshTokenService.invalidateUserRefreshTokens,
+      ).toHaveBeenCalledWith(1);
 
       expect(mockResponse.clearCookie).toHaveBeenCalledWith(
-        'refreshToken',
+        "refreshToken",
         expect.objectContaining({
           httpOnly: true,
           secure: false,
-          sameSite: 'strict',
-          path: '/',
-        })
+          sameSite: "strict",
+          path: "/",
+        }),
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Password changed for user ID: 1 from IP: 127.0.0.1'
+        "Password changed for user ID: 1 from IP: 127.0.0.1",
       );
     });
 
-    it('should require authentication', async () => {
+    it("should require authentication", async () => {
       mockRequest.user = undefined;
 
-      await changePassword(mockRequest as Request, mockResponse as Response, nextFunction);
+      await changePassword(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
       expect(nextFunction).toHaveBeenCalledWith(
         expect.objectContaining({
           statusCode: StatusCodes.UNAUTHORIZED,
-          message: 'Not authenticated',
-        })
+          message: "Not authenticated",
+        }),
       );
     });
 
-    it('should validate password format', async () => {
-      mockRequest.user = { id: 1, role: 'USER' as const };
+    it("should validate password format", async () => {
+      mockRequest.user = { id: 1, role: "USER" as const };
       mockRequest.body = {
-        currentPassword: 'oldpassword',
-        newPassword: 'weak', // Too short
+        currentPassword: "oldpassword",
+        newPassword: "weak", // Too short
       };
 
-      await changePassword(mockRequest as Request, mockResponse as Response, nextFunction);
+      await changePassword(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction,
+      );
 
       expect(nextFunction).toHaveBeenCalledWith(
         expect.objectContaining({
           statusCode: StatusCodes.BAD_REQUEST,
-        })
+        }),
       );
     });
   });

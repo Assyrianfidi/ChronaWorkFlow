@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
-import { body, param, validationResult } from 'express-validator';
-import { stripeService } from '../../services/billing/stripe.service';
-import { PrismaClient } from '@prisma/client';
-import { logger } from '../../utils/logger.js';
+import { Request, Response } from "express";
+import { body, param, validationResult } from "express-validator";
+import { stripeService } from "../../services/billing/stripe.service";
+import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { logger } from "../../utils/logger.js";
 
-const prisma = new PrismaClient();
+const prisma = prisma;
 
 export class BillingController {
   // Get available plans
@@ -16,10 +16,10 @@ export class BillingController {
         data: plans,
       });
     } catch (error) {
-      logger.error('Error getting plans:', error);
+      logger.error("Error getting plans:", error);
       res.status(500).json({
         success: false,
-        message: 'Internal server error',
+        message: "Internal server error",
       });
     }
   }
@@ -31,7 +31,7 @@ export class BillingController {
       if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
-          message: 'Validation failed',
+          message: "Validation failed",
           errors: errors.array(),
         });
       }
@@ -42,22 +42,23 @@ export class BillingController {
       const subscription = await stripeService.createSubscription(
         userId.toString(),
         priceId,
-        paymentMethodId
+        paymentMethodId,
       );
 
       res.json({
         success: true,
         data: {
           subscriptionId: subscription.id,
-          clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
+          clientSecret: (subscription.latest_invoice as any)?.payment_intent
+            ?.client_secret,
           status: subscription.status,
         },
       });
     } catch (error) {
-      logger.error('Error creating subscription:', error);
+      logger.error("Error creating subscription:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to create subscription',
+        message: "Failed to create subscription",
       });
     }
   }
@@ -69,7 +70,7 @@ export class BillingController {
       if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
-          message: 'Validation failed',
+          message: "Validation failed",
           errors: errors.array(),
         });
       }
@@ -85,11 +86,12 @@ export class BillingController {
       if (!user || user.subscriptionId !== subscriptionId) {
         return res.status(403).json({
           success: false,
-          message: 'Subscription not found or access denied',
+          message: "Subscription not found or access denied",
         });
       }
 
-      const subscription = await stripeService.cancelSubscription(subscriptionId);
+      const subscription =
+        await stripeService.cancelSubscription(subscriptionId);
 
       res.json({
         success: true,
@@ -100,10 +102,10 @@ export class BillingController {
         },
       });
     } catch (error) {
-      logger.error('Error canceling subscription:', error);
+      logger.error("Error canceling subscription:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to cancel subscription',
+        message: "Failed to cancel subscription",
       });
     }
   }
@@ -131,7 +133,9 @@ export class BillingController {
         });
       }
 
-      const subscription = await stripeService.getSubscription(user.subscriptionId);
+      const subscription = await stripeService.getSubscription(
+        user.subscriptionId,
+      );
 
       res.json({
         success: true,
@@ -145,10 +149,10 @@ export class BillingController {
         },
       });
     } catch (error) {
-      logger.error('Error getting subscription:', error);
+      logger.error("Error getting subscription:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to get subscription',
+        message: "Failed to get subscription",
       });
     }
   }
@@ -160,7 +164,7 @@ export class BillingController {
       if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
-          message: 'Validation failed',
+          message: "Validation failed",
           errors: errors.array(),
         });
       }
@@ -175,13 +179,13 @@ export class BillingController {
       if (!user || !user.subscriptionId) {
         return res.status(404).json({
           success: false,
-          message: 'No active subscription found',
+          message: "No active subscription found",
         });
       }
 
       const subscription = await stripeService.updateSubscription(
         user.subscriptionId,
-        [{ price: priceId }]
+        [{ price: priceId }],
       );
 
       res.json({
@@ -189,16 +193,19 @@ export class BillingController {
         data: {
           subscriptionId: subscription.id,
           status: subscription.status,
-          planType: await stripeService.getPlans().then(plans => 
-            plans.find(p => p.stripePriceId === priceId)?.id || 'STARTUP'
-          ),
+          planType: await stripeService
+            .getPlans()
+            .then(
+              (plans) =>
+                plans.find((p) => p.stripePriceId === priceId)?.id || "STARTUP",
+            ),
         },
       });
     } catch (error) {
-      logger.error('Error updating subscription:', error);
+      logger.error("Error updating subscription:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to update subscription',
+        message: "Failed to update subscription",
       });
     }
   }
@@ -210,18 +217,18 @@ export class BillingController {
       if (!errors.isEmpty()) {
         return res.status(400).json({
           success: false,
-          message: 'Validation failed',
+          message: "Validation failed",
           errors: errors.array(),
         });
       }
 
-      const { amount, currency = 'usd' } = req.body;
+      const { amount, currency = "usd" } = req.body;
       const userId = (req as any).user.id;
 
       const paymentIntent = await stripeService.createPaymentIntent(
         amount,
         currency,
-        { userId: userId.toString() }
+        { userId: userId.toString() },
       );
 
       res.json({
@@ -232,10 +239,10 @@ export class BillingController {
         },
       });
     } catch (error) {
-      logger.error('Error creating payment intent:', error);
+      logger.error("Error creating payment intent:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to create payment intent',
+        message: "Failed to create payment intent",
       });
     }
   }
@@ -262,7 +269,7 @@ export class BillingController {
 
       res.json({
         success: true,
-        data: invoices.map(invoice => ({
+        data: invoices.map((invoice) => ({
           id: invoice.id,
           amount: invoice.amount_paid / 100,
           currency: invoice.currency,
@@ -272,10 +279,10 @@ export class BillingController {
         })),
       });
     } catch (error) {
-      logger.error('Error getting billing history:', error);
+      logger.error("Error getting billing history:", error);
       res.status(500).json({
         success: false,
-        message: 'Failed to get billing history',
+        message: "Failed to get billing history",
       });
     }
   }
@@ -283,19 +290,19 @@ export class BillingController {
   // Handle Stripe webhook
   async handleWebhook(req: Request, res: Response) {
     try {
-      const sig = req.headers['stripe-signature'] as string;
-      
+      const sig = req.headers["stripe-signature"] as string;
+
       if (!sig) {
         return res.status(400).json({
           success: false,
-          message: 'Stripe signature is required',
+          message: "Stripe signature is required",
         });
       }
 
       const event = stripeService.constructWebhookEvent(
         req.body,
         sig,
-        process.env.STRIPE_WEBHOOK_SECRET!
+        process.env.STRIPE_WEBHOOK_SECRET!,
       );
 
       await stripeService.handleWebhook(event);
@@ -305,10 +312,10 @@ export class BillingController {
         received: true,
       });
     } catch (error) {
-      logger.error('Error handling webhook:', error);
+      logger.error("Error handling webhook:", error);
       res.status(400).json({
         success: false,
-        message: 'Webhook handler failed',
+        message: "Webhook handler failed",
       });
     }
   }
@@ -318,15 +325,20 @@ export const billingController = new BillingController();
 
 // Validation middleware
 export const validateCreateSubscription = [
-  body('priceId').notEmpty().withMessage('Price ID is required'),
-  body('paymentMethodId').notEmpty().withMessage('Payment method ID is required'),
+  body("priceId").notEmpty().withMessage("Price ID is required"),
+  body("paymentMethodId")
+    .notEmpty()
+    .withMessage("Payment method ID is required"),
 ];
 
 export const validateUpdateSubscription = [
-  body('priceId').notEmpty().withMessage('Price ID is required'),
+  body("priceId").notEmpty().withMessage("Price ID is required"),
 ];
 
 export const validateCreatePaymentIntent = [
-  body('amount').isNumeric().withMessage('Amount must be a number'),
-  body('currency').optional().isLength({ min: 3, max: 3 }).withMessage('Currency must be 3 characters'),
+  body("amount").isNumeric().withMessage("Amount must be a number"),
+  body("currency")
+    .optional()
+    .isLength({ min: 3, max: 3 })
+    .withMessage("Currency must be 3 characters"),
 ];

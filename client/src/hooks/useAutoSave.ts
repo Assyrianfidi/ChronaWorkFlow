@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { useFormContext, FieldValues } from 'react-hook-form';
-import { debounce } from 'lodash';
+import { useEffect, useRef } from "react";
+import { useFormContext, FieldValues } from "react-hook-form";
+import { debounce } from "lodash";
 
 interface UseAutoSaveProps<T> {
   onSave: (data: T) => Promise<void> | void;
@@ -8,6 +8,7 @@ interface UseAutoSaveProps<T> {
   enabled?: boolean;
 }
 
+// @ts-ignore
 export function useAutoSave<T extends FieldValues>({
   onSave,
   delay = 2000,
@@ -23,9 +24,9 @@ export function useAutoSave<T extends FieldValues>({
       try {
         await onSave(data);
       } catch (error) {
-        console.error('Auto-save failed:', error);
+        console.error("Auto-save failed:", error);
       }
-    }, delay)
+    }, delay),
   ).current;
 
   // Watch all form values

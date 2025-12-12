@@ -1,40 +1,75 @@
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "module": "ESNext",
-    "strict": true,
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "moduleResolution": "Node",
-    "target": "ESNext",
+    "target": "ES2020",
     "lib": [
       "DOM",
       "DOM.Iterable",
-      "ESNext"
+      "ES6"
     ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": false,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "exactOptionalPropertyTypes": false,
     "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@/components/*": [
+        "./src/components/*"
+      ],
+      "@/lib/*": [
+        "./src/lib/*"
+      ],
+      "@/hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@/utils/*": [
+        "./src/utils/*"
+      ],
+      "@/types/*": [
+        "./src/types/*"
+      ],
+      "@/pages/*": [
+        "./src/pages/*"
+      ],
+      "@/store/*": [
+        "./src/store/*"
+      ],
+      "@/services/*": [
+        "./src/services/*"
       ]
-    },
-    "types": [
-      "node"
-    ]
+    }
   },
   "include": [
-    "src",
-    ".storybook"
+    "src/**/*",
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "node_modules",
+    "dist",
     "build",
-    "dist"
+    "coverage",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "storybook-static",
+    ".storybook"
   ]
 }

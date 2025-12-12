@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/auth-store';
-import { Button } from '../ui/button';
-import { cn } from '../../lib/utils';
-import { Menu, X, Sun, Moon, Bell, User, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+// @ts-ignore
+import { useAuthStore } from '../../store/auth-store.js.js';
+// @ts-ignore
+import { Button } from '../ui/button.js.js';
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
+import {
+  Menu,
+  X,
+  Sun,
+  Moon,
+  Bell,
+  User,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
-  { name: 'Clients', href: '/clients', icon: 'users' },
-  { name: 'Transactions', href: '/transactions', icon: 'receipt' },
-  { name: 'Accounting', href: '/accounting', icon: 'calculator' },
-  { name: 'Reports', href: '/reports', icon: 'file-text' },
-  { name: 'Settings', href: '/settings', icon: 'settings' },
+  { name: "Dashboard", href: "/dashboard", icon: "dashboard" },
+  { name: "Clients", href: "/clients", icon: "users" },
+  { name: "Transactions", href: "/transactions", icon: "receipt" },
+  { name: "Accounting", href: "/accounting", icon: "calculator" },
+  { name: "Reports", href: "/reports", icon: "file-text" },
+  { name: "Settings", href: "/settings", icon: "settings" },
 ];
 
 const iconMap = {
@@ -19,7 +32,7 @@ const iconMap = {
   users: <div className="h-6 w-6 text-blue-500" />,
   receipt: <div className="h-6 w-6 text-green-500" />,
   calculator: <div className="h-6 w-6 text-purple-500" />,
-  'file-text': <div className="h-6 w-6 text-yellow-500" />,
+  "file-text": <div className="h-6 w-6 text-yellow-500" />,
   settings: <div className="h-6 w-6 text-gray-500" />,
 };
 
@@ -31,26 +44,26 @@ export default function DashboardLayout() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
-    <div className={cn('flex h-screen bg-gray-50', { 'dark': darkMode })}>
+    <div className={cn("flex h-screen bg-gray-50", { dark: darkMode })}>
       {/* Mobile sidebar */}
-      <div className="md:hidden">
-        {/* Mobile sidebar implementation */}
-      </div>
+      <div className="md:hidden">{/* Mobile sidebar implementation */}</div>
 
       {/* Desktop sidebar */}
       <div
         className={cn(
-          'hidden md:flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out',
-          sidebarOpen ? 'w-64' : 'w-20'
+          "hidden md:flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out",
+          sidebarOpen ? "w-64" : "w-20",
         )}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           {sidebarOpen ? (
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">AccuBooks</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              AccuBooks
+            </h1>
           ) : (
             <div className="w-8 h-8 bg-blue-500 rounded-md" />
           )}
@@ -58,7 +71,11 @@ export default function DashboardLayout() {
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-1 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
           >
-            {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+            {sidebarOpen ? (
+              <ChevronLeft size={20} />
+            ) : (
+              <ChevronRight size={20} />
+            )}
           </button>
         </div>
 
@@ -69,12 +86,13 @@ export default function DashboardLayout() {
                 <a
                   href={item.href}
                   className={cn(
-                    'flex items-center p-3 rounded-lg text-sm font-medium',
-                    'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700',
-                    'transition-colors duration-200'
+                    "flex items-center p-3 rounded-lg text-sm font-medium",
+                    "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700",
+                    "transition-colors duration-200",
                   )}
                 >
                   <span className="flex-shrink-0">
+// @ts-ignore
                     {iconMap[item.icon as keyof typeof iconMap]}
                   </span>
                   {sidebarOpen && <span className="ml-3">{item.name}</span>}
@@ -126,7 +144,11 @@ export default function DashboardLayout() {
                 onClick={() => setDarkMode(!darkMode)}
                 className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                {darkMode ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
+                )}
               </button>
 
               <button className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 relative">

@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 (async () => {
   try {
@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 
     // Create a transporter using the test account
     const transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host: "smtp.ethereal.email",
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
@@ -18,16 +18,16 @@ const nodemailer = require('nodemailer');
 
     // Send a test email
     const info = await transporter.sendMail({
-      from: 'no-reply@accubooks.com',
-      to: 'test@example.com',
-      subject: 'Test Email',
-      text: 'This is a test email sent using Ethereal.',
-      html: '<p>This is a test email sent using <b>Ethereal</b>.</p>',
+      from: "no-reply@accubooks.com",
+      to: "test@example.com",
+      subject: "Test Email",
+      text: "This is a test email sent using Ethereal.",
+      html: "<p>This is a test email sent using <b>Ethereal</b>.</p>",
     });
 
-    console.log('Message sent: %s', info.messageId);
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    console.log("Message sent: %s", info.messageId);
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
   } catch (error) {
-    console.error('Error sending test email:', error);
+    console.error("Error sending test email:", error);
   }
 })();

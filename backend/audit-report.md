@@ -17,16 +17,19 @@ This report presents a comprehensive audit of the AccuBooks backend API, focusin
 ### 1. Authentication Architecture Conflicts ⚠️ **HIGH PRIORITY**
 
 **Issue**: The application has two conflicting authentication systems:
+
 - **Express.js JWT Auth**: Located in `backend/src/` with custom middleware
 - **NextAuth**: Located in `client/src/lib/auth.ts` for Next.js API routes
 
 **Impact**:
+
 - Inconsistent session management
 - Potential security vulnerabilities
 - Confusion in token handling
 - Frontend/backend authentication mismatch
 
 **Files Affected**:
+
 - `backend/src/routes/auth.js` and `.ts`
 - `backend/src/middleware/auth.js`, `.ts`, `.middleware.js`
 - `client/src/lib/auth.ts`
@@ -35,12 +38,14 @@ This report presents a comprehensive audit of the AccuBooks backend API, focusin
 ### 2. TypeScript Implementation Issues ⚠️ **HIGH PRIORITY**
 
 **Issues Found**:
+
 - Mixed JavaScript and TypeScript files in the same directory
 - Missing type definitions in many route files
 - Inconsistent error handling types
 - Missing return type annotations
 
 **Files Affected**:
+
 - `backend/src/routes/auth.routes.js` (should be `.ts`)
 - `backend/src/routes/report.routes.js` (should be `.ts`)
 - `backend/src/routes/user.routes.js` (should be `.ts`)
@@ -49,15 +54,17 @@ This report presents a comprehensive audit of the AccuBooks backend API, focusin
 ### 3. Security Vulnerabilities ⚠️ **HIGH PRIORITY**
 
 **Issues Found**:
+
 - JWT secret using fallback value in production
 - Missing rate limiting on sensitive endpoints
 - Inconsistent CSRF protection
 - Password validation only in some endpoints
 
 **Specific Issues**:
+
 ```javascript
 // In auth.controller.js - Line 8
-const JWT_SECRET = process.env.JWT_SECRET || 'test-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || "test-secret-key";
 
 // Missing rate limiting in:
 // - POST /api/auth/login
@@ -68,12 +75,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'test-secret-key';
 ### 4. Prisma Integration Issues ⚠️ **MEDIUM PRIORITY**
 
 **Issues Found**:
+
 - Multiple Prisma client instances (potential memory leaks)
 - Missing error handling for database operations
 - No transaction support for multi-table operations
 - Inconsistent use of select statements
 
 **Example**:
+
 ```javascript
 // Multiple instances found:
 const prisma = new PrismaClient(); // In auth.controller.js
@@ -83,6 +92,7 @@ const prisma = new PrismaClient(); // In auth.middleware.js
 ### 5. API Response Inconsistencies ⚠️ **MEDIUM PRIORITY**
 
 **Issues Found**:
+
 - Inconsistent response formats across endpoints
 - Missing HTTP status code standardization
 - Some endpoints return `data.user`, others return `user` directly
@@ -92,30 +102,30 @@ const prisma = new PrismaClient(); // In auth.middleware.js
 
 ### Authentication Routes
 
-| Route | File | Issues | Severity |
-|-------|------|--------|----------|
-| POST /api/auth/login | auth.routes.js/ts | No input validation, inconsistent response | High |
-| POST /api/auth/register | auth.routes.js/ts | Weak password validation, no rate limiting | High |
-| GET /api/auth/me | auth.routes.js/ts | Missing error handling | Medium |
-| POST /api/auth/refresh | auth.routes.js | Insecure token refresh logic | High |
-| POST /api/auth/logout | auth.routes.js | Missing token invalidation | Medium |
+| Route                   | File              | Issues                                     | Severity |
+| ----------------------- | ----------------- | ------------------------------------------ | -------- |
+| POST /api/auth/login    | auth.routes.js/ts | No input validation, inconsistent response | High     |
+| POST /api/auth/register | auth.routes.js/ts | Weak password validation, no rate limiting | High     |
+| GET /api/auth/me        | auth.routes.js/ts | Missing error handling                     | Medium   |
+| POST /api/auth/refresh  | auth.routes.js    | Insecure token refresh logic               | High     |
+| POST /api/auth/logout   | auth.routes.js    | Missing token invalidation                 | Medium   |
 
 ### User Management Routes
 
-| Route | File | Issues | Severity |
-|-------|------|--------|----------|
-| GET /api/users | user.routes.js | Missing pagination, no role filtering | Medium |
-| PUT /api/users/:id | user.routes.js | No ownership check, unsafe updates | High |
-| DELETE /api/users/:id | user.routes.js | Missing soft delete, no cascade handling | High |
+| Route                 | File           | Issues                                   | Severity |
+| --------------------- | -------------- | ---------------------------------------- | -------- |
+| GET /api/users        | user.routes.js | Missing pagination, no role filtering    | Medium   |
+| PUT /api/users/:id    | user.routes.js | No ownership check, unsafe updates       | High     |
+| DELETE /api/users/:id | user.routes.js | Missing soft delete, no cascade handling | High     |
 
 ### Report Routes
 
-| Route | File | Issues | Severity |
-|-------|------|--------|----------|
-| GET /api/reports | report.routes.js/ts | No filtering, missing permissions | Medium |
-| POST /api/reports | report.routes.js/ts | No validation, missing author assignment | High |
-| PUT /api/reports/:id | report.routes.js/ts | No ownership verification | High |
-| DELETE /api/reports/:id | report.routes.js/ts | Missing soft delete | Medium |
+| Route                   | File                | Issues                                   | Severity |
+| ----------------------- | ------------------- | ---------------------------------------- | -------- |
+| GET /api/reports        | report.routes.js/ts | No filtering, missing permissions        | Medium   |
+| POST /api/reports       | report.routes.js/ts | No validation, missing author assignment | High     |
+| PUT /api/reports/:id    | report.routes.js/ts | No ownership verification                | High     |
+| DELETE /api/reports/:id | report.routes.js/ts | Missing soft delete                      | Medium   |
 
 ## NextAuth Analysis
 
@@ -179,24 +189,28 @@ const prisma = new PrismaClient(); // In auth.middleware.js
 ## Implementation Plan
 
 ### Phase 1: Authentication System Unification (1-2 days)
+
 - [ ] Decide on authentication system (NextAuth recommended)
 - [ ] Remove Express JWT authentication code
 - [ ] Update all middleware to use NextAuth
 - [ ] Test authentication flow end-to-end
 
 ### Phase 2: Security Hardening (1 day)
+
 - [ ] Fix JWT secret issues
 - [ ] Implement rate limiting
 - [ ] Add CSRF protection
 - [ ] Strengthen input validation
 
 ### Phase 3: TypeScript Migration (2-3 days)
+
 - [ ] Convert all JS files to TS
 - [ ] Add type definitions
 - [ ] Fix type errors
 - [ ] Update build configuration
 
 ### Phase 4: API Standardization (1-2 days)
+
 - [ ] Standardize response formats
 - [ ] Implement consistent error handling
 - [ ] Add proper HTTP status codes
@@ -225,15 +239,18 @@ const prisma = new PrismaClient(); // In auth.middleware.js
 ## Risk Assessment
 
 ### High Risk Items
+
 - Authentication system conflicts could cause complete system failure
 - Security vulnerabilities could lead to unauthorized access
 - Database connection leaks could cause performance degradation
 
 ### Medium Risk Items
+
 - API inconsistencies could affect frontend integration
 - Missing TypeScript types could lead to runtime errors
 
 ### Low Risk Items
+
 - Documentation gaps
 - Code organization issues
 

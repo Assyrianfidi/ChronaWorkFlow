@@ -1,6 +1,9 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "../../lib/utils"
+import React, { useState } from 'react';
+// @ts-ignore
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden group backdrop-blur-sm",
@@ -19,8 +22,7 @@ const buttonVariants = cva(
           "bg-gradient-to-r from-green-500 via-green-400 to-green-500 text-white border-0 hover:from-green-600 hover:via-green-500 hover:to-green-600 focus-visible:ring-green-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
         warning:
           "bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-white border-0 hover:from-amber-700 hover:via-amber-600 hover:to-amber-700 focus-visible:ring-amber-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
-        info:
-          "bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white border-0 hover:from-blue-700 hover:via-blue-600 hover:to-blue-700 focus-visible:ring-blue-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
+        info: "bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white border-0 hover:from-blue-700 hover:via-blue-600 hover:to-blue-700 focus-visible:ring-blue-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
         neutral:
           "bg-gradient-to-r from-gray-600 via-gray-500 to-gray-600 text-white border-0 hover:from-gray-700 hover:via-gray-600 hover:to-gray-700 focus-visible:ring-gray-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
       },
@@ -37,21 +39,38 @@ const buttonVariants = cva(
       variant: "primary",
       size: "md",
     },
-  }
-)
+  },
+);
 
 export interface EnterpriseButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-  loading?: boolean
-  icon?: React.ReactNode
-  iconPosition?: 'left' | 'right'
-  glowEffect?: boolean
+  loading?: boolean;
+  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
+  glowEffect?: boolean;
 }
 
-const EnterpriseButton = React.forwardRef<HTMLButtonElement, EnterpriseButtonProps>(
-  ({ className, variant, size, loading, icon, iconPosition = 'left', glowEffect = false, children, disabled, ...props }, ref) => {
-    const [isPressed, setIsPressed] = React.useState(false)
+const EnterpriseButton = React.forwardRef<
+  HTMLButtonElement,
+  EnterpriseButtonProps
+>(
+  (
+    {
+      className,
+      variant,
+      size,
+      loading,
+      icon,
+      iconPosition = "left",
+      glowEffect = false,
+      children,
+      disabled,
+      ...props
+    },
+    ref,
+  ) => {
+    const [isPressed, setIsPressed] = React.useState(false);
 
     return (
       <button
@@ -60,7 +79,7 @@ const EnterpriseButton = React.forwardRef<HTMLButtonElement, EnterpriseButtonPro
           glowEffect && "hover-glow",
           isPressed && "scale-95",
           loading && "cursor-not-allowed",
-          "hover-lift"
+          "hover-lift",
         )}
         ref={ref}
         disabled={disabled || loading}
@@ -71,38 +90,38 @@ const EnterpriseButton = React.forwardRef<HTMLButtonElement, EnterpriseButtonPro
       >
         {/* Ripple Effect */}
         <span className="absolute inset-0 rounded-xl bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-        
+
         {/* Loading Spinner */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
           </div>
         )}
-        
+
         {/* Button Content */}
         <span className={cn("flex items-center gap-2", loading && "opacity-0")}>
-          {icon && iconPosition === 'left' && (
+          {icon && iconPosition === "left" && (
             <span className="transition-transform duration-200 group-hover:scale-110">
               {icon}
             </span>
           )}
           {children}
-          {icon && iconPosition === 'right' && (
+          {icon && iconPosition === "right" && (
             <span className="transition-transform duration-200 group-hover:scale-110">
               {icon}
             </span>
           )}
         </span>
-        
+
         {/* Glow Effect */}
         {glowEffect && (
           <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         )}
       </button>
-    )
-  }
-)
+    );
+  },
+);
 
-EnterpriseButton.displayName = "EnterpriseButton"
+EnterpriseButton.displayName = "EnterpriseButton";
 
-export { EnterpriseButton, buttonVariants }
+export { EnterpriseButton, buttonVariants };

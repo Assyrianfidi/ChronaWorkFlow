@@ -1,4 +1,4 @@
-import DatabaseSecurityService from '../../services/databaseSecurity.service.js';
+import DatabaseSecurityService from "../../services/databaseSecurity.service.js";
 
 /**
  * Database Security Middleware
@@ -21,12 +21,12 @@ export const requireDatabasePermission = (resource, action) => {
           resource,
           action,
           ip: req.ip,
-          userAgent: req.get('User-Agent'),
-          details: { reason: 'No authentication' }
+          userAgent: req.get("User-Agent"),
+          details: { reason: "No authentication" },
         });
         return res.status(401).json({
           success: false,
-          message: 'Authentication required'
+          message: "Authentication required",
         });
       }
 
@@ -34,7 +34,7 @@ export const requireDatabasePermission = (resource, action) => {
       if (DatabaseSecurityService.isBlocked(req.user.id, req.ip)) {
         return res.status(429).json({
           success: false,
-          message: 'Too many unauthorized attempts. Please try again later.'
+          message: "Too many unauthorized attempts. Please try again later.",
         });
       }
 
@@ -47,31 +47,41 @@ export const requireDatabasePermission = (resource, action) => {
       }
 
       // Check permission
-      if (!DatabaseSecurityService.hasPermission(req.user, resource, action, resourceData)) {
+      if (
+        !DatabaseSecurityService.hasPermission(
+          req.user,
+          resource,
+          action,
+          resourceData,
+        )
+      ) {
         DatabaseSecurityService.logUnauthorizedAccess({
           userId: req.user.id,
           userRole: req.user.role,
           resource,
           action,
           ip: req.ip,
-          userAgent: req.get('User-Agent'),
-          details: { resourceData }
+          userAgent: req.get("User-Agent"),
+          details: { resourceData },
         });
         return res.status(403).json({
           success: false,
-          message: 'Insufficient permissions'
+          message: "Insufficient permissions",
         });
       }
 
       // Add security filter to request for database queries
-      req.securityFilter = DatabaseSecurityService.getRowLevelSecurityFilter(req.user, resource);
-      
+      req.securityFilter = DatabaseSecurityService.getRowLevelSecurityFilter(
+        req.user,
+        resource,
+      );
+
       next();
     } catch (error) {
-      console.error('Database security middleware error:', error);
+      console.error("Database security middleware error:", error);
       return res.status(500).json({
         success: false,
-        message: 'Internal server error'
+        message: "Internal server error",
       });
     }
   };
@@ -86,38 +96,48 @@ export const validateSensitiveFieldAccess = (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
-        message: 'Authentication required'
+        message: "Authentication required",
       });
     }
 
     // Check if request contains sensitive fields
-    const sensitiveFields = ['password', 'email', 'phone', 'salary', 'ssn', 'bankAccount'];
+    const sensitiveFields = [
+      "password",
+      "email",
+      "phone",
+      "salary",
+      "ssn",
+      "bankAccount",
+    ];
     const requestData = req.body || {};
-    
+
     for (const field of sensitiveFields) {
-      if (requestData[field] && !DatabaseSecurityService.canAccessSensitiveField(req.user, field)) {
+      if (
+        requestData[field] &&
+        !DatabaseSecurityService.canAccessSensitiveField(req.user, field)
+      ) {
         DatabaseSecurityService.logUnauthorizedAccess({
           userId: req.user.id,
           userRole: req.user.role,
-          resource: 'sensitive_field',
-          action: 'write',
+          resource: "sensitive_field",
+          action: "write",
           ip: req.ip,
-          userAgent: req.get('User-Agent'),
-          details: { field, attemptedValue: requestData[field] }
+          userAgent: req.get("User-Agent"),
+          details: { field, attemptedValue: requestData[field] },
         });
         return res.status(403).json({
           success: false,
-          message: `Access to field '${field}' is not permitted`
+          message: `Access to field '${field}' is not permitted`,
         });
       }
     }
 
     next();
   } catch (error) {
-    console.error('Sensitive field validation error:', error);
+    console.error("Sensitive field validation error:", error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: "Internal server error",
     });
   }
 };
@@ -131,22 +151,26 @@ export const validateDatabaseConstraints = (model, action) => {
   return (req, res, next) => {
     try {
       const data = req.body || {};
-      const validation = DatabaseSecurityService.validateConstraints(model, data, action);
-      
+      const validation = DatabaseSecurityService.validateConstraints(
+        model,
+        data,
+        action,
+      );
+
       if (!validation.isValid) {
         return res.status(400).json({
           success: false,
-          message: 'Validation failed',
-          errors: validation.errors
+          message: "Validation failed",
+          errors: validation.errors,
         });
       }
 
       next();
     } catch (error) {
-      console.error('Database constraint validation error:', error);
+      console.error("Database constraint validation error:", error);
       return res.status(500).json({
         success: false,
-        message: 'Internal server error'
+        message: "Internal server error",
       });
     }
   };
@@ -159,8 +183,8 @@ export const filterSensitiveResponseData = (req, res, next) => {
   try {
     // Override res.json to filter sensitive data
     const originalJson = res.json;
-    res.json = function(data) {
-      if (!req.user || req.user.role === 'admin') {
+    res.json = function (data) {
+      if (!req.user || req.user.role === "admin") {
         return originalJson.call(this, data);
       }
 
@@ -171,7 +195,7 @@ export const filterSensitiveResponseData = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('Response filtering error:', error);
+    console.error("Response filtering error:", error);
     next();
   }
 };
@@ -183,23 +207,37 @@ export const filterSensitiveResponseData = (req, res, next) => {
  * @returns {*} - The filtered data
  */
 function filterSensitiveFields(data, userRole) {
-  if (!data || typeof data !== 'object') {
+  if (!data || typeof data !== "object") {
     return data;
   }
 
   // Define fields to hide based on role
   const hiddenFields = {
-    default: ['password', 'passwordHash', 'tokenHash'],
-    user: ['password', 'passwordHash', 'tokenHash', 'salary', 'ssn', 'bankAccount'],
-    manager: ['password', 'passwordHash', 'tokenHash', 'ssn'],
-    auditor: ['password', 'passwordHash', 'tokenHash', 'salary', 'bankAccount'],
-    inventory_manager: ['password', 'passwordHash', 'tokenHash', 'salary', 'ssn', 'bankAccount']
+    default: ["password", "passwordHash", "tokenHash"],
+    user: [
+      "password",
+      "passwordHash",
+      "tokenHash",
+      "salary",
+      "ssn",
+      "bankAccount",
+    ],
+    manager: ["password", "passwordHash", "tokenHash", "ssn"],
+    auditor: ["password", "passwordHash", "tokenHash", "salary", "bankAccount"],
+    inventory_manager: [
+      "password",
+      "passwordHash",
+      "tokenHash",
+      "salary",
+      "ssn",
+      "bankAccount",
+    ],
   };
 
   const fieldsToHide = hiddenFields[userRole] || hiddenFields.default;
 
   if (Array.isArray(data)) {
-    return data.map(item => filterSensitiveFields(item, userRole));
+    return data.map((item) => filterSensitiveFields(item, userRole));
   }
 
   const filtered = { ...data };
@@ -211,7 +249,7 @@ function filterSensitiveFields(data, userRole) {
 
   // Recursively filter nested objects
   for (const key in filtered) {
-    if (typeof filtered[key] === 'object' && filtered[key] !== null) {
+    if (typeof filtered[key] === "object" && filtered[key] !== null) {
       filtered[key] = filterSensitiveFields(filtered[key], userRole);
     }
   }
@@ -223,5 +261,5 @@ export default {
   requireDatabasePermission,
   validateSensitiveFieldAccess,
   validateDatabaseConstraints,
-  filterSensitiveResponseData
+  filterSensitiveResponseData,
 };

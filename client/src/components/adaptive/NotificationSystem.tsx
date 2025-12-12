@@ -1,11 +1,32 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { useUserExperienceMode } from './UserExperienceMode';
-import { usePerformance } from './UI-Performance-Engine';
-import { cn } from '../../lib/utils';
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
+import { createPortal } from "react-dom";
+// @ts-ignore
+import { useUserExperienceMode } from './UserExperienceMode.js.js';
+// @ts-ignore
+import { usePerformance } from './UI-Performance-Engine.js.js';
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
 
 // Notification types
-export type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'loading';
+export type NotificationType =
+  | "success"
+  | "error"
+  | "warning"
+  | "info"
+  | "loading";
 
 export interface Notification {
   id: string;
@@ -18,70 +39,76 @@ export interface Notification {
   progress?: number;
   icon?: React.ReactNode;
   sound?: string;
-  priority?: 'low' | 'medium' | 'high' | 'critical';
+  priority?: "low" | "medium" | "high" | "critical";
 }
 
 export interface NotificationAction {
   label: string;
   action: () => void;
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: "primary" | "secondary" | "danger";
 }
 
 interface NotificationContextType {
   notifications: Notification[];
-  addNotification: (notification: Omit<Notification, 'id'>) => string;
+  addNotification: (notification: Omit<Notification, "id">) => string;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
   updateNotification: (id: string, updates: Partial<Notification>) => void;
 }
 
-const NotificationContext = React.createContext<NotificationContextType | null>(null);
+const NotificationContext = React.createContext<NotificationContextType | null>(
+  null,
+);
 
 // Notification type configurations
 const NOTIFICATION_CONFIGS = {
   success: {
-    icon: '✅',
-    bgColor: 'bg-green-50 dark:bg-green-900/20',
-    borderColor: 'border-green-200 dark:border-green-800',
-    textColor: 'text-green-800 dark:text-green-200',
-    iconColor: 'text-green-600 dark:text-green-400',
-    sound: 'success',
+    icon: "✅",
+    bgColor: "bg-green-50 dark:bg-green-900/20",
+    borderColor: "border-green-200 dark:border-green-800",
+    textColor: "text-green-800 dark:text-green-200",
+    iconColor: "text-green-600 dark:text-green-400",
+    sound: "success",
   },
   error: {
-    icon: '❌',
-    bgColor: 'bg-red-50 dark:bg-red-900/20',
-    borderColor: 'border-red-200 dark:border-red-800',
-    textColor: 'text-red-800 dark:text-red-200',
-    iconColor: 'text-red-600 dark:text-red-400',
-    sound: 'error',
+    icon: "❌",
+    bgColor: "bg-red-50 dark:bg-red-900/20",
+    borderColor: "border-red-200 dark:border-red-800",
+    textColor: "text-red-800 dark:text-red-200",
+    iconColor: "text-red-600 dark:text-red-400",
+    sound: "error",
   },
   warning: {
-    icon: '⚠️',
-    bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
-    borderColor: 'border-yellow-200 dark:border-yellow-800',
-    textColor: 'text-yellow-800 dark:text-yellow-200',
-    iconColor: 'text-yellow-600 dark:text-yellow-400',
-    sound: 'warning',
+    icon: "⚠️",
+    bgColor: "bg-yellow-50 dark:bg-yellow-900/20",
+    borderColor: "border-yellow-200 dark:border-yellow-800",
+    textColor: "text-yellow-800 dark:text-yellow-200",
+    iconColor: "text-yellow-600 dark:text-yellow-400",
+    sound: "warning",
   },
   info: {
-    icon: 'ℹ️',
-    bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-    borderColor: 'border-blue-200 dark:border-blue-800',
-    textColor: 'text-blue-800 dark:text-blue-200',
-    iconColor: 'text-blue-600 dark:text-blue-400',
-    sound: 'info',
+    icon: "ℹ️",
+    bgColor: "bg-blue-50 dark:bg-blue-900/20",
+    borderColor: "border-blue-200 dark:border-blue-800",
+    textColor: "text-blue-800 dark:text-blue-200",
+    iconColor: "text-blue-600 dark:text-blue-400",
+    sound: "info",
   },
   loading: {
-    icon: '⏳',
-    bgColor: 'bg-gray-50 dark:bg-gray-800',
-    borderColor: 'border-gray-200 dark:border-gray-700',
-    textColor: 'text-gray-800 dark:text-gray-200',
-    iconColor: 'text-gray-600 dark:text-gray-400',
+    icon: "⏳",
+    bgColor: "bg-gray-50 dark:bg-gray-800",
+    borderColor: "border-gray-200 dark:border-gray-700",
+    textColor: "text-gray-800 dark:text-gray-200",
+    iconColor: "text-gray-600 dark:text-gray-400",
     sound: null,
   },
 };
 
-export function NotificationSystem({ children }: { children: React.ReactNode }) {
+export function NotificationSystem({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { currentMode } = useUserExperienceMode();
   const { isLowPerformanceMode } = usePerformance();
@@ -90,8 +117,15 @@ export function NotificationSystem({ children }: { children: React.ReactNode }) 
 
   // Initialize audio context for sounds
   useEffect(() => {
-    if (currentMode.sounds && typeof window !== 'undefined' && !audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    if (
+      currentMode.sounds &&
+      typeof window !== "undefined" &&
+      !audioContextRef.current
+    ) {
+      audioContextRef.current = new (window.AudioContext ||
+// @ts-ignore
+// @ts-ignore
+        (window as any).webkitAudioContext)();
     }
 
     return () => {
@@ -102,64 +136,85 @@ export function NotificationSystem({ children }: { children: React.ReactNode }) 
   }, [currentMode.sounds]);
 
   // Play notification sound
-  const playSound = useCallback((type: NotificationType) => {
-    if (!currentMode.sounds || !audioContextRef.current || isLowPerformanceMode) return;
+  const playSound = useCallback(
+    (type: NotificationType) => {
+      if (
+        !currentMode.sounds ||
+        !audioContextRef.current ||
+        isLowPerformanceMode
+      )
+        return;
 
-    const oscillator = audioContextRef.current.createOscillator();
-    const gainNode = audioContextRef.current.createGain();
+      const oscillator = audioContextRef.current.createOscillator();
+      const gainNode = audioContextRef.current.createGain();
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContextRef.current.destination);
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContextRef.current.destination);
 
-    // Different frequencies for different notification types
-    const frequencies = {
-      success: 800,
-      error: 300,
-      warning: 600,
-      info: 500,
-      loading: 400,
-    };
+      // Different frequencies for different notification types
+      const frequencies = {
+        success: 800,
+        error: 300,
+        warning: 600,
+        info: 500,
+        loading: 400,
+      };
 
-    oscillator.frequency.value = frequencies[type] || 500;
-    oscillator.type = 'sine';
+      oscillator.frequency.value = frequencies[type] || 500;
+      oscillator.type = "sine";
 
-    gainNode.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.1);
+      gainNode.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContextRef.current.currentTime + 0.1,
+      );
 
-    oscillator.start(audioContextRef.current.currentTime);
-    oscillator.stop(audioContextRef.current.currentTime + 0.1);
-  }, [currentMode.sounds, isLowPerformanceMode]);
+      oscillator.start(audioContextRef.current.currentTime);
+      oscillator.stop(audioContextRef.current.currentTime + 0.1);
+    },
+    [currentMode.sounds, isLowPerformanceMode],
+  );
 
-  const addNotification = useCallback((notification: Omit<Notification, 'id'>) => {
-    const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const newNotification: Notification = { ...notification, id };
+  const addNotification = useCallback(
+    (notification: Omit<Notification, "id">) => {
+      const id = `notification-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const newNotification: Notification = { ...notification, id };
 
-    setNotifications(prev => {
-      // Remove oldest notifications if too many
-      const maxNotifications = isLowPerformanceMode ? 3 : 5;
-      const filtered = prev.length >= maxNotifications ? prev.slice(-maxNotifications + 1) : prev;
-      return [...filtered, newNotification];
-    });
+      setNotifications((prev) => {
+        // Remove oldest notifications if too many
+        const maxNotifications = isLowPerformanceMode ? 3 : 5;
+        const filtered =
+          prev.length >= maxNotifications
+            ? prev.slice(-maxNotifications + 1)
+            : prev;
+        return [...filtered, newNotification];
+      });
 
-    // Play sound if enabled
-    if (notification.type) {
-      playSound(notification.type);
-    }
+      // Play sound if enabled
+      if (notification.type) {
+        playSound(notification.type);
+      }
 
-    // Auto-remove notification after duration
-    if (notification.duration && notification.duration > 0 && !notification.persistent) {
-      const timeout = setTimeout(() => {
-        removeNotification(id);
-      }, notification.duration);
-      timeoutsRef.current.set(id, timeout);
-    }
+      // Auto-remove notification after duration
+      if (
+        notification.duration &&
+        notification.duration > 0 &&
+        !notification.persistent
+      ) {
+        const timeout = setTimeout(() => {
+          removeNotification(id);
+        }, notification.duration);
+        timeoutsRef.current.set(id, timeout);
+      }
 
-    return id;
-  }, [playSound, isLowPerformanceMode]);
+      return id;
+    },
+    [playSound, isLowPerformanceMode],
+  );
 
   const removeNotification = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-    
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+
     const timeout = timeoutsRef.current.get(id);
     if (timeout) {
       clearTimeout(timeout);
@@ -169,20 +224,27 @@ export function NotificationSystem({ children }: { children: React.ReactNode }) 
 
   const clearNotifications = useCallback(() => {
     setNotifications([]);
-    timeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+    timeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
     timeoutsRef.current.clear();
   }, []);
 
-  const updateNotification = useCallback((id: string, updates: Partial<Notification>) => {
-    setNotifications(prev => prev.map(notification =>
-      notification.id === id ? { ...notification, ...updates } : notification
-    ));
-  }, []);
+  const updateNotification = useCallback(
+    (id: string, updates: Partial<Notification>) => {
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === id
+            ? { ...notification, ...updates }
+            : notification,
+        ),
+      );
+    },
+    [],
+  );
 
   // Clean up timeouts on unmount
   useEffect(() => {
     return () => {
-      timeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+      timeoutsRef.current.forEach((timeout) => clearTimeout(timeout));
       timeoutsRef.current.clear();
     };
   }, []);
@@ -206,7 +268,7 @@ export function NotificationSystem({ children }: { children: React.ReactNode }) 
 export function useNotifications() {
   const context = React.useContext(NotificationContext);
   if (!context) {
-    throw new Error('useNotifications must be used within NotificationSystem');
+    throw new Error("useNotifications must be used within NotificationSystem");
   }
   return context;
 }
@@ -225,12 +287,14 @@ function NotificationContainer() {
         <NotificationItem
           key={notification.id}
           notification={notification}
-          reducedMotion={isLowPerformanceMode || currentMode.animations === 'minimal'}
-          enhancedAnimation={currentMode.animations === 'enhanced'}
+          reducedMotion={
+            isLowPerformanceMode || currentMode.animations === "minimal"
+          }
+          enhancedAnimation={currentMode.animations === "enhanced"}
         />
       ))}
     </div>,
-    document.body
+    document.body,
   );
 }
 
@@ -249,11 +313,16 @@ function NotificationItem({
   const progressRef = useRef<HTMLDivElement>(null);
 
   const config = NOTIFICATION_CONFIGS[notification.type];
-  const isHighPriority = notification.priority === 'high' || notification.priority === 'critical';
+  const isHighPriority =
+    notification.priority === "high" || notification.priority === "critical";
 
   // Animate progress bar for loading notifications
   useEffect(() => {
-    if (notification.type === 'loading' && notification.progress !== undefined && progressRef.current) {
+    if (
+      notification.type === "loading" &&
+      notification.progress !== undefined &&
+      progressRef.current
+    ) {
       progressRef.current.style.width = `${notification.progress}%`;
     }
   }, [notification.progress]);
@@ -264,33 +333,42 @@ function NotificationItem({
     }
   }, [notification.id, notification.persistent, removeNotification]);
 
-  const handleAction = useCallback((action: NotificationAction) => {
-    action.action();
-    if (!notification.persistent) {
-      removeNotification(notification.id);
-    }
-  }, [notification.action, notification.id, notification.persistent, removeNotification]);
+  const handleAction = useCallback(
+    (action: NotificationAction) => {
+      action.action();
+      if (!notification.persistent) {
+        removeNotification(notification.id);
+      }
+    },
+    [
+      notification.action,
+      notification.id,
+      notification.persistent,
+      removeNotification,
+    ],
+  );
 
-  const animationClasses = enhancedAnimation && !reducedMotion
-    ? 'animate-slide-in-right'
-    : reducedMotion
-    ? 'transition-none'
-    : 'transition-all duration-300';
+  const animationClasses =
+    enhancedAnimation && !reducedMotion
+      ? "animate-slide-in-right"
+      : reducedMotion
+        ? "transition-none"
+        : "transition-all duration-300";
 
   return (
     <div
       className={cn(
-        'notification-item pointer-events-auto max-w-sm w-full shadow-lg rounded-lg border p-4',
+        "notification-item pointer-events-auto max-w-sm w-full shadow-lg rounded-lg border p-4",
         config.bgColor,
         config.borderColor,
         animationClasses,
-        isHighPriority && 'ring-2 ring-red-500 ring-opacity-50',
-        notification.type === 'loading' && 'overflow-hidden'
+        isHighPriority && "ring-2 ring-red-500 ring-opacity-50",
+        notification.type === "loading" && "overflow-hidden",
       )}
     >
       <div className="flex items-start gap-3">
         {/* Icon */}
-        <div className={cn('flex-shrink-0 text-lg', config.iconColor)}>
+        <div className={cn("flex-shrink-0 text-lg", config.iconColor)}>
           {notification.icon || config.icon}
         </div>
 
@@ -298,11 +376,13 @@ function NotificationItem({
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h4 className={cn('font-semibold text-sm', config.textColor)}>
+              <h4 className={cn("font-semibold text-sm", config.textColor)}>
                 {notification.title}
               </h4>
               {notification.message && (
-                <p className={cn('text-sm mt-1', config.textColor, 'opacity-80')}>
+                <p
+                  className={cn("text-sm mt-1", config.textColor, "opacity-80")}
+                >
                   {notification.message}
                 </p>
               )}
@@ -311,8 +391,8 @@ function NotificationItem({
               <button
                 onClick={handleRemove}
                 className={cn(
-                  'flex-shrink-0 p-1 rounded hover:bg-black hover:bg-opacity-10 transition-colors',
-                  config.textColor
+                  "flex-shrink-0 p-1 rounded hover:bg-black hover:bg-opacity-10 transition-colors",
+                  config.textColor,
                 )}
               >
                 ✕
@@ -328,12 +408,12 @@ function NotificationItem({
                   key={index}
                   onClick={() => handleAction(action)}
                   className={cn(
-                    'px-3 py-1 text-xs rounded transition-colors',
-                    action.variant === 'primary'
-                      ? 'bg-blue-500 text-white hover:bg-blue-600'
-                      : action.variant === 'danger'
-                      ? 'bg-red-500 text-white hover:bg-red-600'
-                      : 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200'
+                    "px-3 py-1 text-xs rounded transition-colors",
+                    action.variant === "primary"
+                      ? "bg-blue-500 text-white hover:bg-blue-600"
+                      : action.variant === "danger"
+                        ? "bg-red-500 text-white hover:bg-red-600"
+                        : "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200",
                   )}
                 >
                   {action.label}
@@ -345,50 +425,109 @@ function NotificationItem({
       </div>
 
       {/* Progress Bar for Loading Notifications */}
-      {notification.type === 'loading' && notification.progress !== undefined && (
-        <div className="mt-3 bg-gray-200 dark:bg-gray-700 rounded-full h-1 overflow-hidden">
-          <div
-            ref={progressRef}
-            className="bg-blue-500 h-full transition-all duration-300 ease-out"
-            style={{ width: `${notification.progress}%` }}
-          />
-        </div>
-      )}
+      {notification.type === "loading" &&
+        notification.progress !== undefined && (
+          <div className="mt-3 bg-gray-200 dark:bg-gray-700 rounded-full h-1 overflow-hidden">
+            <div
+              ref={progressRef}
+              className="bg-blue-500 h-full transition-all duration-300 ease-out"
+              style={{ width: `${notification.progress}%` }}
+            />
+          </div>
+        )}
     </div>
   );
 }
 
 // Notification Hook for easy usage
 export function useNotification() {
-  const { addNotification, removeNotification, updateNotification } = useNotifications();
+  const { addNotification, removeNotification, updateNotification } =
+    useNotifications();
 
-  const notify = useCallback((notification: Omit<Notification, 'id'>) => {
-    return addNotification(notification);
-  }, [addNotification]);
+  const notify = useCallback(
+    (notification: Omit<Notification, "id">) => {
+      return addNotification(notification);
+    },
+    [addNotification],
+  );
 
-  const success = useCallback((title: string, message?: string, options?: Partial<Omit<Notification, 'id' | 'type' | 'title' | 'message'>>) => {
-    return addNotification({ type: 'success', title, message, ...options });
-  }, [addNotification]);
+  const success = useCallback(
+    (
+      title: string,
+      message?: string,
+      options?: Partial<
+        Omit<Notification, "id" | "type" | "title" | "message">
+      >,
+    ) => {
+      return addNotification({ type: "success", title, message, ...options });
+    },
+    [addNotification],
+  );
 
-  const error = useCallback((title: string, message?: string, options?: Partial<Omit<Notification, 'id' | 'type' | 'title' | 'message'>>) => {
-    return addNotification({ type: 'error', title, message, ...options });
-  }, [addNotification]);
+  const error = useCallback(
+    (
+      title: string,
+      message?: string,
+      options?: Partial<
+        Omit<Notification, "id" | "type" | "title" | "message">
+      >,
+    ) => {
+      return addNotification({ type: "error", title, message, ...options });
+    },
+    [addNotification],
+  );
 
-  const warning = useCallback((title: string, message?: string, options?: Partial<Omit<Notification, 'id' | 'type' | 'title' | 'message'>>) => {
-    return addNotification({ type: 'warning', title, message, ...options });
-  }, [addNotification]);
+  const warning = useCallback(
+    (
+      title: string,
+      message?: string,
+      options?: Partial<
+        Omit<Notification, "id" | "type" | "title" | "message">
+      >,
+    ) => {
+      return addNotification({ type: "warning", title, message, ...options });
+    },
+    [addNotification],
+  );
 
-  const info = useCallback((title: string, message?: string, options?: Partial<Omit<Notification, 'id' | 'type' | 'title' | 'message'>>) => {
-    return addNotification({ type: 'info', title, message, ...options });
-  }, [addNotification]);
+  const info = useCallback(
+    (
+      title: string,
+      message?: string,
+      options?: Partial<
+        Omit<Notification, "id" | "type" | "title" | "message">
+      >,
+    ) => {
+      return addNotification({ type: "info", title, message, ...options });
+    },
+    [addNotification],
+  );
 
-  const loading = useCallback((title: string, message?: string, options?: Partial<Omit<Notification, 'id' | 'type' | 'title' | 'message'>>) => {
-    return addNotification({ type: 'loading', title, message, persistent: true, ...options });
-  }, [addNotification]);
+  const loading = useCallback(
+    (
+      title: string,
+      message?: string,
+      options?: Partial<
+        Omit<Notification, "id" | "type" | "title" | "message">
+      >,
+    ) => {
+      return addNotification({
+        type: "loading",
+        title,
+        message,
+        persistent: true,
+        ...options,
+      });
+    },
+    [addNotification],
+  );
 
-  const updateProgress = useCallback((id: string, progress: number) => {
-    updateNotification(id, { progress });
-  }, [updateNotification]);
+  const updateProgress = useCallback(
+    (id: string, progress: number) => {
+      updateNotification(id, { progress });
+    },
+    [updateNotification],
+  );
 
   return {
     notify,
@@ -409,7 +548,7 @@ export function Toast({
   message,
   duration = 3000,
   ...props
-}: Omit<Notification, 'id'>) {
+}: Omit<Notification, "id">) {
   const { addNotification } = useNotifications();
 
   useEffect(() => {
@@ -424,7 +563,7 @@ export function Toast({
 
 // Notification Queue for batch operations
 export class NotificationQueue {
-  private queue: Omit<Notification, 'id'>[] = [];
+  private queue: Omit<Notification, "id">[] = [];
   private isProcessing = false;
   private notifications: ReturnType<typeof useNotifications>;
 
@@ -432,7 +571,7 @@ export class NotificationQueue {
     this.notifications = notifications;
   }
 
-  add(notification: Omit<Notification, 'id'>) {
+  add(notification: Omit<Notification, "id">) {
     this.queue.push(notification);
     this.processQueue();
   }
@@ -447,7 +586,7 @@ export class NotificationQueue {
       if (notification) {
         this.notifications.addNotification(notification);
         // Add small delay between notifications to prevent overwhelming
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
     }
 

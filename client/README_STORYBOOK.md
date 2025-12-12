@@ -1,20 +1,25 @@
 # Storybook Setup Guide
 
 ## Overview
+
 This project uses Storybook 8.6.14 for component development and documentation. The setup includes comprehensive stories for UI components, forms, and layout components.
 
 ## Installation
+
 ```bash
 npm install
 ```
 
 ## Running Storybook
+
 ```bash
 npm run storybook
 ```
+
 This will start Storybook on `http://localhost:6006`
 
 ## Building Storybook
+
 ```bash
 npm run build-storybook
 ```
@@ -22,6 +27,7 @@ npm run build-storybook
 ## Available Stories
 
 ### UI Components
+
 - **Button** - Various button styles and states
 - **Card** - Card layouts with headers, content, and footers
 - **Input** - Input fields with different types and states
@@ -34,21 +40,25 @@ npm run build-storybook
 - **EnterpriseButton** - Enhanced button components with animations
 
 ### Layout Components
+
 - **Layout** - Main application layout with navigation
 - **ErrorBoundary** - Error boundary with fallback UI
 - **ProtectedRoute** - Route protection with auth states
 - **ThemeProvider** - Theme context provider
 
 ### Form Components
+
 - **ReportForm** - Comprehensive report creation form with validation
 
 ### Report Components
+
 - **ReportList** - List view for reports
 - **ReportView** - Detailed report view
 
 ## Component Stories Structure
 
 Each story file includes:
+
 - **Meta configuration** - Component metadata and controls
 - **Default story** - Basic component usage
 - **Variant stories** - Different states and configurations
@@ -57,6 +67,7 @@ Each story file includes:
 ## Testing Stories
 
 Stories can be tested using:
+
 ```bash
 npm run test:coverage
 ```
@@ -64,11 +75,13 @@ npm run test:coverage
 ## Configuration Files
 
 ### `.storybook/main.ts`
+
 - Storybook configuration with Vite framework
 - Addons for docs, a11y, interactions, and essentials
 - Auto-documentation setup
 
 ### `.storybook/preview.ts`
+
 - Global decorators for theme and auth providers
 - CSS imports for styling
 - Control configurations
@@ -81,17 +94,18 @@ npm run test:coverage
 4. Create story variants
 
 Example:
+
 ```typescript
-import type { Meta, StoryObj } from '@storybook/react';
-import { MyComponent } from './MyComponent';
+import type { Meta, StoryObj } from "@storybook/react";
+import { MyComponent } from "./MyComponent";
 
 const meta: Meta<typeof MyComponent> = {
-  title: 'Components/MyComponent',
+  title: "Components/MyComponent",
   component: MyComponent,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 };
 
 export default meta;
@@ -137,6 +151,7 @@ Playwright Chromium is installed for visual testing and browser automation. Conf
 ## Environment Variables
 
 Set up any required environment variables in a `.env` file:
+
 ```env
 VITE_API_URL=http://localhost:3000
 ```
@@ -144,6 +159,7 @@ VITE_API_URL=http://localhost:3000
 ## Contributing
 
 When adding new components:
+
 1. Create the component with proper TypeScript types
 2. Add comprehensive stories covering all use cases
 3. Test with different screen sizes and accessibility settings
@@ -152,6 +168,7 @@ When adding new components:
 ## Current Status
 
 ✅ **Setup Complete**
+
 - Storybook 8.6.14 configured
 - 15+ component stories created
 - Mock providers implemented
@@ -159,12 +176,14 @@ When adding new components:
 - Accessibility testing enabled
 
 ✅ **Components with Stories**
+
 - All UI components (Button, Card, Input, Badge, Dialog, etc.)
 - Layout components (Layout, ErrorBoundary, ProtectedRoute, ThemeProvider)
 - Form components (ReportForm)
 - Report components (ReportList, ReportView)
 
 🚀 **Ready for Development**
+
 - Run `npm run storybook` to start development
 - All stories should render without errors
 - Accessibility tests pass for all components

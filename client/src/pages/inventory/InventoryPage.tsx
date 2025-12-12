@@ -1,25 +1,40 @@
-import React from 'react';
+import React from "react";
+import { DashboardShell } from '../../components/ui/layout/DashboardShell.js';
 
+// @ts-ignore
 const InventoryPage: React.FC = () => {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Inventory</h1>
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <input 
-            type="text" 
-            placeholder="Search inventory..."
-            className="px-4 py-2 border rounded-md"
-          />
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-md">
-            Add Item
-          </button>
-        </div>
-        <div className="mt-4">
-          <p>No inventory items found</p>
+    <DashboardShell>
+      <div className="container mx-auto max-w-7xl px-6 py-6 space-y-4">
+        <h1 className="text-2xl font-bold mb-4 text-default">Inventory</h1>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            {/* a11y: id + label + aria-describedby added for inventory landing search */}
+            <div className="flex-1 max-w-md">
+              <label htmlFor="inventory-page-search" className="sr-only">
+                Search inventory
+              </label>
+              <input
+                id="inventory-page-search"
+                type="text"
+                placeholder="Search inventory..."
+                className="w-full px-4 py-2 border border-border-gray rounded-md bg-surface1 text-default"
+                aria-describedby="inventory-page-search-help"
+              />
+              <p id="inventory-page-search-help" className="sr-only">
+                Search inventory items by name, SKU, or other details.
+              </p>
+            </div>
+            <button className="px-4 py-2 rounded-md bg-primary text-primary-foreground shadow-soft">
+              Add Item
+            </button>
+          </div>
+          <div className="mt-4 rounded-xl bg-surface1 border border-border-gray p-4 shadow-soft">
+            <p className="text-muted">No inventory items found</p>
+          </div>
         </div>
       </div>
-    </div>
+    </DashboardShell>
   );
 };
 

@@ -1,16 +1,17 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 const client = new Client({
-  host: 'localhost',
+  host: "localhost",
   port: 5432,
-  user: 'postgres',
-  password: 'postgres',
-  database: 'accubooks'
+  user: "postgres",
+  password: "postgres",
+  database: "accubooks",
 });
 
-client.connect()
-  .then(() => console.log('✅ Connected to PostgreSQL'))
-  .then(() => client.query('SELECT NOW()'))
-  .then(res => console.log('Query result:', res.rows[0]))
-  .catch(err => console.error('❌ Connection error:', err))
+client
+  .connect()
+  .then(() => console.log("✅ Connected to PostgreSQL"))
+  .then(() => client.query("SELECT NOW()"))
+  .then((res) => console.log("Query result:", res.rows[0]))
+  .catch((err) => console.error("❌ Connection error:", err))
   .finally(() => client.end());

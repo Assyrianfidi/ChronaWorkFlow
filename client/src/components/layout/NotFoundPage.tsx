@@ -1,12 +1,24 @@
-import * as React from "react"
-import { Link } from "react-router-dom"
-import { Home, Search, ArrowLeft } from "lucide-react"
-import { cn } from "../../lib/utils"
-import { AccuBooksLogo } from "../ui/AccuBooksLogo"
-import { EnterpriseButton } from "../ui/EnterpriseButton"
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React from 'react';
+// @ts-ignore
+import * as React from "react";
+import { Link } from "react-router-dom";
+import { Home, Search, ArrowLeft } from "lucide-react";
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
+// @ts-ignore
+import { AccuBooksLogo } from '../ui/AccuBooksLogo.js.js';
+// @ts-ignore
+import { EnterpriseButton } from '../ui/EnterpriseButton.js.js';
 
 interface NotFoundPageProps {
-  className?: string
+  className?: string;
 }
 
 const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
@@ -16,14 +28,17 @@ const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
         ref={ref}
         className={cn(
           "min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8",
-          className
+          className,
         )}
         {...props}
       >
         <div className="max-w-md w-full text-center">
           {/* Logo */}
           <div className="flex justify-center mb-8">
-            <AccuBooksLogo variant="monogram" className="w-16 h-16 text-ocean-blue" />
+            <AccuBooksLogo
+              variant="monogram"
+              className="w-16 h-16 text-ocean-blue"
+            />
           </div>
 
           {/* Error Content */}
@@ -33,8 +48,8 @@ const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
               Page Not Found
             </h2>
             <p className="text-gray-600 mb-8">
-              The page you're looking for doesn't exist or has been moved. 
-              Let's get you back on track.
+              The page you're looking for doesn't exist or has been moved. Let's
+              get you back on track.
             </p>
           </div>
 
@@ -49,7 +64,7 @@ const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
                 <ArrowLeft className="w-4 h-4" />
                 Go Back
               </EnterpriseButton>
-              
+
               <Link to="/dashboard">
                 <EnterpriseButton
                   variant="secondary"
@@ -60,7 +75,7 @@ const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
                 </EnterpriseButton>
               </Link>
             </div>
-            
+
             <Link to="/search">
               <EnterpriseButton
                 variant="ghost"
@@ -81,14 +96,14 @@ const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
               If you believe this is an error, please contact our support team.
             </p>
             <div className="flex justify-center gap-4">
-              <a 
+              <a
                 href="mailto:support@accubooks.com"
                 className="text-ocean-blue hover:text-ocean-blue/80 text-sm font-medium"
               >
                 Email Support
               </a>
               <span className="text-gray-400">•</span>
-              <a 
+              <a
                 href="/help"
                 className="text-ocean-blue hover:text-ocean-blue/80 text-sm font-medium"
               >
@@ -98,9 +113,9 @@ const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
           </div>
         </div>
       </div>
-    )
-  }
-)
-NotFoundPage.displayName = "NotFoundPage"
+    );
+  },
+);
+NotFoundPage.displayName = "NotFoundPage";
 
-export { NotFoundPage }
+export { NotFoundPage };

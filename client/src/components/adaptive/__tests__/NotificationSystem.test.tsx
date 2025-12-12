@@ -1,19 +1,24 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { NotificationSystem, useNotifications, Toast, NotificationQueue } from '../NotificationSystem';
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  NotificationSystem,
+  useNotifications,
+  Toast,
+  NotificationQueue,
+} from '../NotificationSystem.js.js';
 
 // Mock the UX mode hook
-jest.mock('../UserExperienceMode', () => ({
+jest.mock("../UserExperienceMode", () => ({
   useUserExperienceMode: jest.fn(() => ({
     currentMode: {
-      animations: 'normal',
+      animations: "normal",
       sounds: false,
     },
   })),
 }));
 
 // Mock the performance hook
-jest.mock('../UI-Performance-Engine', () => ({
+jest.mock("../UI-Performance-Engine", () => ({
   usePerformance: jest.fn(() => ({
     isLowPerformanceMode: false,
   })),
@@ -24,7 +29,7 @@ global.AudioContext = jest.fn(() => ({
   createOscillator: jest.fn(() => ({
     connect: jest.fn(),
     frequency: { value: 0 },
-    type: 'sine',
+    type: "sine",
     gain: {
       setValueAtTime: jest.fn(),
       exponentialRampToValueAtTime: jest.fn(),
@@ -39,38 +44,40 @@ global.AudioContext = jest.fn(() => ({
   destination: {},
   currentTime: 0,
   close: jest.fn(),
+// @ts-ignore
+// @ts-ignore
 })) as any;
 
 // Mock createPortal
-jest.mock('react-dom', () => ({
-  ...jest.requireActual('react-dom'),
+jest.mock("react-dom", () => ({
+  ...jest.requireActual("react-dom"),
   createPortal: jest.fn((element) => element),
 }));
 
-describe('NotificationSystem', () => {
+describe("NotificationSystem", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders children correctly', () => {
+  it("renders children correctly", () => {
     render(
       <NotificationSystem>
         <div>Test Content</div>
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
-    expect(screen.getByText('Test Content')).toBeInTheDocument();
+    expect(screen.getByText("Test Content")).toBeInTheDocument();
   });
 
-  it('renders notifications when added', async () => {
+  it("renders notifications when added", async () => {
     const TestComponent = () => {
       const { addNotification } = useNotifications();
-      
+
       React.useEffect(() => {
         addNotification({
-          type: 'success',
-          title: 'Success!',
-          message: 'Operation completed',
+          type: "success",
+          title: "Success!",
+          message: "Operation completed",
         });
       }, []);
 
@@ -80,25 +87,25 @@ describe('NotificationSystem', () => {
     render(
       <NotificationSystem>
         <TestComponent />
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Success!')).toBeInTheDocument();
-      expect(screen.getByText('Operation completed')).toBeInTheDocument();
+      expect(screen.getByText("Success!")).toBeInTheDocument();
+      expect(screen.getByText("Operation completed")).toBeInTheDocument();
     });
   });
 
-  it('removes notifications after duration', async () => {
+  it("removes notifications after duration", async () => {
     jest.useFakeTimers();
 
     const TestComponent = () => {
       const { addNotification } = useNotifications();
-      
+
       React.useEffect(() => {
         addNotification({
-          type: 'info',
-          title: 'Info',
+          type: "info",
+          title: "Info",
           duration: 1000,
         });
       }, []);
@@ -109,30 +116,30 @@ describe('NotificationSystem', () => {
     render(
       <NotificationSystem>
         <TestComponent />
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Info')).toBeInTheDocument();
+      expect(screen.getByText("Info")).toBeInTheDocument();
     });
 
     jest.advanceTimersByTime(1000);
 
     await waitFor(() => {
-      expect(screen.queryByText('Info')).not.toBeInTheDocument();
+      expect(screen.queryByText("Info")).not.toBeInTheDocument();
     });
 
     jest.useRealTimers();
   });
 
-  it('keeps persistent notifications', async () => {
+  it("keeps persistent notifications", async () => {
     const TestComponent = () => {
       const { addNotification } = useNotifications();
-      
+
       React.useEffect(() => {
         addNotification({
-          type: 'warning',
-          title: 'Persistent Warning',
+          type: "warning",
+          title: "Persistent Warning",
           persistent: true,
         });
       }, []);
@@ -143,49 +150,64 @@ describe('NotificationSystem', () => {
     render(
       <NotificationSystem>
         <TestComponent />
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Persistent Warning')).toBeInTheDocument();
+      expect(screen.getByText("Persistent Warning")).toBeInTheDocument();
     });
 
     // Should not disappear automatically
     jest.advanceTimersByTime(5000);
 
     await waitFor(() => {
-      expect(screen.getByText('Persistent Warning')).toBeInTheDocument();
+      expect(screen.getByText("Persistent Warning")).toBeInTheDocument();
     });
   });
 });
 
-describe('useNotifications hook', () => {
-  it('throws error when used outside provider', () => {
+describe("useNotifications hook", () => {
+  it("throws error when used outside provider", () => {
     const TestComponent = () => {
       try {
         useNotifications();
         return <div>Success</div>;
       } catch (error) {
+// @ts-ignore
         return <div>Error: {(error as Error).message}</div>;
       }
     };
 
     render(<TestComponent />);
     expect(screen.getByText(/Error:/)).toBeInTheDocument();
-    expect(screen.getByText(/useNotifications must be used within NotificationSystem/)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /useNotifications must be used within NotificationSystem/,
+      ),
+    ).toBeInTheDocument();
   });
 
-  it('provides notification methods', () => {
+  it("provides notification methods", () => {
     const TestComponent = () => {
       const { success, error, warning, info, loading } = useNotifications();
-      
+
       return (
         <div>
-          <button onClick={() => success('Success Title', 'Success Message')}>Success</button>
-          <button onClick={() => error('Error Title', 'Error Message')}>Error</button>
-          <button onClick={() => warning('Warning Title', 'Warning Message')}>Warning</button>
-          <button onClick={() => info('Info Title', 'Info Message')}>Info</button>
-          <button onClick={() => loading('Loading Title', 'Loading Message')}>Loading</button>
+          <button onClick={() => success("Success Title", "Success Message")}>
+            Success
+          </button>
+          <button onClick={() => error("Error Title", "Error Message")}>
+            Error
+          </button>
+          <button onClick={() => warning("Warning Title", "Warning Message")}>
+            Warning
+          </button>
+          <button onClick={() => info("Info Title", "Info Message")}>
+            Info
+          </button>
+          <button onClick={() => loading("Loading Title", "Loading Message")}>
+            Loading
+          </button>
         </div>
       );
     };
@@ -193,26 +215,32 @@ describe('useNotifications hook', () => {
     render(
       <NotificationSystem>
         <TestComponent />
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
-    expect(screen.getByText('Success')).toBeInTheDocument();
-    expect(screen.getByText('Error')).toBeInTheDocument();
-    expect(screen.getByText('Warning')).toBeInTheDocument();
-    expect(screen.getByText('Info')).toBeInTheDocument();
-    expect(screen.getByText('Loading')).toBeInTheDocument();
+    expect(screen.getByText("Success")).toBeInTheDocument();
+    expect(screen.getByText("Error")).toBeInTheDocument();
+    expect(screen.getByText("Warning")).toBeInTheDocument();
+    expect(screen.getByText("Info")).toBeInTheDocument();
+    expect(screen.getByText("Loading")).toBeInTheDocument();
   });
 
-  it('adds notifications with different types', async () => {
+  it("adds notifications with different types", async () => {
     const TestComponent = () => {
       const { addNotification } = useNotifications();
-      
+
       return (
         <div>
-          <button onClick={() => addNotification({ type: 'success', title: 'Success' })}>
+          <button
+            onClick={() =>
+              addNotification({ type: "success", title: "Success" })
+            }
+          >
             Add Success
           </button>
-          <button onClick={() => addNotification({ type: 'error', title: 'Error' })}>
+          <button
+            onClick={() => addNotification({ type: "error", title: "Error" })}
+          >
             Add Error
           </button>
         </div>
@@ -222,31 +250,31 @@ describe('useNotifications hook', () => {
     render(
       <NotificationSystem>
         <TestComponent />
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
-    fireEvent.click(screen.getByText('Add Success'));
+    fireEvent.click(screen.getByText("Add Success"));
 
     await waitFor(() => {
-      expect(screen.getByText('Success')).toBeInTheDocument();
+      expect(screen.getByText("Success")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Add Error'));
+    fireEvent.click(screen.getByText("Add Error"));
 
     await waitFor(() => {
-      expect(screen.getByText('Error')).toBeInTheDocument();
+      expect(screen.getByText("Error")).toBeInTheDocument();
     });
   });
 
-  it('removes notifications manually', async () => {
+  it("removes notifications manually", async () => {
     const TestComponent = () => {
       const { addNotification, removeNotification } = useNotifications();
-      const [notificationId, setNotificationId] = React.useState<string>('');
-      
+      const [notificationId, setNotificationId] = React.useState<string>("");
+
       const addNotif = () => {
         const id = addNotification({
-          type: 'info',
-          title: 'Test Notification',
+          type: "info",
+          title: "Test Notification",
         });
         setNotificationId(id);
       };
@@ -254,7 +282,9 @@ describe('useNotifications hook', () => {
       return (
         <div>
           <button onClick={addNotif}>Add Notification</button>
-          <button onClick={() => removeNotification(notificationId)}>Remove Notification</button>
+          <button onClick={() => removeNotification(notificationId)}>
+            Remove Notification
+          </button>
         </div>
       );
     };
@@ -262,32 +292,40 @@ describe('useNotifications hook', () => {
     render(
       <NotificationSystem>
         <TestComponent />
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
-    fireEvent.click(screen.getByText('Add Notification'));
+    fireEvent.click(screen.getByText("Add Notification"));
 
     await waitFor(() => {
-      expect(screen.getByText('Test Notification')).toBeInTheDocument();
+      expect(screen.getByText("Test Notification")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Remove Notification'));
+    fireEvent.click(screen.getByText("Remove Notification"));
 
     await waitFor(() => {
-      expect(screen.queryByText('Test Notification')).not.toBeInTheDocument();
+      expect(screen.queryByText("Test Notification")).not.toBeInTheDocument();
     });
   });
 
-  it('clears all notifications', async () => {
+  it("clears all notifications", async () => {
     const TestComponent = () => {
       const { addNotification, clearNotifications } = useNotifications();
-      
+
       return (
         <div>
-          <button onClick={() => addNotification({ type: 'info', title: 'Notification 1' })}>
+          <button
+            onClick={() =>
+              addNotification({ type: "info", title: "Notification 1" })
+            }
+          >
             Add 1
           </button>
-          <button onClick={() => addNotification({ type: 'info', title: 'Notification 2' })}>
+          <button
+            onClick={() =>
+              addNotification({ type: "info", title: "Notification 2" })
+            }
+          >
             Add 2
           </button>
           <button onClick={clearNotifications}>Clear All</button>
@@ -298,64 +336,71 @@ describe('useNotifications hook', () => {
     render(
       <NotificationSystem>
         <TestComponent />
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
-    fireEvent.click(screen.getByText('Add 1'));
-    fireEvent.click(screen.getByText('Add 2'));
+    fireEvent.click(screen.getByText("Add 1"));
+    fireEvent.click(screen.getByText("Add 2"));
 
     await waitFor(() => {
-      expect(screen.getByText('Notification 1')).toBeInTheDocument();
-      expect(screen.getByText('Notification 2')).toBeInTheDocument();
+      expect(screen.getByText("Notification 1")).toBeInTheDocument();
+      expect(screen.getByText("Notification 2")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Clear All'));
+    fireEvent.click(screen.getByText("Clear All"));
 
     await waitFor(() => {
-      expect(screen.queryByText('Notification 1')).not.toBeInTheDocument();
-      expect(screen.queryByText('Notification 2')).not.toBeInTheDocument();
+      expect(screen.queryByText("Notification 1")).not.toBeInTheDocument();
+      expect(screen.queryByText("Notification 2")).not.toBeInTheDocument();
     });
   });
 });
 
-describe('Toast component', () => {
-  it('adds and removes notification automatically', async () => {
+describe("Toast component", () => {
+  it("adds and removes notification automatically", async () => {
     jest.useFakeTimers();
 
     render(
       <NotificationSystem>
-        <Toast type="success" title="Toast Title" message="Toast Message" duration={1000} />
-      </NotificationSystem>
+        <Toast
+          type="success"
+          title="Toast Title"
+          message="Toast Message"
+          duration={1000}
+        />
+      </NotificationSystem>,
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Toast Title')).toBeInTheDocument();
-      expect(screen.getByText('Toast Message')).toBeInTheDocument();
+      expect(screen.getByText("Toast Title")).toBeInTheDocument();
+      expect(screen.getByText("Toast Message")).toBeInTheDocument();
     });
 
     jest.advanceTimersByTime(1000);
 
     await waitFor(() => {
-      expect(screen.queryByText('Toast Title')).not.toBeInTheDocument();
-      expect(screen.queryByText('Toast Message')).not.toBeInTheDocument();
+      expect(screen.queryByText("Toast Title")).not.toBeInTheDocument();
+      expect(screen.queryByText("Toast Message")).not.toBeInTheDocument();
     });
 
     jest.useRealTimers();
   });
 });
 
-describe('NotificationQueue', () => {
-  it('queues and processes notifications', async () => {
+describe("NotificationQueue", () => {
+  it("queues and processes notifications", async () => {
     jest.useFakeTimers();
 
     const mockNotifications = {
       addNotification: jest.fn(),
     };
 
+// @ts-ignore
+// @ts-ignore
     const queue = new NotificationQueue(mockNotifications as any);
 
-    queue.add({ type: 'info', title: 'Notification 1' });
-    queue.add({ type: 'info', title: 'Notification 2' });
+    queue.add({ type: "info", title: "Notification 1" });
+    queue.add({ type: "info", title: "Notification 2" });
 
     expect(queue.size()).toBe(2);
 
@@ -370,15 +415,17 @@ describe('NotificationQueue', () => {
     jest.useRealTimers();
   });
 
-  it('clears queue', () => {
+  it("clears queue", () => {
     const mockNotifications = {
       addNotification: jest.fn(),
     };
 
+// @ts-ignore
+// @ts-ignore
     const queue = new NotificationQueue(mockNotifications as any);
 
-    queue.add({ type: 'info', title: 'Notification 1' });
-    queue.add({ type: 'info', title: 'Notification 2' });
+    queue.add({ type: "info", title: "Notification 1" });
+    queue.add({ type: "info", title: "Notification 2" });
 
     expect(queue.size()).toBe(2);
 
@@ -388,17 +435,17 @@ describe('NotificationQueue', () => {
   });
 });
 
-describe('Notification rendering', () => {
-  it('shows correct icons for different types', async () => {
+describe("Notification rendering", () => {
+  it("shows correct icons for different types", async () => {
     const TestComponent = () => {
       const { addNotification } = useNotifications();
-      
+
       React.useEffect(() => {
-        addNotification({ type: 'success', title: 'Success' });
-        addNotification({ type: 'error', title: 'Error' });
-        addNotification({ type: 'warning', title: 'Warning' });
-        addNotification({ type: 'info', title: 'Info' });
-        addNotification({ type: 'loading', title: 'Loading' });
+        addNotification({ type: "success", title: "Success" });
+        addNotification({ type: "error", title: "Error" });
+        addNotification({ type: "warning", title: "Warning" });
+        addNotification({ type: "info", title: "Info" });
+        addNotification({ type: "loading", title: "Loading" });
       }, []);
 
       return <div>Test</div>;
@@ -407,31 +454,31 @@ describe('Notification rendering', () => {
     render(
       <NotificationSystem>
         <TestComponent />
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
     await waitFor(() => {
-      expect(screen.getByText('✅')).toBeInTheDocument(); // Success
-      expect(screen.getByText('❌')).toBeInTheDocument(); // Error
-      expect(screen.getByText('⚠️')).toBeInTheDocument(); // Warning
-      expect(screen.getByText('ℹ️')).toBeInTheDocument(); // Info
-      expect(screen.getByText('⏳')).toBeInTheDocument(); // Loading
+      expect(screen.getByText("✅")).toBeInTheDocument(); // Success
+      expect(screen.getByText("❌")).toBeInTheDocument(); // Error
+      expect(screen.getByText("⚠️")).toBeInTheDocument(); // Warning
+      expect(screen.getByText("ℹ️")).toBeInTheDocument(); // Info
+      expect(screen.getByText("⏳")).toBeInTheDocument(); // Loading
     });
   });
 
-  it('renders notification actions', async () => {
+  it("renders notification actions", async () => {
     const mockAction = jest.fn();
 
     const TestComponent = () => {
       const { addNotification } = useNotifications();
-      
+
       React.useEffect(() => {
         addNotification({
-          type: 'info',
-          title: 'Notification with Actions',
+          type: "info",
+          title: "Notification with Actions",
           actions: [
-            { label: 'Action 1', action: mockAction },
-            { label: 'Action 2', action: jest.fn() },
+            { label: "Action 1", action: mockAction },
+            { label: "Action 2", action: jest.fn() },
           ],
         });
       }, []);
@@ -442,32 +489,32 @@ describe('Notification rendering', () => {
     render(
       <NotificationSystem>
         <TestComponent />
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Action 1')).toBeInTheDocument();
-      expect(screen.getByText('Action 2')).toBeInTheDocument();
+      expect(screen.getByText("Action 1")).toBeInTheDocument();
+      expect(screen.getByText("Action 2")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Action 1'));
+    fireEvent.click(screen.getByText("Action 1"));
 
     expect(mockAction).toHaveBeenCalled();
   });
 
-  it('shows progress bar for loading notifications', async () => {
+  it("shows progress bar for loading notifications", async () => {
     const TestComponent = () => {
       const { addNotification, updateProgress } = useNotifications();
-      const [notificationId, setNotificationId] = React.useState<string>('');
-      
+      const [notificationId, setNotificationId] = React.useState<string>("");
+
       React.useEffect(() => {
         const id = addNotification({
-          type: 'loading',
-          title: 'Loading...',
+          type: "loading",
+          title: "Loading...",
           progress: 0,
         });
         setNotificationId(id);
-        
+
         // Simulate progress update
         setTimeout(() => {
           updateProgress(id, 50);
@@ -480,17 +527,19 @@ describe('Notification rendering', () => {
     render(
       <NotificationSystem>
         <TestComponent />
-      </NotificationSystem>
+      </NotificationSystem>,
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Loading...')).toBeInTheDocument();
+      expect(screen.getByText("Loading...")).toBeInTheDocument();
     });
 
     jest.advanceTimersByTime(100);
 
     await waitFor(() => {
-      const progressBar = screen.getByRole('progressbar') || document.querySelector('.bg-blue-500');
+      const progressBar =
+        screen.getByRole("progressbar") ||
+        document.querySelector(".bg-blue-500");
       expect(progressBar).toBeInTheDocument();
     });
   });

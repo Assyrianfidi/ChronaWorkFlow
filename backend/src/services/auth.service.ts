@@ -1,25 +1,26 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { StatusCodes } from 'http-status-codes';
-import { PrismaClient, User } from '@prisma/client';
-import { config } from '../config/config.js';
-import { ApiError } from '../utils/errors.js';
+// @ts-ignore
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { StatusCodes } from "http-status-codes";
+import { PrismaClient, User } from "@prisma/client";
+import { config } from "../config/config.js";
+import { ApiError } from "../utils/errors.js";
 
 // Define Role enum to match Prisma schema
 export enum UserRole {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
-  MANAGER = 'MANAGER',
-  AUDITOR = 'AUDITOR'
+  USER = "USER",
+  ADMIN = "ADMIN",
+  MANAGER = "MANAGER",
+  AUDITOR = "AUDITOR",
 }
 
-type UserWithRole = Omit<User, 'role'> & { 
+type UserWithRole = Omit<User, "role"> & {
   role: UserRole;
   currentCompanyId?: string | null;
   deletedAt?: Date | null;
 };
 
-const prisma = new PrismaClient();
+const prisma = prisma;
 
 // Token expiration times (in seconds)
 const ACCESS_TOKEN_EXPIRES_IN = 15 * 60; // 15 minutes
@@ -29,7 +30,7 @@ const REFRESH_TOKEN_EXPIRES_IN = 7 * 24 * 60 * 60; // 7 days
 interface TokenPayload extends jwt.JwtPayload {
   userId: number;
   role: UserRole;
-  type: 'access' | 'refresh';
+  type: "access" | "refresh";
   iat: number;
   exp: number;
 }
@@ -42,40 +43,42 @@ export interface AuthTokens {
 }
 
 // Generate access token
-export const generateAccessToken = (user: UserWithRole): { accessToken: string; expiresIn: number } => {
+export const generateAccessToken = (
+  user: UserWithRole,
+): { accessToken: string; expiresIn: number } => {
   if (!config.jwt?.secret) {
-    throw new Error('JWT secret is not configured');
+    throw new Error("JWT secret is not configured");
   }
-  
+
   const accessToken = jwt.sign(
-    { 
-      userId: user.id, 
+    {
+      userId: user.id,
       role: user.role,
-      type: 'access' 
+      type: "access",
     },
     config.jwt.secret,
-    { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
+    { expiresIn: ACCESS_TOKEN_EXPIRES_IN },
   );
 
   return {
     accessToken,
-    expiresIn: ACCESS_TOKEN_EXPIRES_IN
+    expiresIn: ACCESS_TOKEN_EXPIRES_IN,
   };
 };
 
 // Generate refresh token
 const generateRefreshToken = async (userId: number): Promise<string> => {
   if (!config.jwt?.refreshSecret) {
-    throw new Error('JWT refresh secret is not configured');
+    throw new Error("JWT refresh secret is not configured");
   }
 
   const token = jwt.sign(
-    { 
-      userId, 
-      type: 'refresh' 
+    {
+      userId,
+      type: "refresh",
     },
     config.jwt.refreshSecret,
-    { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
+    { expiresIn: REFRESH_TOKEN_EXPIRES_IN },
   );
 
   // Store the refresh token in the database
@@ -97,19 +100,22 @@ export class AuthService {
   /**
    * Register a new user
    */
-  async register(userData: { 
-    email: string; 
-    password: string; 
+  async register(userData: {
+    email: string;
+    password: string;
     name: string;
     role?: UserRole;
-  }): Promise<{ user: Omit<User, 'password'>; tokens: AuthTokens }> {
+  }): Promise<{ user: Omit<User, "password">; tokens: AuthTokens }> {
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email: userData.email },
     });
 
     if (existingUser) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, 'Email is already registered');
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "Email is already registered",
+      );
     }
 
     // Hash password with salt
@@ -117,7 +123,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(userData.password, salt);
 
     // Create user
-    const user = await prisma.user.create({
+    const user = (await prisma.user.create({
       data: {
         email: userData.email,
         password: hashedPassword,
@@ -125,7 +131,7 @@ export class AuthService {
         role: userData.role || UserRole.USER,
         isActive: true,
       },
-    }) as UserWithRole;
+    })) as UserWithRole;
 
     // Generate tokens
     const tokens = await this.generateAuthTokens(user.id, user.role);
@@ -141,10 +147,10 @@ export class AuthService {
   /**
    * Login user with email and password
    */
-  async login(credentials: { 
-    email: string; 
-    password: string; 
-  }): Promise<{ user: Omit<User, 'password'>; tokens: AuthTokens }> {
+  async login(credentials: {
+    email: string;
+    password: string;
+  }): Promise<{ user: Omit<User, "password">; tokens: AuthTokens }> {
     // Find user by email
     const user = await prisma.user.findUnique({
       where: { email: credentials.email },
@@ -152,17 +158,23 @@ export class AuthService {
 
     // Check if user exists and is active
     if (!user || !user.isActive) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid email or password');
+      throw new ApiError(StatusCodes.UNAUTHORIZED, "Invalid email or password");
     }
 
     // Check if password is correct
-    const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      credentials.password,
+      user.password,
+    );
     if (!isPasswordValid) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid email or password');
+      throw new ApiError(StatusCodes.UNAUTHORIZED, "Invalid email or password");
     }
 
     // Generate tokens
-    const tokens = await this.generateAuthTokens(user.id, user.role as UserRole);
+    const tokens = await this.generateAuthTokens(
+      user.id,
+      user.role as UserRole,
+    );
 
     // Update last login
     await this.updateLastLogin(user.id);
@@ -175,12 +187,15 @@ export class AuthService {
   /**
    * Generate new access and refresh tokens
    */
-  private async generateAuthTokens(userId: number, role: UserRole): Promise<AuthTokens> {
+  private async generateAuthTokens(
+    userId: number,
+    role: UserRole,
+  ): Promise<AuthTokens> {
     const userWithRole: UserWithRole = {
       id: userId,
-      email: '', // Not needed for token generation
-      name: '', // Not needed for token generation
-      password: '', // Not needed for token generation
+      email: "", // Not needed for token generation
+      name: "", // Not needed for token generation
+      password: "", // Not needed for token generation
       role,
       isActive: true,
       passwordChangedAt: null,
@@ -208,15 +223,18 @@ export class AuthService {
    */
   async refreshToken(refreshToken: string): Promise<AuthTokens> {
     if (!config.jwt?.refreshSecret) {
-      throw new Error('JWT refresh secret is not configured');
+      throw new Error("JWT refresh secret is not configured");
     }
 
     try {
       // Verify refresh token
-      const decoded = jwt.verify(refreshToken, config.jwt.refreshSecret) as TokenPayload;
-      
-      if (decoded.type !== 'refresh') {
-        throw new Error('Invalid token type');
+      const decoded = jwt.verify(
+        refreshToken,
+        config.jwt.refreshSecret,
+      ) as TokenPayload;
+
+      if (decoded.type !== "refresh") {
+        throw new Error("Invalid token type");
       }
 
       // Check if refresh token exists in the database and is not expired
@@ -228,7 +246,7 @@ export class AuthService {
       });
 
       if (!tokenRecord) {
-        throw new Error('Invalid or expired refresh token');
+        throw new Error("Invalid or expired refresh token");
       }
 
       // Get the user
@@ -237,11 +255,14 @@ export class AuthService {
       });
 
       if (!user) {
-        throw new Error('User not found');
+        throw new Error("User not found");
       }
 
       // Generate new tokens
-      const tokens = await this.generateAuthTokens(user.id, user.role as UserRole);
+      const tokens = await this.generateAuthTokens(
+        user.id,
+        user.role as UserRole,
+      );
 
       // Delete the old refresh token
       await prisma.refreshToken.delete({
@@ -255,9 +276,9 @@ export class AuthService {
         await prisma.refreshToken.deleteMany({
           where: { tokenHash: refreshToken },
         });
-        throw new ApiError(StatusCodes.UNAUTHORIZED, 'Refresh token expired');
+        throw new ApiError(StatusCodes.UNAUTHORIZED, "Refresh token expired");
       }
-      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid refresh token');
+      throw new ApiError(StatusCodes.UNAUTHORIZED, "Invalid refresh token");
     }
   }
 
@@ -272,7 +293,7 @@ export class AuthService {
       });
     } catch (error) {
       // Log the error but don't fail the request
-      console.error('Error during logout:', error);
+      console.error("Error during logout:", error);
     }
   }
 
@@ -282,8 +303,8 @@ export class AuthService {
   private async updateLastLogin(userId: number): Promise<void> {
     await prisma.user.update({
       where: { id: userId },
-      data: { 
-        lastLogin: new Date() 
+      data: {
+        lastLogin: new Date(),
       },
     });
   }
@@ -292,22 +313,28 @@ export class AuthService {
    * Change user password
    */
   async changePassword(
-    userId: number, 
-    currentPassword: string, 
-    newPassword: string
+    userId: number,
+    currentPassword: string,
+    newPassword: string,
   ): Promise<void> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
 
     if (!user) {
-      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
+      throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
     }
 
     // Verify current password
-    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
     if (!isPasswordValid) {
-      throw new ApiError(StatusCodes.UNAUTHORIZED, 'Current password is incorrect');
+      throw new ApiError(
+        StatusCodes.UNAUTHORIZED,
+        "Current password is incorrect",
+      );
     }
 
     // Hash new password
@@ -329,7 +356,7 @@ export class AuthService {
   /**
    * Get current user profile
    */
-  async getCurrentUser(userId: number): Promise<Omit<User, 'password'>> {
+  async getCurrentUser(userId: number): Promise<Omit<User, "password">> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -346,10 +373,10 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new ApiError(StatusCodes.NOT_FOUND, 'User not found');
+      throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
     }
 
-    return user as Omit<User, 'password'>;
+    return user as Omit<User, "password">;
   }
 }
 

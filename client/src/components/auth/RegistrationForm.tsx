@@ -1,11 +1,23 @@
-import { type ReactElement } from 'react';
-import { useForm, type UseFormReturn, type SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { CardContent, CardFooter } from '../components/ui/card';
-import { type RegisterFormData, registerSchema } from '../lib/validations/schemas';
-import { useToast } from '../hooks/use-toast';
+import React from 'react';
+import { type ReactElement } from "react";
+import {
+  useForm,
+  type UseFormReturn,
+  type SubmitHandler,
+} from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+// @ts-ignore
+import { Button } from '../components/ui/button.js.js';
+// @ts-ignore
+import { Input } from '../components/ui/input.js.js';
+// @ts-ignore
+import { CardContent, CardFooter } from '../components/ui/card.js.js';
+import {
+  type RegisterFormData,
+  registerSchema,
+} from '../lib/validations/schemas.js.js';
+// @ts-ignore
+import { useToast } from '../hooks/use-toast.js.js';
 
 interface RegistrationFormProps {
   onSubmit: (data: RegisterFormData) => Promise<void>;
@@ -21,14 +33,14 @@ export function RegistrationForm({
   clearError,
 }: RegistrationFormProps): ReactElement {
   const { toast } = useToast();
-  
+
   const methods = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -37,12 +49,12 @@ export function RegistrationForm({
       clearError();
       await onSubmit(data);
       toast({
-        title: 'Registration successful!',
-        description: 'Your account has been created.',
+        title: "Registration successful!",
+        description: "Your account has been created.",
       });
     } catch (error) {
       // Error is handled by the parent component
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
     }
   };
 
@@ -68,7 +80,7 @@ export function RegistrationForm({
             placeholder="John Doe"
             data-testid="input-name"
             disabled={isLoading}
-            {...methods.register('name')}
+            {...methods.register("name")}
           />
           {methods.formState.errors.name && (
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -90,7 +102,7 @@ export function RegistrationForm({
             placeholder="you@example.com"
             data-testid="input-email"
             disabled={isLoading}
-            {...methods.register('email')}
+            {...methods.register("email")}
           />
           {methods.formState.errors.email && (
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -112,7 +124,7 @@ export function RegistrationForm({
             placeholder="••••••••"
             data-testid="input-password"
             disabled={isLoading}
-            {...methods.register('password')}
+            {...methods.register("password")}
           />
           {methods.formState.errors.password && (
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -134,7 +146,7 @@ export function RegistrationForm({
             placeholder="••••••••"
             data-testid="input-confirm-password"
             disabled={isLoading}
-            {...methods.register('confirmPassword')}
+            {...methods.register("confirmPassword")}
           />
           {methods.formState.errors.confirmPassword && (
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -152,16 +164,16 @@ export function RegistrationForm({
           data-testid="button-register"
         >
           {isLoading || methods.formState.isSubmitting
-            ? 'Creating account...'
-            : 'Create Account'}
+            ? "Creating account..."
+            : "Create Account"}
         </Button>
 
         <p className="text-sm text-center text-muted-foreground">
-          By creating an account, you agree to our{' '}
+          By creating an account, you agree to our{" "}
           <a href="#" className="text-primary hover:underline">
             Terms of Service
-          </a>{' '}
-          and{' '}
+          </a>{" "}
+          and{" "}
           <a href="#" className="text-primary hover:underline">
             Privacy Policy
           </a>

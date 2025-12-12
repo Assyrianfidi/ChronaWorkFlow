@@ -1,3 +1,11 @@
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React, { useState } from 'react';
 import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
@@ -14,8 +22,12 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children, defaultTheme = "light" }: ThemeProviderProps) {
+export function ThemeProvider({
+  children,
+  defaultTheme = "light",
+}: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
+// @ts-ignore
     const stored = localStorage.getItem("accubooks-theme") as Theme;
     return stored || defaultTheme;
   });

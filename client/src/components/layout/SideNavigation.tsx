@@ -1,11 +1,13 @@
-import * as React from "react"
-import { 
-  BarChart3, 
-  Users, 
-  CreditCard, 
-  FileText, 
-  TrendingUp, 
-  Settings, 
+import React, { useState } from 'react';
+// @ts-ignore
+import * as React from "react";
+import {
+  BarChart3,
+  Users,
+  CreditCard,
+  FileText,
+  TrendingUp,
+  Settings,
   Home,
   Building2,
   Receipt,
@@ -20,46 +22,52 @@ import {
   Moon,
   Sun,
   Menu,
-  X
-} from "lucide-react"
-import { cn } from "../../lib/utils"
+  X,
+} from "lucide-react";
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
 
 interface NavigationItem {
-  id: string
-  label: string
-  icon: React.ReactNode
-  href: string
-  active?: boolean
-  badge?: string | number
-  children?: NavigationItem[]
-  description?: string
-  shortcut?: string
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  href: string;
+  active?: boolean;
+  badge?: string | number;
+  children?: NavigationItem[];
+  description?: string;
+  shortcut?: string;
 }
 
 interface SideNavigationProps {
-  open?: boolean
-  className?: string
-  onItemClick?: (item: NavigationItem) => void
-  activeItem?: string
-  collapsible?: boolean
-  theme?: 'light' | 'dark'
-  userRole?: 'beginner' | 'professional' | 'admin'
+  open?: boolean;
+  className?: string;
+  onItemClick?: (item: NavigationItem) => void;
+  activeItem?: string;
+  collapsible?: boolean;
+  theme?: "light" | "dark";
+  userRole?: "beginner" | "professional" | "admin";
 }
 
 const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
-  ({ 
-    open = true, 
-    className, 
-    onItemClick, 
-    activeItem = "dashboard", 
-    collapsible = true,
-    theme = 'light',
-    userRole = 'professional'
-  }, ref) => {
-    const [activeNav, setActiveNav] = React.useState(activeItem)
-    const [expandedItems, setExpandedItems] = React.useState<Set<string>>(new Set())
-    const [searchQuery, setSearchQuery] = React.useState("")
-    const [isCollapsed, setIsCollapsed] = React.useState(false)
+  (
+    {
+      open = true,
+      className,
+      onItemClick,
+      activeItem = "dashboard",
+      collapsible = true,
+      theme = "light",
+      userRole = "professional",
+    },
+    ref,
+  ) => {
+    const [activeNav, setActiveNav] = React.useState(activeItem);
+    const [expandedItems, setExpandedItems] = React.useState<Set<string>>(
+      new Set(),
+    );
+    const [searchQuery, setSearchQuery] = React.useState("");
+    const [isCollapsed, setIsCollapsed] = React.useState(false);
 
     const navigationItems: NavigationItem[] = [
       {
@@ -69,7 +77,7 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
         href: "/dashboard",
         active: activeNav === "dashboard",
         description: "Business overview and analytics",
-        shortcut: "Ctrl+D"
+        shortcut: "Ctrl+D",
       },
       {
         id: "accounts",
@@ -80,10 +88,25 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
         description: "Manage chart of accounts",
         shortcut: "Ctrl+A",
         children: [
-          { id: "accounts-revenue", label: "Revenue Accounts", icon: <TrendingUp className="h-4 w-4" />, href: "/accounts/revenue" },
-          { id: "accounts-expenses", label: "Expense Accounts", icon: <Receipt className="h-4 w-4" />, href: "/accounts/expenses" },
-          { id: "accounts-assets", label: "Asset Accounts", icon: <Building2 className="h-4 w-4" />, href: "/accounts/assets" }
-        ]
+          {
+            id: "accounts-revenue",
+            label: "Revenue Accounts",
+            icon: <TrendingUp className="h-4 w-4" />,
+            href: "/accounts/revenue",
+          },
+          {
+            id: "accounts-expenses",
+            label: "Expense Accounts",
+            icon: <Receipt className="h-4 w-4" />,
+            href: "/accounts/expenses",
+          },
+          {
+            id: "accounts-assets",
+            label: "Asset Accounts",
+            icon: <Building2 className="h-4 w-4" />,
+            href: "/accounts/assets",
+          },
+        ],
       },
       {
         id: "transactions",
@@ -93,7 +116,7 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
         active: activeNav === "transactions",
         description: "Record and manage transactions",
         shortcut: "Ctrl+T",
-        badge: "12"
+        badge: "12",
       },
       {
         id: "invoices",
@@ -103,7 +126,7 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
         active: activeNav === "invoices",
         description: "Create and track invoices",
         shortcut: "Ctrl+I",
-        badge: "3"
+        badge: "3",
       },
       {
         id: "customers",
@@ -112,7 +135,7 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
         href: "/customers",
         active: activeNav === "customers",
         description: "Customer relationship management",
-        shortcut: "Ctrl+C"
+        shortcut: "Ctrl+C",
       },
       {
         id: "reports",
@@ -123,10 +146,25 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
         description: "Financial reports and analytics",
         shortcut: "Ctrl+R",
         children: [
-          { id: "reports-profit-loss", label: "Profit & Loss", icon: <TrendingUp className="h-4 w-4" />, href: "/reports/profit-loss" },
-          { id: "reports-balance-sheet", label: "Balance Sheet", icon: <BarChart3 className="h-4 w-4" />, href: "/reports/balance-sheet" },
-          { id: "reports-cash-flow", label: "Cash Flow", icon: <Receipt className="h-4 w-4" />, href: "/reports/cash-flow" }
-        ]
+          {
+            id: "reports-profit-loss",
+            label: "Profit & Loss",
+            icon: <TrendingUp className="h-4 w-4" />,
+            href: "/reports/profit-loss",
+          },
+          {
+            id: "reports-balance-sheet",
+            label: "Balance Sheet",
+            icon: <BarChart3 className="h-4 w-4" />,
+            href: "/reports/balance-sheet",
+          },
+          {
+            id: "reports-cash-flow",
+            label: "Cash Flow",
+            icon: <Receipt className="h-4 w-4" />,
+            href: "/reports/cash-flow",
+          },
+        ],
       },
       {
         id: "settings",
@@ -135,37 +173,38 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
         href: "/settings",
         active: activeNav === "settings",
         description: "System configuration",
-        shortcut: "Ctrl+S"
-      }
-    ]
+        shortcut: "Ctrl+S",
+      },
+    ];
 
     const filteredItems = React.useMemo(() => {
-      if (!searchQuery) return navigationItems
-      
-      return navigationItems.filter(item => 
-        item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }, [searchQuery])
+      if (!searchQuery) return navigationItems;
+
+      return navigationItems.filter(
+        (item) =>
+          item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }, [searchQuery]);
 
     const handleItemClick = (item: NavigationItem) => {
-      setActiveNav(item.id)
-      onItemClick?.(item)
-      
+      setActiveNav(item.id);
+      onItemClick?.(item);
+
       if (item.children) {
-        const newExpanded = new Set(expandedItems)
+        const newExpanded = new Set(expandedItems);
         if (newExpanded.has(item.id)) {
-          newExpanded.delete(item.id)
+          newExpanded.delete(item.id);
         } else {
-          newExpanded.add(item.id)
+          newExpanded.add(item.id);
         }
-        setExpandedItems(newExpanded)
+        setExpandedItems(newExpanded);
       }
-    }
+    };
 
     const toggleCollapse = () => {
-      setIsCollapsed(!isCollapsed)
-    }
+      setIsCollapsed(!isCollapsed);
+    };
 
     return (
       <div
@@ -173,9 +212,9 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
         className={cn(
           "relative flex flex-col h-full backdrop-blur-xl transition-all duration-300",
           isCollapsed ? "w-16" : "w-64",
-          theme === 'dark' ? "glass-dark" : "glass",
+          theme === "dark" ? "glass-dark" : "glass",
           "border border-white/20",
-          className
+          className,
         )}
       >
         {/* Header */}
@@ -193,7 +232,11 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
               onClick={toggleCollapse}
               className="p-2 rounded-lg hover:bg-white/20 transition-colors"
             >
-              {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
+              {isCollapsed ? (
+                <Menu className="h-4 w-4" />
+              ) : (
+                <X className="h-4 w-4" />
+              )}
             </button>
           )}
         </div>
@@ -222,10 +265,10 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
                 onClick={() => handleItemClick(item)}
                 className={cn(
                   "w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 group",
-                  item.active 
-                    ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg" 
+                  item.active
+                    ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
                     : "text-gray-700 hover:bg-white/20 hover:scale-105",
-                  isCollapsed && "justify-center"
+                  isCollapsed && "justify-center",
                 )}
               >
                 <div className="relative">
@@ -234,27 +277,31 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
                   )}
                 </div>
-                
+
                 {!isCollapsed && (
                   <div className="flex-1 text-left">
                     <div className="font-medium text-sm">{item.label}</div>
-                    {item.description && userRole === 'beginner' && (
-                      <div className="text-xs opacity-70">{item.description}</div>
+                    {item.description && userRole === "beginner" && (
+                      <div className="text-xs opacity-70">
+                        {item.description}
+                      </div>
                     )}
                   </div>
                 )}
-                
-                {!isCollapsed && item.shortcut && userRole === 'professional' && (
-                  <kbd className="px-2 py-1 text-xs bg-white/20 rounded border border-white/30">
-                    {item.shortcut}
-                  </kbd>
-                )}
-                
+
+                {!isCollapsed &&
+                  item.shortcut &&
+                  userRole === "professional" && (
+                    <kbd className="px-2 py-1 text-xs bg-white/20 rounded border border-white/30">
+                      {item.shortcut}
+                    </kbd>
+                  )}
+
                 {!isCollapsed && item.children && (
-                  <ChevronDown 
+                  <ChevronDown
                     className={cn(
                       "h-4 w-4 transition-transform duration-200",
-                      expandedItems.has(item.id) && "rotate-180"
+                      expandedItems.has(item.id) && "rotate-180",
                     )}
                   />
                 )}
@@ -269,9 +316,9 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
                       onClick={() => handleItemClick(child)}
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
-                        child.active 
-                          ? "bg-white/20 text-blue-600" 
-                          : "text-gray-600 hover:bg-white/10"
+                        child.active
+                          ? "bg-white/20 text-blue-600"
+                          : "text-gray-600 hover:bg-white/10",
                       )}
                     >
                       {child.icon}
@@ -298,18 +345,22 @@ const SideNavigation = React.forwardRef<HTMLDivElement, SideNavigationProps>(
               </button>
             </>
           )}
-          
+
           {/* Theme Toggle */}
           <button className="w-full flex items-center justify-center gap-3 px-3 py-2 text-gray-700 hover:bg-white/20 rounded-lg transition-colors">
-            {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            {theme === "light" ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
             {!isCollapsed && <span className="text-sm">Theme</span>}
           </button>
         </div>
       </div>
-    )
-  }
-)
+    );
+  },
+);
 
-SideNavigation.displayName = "SideNavigation"
+SideNavigation.displayName = "SideNavigation";
 
-export { SideNavigation }
+export { SideNavigation };

@@ -1,6 +1,6 @@
-import React from 'react';
-import { useFormContext } from 'react-hook-form';
-import { cn } from '../lib/utils';
+import React from "react";
+import { useFormContext } from "react-hook-form";
+import { cn } from '../lib/utils.js';
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
@@ -32,29 +32,27 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           type={type}
           className={cn(
-            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background',
-            'file:border-0 file:bg-transparent file:text-sm file:font-medium',
-            'placeholder:text-muted-foreground',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-            'disabled:cursor-not-allowed disabled:opacity-50',
-            error && 'border-red-500 focus-visible:ring-red-300',
-            className
+            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+            "file:border-0 file:bg-transparent file:text-sm file:font-medium",
+            "placeholder:text-muted-foreground",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            error && "border-red-500 focus-visible:ring-red-300",
+            className,
           )}
           {...(name ? register(name) : {})}
           {...props}
           ref={ref}
         />
         {error && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-            {error}
-          </p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
         )}
       </div>
     );
-  }
+  },
 );
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
 
 type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
   options: { value: string; label: string }[];
@@ -86,11 +84,11 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         <select
           id={selectId}
           className={cn(
-            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-            'disabled:cursor-not-allowed disabled:opacity-50',
-            error && 'border-red-500 focus-visible:ring-red-300',
-            className
+            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            error && "border-red-500 focus-visible:ring-red-300",
+            className,
           )}
           {...(name ? register(name) : {})}
           {...props}
@@ -103,16 +101,14 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           ))}
         </select>
         {error && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-            {error}
-          </p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
         )}
       </div>
     );
-  }
+  },
 );
 
-Select.displayName = 'Select';
+Select.displayName = "Select";
 
 type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label?: string;
@@ -143,28 +139,26 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           id={textareaId}
           className={cn(
-            'flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background',
-            'placeholder:text-muted-foreground',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-            'disabled:cursor-not-allowed disabled:opacity-50',
-            error && 'border-red-500 focus-visible:ring-red-300',
-            className
+            "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+            "placeholder:text-muted-foreground",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            error && "border-red-500 focus-visible:ring-red-300",
+            className,
           )}
           {...(name ? register(name) : {})}
           {...props}
           ref={ref}
         />
         {error && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-            {error}
-          </p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
         )}
       </div>
     );
-  }
+  },
 );
 
-Textarea.displayName = 'Textarea';
+Textarea.displayName = "Textarea";
 
 type CheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label: string;
@@ -185,9 +179,9 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
               id={checkboxId}
               type="checkbox"
               className={cn(
-                'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary',
-                error && 'border-red-500 text-red-600 focus:ring-red-500',
-                className
+                "h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary",
+                error && "border-red-500 text-red-600 focus:ring-red-500",
+                className,
               )}
               {...(name ? register(name) : {})}
               {...props}
@@ -207,13 +201,11 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           </div>
         </div>
         {error && (
-          <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-            {error}
-          </p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error}</p>
         )}
       </div>
     );
-  }
+  },
 );
 
-Checkbox.displayName = 'Checkbox';
+Checkbox.displayName = "Checkbox";

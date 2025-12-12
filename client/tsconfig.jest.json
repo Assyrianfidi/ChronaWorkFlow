@@ -8,9 +8,5 @@
     "module": "commonjs",
     "target": "es2017"
   },
-  "include": [
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "jest.setup.ts"
-  ]
+  "include": ["**/*.test.ts", "**/*.test.tsx", "jest.setup.ts"]
 }

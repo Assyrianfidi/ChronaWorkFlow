@@ -1,10 +1,24 @@
-import * as React from "react"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from "recharts"
-import { TrendingUp, TrendingDown, DollarSign } from "lucide-react"
-import { cn } from "../../lib/utils"
+import React, { useState } from 'react';
+// @ts-ignore
+import * as React from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Area,
+  AreaChart,
+} from "recharts";
+import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "elevated" | "outlined" | "glass"
+  variant?: "default" | "elevated" | "outlined" | "glass";
 }
 
 const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
@@ -16,60 +30,65 @@ const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
         {
           "border-gray-200 hover:shadow-md": variant === "default",
           "border-gray-100 shadow-lg hover:shadow-xl": variant === "elevated",
-          "border-2 border-gray-300 hover:border-primary-300": variant === "outlined",
-          "border-transparent bg-white/80 backdrop-blur-sm hover:bg-white/90": variant === "glass",
+          "border-2 border-gray-300 hover:border-primary-300":
+            variant === "outlined",
+          "border-transparent bg-white/80 backdrop-blur-sm hover:bg-white/90":
+            variant === "glass",
         },
-        className
+        className,
       )}
       {...props}
     />
-  )
-)
+  ),
+);
 
-EnterpriseCard.displayName = "EnterpriseCard"
+EnterpriseCard.displayName = "EnterpriseCard";
 
-interface EnterpriseButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost"
-  size?: "sm" | "md" | "lg"
+interface EnterpriseButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "outline" | "ghost";
+  size?: "sm" | "md" | "lg";
 }
 
-const EnterpriseButton = React.forwardRef<HTMLButtonElement, EnterpriseButtonProps>(
-  ({ className, variant = "primary", size = "md", ...props }, ref) => (
-    <button
-      ref={ref}
-      className={cn(
-        "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50",
-        {
-          "bg-primary-600 text-white hover:bg-primary-700": variant === "primary",
-          "bg-gray-100 text-gray-900 hover:bg-gray-200": variant === "secondary",
-          "border border-gray-300 bg-white hover:bg-gray-50": variant === "outline",
-          "hover:bg-gray-100": variant === "ghost",
-        },
-        {
-          "h-8 px-3 text-sm": size === "sm",
-          "h-10 px-4 py-2": size === "md",
-          "h-12 px-6 text-lg": size === "lg",
-        },
-        className
-      )}
-      {...props}
-    />
-  )
-)
+const EnterpriseButton = React.forwardRef<
+  HTMLButtonElement,
+  EnterpriseButtonProps
+>(({ className, variant = "primary", size = "md", ...props }, ref) => (
+  <button
+    ref={ref}
+    className={cn(
+      "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50",
+      {
+        "bg-primary-600 text-white hover:bg-primary-700": variant === "primary",
+        "bg-gray-100 text-gray-900 hover:bg-gray-200": variant === "secondary",
+        "border border-gray-300 bg-white hover:bg-gray-50":
+          variant === "outline",
+        "hover:bg-gray-100": variant === "ghost",
+      },
+      {
+        "h-8 px-3 text-sm": size === "sm",
+        "h-10 px-4 py-2": size === "md",
+        "h-12 px-6 text-lg": size === "lg",
+      },
+      className,
+    )}
+    {...props}
+  />
+));
 
-EnterpriseButton.displayName = "EnterpriseButton"
+EnterpriseButton.displayName = "EnterpriseButton";
 
 interface CashFlowData {
-  month: string
-  income: number
-  expenses: number
-  net: number
+  month: string;
+  income: number;
+  expenses: number;
+  net: number;
 }
 
 interface CashFlowChartProps {
-  className?: string
-  loading?: boolean
-  period?: "6-months" | "12-months" | "24-months"
+  className?: string;
+  loading?: boolean;
+  period?: "6-months" | "12-months" | "24-months";
 }
 
 const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
@@ -80,13 +99,13 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
       { month: "Sep", income: 48000, expenses: 33000, net: 15000 },
       { month: "Oct", income: 61000, expenses: 38000, net: 23000 },
       { month: "Nov", income: 55000, expenses: 36000, net: 19000 },
-      { month: "Dec", income: 67000, expenses: 41000, net: 26000 }
-    ])
+      { month: "Dec", income: 67000, expenses: 41000, net: 26000 },
+    ]);
 
-    const currentMonth = cashFlowData[cashFlowData.length - 1]
-    const previousMonth = cashFlowData[cashFlowData.length - 2]
-    const netChange = currentMonth.net - previousMonth.net
-    const netChangePercent = ((netChange / previousMonth.net) * 100).toFixed(1)
+    const currentMonth = cashFlowData[cashFlowData.length - 1];
+    const previousMonth = cashFlowData[cashFlowData.length - 2];
+    const netChange = currentMonth.net - previousMonth.net;
+    const netChangePercent = ((netChange / previousMonth.net) * 100).toFixed(1);
 
     const formatCurrency = (value: number) => {
       return new Intl.NumberFormat("en-US", {
@@ -94,8 +113,8 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
         currency: "USD",
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-      }).format(value)
-    }
+      }).format(value);
+    };
 
     const CustomTooltip = ({ active, payload, label }: any) => {
       if (active && payload && payload.length) {
@@ -108,10 +127,10 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
               </p>
             ))}
           </div>
-        )
+        );
       }
-      return null
-    }
+      return null;
+    };
 
     if (loading) {
       return (
@@ -121,7 +140,7 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
             <div className="h-64 bg-gray-200 rounded"></div>
           </div>
         </EnterpriseCard>
-      )
+      );
     }
 
     return (
@@ -142,11 +161,14 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
               ) : (
                 <TrendingDown className="w-4 h-4 text-red-500" />
               )}
-              <span className={cn(
-                "text-sm font-medium",
-                netChange > 0 ? "text-green-500" : "text-red-500"
-              )}>
-                {netChange > 0 ? "+" : ""}{netChangePercent}%
+              <span
+                className={cn(
+                  "text-sm font-medium",
+                  netChange > 0 ? "text-green-500" : "text-red-500",
+                )}
+              >
+                {netChange > 0 ? "+" : ""}
+                {netChangePercent}%
               </span>
             </div>
             <p className="text-sm text-gray-500">vs last month</p>
@@ -180,21 +202,18 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={cashFlowData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis 
-                dataKey="month" 
-                tick={{ fontSize: 12, fill: '#6b7280' }}
-                axisLine={{ stroke: '#e5e7eb' }}
+              <XAxis
+                dataKey="month"
+                tick={{ fontSize: 12, fill: "#6b7280" }}
+                axisLine={{ stroke: "#e5e7eb" }}
               />
-              <YAxis 
-                tick={{ fontSize: 12, fill: '#6b7280' }}
-                axisLine={{ stroke: '#e5e7eb' }}
+              <YAxis
+                tick={{ fontSize: 12, fill: "#6b7280" }}
+                axisLine={{ stroke: "#e5e7eb" }}
                 tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Legend 
-                wrapperStyle={{ paddingTop: '20px' }}
-                iconType="rect"
-              />
+              <Legend wrapperStyle={{ paddingTop: "20px" }} iconType="rect" />
               <Area
                 type="monotone"
                 dataKey="income"
@@ -218,7 +237,7 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
                 dataKey="net"
                 stroke="#007bff"
                 strokeWidth={3}
-                dot={{ fill: '#007bff', r: 4 }}
+                dot={{ fill: "#007bff", r: 4 }}
                 activeDot={{ r: 6 }}
               />
             </AreaChart>
@@ -231,7 +250,12 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
             <div className="text-sm text-gray-600">
               Average monthly net cash flow:{" "}
               <span className="font-medium text-gray-900">
-                {formatCurrency(Math.round(cashFlowData.reduce((sum, d) => sum + d.net, 0) / cashFlowData.length))}
+                {formatCurrency(
+                  Math.round(
+                    cashFlowData.reduce((sum, d) => sum + d.net, 0) /
+                      cashFlowData.length,
+                  ),
+                )}
               </span>
             </div>
             <EnterpriseButton variant="ghost" size="sm">
@@ -240,9 +264,9 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
           </div>
         </div>
       </EnterpriseCard>
-    )
-  }
-)
-CashFlowChart.displayName = "CashFlowChart"
+    );
+  },
+);
+CashFlowChart.displayName = "CashFlowChart";
 
-export { CashFlowChart, type CashFlowData }
+export { CashFlowChart, type CashFlowData };

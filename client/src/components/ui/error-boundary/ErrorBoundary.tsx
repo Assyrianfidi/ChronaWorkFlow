@@ -1,6 +1,6 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert.js';
+import { AlertCircle } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -24,7 +24,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
+    console.error("Uncaught error:", error, errorInfo);
     this.props.onError?.(error, errorInfo);
   }
 
@@ -40,7 +40,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Something went wrong</AlertTitle>
             <AlertDescription>
-              {this.state.error?.message || 'An unexpected error occurred'}
+              {this.state.error?.message || "An unexpected error occurred"}
             </AlertDescription>
           </Alert>
         </div>

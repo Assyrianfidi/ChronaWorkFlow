@@ -3,11 +3,11 @@
  * Comprehensive audit logging, compliance tracking, and forensic analysis
  */
 
-import { PrismaClient } from '@prisma/client';
-import { logger } from '../utils/logger';
-import { EventBus } from '../events/event-bus';
-import { CacheManager } from '../cache/cache-manager';
-import { CryptoService } from '../security/crypto-service';
+import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { logger } from "../utils/logger";
+import { EventBus } from "../events/event-bus";
+import { CacheManager } from "../cache/cache-manager";
+import { CryptoService } from "../security/crypto-service";
 
 export interface AuditEvent {
   id: string;
@@ -18,8 +18,17 @@ export interface AuditEvent {
   resource: string;
   resourceId?: string;
   resourceName?: string;
-  operation: 'create' | 'read' | 'update' | 'delete' | 'export' | 'import' | 'login' | 'logout' | 'admin';
-  result: 'success' | 'failure' | 'partial';
+  operation:
+    | "create"
+    | "read"
+    | "update"
+    | "delete"
+    | "export"
+    | "import"
+    | "login"
+    | "logout"
+    | "admin";
+  result: "success" | "failure" | "partial";
   details: Record<string, any>;
   beforeState?: Record<string, any>;
   afterState?: Record<string, any>;
@@ -27,13 +36,20 @@ export interface AuditEvent {
   userAgent: string;
   sessionId: string;
   requestId: string;
-  source: 'web' | 'api' | 'mobile' | 'system' | 'integration';
-  category: 'authentication' | 'authorization' | 'data' | 'system' | 'security' | 'compliance' | 'financial';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  source: "web" | "api" | "mobile" | "system" | "integration";
+  category:
+    | "authentication"
+    | "authorization"
+    | "data"
+    | "system"
+    | "security"
+    | "compliance"
+    | "financial";
+  severity: "low" | "medium" | "high" | "critical";
   compliance: Array<{
     standard: string;
     requirement: string;
-    status: 'compliant' | 'non-compliant' | 'pending';
+    status: "compliant" | "non-compliant" | "pending";
   }>;
   retention: number; // days
   encrypted: boolean;
@@ -57,44 +73,51 @@ export interface AuditFilter {
   compliance?: string;
   limit?: number;
   offset?: number;
-  sortBy?: 'timestamp' | 'severity' | 'category' | 'user';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "timestamp" | "severity" | "category" | "user";
+  sortOrder?: "asc" | "desc";
 }
 
 export interface AuditReport {
   id: string;
   name: string;
   description: string;
-  type: 'compliance' | 'security' | 'access' | 'data' | 'financial' | 'custom';
+  type: "compliance" | "security" | "access" | "data" | "financial" | "custom";
   filters: AuditFilter;
   schedule?: {
-    frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly';
+    frequency: "daily" | "weekly" | "monthly" | "quarterly";
     nextRun: Date;
     recipients: string[];
   };
-  format: 'json' | 'csv' | 'pdf' | 'xml';
+  format: "json" | "csv" | "pdf" | "xml";
   isActive: boolean;
   createdBy: string;
   createdAt: Date;
   lastRun?: Date;
-  lastRunStatus?: 'success' | 'failure' | 'running';
+  lastRunStatus?: "success" | "failure" | "running";
 }
 
 export interface ComplianceRule {
   id: string;
   name: string;
   description: string;
-  standard: 'SOX' | 'GDPR' | 'HIPAA' | 'PCI-DSS' | 'ISO-27001' | 'custom';
+  standard: "SOX" | "GDPR" | "HIPAA" | "PCI-DSS" | "ISO-27001" | "custom";
   requirement: string;
   category: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   conditions: Array<{
     field: string;
-    operator: 'equals' | 'contains' | 'not_equals' | 'greater_than' | 'less_than' | 'in' | 'not_in';
+    operator:
+      | "equals"
+      | "contains"
+      | "not_equals"
+      | "greater_than"
+      | "less_than"
+      | "in"
+      | "not_in";
     value: any;
   }>;
   actions: Array<{
-    type: 'alert' | 'block' | 'log' | 'report';
+    type: "alert" | "block" | "log" | "report";
     parameters?: Record<string, any>;
   }>;
   isActive: boolean;
@@ -107,13 +130,13 @@ export interface AuditAlert {
   id: string;
   ruleId: string;
   ruleName: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   message: string;
   details: Record<string, any>;
   triggeredAt: Date;
   acknowledgedAt?: Date;
   acknowledgedBy?: string;
-  status: 'open' | 'acknowledged' | 'resolved' | 'false_positive';
+  status: "open" | "acknowledged" | "resolved" | "false_positive";
   resolution?: string;
 }
 
@@ -128,8 +151,8 @@ export class EnterpriseAuditTrailSystem {
   private bufferFlushInterval: NodeJS.Timeout | undefined;
 
   constructor() {
-    this.prisma = new PrismaClient();
-    this.logger = logger.child({ component: 'EnterpriseAuditTrailSystem' });
+    this.prisma = prisma;
+    this.logger = logger.child({ component: "EnterpriseAuditTrailSystem" });
     this.eventBus = new EventBus();
     this.cache = new CacheManager();
     this.crypto = new CryptoService();
@@ -158,7 +181,7 @@ export class EnterpriseAuditTrailSystem {
 
       this.logger.info(`Loaded ${this.complianceRules.size} compliance rules`);
     } catch (error) {
-      this.logger.error('Failed to initialize compliance rules:', error);
+      this.logger.error("Failed to initialize compliance rules:", error);
       throw error;
     }
   }
@@ -167,102 +190,118 @@ export class EnterpriseAuditTrailSystem {
    * Create default compliance rules
    */
   private async createDefaultComplianceRules(): Promise<void> {
-    const defaultRules: Omit<ComplianceRule, 'id' | 'createdAt' | 'updatedAt'>[] = [
+    const defaultRules: Omit<
+      ComplianceRule,
+      "id" | "createdAt" | "updatedAt"
+    >[] = [
       {
-        name: 'SOX Financial Data Access',
-        description: 'Monitor access to financial data for SOX compliance',
-        standard: 'SOX',
-        requirement: 'All financial data access must be logged and reviewed',
-        category: 'financial',
-        severity: 'high',
+        name: "SOX Financial Data Access",
+        description: "Monitor access to financial data for SOX compliance",
+        standard: "SOX",
+        requirement: "All financial data access must be logged and reviewed",
+        category: "financial",
+        severity: "high",
         conditions: [
-          { field: 'category', operator: 'equals', value: 'financial' },
-          { field: 'operation', operator: 'in', value: ['create', 'update', 'delete'] }
+          { field: "category", operator: "equals", value: "financial" },
+          {
+            field: "operation",
+            operator: "in",
+            value: ["create", "update", "delete"],
+          },
         ],
         actions: [
-          { type: 'log' },
-          { type: 'alert', parameters: { level: 'high' } }
+          { type: "log" },
+          { type: "alert", parameters: { level: "high" } },
         ],
         isActive: true,
-        retentionDays: 2555 // 7 years for SOX
+        retentionDays: 2555, // 7 years for SOX
       },
       {
-        name: 'GDPR Data Processing',
-        description: 'Monitor personal data processing for GDPR compliance',
-        standard: 'GDPR',
-        requirement: 'Personal data processing must be logged with lawful basis',
-        category: 'data',
-        severity: 'medium',
+        name: "GDPR Data Processing",
+        description: "Monitor personal data processing for GDPR compliance",
+        standard: "GDPR",
+        requirement:
+          "Personal data processing must be logged with lawful basis",
+        category: "data",
+        severity: "medium",
         conditions: [
-          { field: 'resource', operator: 'contains', value: 'personal' },
-          { field: 'operation', operator: 'in', value: ['create', 'update', 'delete', 'export'] }
+          { field: "resource", operator: "contains", value: "personal" },
+          {
+            field: "operation",
+            operator: "in",
+            value: ["create", "update", "delete", "export"],
+          },
         ],
         actions: [
-          { type: 'log' },
-          { type: 'report', parameters: { frequency: 'monthly' } }
+          { type: "log" },
+          { type: "report", parameters: { frequency: "monthly" } },
         ],
         isActive: true,
-        retentionDays: 2555
+        retentionDays: 2555,
       },
       {
-        name: 'Admin Action Monitoring',
-        description: 'Monitor all administrative actions',
-        standard: 'ISO-27001',
-        requirement: 'Administrative actions must be logged and reviewed',
-        category: 'authorization',
-        severity: 'high',
+        name: "Admin Action Monitoring",
+        description: "Monitor all administrative actions",
+        standard: "ISO-27001",
+        requirement: "Administrative actions must be logged and reviewed",
+        category: "authorization",
+        severity: "high",
         conditions: [
-          { field: 'userRole', operator: 'equals', value: 'admin' },
-          { field: 'operation', operator: 'in', value: ['create', 'update', 'delete'] }
+          { field: "userRole", operator: "equals", value: "admin" },
+          {
+            field: "operation",
+            operator: "in",
+            value: ["create", "update", "delete"],
+          },
         ],
         actions: [
-          { type: 'log' },
-          { type: 'alert', parameters: { level: 'medium' } }
+          { type: "log" },
+          { type: "alert", parameters: { level: "medium" } },
         ],
         isActive: true,
-        retentionDays: 1825 // 5 years
+        retentionDays: 1825, // 5 years
       },
       {
-        name: 'Failed Authentication',
-        description: 'Monitor failed authentication attempts',
-        standard: 'custom',
-        requirement: 'Failed authentication must be monitored for security',
-        category: 'authentication',
-        severity: 'medium',
+        name: "Failed Authentication",
+        description: "Monitor failed authentication attempts",
+        standard: "custom",
+        requirement: "Failed authentication must be monitored for security",
+        category: "authentication",
+        severity: "medium",
         conditions: [
-          { field: 'action', operator: 'equals', value: 'login' },
-          { field: 'result', operator: 'equals', value: 'failure' }
+          { field: "action", operator: "equals", value: "login" },
+          { field: "result", operator: "equals", value: "failure" },
         ],
         actions: [
-          { type: 'log' },
-          { type: 'alert', parameters: { level: 'medium', threshold: 5 } }
+          { type: "log" },
+          { type: "alert", parameters: { level: "medium", threshold: 5 } },
         ],
         isActive: true,
-        retentionDays: 365
+        retentionDays: 365,
       },
       {
-        name: 'Data Export Monitoring',
-        description: 'Monitor all data export activities',
-        standard: 'custom',
-        requirement: 'Data exports must be authorized and logged',
-        category: 'data',
-        severity: 'high',
+        name: "Data Export Monitoring",
+        description: "Monitor all data export activities",
+        standard: "custom",
+        requirement: "Data exports must be authorized and logged",
+        category: "data",
+        severity: "high",
         conditions: [
-          { field: 'operation', operator: 'equals', value: 'export' }
+          { field: "operation", operator: "equals", value: "export" },
         ],
         actions: [
-          { type: 'log' },
-          { type: 'alert', parameters: { level: 'high' } }
+          { type: "log" },
+          { type: "alert", parameters: { level: "high" } },
         ],
         isActive: true,
-        retentionDays: 1825
-      }
+        retentionDays: 1825,
+      },
     ];
 
     for (const ruleData of defaultRules) {
       const rule = {
         id: this.generateReportId(),
-        ...ruleData
+        ...ruleData,
       };
       this.complianceRules.set(rule.id, rule as ComplianceRule);
     }
@@ -275,20 +314,20 @@ export class EnterpriseAuditTrailSystem {
    */
   private setupEventListeners(): void {
     // Listen to all system events for audit logging
-    this.eventBus.on('*', async (event: any) => {
+    this.eventBus.on("*", async (event: any) => {
       await this.captureAuditEvent(event);
     });
 
     // Listen for specific security events
-    this.eventBus.on('security.threat_detected', async (event: any) => {
+    this.eventBus.on("security.threat_detected", async (event: any) => {
       await this.createSecurityAudit(event);
     });
 
-    this.eventBus.on('user.permission_changed', async (event: any) => {
+    this.eventBus.on("user.permission_changed", async (event: any) => {
       await this.createPermissionAudit(event);
     });
 
-    this.eventBus.on('data.exported', async (event: any) => {
+    this.eventBus.on("data.exported", async (event: any) => {
       await this.createDataExportAudit(event);
     });
   }
@@ -308,7 +347,7 @@ export class EnterpriseAuditTrailSystem {
   private async captureAuditEvent(event: any): Promise<void> {
     try {
       // Skip audit events to prevent infinite loops
-      if (event.type?.startsWith('audit.')) return;
+      if (event.type?.startsWith("audit.")) return;
 
       const auditEvent = await this.transformEventToAudit(event);
       if (!auditEvent) return;
@@ -317,12 +356,11 @@ export class EnterpriseAuditTrailSystem {
       this.auditBuffer.push(auditEvent);
 
       // Process immediately for critical events
-      if (auditEvent.severity === 'critical') {
+      if (auditEvent.severity === "critical") {
         await this.processAuditEvent(auditEvent);
       }
-
     } catch (error) {
-      this.logger.error('Failed to capture audit event:', error);
+      this.logger.error("Failed to capture audit event:", error);
     }
   }
 
@@ -341,111 +379,137 @@ export class EnterpriseAuditTrailSystem {
       id: this.generateAuditId(),
       timestamp: event.timestamp || new Date(),
       userId: event.userId,
-      userRole: event.userRole || 'user',
+      userRole: event.userRole || "user",
       action: event.type,
-      resource: event.entityType || 'system',
+      resource: event.entityType || "system",
       resourceId: event.entityId,
       resourceName: event.entityName,
       operation,
-      result: event.success ? 'success' : 'failure',
+      result: event.success ? "success" : "failure",
       details: event.data || {},
       beforeState: event.beforeState,
       afterState: event.afterState,
-      ipAddress: event.ipAddress || 'unknown',
-      userAgent: event.userAgent || 'unknown',
-      sessionId: event.sessionId || 'unknown',
+      ipAddress: event.ipAddress || "unknown",
+      userAgent: event.userAgent || "unknown",
+      sessionId: event.sessionId || "unknown",
       requestId: event.requestId || this.generateRequestId(),
-      source: event.source || 'system',
+      source: event.source || "system",
       category,
       severity,
       compliance,
       retention: this.calculateRetention(category, severity),
-      encrypted: category === 'financial' || severity === 'critical',
-      checksum: ''
+      encrypted: category === "financial" || severity === "critical",
+      checksum: "",
     };
   }
 
   /**
    * Determine audit category
    */
-  private determineAuditCategory(eventType: string): AuditEvent['category'] {
-    if (eventType.includes('login') || eventType.includes('logout') || eventType.includes('auth')) {
-      return 'authentication';
+  private determineAuditCategory(eventType: string): AuditEvent["category"] {
+    if (
+      eventType.includes("login") ||
+      eventType.includes("logout") ||
+      eventType.includes("auth")
+    ) {
+      return "authentication";
     }
-    if (eventType.includes('permission') || eventType.includes('role') || eventType.includes('access')) {
-      return 'authorization';
+    if (
+      eventType.includes("permission") ||
+      eventType.includes("role") ||
+      eventType.includes("access")
+    ) {
+      return "authorization";
     }
-    if (eventType.includes('security') || eventType.includes('threat') || eventType.includes('breach')) {
-      return 'security';
+    if (
+      eventType.includes("security") ||
+      eventType.includes("threat") ||
+      eventType.includes("breach")
+    ) {
+      return "security";
     }
-    if (eventType.includes('transaction') || eventType.includes('invoice') || eventType.includes('bill')) {
-      return 'financial';
+    if (
+      eventType.includes("transaction") ||
+      eventType.includes("invoice") ||
+      eventType.includes("bill")
+    ) {
+      return "financial";
     }
-    if (eventType.includes('export') || eventType.includes('import') || eventType.includes('data')) {
-      return 'data';
+    if (
+      eventType.includes("export") ||
+      eventType.includes("import") ||
+      eventType.includes("data")
+    ) {
+      return "data";
     }
-    if (eventType.includes('compliance') || eventType.includes('audit')) {
-      return 'compliance';
+    if (eventType.includes("compliance") || eventType.includes("audit")) {
+      return "compliance";
     }
-    return 'system';
+    return "system";
   }
 
   /**
    * Determine audit severity
    */
-  private determineAuditSeverity(event: any): AuditEvent['severity'] {
+  private determineAuditSeverity(event: any): AuditEvent["severity"] {
     // Security events are critical
-    if (event.type?.includes('security') || event.type?.includes('threat')) {
-      return 'critical';
+    if (event.type?.includes("security") || event.type?.includes("threat")) {
+      return "critical";
     }
-    
+
     // Failed operations are high severity
     if (!event.success) {
-      return 'high';
+      return "high";
     }
-    
+
     // Admin operations are high severity
-    if (event.userRole === 'admin') {
-      return 'high';
+    if (event.userRole === "admin") {
+      return "high";
     }
-    
+
     // Financial operations are medium severity
-    if (event.type?.includes('transaction') || event.type?.includes('invoice')) {
-      return 'medium';
+    if (
+      event.type?.includes("transaction") ||
+      event.type?.includes("invoice")
+    ) {
+      return "medium";
     }
-    
+
     // Regular operations are low severity
-    return 'low';
+    return "low";
   }
 
   /**
    * Determine audit operation
    */
-  private determineAuditOperation(eventType: string): AuditEvent['operation'] {
-    if (eventType.includes('create')) return 'create';
-    if (eventType.includes('update')) return 'update';
-    if (eventType.includes('delete')) return 'delete';
-    if (eventType.includes('view') || eventType.includes('read')) return 'read';
-    if (eventType.includes('export')) return 'export';
-    if (eventType.includes('import')) return 'import';
-    if (eventType.includes('login')) return 'login';
-    if (eventType.includes('logout')) return 'logout';
-    if (eventType.includes('admin')) return 'admin';
-    return 'update';
+  private determineAuditOperation(eventType: string): AuditEvent["operation"] {
+    if (eventType.includes("create")) return "create";
+    if (eventType.includes("update")) return "update";
+    if (eventType.includes("delete")) return "delete";
+    if (eventType.includes("view") || eventType.includes("read")) return "read";
+    if (eventType.includes("export")) return "export";
+    if (eventType.includes("import")) return "import";
+    if (eventType.includes("login")) return "login";
+    if (eventType.includes("logout")) return "logout";
+    if (eventType.includes("admin")) return "admin";
+    return "update";
   }
 
   /**
    * Evaluate compliance
    */
-  private async evaluateCompliance(event: any, category: string): Promise<AuditEvent['compliance']> {
-    const compliance: AuditEvent['compliance'] = [];
+  private async evaluateCompliance(
+    event: any,
+    category: string,
+  ): Promise<AuditEvent["compliance"]> {
+    const compliance: AuditEvent["compliance"] = [];
 
     for (const rule of this.complianceRules.values()) {
       if (this.evaluateRuleConditions(rule.conditions, event, category)) {
         compliance.push({
           standard: rule.standard,
           requirement: rule.requirement,
-          status: 'compliant'
+          status: "compliant",
         });
       }
     }
@@ -456,25 +520,35 @@ export class EnterpriseAuditTrailSystem {
   /**
    * Evaluate rule conditions
    */
-  private evaluateRuleConditions(conditions: any[], event: any, category: string): boolean {
-    return conditions.every(condition => {
+  private evaluateRuleConditions(
+    conditions: any[],
+    event: any,
+    category: string,
+  ): boolean {
+    return conditions.every((condition) => {
       const fieldValue = this.getFieldValue(condition.field, event, category);
-      
+
       switch (condition.operator) {
-        case 'equals':
+        case "equals":
           return fieldValue === condition.value;
-        case 'contains':
+        case "contains":
           return String(fieldValue).includes(String(condition.value));
-        case 'not_equals':
+        case "not_equals":
           return fieldValue !== condition.value;
-        case 'greater_than':
+        case "greater_than":
           return Number(fieldValue) > Number(condition.value);
-        case 'less_than':
+        case "less_than":
           return Number(fieldValue) < Number(condition.value);
-        case 'in':
-          return Array.isArray(condition.value) && condition.value.includes(fieldValue);
-        case 'not_in':
-          return Array.isArray(condition.value) && !condition.value.includes(fieldValue);
+        case "in":
+          return (
+            Array.isArray(condition.value) &&
+            condition.value.includes(fieldValue)
+          );
+        case "not_in":
+          return (
+            Array.isArray(condition.value) &&
+            !condition.value.includes(fieldValue)
+          );
         default:
           return false;
       }
@@ -486,14 +560,14 @@ export class EnterpriseAuditTrailSystem {
    */
   private getFieldValue(field: string, event: any, category: string): any {
     const fieldMap: Record<string, (event: any) => any> = {
-      'category': () => category,
-      'operation': () => this.determineAuditOperation(event.type),
-      'action': () => event.action || event.type,
-      'resource': () => event.entityType,
-      'userRole': () => event.userRole,
-      'result': () => event.success ? 'success' : 'failure',
-      'severity': () => this.determineAuditSeverity(event),
-      'source': () => event.source || 'system'
+      category: () => category,
+      operation: () => this.determineAuditOperation(event.type),
+      action: () => event.action || event.type,
+      resource: () => event.entityType,
+      userRole: () => event.userRole,
+      result: () => (event.success ? "success" : "failure"),
+      severity: () => this.determineAuditSeverity(event),
+      source: () => event.source || "system",
     };
 
     const getter = fieldMap[field];
@@ -506,24 +580,26 @@ export class EnterpriseAuditTrailSystem {
   private calculateRetention(category: string, severity: string): number {
     // Base retention periods
     const baseRetention: Record<string, number> = {
-      'authentication': 365,
-      'authorization': 1825,
-      'data': 2555,
-      'system': 365,
-      'security': 2555,
-      'compliance': 2555,
-      'financial': 2555 // 7 years for financial data
+      authentication: 365,
+      authorization: 1825,
+      data: 2555,
+      system: 365,
+      security: 2555,
+      compliance: 2555,
+      financial: 2555, // 7 years for financial data
     };
 
     // Adjust based on severity
     const severityMultipliers: Record<string, number> = {
-      'low': 1,
-      'medium': 1.5,
-      'high': 2,
-      'critical': 3
+      low: 1,
+      medium: 1.5,
+      high: 2,
+      critical: 3,
     };
 
-    return Math.floor(baseRetention[category] * (severityMultipliers[severity] || 1));
+    return Math.floor(
+      baseRetention[category] * (severityMultipliers[severity] || 1),
+    );
   }
 
   /**
@@ -538,7 +614,9 @@ export class EnterpriseAuditTrailSystem {
       if (auditEvent.encrypted) {
         auditEvent.details = await this.encryptData(auditEvent.details);
         if (auditEvent.beforeState) {
-          auditEvent.beforeState = await this.encryptData(auditEvent.beforeState);
+          auditEvent.beforeState = await this.encryptData(
+            auditEvent.beforeState,
+          );
         }
         if (auditEvent.afterState) {
           auditEvent.afterState = await this.encryptData(auditEvent.afterState);
@@ -548,7 +626,7 @@ export class EnterpriseAuditTrailSystem {
       // Store in database
       // TODO: Implement auditEvent table
       // await this.captureAuditEvent(auditEvent);
-      this.logger.info('Audit event captured', auditEvent);
+      this.logger.info("Audit event captured", auditEvent);
 
       // Check compliance rules
       // TODO: Implement compliance checking
@@ -557,10 +635,9 @@ export class EnterpriseAuditTrailSystem {
       // Update metrics
       // TODO: Implement audit metrics
       // await this.updateAuditMetrics(auditEvent);
-      this.logger.info('Audit metrics updated');
-
+      this.logger.info("Audit metrics updated");
     } catch (error) {
-      this.logger.error('Failed to process audit event:', error);
+      this.logger.error("Failed to process audit event:", error);
       throw error;
     }
   }
@@ -578,7 +655,7 @@ export class EnterpriseAuditTrailSystem {
       try {
         await this.processAuditEvent(event);
       } catch (error) {
-        this.logger.error('Failed to process buffered audit event:', error);
+        this.logger.error("Failed to process buffered audit event:", error);
         // Re-add to buffer for retry
         this.auditBuffer.push(event);
       }
@@ -592,30 +669,30 @@ export class EnterpriseAuditTrailSystem {
     const auditEvent: AuditEvent = {
       id: this.generateAuditId(),
       timestamp: new Date(),
-      userId: event.userId || 'system',
-      userRole: 'system',
-      action: 'security.threat_detected',
-      resource: 'security',
-      operation: 'admin',
-      result: 'success',
+      userId: event.userId || "system",
+      userRole: "system",
+      action: "security.threat_detected",
+      resource: "security",
+      operation: "admin",
+      result: "success",
       details: event,
-      ipAddress: event.ipAddress || 'unknown',
-      userAgent: 'system',
-      sessionId: 'system',
+      ipAddress: event.ipAddress || "unknown",
+      userAgent: "system",
+      sessionId: "system",
       requestId: this.generateRequestId(),
-      source: 'system',
-      category: 'security',
-      severity: 'critical',
+      source: "system",
+      category: "security",
+      severity: "critical",
       compliance: [
         {
-          standard: 'ISO-27001',
-          requirement: 'Security incidents must be logged and investigated',
-          status: 'compliant'
-        }
+          standard: "ISO-27001",
+          requirement: "Security incidents must be logged and investigated",
+          status: "compliant",
+        },
       ],
       retention: 2555,
       encrypted: true,
-      checksum: ''
+      checksum: "",
     };
 
     await this.processAuditEvent(auditEvent);
@@ -630,31 +707,31 @@ export class EnterpriseAuditTrailSystem {
       timestamp: new Date(),
       userId: event.userId,
       userRole: event.userRole,
-      action: 'user.permission_changed',
-      resource: 'user',
+      action: "user.permission_changed",
+      resource: "user",
       resourceId: event.targetUserId,
-      operation: 'update',
-      result: 'success',
+      operation: "update",
+      result: "success",
       details: event,
       beforeState: event.beforePermissions,
       afterState: event.afterPermissions,
-      ipAddress: event.ipAddress || 'unknown',
-      userAgent: event.userAgent || 'unknown',
-      sessionId: event.sessionId || 'unknown',
+      ipAddress: event.ipAddress || "unknown",
+      userAgent: event.userAgent || "unknown",
+      sessionId: event.sessionId || "unknown",
       requestId: this.generateRequestId(),
-      source: event.source || 'system',
-      category: 'authorization',
-      severity: 'high',
+      source: event.source || "system",
+      category: "authorization",
+      severity: "high",
       compliance: [
         {
-          standard: 'SOX',
-          requirement: 'Access control changes must be authorized and logged',
-          status: 'compliant'
-        }
+          standard: "SOX",
+          requirement: "Access control changes must be authorized and logged",
+          status: "compliant",
+        },
       ],
       retention: 1825,
       encrypted: false,
-      checksum: ''
+      checksum: "",
     };
 
     await this.processAuditEvent(auditEvent);
@@ -669,28 +746,28 @@ export class EnterpriseAuditTrailSystem {
       timestamp: new Date(),
       userId: event.userId,
       userRole: event.userRole,
-      action: 'data.exported',
+      action: "data.exported",
       resource: event.dataType,
-      operation: 'export',
-      result: 'success',
+      operation: "export",
+      result: "success",
       details: event,
-      ipAddress: event.ipAddress || 'unknown',
-      userAgent: event.userAgent || 'unknown',
-      sessionId: event.sessionId || 'unknown',
+      ipAddress: event.ipAddress || "unknown",
+      userAgent: event.userAgent || "unknown",
+      sessionId: event.sessionId || "unknown",
       requestId: this.generateRequestId(),
-      source: event.source || 'system',
-      category: 'data',
-      severity: 'high',
+      source: event.source || "system",
+      category: "data",
+      severity: "high",
       compliance: [
         {
-          standard: 'GDPR',
-          requirement: 'Data exports must be logged and authorized',
-          status: 'compliant'
-        }
+          standard: "GDPR",
+          requirement: "Data exports must be logged and authorized",
+          status: "compliant",
+        },
       ],
       retention: 1825,
       encrypted: event.containsPersonalData || false,
-      checksum: ''
+      checksum: "",
     };
 
     await this.processAuditEvent(auditEvent);
@@ -705,43 +782,45 @@ export class EnterpriseAuditTrailSystem {
     // Apply filters
     if (filter.userId) whereClause.userId = filter.userId;
     if (filter.userRole) whereClause.userRole = filter.userRole;
-    if (filter.action) whereClause.action = { contains: filter.action, mode: 'insensitive' };
-    if (filter.resource) whereClause.resource = { contains: filter.resource, mode: 'insensitive' };
+    if (filter.action)
+      whereClause.action = { contains: filter.action, mode: "insensitive" };
+    if (filter.resource)
+      whereClause.resource = { contains: filter.resource, mode: "insensitive" };
     if (filter.operation) whereClause.operation = filter.operation;
     if (filter.result) whereClause.result = filter.result;
     if (filter.category) whereClause.category = filter.category;
     if (filter.severity) whereClause.severity = filter.severity;
     if (filter.source) whereClause.source = filter.source;
     if (filter.ipAddress) whereClause.ipAddress = filter.ipAddress;
-    
+
     if (filter.dateFrom || filter.dateTo) {
       whereClause.timestamp = {};
       if (filter.dateFrom) whereClause.timestamp.gte = filter.dateFrom;
       if (filter.dateTo) whereClause.timestamp.lte = filter.dateTo;
     }
-    
+
     if (filter.search) {
       whereClause.OR = [
-        { action: { contains: filter.search, mode: 'insensitive' } },
-        { resource: { contains: filter.search, mode: 'insensitive' } },
-        { resourceName: { contains: filter.search, mode: 'insensitive' } }
+        { action: { contains: filter.search, mode: "insensitive" } },
+        { resource: { contains: filter.search, mode: "insensitive" } },
+        { resourceName: { contains: filter.search, mode: "insensitive" } },
       ];
     }
-    
+
     if (filter.compliance) {
       whereClause.compliance = {
         some: {
-          standard: filter.compliance
-        }
+          standard: filter.compliance,
+        },
       };
     }
 
     // Apply sorting
     const orderBy: any = {};
     if (filter.sortBy) {
-      orderBy[filter.sortBy] = filter.sortOrder || 'desc';
+      orderBy[filter.sortBy] = filter.sortOrder || "desc";
     } else {
-      orderBy.timestamp = 'desc';
+      orderBy.timestamp = "desc";
     }
 
     // TODO: Implement auditEvent table
@@ -763,22 +842,25 @@ export class EnterpriseAuditTrailSystem {
 
     // Return empty array for now
     const events: any[] = [];
-    
+
     return events;
   }
 
   /**
    * Create audit report
    */
-  async createAuditReport(data: {
-    name: string;
-    description: string;
-    type: AuditReport['type'];
-    filters: AuditFilter;
-    schedule?: AuditReport['schedule'];
-    format: AuditReport['format'];
-    recipients: string[];
-  }, createdBy: string): Promise<AuditReport> {
+  async createAuditReport(
+    data: {
+      name: string;
+      description: string;
+      type: AuditReport["type"];
+      filters: AuditFilter;
+      schedule?: AuditReport["schedule"];
+      format: AuditReport["format"];
+      recipients: string[];
+    },
+    createdBy: string,
+  ): Promise<AuditReport> {
     const report: AuditReport = {
       id: this.generateReportId(),
       name: data.name,
@@ -789,7 +871,7 @@ export class EnterpriseAuditTrailSystem {
       format: data.format,
       isActive: true,
       createdBy,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     // Store in database
@@ -824,19 +906,19 @@ export class EnterpriseAuditTrailSystem {
     // For now, return mock report
     const report = {
       id: reportId,
-      name: 'Mock Report',
-      description: 'Mock report description',
-      type: 'compliance',
+      name: "Mock Report",
+      description: "Mock report description",
+      type: "compliance",
       filters: {},
       schedule: {},
-      format: 'json',
+      format: "json",
       isActive: true,
-      createdBy: 'system',
-      createdAt: new Date()
+      createdBy: "system",
+      createdAt: new Date(),
     };
 
     if (!report) {
-      throw new Error('Report not found');
+      throw new Error("Report not found");
     }
 
     // Query events based on report filters
@@ -850,12 +932,12 @@ export class EnterpriseAuditTrailSystem {
         description: report.description,
         type: report.type,
         generatedAt: new Date(),
-        eventCount: events.length
+        eventCount: events.length,
       },
       summary: this.generateReportSummary(events),
       events: events,
       compliance: this.generateComplianceSummary(events),
-      trends: this.generateTrendAnalysis(events)
+      trends: this.generateTrendAnalysis(events),
     };
 
     // Update report status
@@ -884,32 +966,37 @@ export class EnterpriseAuditTrailSystem {
       successRate: 0,
       timeRange: {
         start: events.length > 0 ? events[0].timestamp : new Date(),
-        end: events.length > 0 ? events[events.length - 1].timestamp : new Date()
-      }
+        end:
+          events.length > 0 ? events[events.length - 1].timestamp : new Date(),
+      },
     };
 
     let successCount = 0;
 
     for (const event of events) {
       // Count by category
-      summary.byCategory[event.category] = (summary.byCategory[event.category] || 0) + 1;
-      
+      summary.byCategory[event.category] =
+        (summary.byCategory[event.category] || 0) + 1;
+
       // Count by severity
-      summary.bySeverity[event.severity] = (summary.bySeverity[event.severity] || 0) + 1;
-      
+      summary.bySeverity[event.severity] =
+        (summary.bySeverity[event.severity] || 0) + 1;
+
       // Count by operation
-      summary.byOperation[event.operation] = (summary.byOperation[event.operation] || 0) + 1;
-      
+      summary.byOperation[event.operation] =
+        (summary.byOperation[event.operation] || 0) + 1;
+
       // Count by user
       summary.byUser[event.userId] = (summary.byUser[event.userId] || 0) + 1;
-      
+
       // Count successes
-      if (event.result === 'success') {
+      if (event.result === "success") {
         successCount++;
       }
     }
 
-    summary.successRate = events.length > 0 ? (successCount / events.length) * 100 : 0;
+    summary.successRate =
+      events.length > 0 ? (successCount / events.length) * 100 : 0;
 
     return summary;
   }
@@ -927,7 +1014,7 @@ export class EnterpriseAuditTrailSystem {
             total: 0,
             compliant: 0,
             nonCompliant: 0,
-            pending: 0
+            pending: 0,
           };
         }
 
@@ -945,45 +1032,49 @@ export class EnterpriseAuditTrailSystem {
   private generateTrendAnalysis(events: AuditEvent[]): any {
     // Group events by day
     const dailyEvents: Record<string, number> = {};
-    
+
     for (const event of events) {
-      const day = event.timestamp.toISOString().split('T')[0];
+      const day = event.timestamp.toISOString().split("T")[0];
       dailyEvents[day] = (dailyEvents[day] || 0) + 1;
     }
 
     return {
       dailyVolume: dailyEvents,
-      peakDay: Object.entries(dailyEvents).reduce((max, [day, count]) => 
-        count > max.count ? { day, count } : max, 
-        { day: '', count: 0 }
+      peakDay: Object.entries(dailyEvents).reduce(
+        (max, [day, count]) => (count > max.count ? { day, count } : max),
+        { day: "", count: 0 },
       ),
-      trend: this.calculateTrend(Object.values(dailyEvents))
+      trend: this.calculateTrend(Object.values(dailyEvents)),
     };
   }
 
   /**
    * Calculate trend
    */
-  private calculateTrend(values: number[]): 'increasing' | 'decreasing' | 'stable' {
-    if (values.length < 2) return 'stable';
-    
+  private calculateTrend(
+    values: number[],
+  ): "increasing" | "decreasing" | "stable" {
+    if (values.length < 2) return "stable";
+
     const firstHalf = values.slice(0, Math.floor(values.length / 2));
     const secondHalf = values.slice(Math.floor(values.length / 2));
-    
-    const firstAvg = firstHalf.reduce((sum, val) => sum + val, 0) / firstHalf.length;
-    const secondAvg = secondHalf.reduce((sum, val) => sum + val, 0) / secondHalf.length;
-    
+
+    const firstAvg =
+      firstHalf.reduce((sum, val) => sum + val, 0) / firstHalf.length;
+    const secondAvg =
+      secondHalf.reduce((sum, val) => sum + val, 0) / secondHalf.length;
+
     const change = (secondAvg - firstAvg) / firstAvg;
-    
-    if (change > 0.1) return 'increasing';
-    if (change < -0.1) return 'decreasing';
-    return 'stable';
+
+    if (change > 0.1) return "increasing";
+    if (change < -0.1) return "decreasing";
+    return "stable";
   }
 
   /**
    * Get audit alerts
    */
-  async getAuditAlerts(status?: AuditAlert['status']): Promise<AuditAlert[]> {
+  async getAuditAlerts(status?: AuditAlert["status"]): Promise<AuditAlert[]> {
     // TODO: Implement auditAlert table
     // const alerts = await this.prisma.auditAlert.findMany({
     //   where: { status },
@@ -993,10 +1084,10 @@ export class EnterpriseAuditTrailSystem {
 
     // Return empty array for now
     const alerts: any[] = [];
-    
-    return alerts.map(alert => ({
+
+    return alerts.map((alert) => ({
       ...alert,
-      details: alert.details as any
+      details: alert.details as any,
     }));
   }
 
@@ -1013,9 +1104,9 @@ export class EnterpriseAuditTrailSystem {
     //     acknowledgedBy: userId
     //   }
     // });
-    
+
     // For now, just log the acknowledgment
-    this.logger.info('Audit alert acknowledged', { alertId, userId });
+    this.logger.info("Audit alert acknowledged", { alertId, userId });
   }
 
   /**
@@ -1038,9 +1129,9 @@ export class EnterpriseAuditTrailSystem {
 
     // For now, return 0
     const result = { count: 0 };
-    
+
     this.logger.info(`Cleaned up ${result.count} old audit events`);
-    
+
     return result.count;
   }
 
@@ -1065,20 +1156,20 @@ export class EnterpriseAuditTrailSystem {
       timestamp: auditEvent.timestamp,
       userId: auditEvent.userId,
       action: auditEvent.action,
-      result: auditEvent.result
+      result: auditEvent.result,
     });
-    
-    return require('crypto').createHash('sha256').update(data).digest('hex');
+
+    return require("crypto").createHash("sha256").update(data).digest("hex");
   }
 
   private async encryptData(data: any): Promise<any> {
     // Implement encryption logic
-    return this.crypto.encrypt(JSON.stringify(data), 'audit-key');
+    return this.crypto.encrypt(JSON.stringify(data), "audit-key");
   }
 
   private async decryptData(encryptedData: any): Promise<any> {
     // Implement decryption logic
-    return JSON.parse(this.crypto.decrypt(encryptedData, 'audit-key'));
+    return JSON.parse(this.crypto.decrypt(encryptedData, "audit-key"));
   }
 }
 

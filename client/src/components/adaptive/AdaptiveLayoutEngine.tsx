@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useWindowSize } from '../../hooks/useWindowSize';
-import { useAuthStore } from '../../store/auth-store';
-import { cn } from '../../lib/utils';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+// @ts-ignore
+import { useWindowSize } from '../../hooks/useWindowSize.js.js';
+// @ts-ignore
+import { useAuthStore } from '../../store/auth-store.js.js';
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
 
 interface AdaptiveLayoutConfig {
   breakpoints: {
@@ -14,7 +17,7 @@ interface AdaptiveLayoutConfig {
     compact: boolean;
     sidebarCollapsed: boolean;
     topNavigation: boolean;
-    cardDensity: 'comfortable' | 'compact' | 'spacious';
+    cardDensity: "comfortable" | "compact" | "spacious";
     animationsEnabled: boolean;
   };
 }
@@ -22,11 +25,11 @@ interface AdaptiveLayoutConfig {
 interface AdaptiveContextType {
   config: AdaptiveLayoutConfig;
   updateConfig: (updates: Partial<AdaptiveLayoutConfig>) => void;
-  currentBreakpoint: keyof AdaptiveLayoutConfig['breakpoints'];
+  currentBreakpoint: keyof AdaptiveLayoutConfig["breakpoints"];
   isMobile: boolean;
   isTablet: boolean;
   isDesktop: boolean;
-  screenOrientation: 'portrait' | 'landscape';
+  screenOrientation: "portrait" | "landscape";
 }
 
 const AdaptiveContext = React.createContext<AdaptiveContextType | null>(null);
@@ -42,32 +45,37 @@ const defaultConfig: AdaptiveLayoutConfig = {
     compact: false,
     sidebarCollapsed: false,
     topNavigation: false,
-    cardDensity: 'comfortable',
+    cardDensity: "comfortable",
     animationsEnabled: true,
   },
 };
 
-export function AdaptiveLayoutEngine({ children }: { children: React.ReactNode }) {
+export function AdaptiveLayoutEngine({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { width, height } = useWindowSize();
   const { user } = useAuthStore();
   const [config, setConfig] = useState<AdaptiveLayoutConfig>(defaultConfig);
 
   // Determine current breakpoint
   const currentBreakpoint = useMemo(() => {
-    if (width < config.breakpoints.mobile) return 'mobile';
-    if (width < config.breakpoints.tablet) return 'tablet';
-    if (width < config.breakpoints.desktop) return 'desktop';
-    return 'wide';
+    if (width < config.breakpoints.mobile) return "mobile";
+    if (width < config.breakpoints.tablet) return "tablet";
+    if (width < config.breakpoints.desktop) return "desktop";
+    return "wide";
   }, [width, config.breakpoints]);
 
   // Device detection
-  const isMobile = currentBreakpoint === 'mobile';
-  const isTablet = currentBreakpoint === 'tablet';
-  const isDesktop = currentBreakpoint === 'desktop' || currentBreakpoint === 'wide';
+  const isMobile = currentBreakpoint === "mobile";
+  const isTablet = currentBreakpoint === "tablet";
+  const isDesktop =
+    currentBreakpoint === "desktop" || currentBreakpoint === "wide";
 
   // Screen orientation
   const screenOrientation = useMemo(() => {
-    return width > height ? 'landscape' : 'portrait';
+    return width > height ? "landscape" : "portrait";
   }, [width, height]);
 
   // Adaptive layout adjustments based on screen size and user role
@@ -79,7 +87,7 @@ export function AdaptiveLayoutEngine({ children }: { children: React.ReactNode }
       newConfig.layouts.sidebarCollapsed = true;
       newConfig.layouts.topNavigation = true;
       newConfig.layouts.compact = true;
-      newConfig.layouts.cardDensity = 'compact';
+      newConfig.layouts.cardDensity = "compact";
       newConfig.layouts.animationsEnabled = false; // Reduce animations on mobile for performance
     }
     // Tablet adaptations
@@ -87,7 +95,7 @@ export function AdaptiveLayoutEngine({ children }: { children: React.ReactNode }
       newConfig.layouts.sidebarCollapsed = false;
       newConfig.layouts.topNavigation = false;
       newConfig.layouts.compact = false;
-      newConfig.layouts.cardDensity = 'comfortable';
+      newConfig.layouts.cardDensity = "comfortable";
       newConfig.layouts.animationsEnabled = true;
     }
     // Desktop adaptations
@@ -95,22 +103,23 @@ export function AdaptiveLayoutEngine({ children }: { children: React.ReactNode }
       newConfig.layouts.sidebarCollapsed = false;
       newConfig.layouts.topNavigation = false;
       newConfig.layouts.compact = false;
-      newConfig.layouts.cardDensity = 'spacious';
+      newConfig.layouts.cardDensity = "spacious";
       newConfig.layouts.animationsEnabled = true;
     }
 
     // User role-based adaptations
-    if (user?.role === 'admin') {
+    if (user?.role === "admin") {
       newConfig.layouts.compact = false; // Admins get full interface
-    } else if (user?.role === 'viewer') {
+    } else if (user?.role === "viewer") {
       newConfig.layouts.compact = true; // Viewers get simplified interface
     }
 
     // Performance-based adaptations
-    const isLowEndDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4;
+    const isLowEndDevice =
+      navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4;
     if (isLowEndDevice) {
       newConfig.layouts.animationsEnabled = false;
-      newConfig.layouts.cardDensity = 'compact';
+      newConfig.layouts.cardDensity = "compact";
     }
 
     setConfig(newConfig);
@@ -118,7 +127,7 @@ export function AdaptiveLayoutEngine({ children }: { children: React.ReactNode }
 
   // Update config method
   const updateConfig = useCallback((updates: Partial<AdaptiveLayoutConfig>) => {
-    setConfig(prev => ({ ...prev, ...updates }));
+    setConfig((prev) => ({ ...prev, ...updates }));
   }, []);
 
   const contextValue: AdaptiveContextType = {
@@ -135,17 +144,17 @@ export function AdaptiveLayoutEngine({ children }: { children: React.ReactNode }
     <AdaptiveContext.Provider value={contextValue}>
       <div
         className={cn(
-          'adaptive-layout',
+          "adaptive-layout",
           `breakpoint-${currentBreakpoint}`,
           `density-${config.layouts.cardDensity}`,
           {
-            'compact-layout': config.layouts.compact,
-            'sidebar-collapsed': config.layouts.sidebarCollapsed,
-            'top-nav': config.layouts.topNavigation,
-            'animations-disabled': !config.layouts.animationsEnabled,
-            'orientation-portrait': screenOrientation === 'portrait',
-            'orientation-landscape': screenOrientation === 'landscape',
-          }
+            "compact-layout": config.layouts.compact,
+            "sidebar-collapsed": config.layouts.sidebarCollapsed,
+            "top-nav": config.layouts.topNavigation,
+            "animations-disabled": !config.layouts.animationsEnabled,
+            "orientation-portrait": screenOrientation === "portrait",
+            "orientation-landscape": screenOrientation === "landscape",
+          },
         )}
       >
         {children}
@@ -157,7 +166,9 @@ export function AdaptiveLayoutEngine({ children }: { children: React.ReactNode }
 export function useAdaptiveLayout() {
   const context = React.useContext(AdaptiveContext);
   if (!context) {
-    throw new Error('useAdaptiveLayout must be used within AdaptiveLayoutEngine');
+    throw new Error(
+      "useAdaptiveLayout must be used within AdaptiveLayoutEngine",
+    );
   }
   return context;
 }
@@ -170,8 +181,8 @@ export function AdaptiveGrid({
   className,
 }: {
   children: React.ReactNode;
-  cols?: Partial<Record<keyof AdaptiveLayoutConfig['breakpoints'], number>>;
-  gap?: Partial<Record<keyof AdaptiveLayoutConfig['breakpoints'], number>>;
+  cols?: Partial<Record<keyof AdaptiveLayoutConfig["breakpoints"], number>>;
+  gap?: Partial<Record<keyof AdaptiveLayoutConfig["breakpoints"], number>>;
   className?: string;
 }) {
   const { currentBreakpoint, config } = useAdaptiveLayout();
@@ -182,10 +193,10 @@ export function AdaptiveGrid({
   return (
     <div
       className={cn(
-        'grid',
+        "grid",
         `grid-cols-${currentCols}`,
         `gap-${currentGap}`,
-        className
+        className,
       )}
       style={{
         gridTemplateColumns: `repeat(${currentCols}, minmax(0, 1fr))`,
@@ -212,19 +223,19 @@ export function AdaptiveContainer({
   const { currentBreakpoint } = useAdaptiveLayout();
 
   const maxPadding = {
-    mobile: 'px-4',
-    tablet: 'px-6',
-    desktop: 'px-8',
-    wide: 'px-12',
+    mobile: "px-4",
+    tablet: "px-6",
+    desktop: "px-8",
+    wide: "px-12",
   };
 
   return (
     <div
       className={cn(
-        'adaptive-container',
-        maxWidth && 'max-w-7xl mx-auto',
+        "adaptive-container",
+        maxWidth && "max-w-7xl mx-auto",
         padding && maxPadding[currentBreakpoint],
-        className
+        className,
       )}
     >
       {children}
@@ -235,49 +246,49 @@ export function AdaptiveContainer({
 // Adaptive text component
 export function AdaptiveText({
   children,
-  variant = 'body',
+  variant = "body",
   className,
 }: {
   children: React.ReactNode;
-  variant?: 'heading' | 'subheading' | 'body' | 'caption';
+  variant?: "heading" | "subheading" | "body" | "caption";
   className?: string;
 }) {
   const { currentBreakpoint, config } = useAdaptiveLayout();
 
   const textSizes = {
     heading: {
-      mobile: 'text-2xl',
-      tablet: 'text-3xl',
-      desktop: 'text-4xl',
-      wide: 'text-5xl',
+      mobile: "text-2xl",
+      tablet: "text-3xl",
+      desktop: "text-4xl",
+      wide: "text-5xl",
     },
     subheading: {
-      mobile: 'text-lg',
-      tablet: 'text-xl',
-      desktop: 'text-2xl',
-      wide: 'text-3xl',
+      mobile: "text-lg",
+      tablet: "text-xl",
+      desktop: "text-2xl",
+      wide: "text-3xl",
     },
     body: {
-      mobile: 'text-sm',
-      tablet: 'text-base',
-      desktop: 'text-base',
-      wide: 'text-lg',
+      mobile: "text-sm",
+      tablet: "text-base",
+      desktop: "text-base",
+      wide: "text-lg",
     },
     caption: {
-      mobile: 'text-xs',
-      tablet: 'text-sm',
-      desktop: 'text-sm',
-      wide: 'text-base',
+      mobile: "text-xs",
+      tablet: "text-sm",
+      desktop: "text-sm",
+      wide: "text-base",
     },
   };
 
   return (
     <span
       className={cn(
-        'adaptive-text',
+        "adaptive-text",
         textSizes[variant][currentBreakpoint],
-        config.layouts.compact && 'text-xs',
-        className
+        config.layouts.compact && "text-xs",
+        className,
       )}
     >
       {children}

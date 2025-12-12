@@ -1,13 +1,13 @@
-import { Button } from '../ui/button';
-import { Icons } from '../icons';
-import { signIn } from 'next-auth/react';
+import { Button } from '../ui/button.js';
+import { Icons } from '../icons.js';
+import { signIn } from "next-auth/react";
 
 export function SocialLogin() {
-  const handleSocialLogin = async (provider: 'google' | 'github') => {
+  const handleSocialLogin = async (provider: "google" | "github") => {
     try {
-      await signIn(provider, { callbackUrl: '/dashboard' });
+      await signIn(provider, { callbackUrl: "/dashboard" });
     } catch (error) {
-      console.error('Social login error:', error);
+      console.error("Social login error:", error);
     }
   };
 
@@ -28,7 +28,7 @@ export function SocialLogin() {
         <Button
           variant="outline"
           type="button"
-          onClick={() => handleSocialLogin('google')}
+          onClick={() => handleSocialLogin("google")}
           className="flex items-center justify-center gap-2"
         >
           <Icons.google className="h-4 w-4" />
@@ -37,7 +37,7 @@ export function SocialLogin() {
         <Button
           variant="outline"
           type="button"
-          onClick={() => handleSocialLogin('github')}
+          onClick={() => handleSocialLogin("github")}
           className="flex items-center justify-center gap-2"
         >
           <Icons.github className="h-4 w-4" />

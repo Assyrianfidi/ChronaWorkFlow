@@ -3,12 +3,12 @@ const auth = (req, res, next) => {
   // Set a mock admin user
   req.user = {
     id: 1,
-    email: 'test-admin@example.com',
-    name: 'Test Admin',
-    role: 'ADMIN',
+    email: "test-admin@example.com",
+    name: "Test Admin",
+    role: "ADMIN",
     isActive: true,
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 3600
+    exp: Math.floor(Date.now() / 1000) + 3600,
   };
   next();
 };
@@ -23,5 +23,5 @@ const authorizeRoles = (...roles) => {
 
 module.exports = {
   auth,
-  authorizeRoles
+  authorizeRoles,
 };

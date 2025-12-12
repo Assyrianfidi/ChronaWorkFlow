@@ -1,20 +1,24 @@
-import { Request, Response, NextFunction } from 'express';
-import { PrismaClient, Role } from '@prisma/client';
-import { logger } from '../utils/logger.js';
-import { ApiError, ErrorCodes } from '../utils/errorHandler.js';
-import bcrypt from 'bcryptjs';
+import { Request, Response, NextFunction } from "express";
+import { PrismaClient, Role } from "@prisma/client";
+import { logger } from "../utils/logger.js";
+import { ApiError, ErrorCodes } from "../utils/errorHandler.js";
+import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+const prisma = prisma;
 
-export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     if (!req.user) {
-      throw new ApiError('Not authenticated', 401, ErrorCodes.UNAUTHORIZED);
+      throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
     }
 
     // Only admins can get all users
     if (req.user.role !== Role.ADMIN) {
-      throw new ApiError('Access denied', 403, ErrorCodes.FORBIDDEN);
+      throw new ApiError("Access denied", 403, ErrorCodes.FORBIDDEN);
     }
 
     const users = await prisma.user.findMany({
@@ -29,45 +33,49 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
       },
     });
 
-    logger.info('All users retrieved', {
-      event: 'ALL_USERS_RETRIEVED',
+    logger.info("All users retrieved", {
+      event: "ALL_USERS_RETRIEVED",
       userId: req.user.id,
-      count: users.length
+      count: users.length,
     });
 
     res.status(200).json({
-      status: 'success',
+      status: "success",
       results: users.length,
       data: {
         users,
       },
     });
   } catch (error) {
-    logger.error('Failed to retrieve all users', {
-      event: 'ALL_USERS_RETRIEVAL_ERROR',
+    logger.error("Failed to retrieve all users", {
+      event: "ALL_USERS_RETRIEVAL_ERROR",
       userId: req.user?.id,
-      error: (error as Error).message
+      error: (error as Error).message,
     });
     next(error);
   }
 };
 
-export const getUser = async (req: Request, res: Response, next: NextFunction) => {
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     if (!req.user) {
-      throw new ApiError('Not authenticated', 401, ErrorCodes.UNAUTHORIZED);
+      throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
     }
 
     const { id } = req.params;
     const userId = parseInt(id);
 
     if (isNaN(userId)) {
-      throw new ApiError('Invalid user ID', 400, ErrorCodes.VALIDATION_ERROR);
+      throw new ApiError("Invalid user ID", 400, ErrorCodes.VALIDATION_ERROR);
     }
 
     // Users can only get their own profile unless they're admin
     if (userId !== req.user.id && req.user.role !== Role.ADMIN) {
-      throw new ApiError('Access denied', 403, ErrorCodes.FORBIDDEN);
+      throw new ApiError("Access denied", 403, ErrorCodes.FORBIDDEN);
     }
 
     const user = await prisma.user.findUnique({
@@ -85,49 +93,57 @@ export const getUser = async (req: Request, res: Response, next: NextFunction) =
     });
 
     if (!user) {
-      throw new ApiError('User not found', 404, ErrorCodes.NOT_FOUND);
+      throw new ApiError("User not found", 404, ErrorCodes.NOT_FOUND);
     }
 
-    logger.info('User retrieved', {
-      event: 'USER_RETRIEVED',
+    logger.info("User retrieved", {
+      event: "USER_RETRIEVED",
       userId: req.user.id,
       targetUserId: userId,
-      isSelf: userId === req.user.id
+      isSelf: userId === req.user.id,
     });
 
     res.status(200).json({
-      status: 'success',
+      status: "success",
       data: {
         user,
       },
     });
   } catch (error) {
-    logger.error('Failed to retrieve user', {
-      event: 'USER_RETRIEVAL_ERROR',
+    logger.error("Failed to retrieve user", {
+      event: "USER_RETRIEVAL_ERROR",
       userId: req.user?.id,
       targetUserId: req.params.id,
-      error: (error as Error).message
+      error: (error as Error).message,
     });
     next(error);
   }
 };
 
-export const createUser = async (req: Request, res: Response, next: NextFunction) => {
+export const createUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     if (!req.user) {
-      throw new ApiError('Not authenticated', 401, ErrorCodes.UNAUTHORIZED);
+      throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
     }
 
     // Only admins can create users
     if (req.user.role !== Role.ADMIN) {
-      throw new ApiError('Access denied', 403, ErrorCodes.FORBIDDEN);
+      throw new ApiError("Access denied", 403, ErrorCodes.FORBIDDEN);
     }
 
     const { name, email, password, role = Role.USER } = req.body;
 
     // Basic validation
     if (!name || !email || !password) {
-      throw new ApiError('Missing required fields', 400, ErrorCodes.VALIDATION_ERROR);
+      throw new ApiError(
+        "Missing required fields",
+        400,
+        ErrorCodes.VALIDATION_ERROR,
+      );
     }
 
     // Check if user already exists
@@ -136,7 +152,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
     });
 
     if (existingUser) {
-      throw new ApiError('User already exists', 400, ErrorCodes.CONFLICT);
+      throw new ApiError("User already exists", 400, ErrorCodes.CONFLICT);
     }
 
     // Hash password
@@ -161,34 +177,38 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
       },
     });
 
-    logger.info('User created', {
-      event: 'USER_CREATED',
+    logger.info("User created", {
+      event: "USER_CREATED",
       userId: req.user.id,
       newUserId: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
     });
 
     res.status(201).json({
-      status: 'success',
+      status: "success",
       data: {
         user,
       },
     });
   } catch (error) {
-    logger.error('Failed to create user', {
-      event: 'USER_CREATION_ERROR',
+    logger.error("Failed to create user", {
+      event: "USER_CREATION_ERROR",
       userId: req.user?.id,
-      error: (error as Error).message
+      error: (error as Error).message,
     });
     next(error);
   }
 };
 
-export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+export const updateUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     if (!req.user) {
-      throw new ApiError('Not authenticated', 401, ErrorCodes.UNAUTHORIZED);
+      throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
     }
 
     const { id } = req.params;
@@ -196,12 +216,12 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     const { name, email, role, isActive } = req.body;
 
     if (isNaN(userId)) {
-      throw new ApiError('Invalid user ID', 400, ErrorCodes.VALIDATION_ERROR);
+      throw new ApiError("Invalid user ID", 400, ErrorCodes.VALIDATION_ERROR);
     }
 
     // Users can only update their own profile (name, email only) unless they're admin
     if (userId !== req.user.id && req.user.role !== Role.ADMIN) {
-      throw new ApiError('Access denied', 403, ErrorCodes.FORBIDDEN);
+      throw new ApiError("Access denied", 403, ErrorCodes.FORBIDDEN);
     }
 
     // Check if user exists
@@ -210,17 +230,17 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     });
 
     if (!existingUser) {
-      throw new ApiError('User not found', 404, ErrorCodes.NOT_FOUND);
+      throw new ApiError("User not found", 404, ErrorCodes.NOT_FOUND);
     }
 
     const updateData: any = {};
-    
+
     // Only admins can update role and isActive
     if (req.user.role === Role.ADMIN) {
       if (role !== undefined) updateData.role = role;
       if (isActive !== undefined) updateData.isActive = isActive;
     }
-    
+
     // Any user can update their own name and email
     if (userId === req.user.id) {
       if (name !== undefined) updateData.name = name;
@@ -230,7 +250,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
           where: { email },
         });
         if (emailExists && emailExists.id !== userId) {
-          throw new ApiError('Email already taken', 400, ErrorCodes.CONFLICT);
+          throw new ApiError("Email already taken", 400, ErrorCodes.CONFLICT);
         }
         updateData.email = email;
       }
@@ -250,51 +270,59 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
       },
     });
 
-    logger.info('User updated', {
-      event: 'USER_UPDATED',
+    logger.info("User updated", {
+      event: "USER_UPDATED",
       userId: req.user.id,
       targetUserId: userId,
-      updatedFields: Object.keys(updateData)
+      updatedFields: Object.keys(updateData),
     });
 
     res.status(200).json({
-      status: 'success',
+      status: "success",
       data: {
         user,
       },
     });
   } catch (error) {
-    logger.error('Failed to update user', {
-      event: 'USER_UPDATE_ERROR',
+    logger.error("Failed to update user", {
+      event: "USER_UPDATE_ERROR",
       userId: req.user?.id,
       targetUserId: req.params.id,
-      error: (error as Error).message
+      error: (error as Error).message,
     });
     next(error);
   }
 };
 
-export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     if (!req.user) {
-      throw new ApiError('Not authenticated', 401, ErrorCodes.UNAUTHORIZED);
+      throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
     }
 
     // Only admins can delete users
     if (req.user.role !== Role.ADMIN) {
-      throw new ApiError('Access denied', 403, ErrorCodes.FORBIDDEN);
+      throw new ApiError("Access denied", 403, ErrorCodes.FORBIDDEN);
     }
 
     const { id } = req.params;
     const userId = parseInt(id);
 
     if (isNaN(userId)) {
-      throw new ApiError('Invalid user ID', 400, ErrorCodes.VALIDATION_ERROR);
+      throw new ApiError("Invalid user ID", 400, ErrorCodes.VALIDATION_ERROR);
     }
 
     // Prevent self-deletion
     if (userId === req.user.id) {
-      throw new ApiError('Cannot delete your own account', 400, ErrorCodes.VALIDATION_ERROR);
+      throw new ApiError(
+        "Cannot delete your own account",
+        400,
+        ErrorCodes.VALIDATION_ERROR,
+      );
     }
 
     // Check if user exists
@@ -303,36 +331,40 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
     });
 
     if (!existingUser) {
-      throw new ApiError('User not found', 404, ErrorCodes.NOT_FOUND);
+      throw new ApiError("User not found", 404, ErrorCodes.NOT_FOUND);
     }
 
     await prisma.user.delete({
       where: { id: userId },
     });
 
-    logger.info('User deleted', {
-      event: 'USER_DELETED',
+    logger.info("User deleted", {
+      event: "USER_DELETED",
       userId: req.user.id,
       deletedUserId: userId,
-      deletedUserEmail: existingUser.email
+      deletedUserEmail: existingUser.email,
     });
 
     res.status(204).send();
   } catch (error) {
-    logger.error('Failed to delete user', {
-      event: 'USER_DELETION_ERROR',
+    logger.error("Failed to delete user", {
+      event: "USER_DELETION_ERROR",
       userId: req.user?.id,
       targetUserId: req.params.id,
-      error: (error as Error).message
+      error: (error as Error).message,
     });
     next(error);
   }
 };
 
-export const updateMe = async (req: Request, res: Response, next: NextFunction) => {
+export const updateMe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     if (!req.user) {
-      throw new ApiError('Not authenticated', 401, ErrorCodes.UNAUTHORIZED);
+      throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
     }
 
     const { name, email } = req.body;
@@ -345,7 +377,7 @@ export const updateMe = async (req: Request, res: Response, next: NextFunction) 
         where: { email },
       });
       if (emailExists && emailExists.id !== req.user.id) {
-        throw new ApiError('Email already taken', 400, ErrorCodes.CONFLICT);
+        throw new ApiError("Email already taken", 400, ErrorCodes.CONFLICT);
       }
       updateData.email = email;
     }
@@ -364,49 +396,53 @@ export const updateMe = async (req: Request, res: Response, next: NextFunction) 
       },
     });
 
-    logger.info('User profile updated', {
-      event: 'USER_PROFILE_UPDATED',
+    logger.info("User profile updated", {
+      event: "USER_PROFILE_UPDATED",
       userId: req.user.id,
-      updatedFields: Object.keys(updateData)
+      updatedFields: Object.keys(updateData),
     });
 
     res.status(200).json({
-      status: 'success',
+      status: "success",
       data: {
         user,
       },
     });
   } catch (error) {
-    logger.error('Failed to update user profile', {
-      event: 'USER_PROFILE_UPDATE_ERROR',
+    logger.error("Failed to update user profile", {
+      event: "USER_PROFILE_UPDATE_ERROR",
       userId: req.user?.id,
-      error: (error as Error).message
+      error: (error as Error).message,
     });
     next(error);
   }
 };
 
-export const deleteMe = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteMe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     if (!req.user) {
-      throw new ApiError('Not authenticated', 401, ErrorCodes.UNAUTHORIZED);
+      throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
     }
 
     await prisma.user.delete({
       where: { id: req.user.id },
     });
 
-    logger.info('User self-deleted', {
-      event: 'USER_SELF_DELETED',
-      userId: req.user.id
+    logger.info("User self-deleted", {
+      event: "USER_SELF_DELETED",
+      userId: req.user.id,
     });
 
     res.status(204).send();
   } catch (error) {
-    logger.error('Failed to delete user profile', {
-      event: 'USER_SELF_DELETION_ERROR',
+    logger.error("Failed to delete user profile", {
+      event: "USER_SELF_DELETION_ERROR",
       userId: req.user?.id,
-      error: (error as Error).message
+      error: (error as Error).message,
     });
     next(error);
   }

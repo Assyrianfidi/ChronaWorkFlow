@@ -11,9 +11,7 @@
     "notable_failure_clusters": [
       {
         "area": "auth/register",
-        "files": [
-          "src/app/auth/register/__tests__/RegisterPage.test.tsx"
-        ],
+        "files": ["src/app/auth/register/__tests__/RegisterPage.test.tsx"],
         "issues": [
           "Ambiguous label selector for password fields",
           "Loading-state expectations not matching component behavior",
@@ -46,9 +44,7 @@
       },
       {
         "area": "auth/login",
-        "files": [
-          "src/app/auth/login/__tests__/page.test.tsx"
-        ],
+        "files": ["src/app/auth/login/__tests__/page.test.tsx"],
         "issues": [
           "Auth store state updates not flowing through selector-based mock before fix",
           "Redirect-on-auth test required stateful mock"

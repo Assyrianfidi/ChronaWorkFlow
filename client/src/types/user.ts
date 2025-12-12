@@ -1,4 +1,4 @@
-export type UserRole = 'USER' | 'ADMIN';
+export type UserRole = "USER" | "ADMIN";
 
 export interface Account {
   id: string;
@@ -31,16 +31,16 @@ export interface User {
 
 // Type guards
 export const isAdmin = (user: User | null | undefined): boolean => {
-  return user?.role === 'ADMIN';
+  return user?.role === "ADMIN";
 };
 
 // Type predicates
 export function isUser(user: any): user is User {
   return (
     user &&
-    typeof user === 'object' &&
-    'id' in user &&
-    'email' in user &&
-    'role' in user
+    typeof user === "object" &&
+    "id" in user &&
+    "email" in user &&
+    "role" in user
   );
 }

@@ -1,19 +1,19 @@
-import { prisma } from '../../utils/prisma.js';
+import { prisma } from "../../utils/prisma.js";
 import {
   transactionCreateSchema,
   transactionListSchema,
   TransactionCreateInput,
   TransactionLineInput,
   toDecimal,
-} from './transactions.model.js';
-import { ApiError } from '../../utils/errors.js';
-import { StatusCodes } from 'http-status-codes';
+} from "./transactions.model.js";
+import { ApiError } from "../../utils/errors.js";
+import { StatusCodes } from "http-status-codes";
 
 export class TransactionsService {
   async list(companyId: string, limit: number) {
     return prisma.transaction.findMany({
       where: { companyId },
-      orderBy: { date: 'desc' },
+      orderBy: { date: "desc" },
       include: { lines: true },
       take: limit,
     });
@@ -25,11 +25,14 @@ export class TransactionsService {
         debits: acc.debits + parseFloat(line.debit),
         credits: acc.credits + parseFloat(line.credit),
       }),
-      { debits: 0, credits: 0 }
+      { debits: 0, credits: 0 },
     );
 
     if (Math.abs(totals.debits - totals.credits) > 0.01) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, 'Transaction must be balanced');
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "Transaction must be balanced",
+      );
     }
   }
 
@@ -59,8 +62,8 @@ export class TransactionsService {
               credit: toDecimal(line.credit),
               description: line.description,
             },
-          })
-        )
+          }),
+        ),
       );
 
       return transaction;

@@ -3,10 +3,10 @@
  * Sub-20ms API response optimization with advanced caching, query optimization, and performance monitoring
  */
 
-import { PrismaClient } from '@prisma/client';
-import { logger } from '../utils/logger.js';
-import { EventBus } from '../events/event-bus.js';
-import { CacheManager } from '../cache/cache-manager.js';
+import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { logger } from "../utils/logger.js";
+import { EventBus } from "../events/event-bus.js";
+import { CacheManager } from "../cache/cache-manager.js";
 
 export interface PerformanceMetrics {
   requestId: string;
@@ -44,7 +44,7 @@ export interface QueryOptimization {
   indexes: Array<{
     table: string;
     columns: string[];
-    type: 'btree' | 'hash' | 'gin' | 'gist';
+    type: "btree" | "hash" | "gin" | "gist";
     estimatedImpact: number;
   }>;
   analyzedAt: Date;
@@ -53,19 +53,24 @@ export interface QueryOptimization {
 export interface CacheStrategy {
   key: string;
   ttl: number;
-  strategy: 'write-through' | 'write-behind' | 'cache-aside' | 'refresh-ahead';
+  strategy: "write-through" | "write-behind" | "cache-aside" | "refresh-ahead";
   invalidationRules: Array<{
     trigger: string;
-    action: 'invalidate' | 'refresh' | 'update';
+    action: "invalidate" | "refresh" | "update";
   }>;
   compressionEnabled: boolean;
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  priority: "low" | "medium" | "high" | "critical";
 }
 
 export interface PerformanceAlert {
   id: string;
-  type: 'slow_query' | 'memory_leak' | 'cache_miss' | 'db_overload' | 'api_degradation';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  type:
+    | "slow_query"
+    | "memory_leak"
+    | "cache_miss"
+    | "db_overload"
+    | "api_degradation";
+  severity: "low" | "medium" | "high" | "critical";
   endpoint?: string;
   message: string;
   metrics: Partial<PerformanceMetrics>;
@@ -73,7 +78,7 @@ export interface PerformanceAlert {
   triggeredAt: Date;
   acknowledgedAt?: Date;
   acknowledgedBy?: string;
-  status: 'open' | 'acknowledged' | 'resolved' | 'false_positive';
+  status: "open" | "acknowledged" | "resolved" | "false_positive";
   resolution?: string;
   resolvedAt?: Date;
   resolvedBy?: string;
@@ -81,7 +86,7 @@ export interface PerformanceAlert {
 
 export interface PerformanceReport {
   id: string;
-  period: 'hour' | 'day' | 'week' | 'month';
+  period: "hour" | "day" | "week" | "month";
   startTime: Date;
   endTime: Date;
   summary: {
@@ -132,8 +137,8 @@ export class BackendPerformanceEngine {
   private reportInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.prisma = new PrismaClient();
-    this.logger = logger.child({ component: 'BackendPerformanceEngine' });
+    this.prisma = prisma;
+    this.logger = logger.child({ component: "BackendPerformanceEngine" });
     this.eventBus = new EventBus();
     this.cache = new CacheManager();
     this.initializeThresholds();
@@ -149,50 +154,50 @@ export class BackendPerformanceEngine {
   private initializeThresholds(): void {
     const defaultThresholds: PerformanceThreshold[] = [
       {
-        endpoint: '/api/transactions',
-        method: 'GET',
+        endpoint: "/api/transactions",
+        method: "GET",
         maxDuration: 20, // 20ms target
         maxMemory: 50, // 50MB
         maxQueries: 3,
         maxCacheMissRate: 10, // 10%
-        alertThreshold: 80 // Alert at 80% of threshold
+        alertThreshold: 80, // Alert at 80% of threshold
       },
       {
-        endpoint: '/api/transactions',
-        method: 'POST',
+        endpoint: "/api/transactions",
+        method: "POST",
         maxDuration: 50, // 50ms for writes
         maxMemory: 100,
         maxQueries: 5,
         maxCacheMissRate: 20,
-        alertThreshold: 80
+        alertThreshold: 80,
       },
       {
-        endpoint: '/api/accounts',
-        method: 'GET',
+        endpoint: "/api/accounts",
+        method: "GET",
         maxDuration: 15,
         maxMemory: 30,
         maxQueries: 2,
         maxCacheMissRate: 5,
-        alertThreshold: 80
+        alertThreshold: 80,
       },
       {
-        endpoint: '/api/reports',
-        method: 'GET',
+        endpoint: "/api/reports",
+        method: "GET",
         maxDuration: 100, // Reports can be slower
         maxMemory: 200,
         maxQueries: 10,
         maxCacheMissRate: 15,
-        alertThreshold: 80
+        alertThreshold: 80,
       },
       {
-        endpoint: '/api/search',
-        method: 'GET',
+        endpoint: "/api/search",
+        method: "GET",
         maxDuration: 30,
         maxMemory: 80,
         maxQueries: 5,
         maxCacheMissRate: 20,
-        alertThreshold: 80
-      }
+        alertThreshold: 80,
+      },
     ];
 
     for (const threshold of defaultThresholds) {
@@ -207,59 +212,57 @@ export class BackendPerformanceEngine {
   private initializeCacheStrategies(): void {
     const strategies: CacheStrategy[] = [
       {
-        key: 'user:*',
+        key: "user:*",
         ttl: 300, // 5 minutes
-        strategy: 'cache-aside',
+        strategy: "cache-aside",
         invalidationRules: [
-          { trigger: 'user.updated', action: 'invalidate' },
-          { trigger: 'user.deleted', action: 'invalidate' }
+          { trigger: "user.updated", action: "invalidate" },
+          { trigger: "user.deleted", action: "invalidate" },
         ],
         compressionEnabled: true,
-        priority: 'high'
+        priority: "high",
       },
       {
-        key: 'account:*',
+        key: "account:*",
         ttl: 600, // 10 minutes
-        strategy: 'write-through',
+        strategy: "write-through",
         invalidationRules: [
-          { trigger: 'account.updated', action: 'refresh' },
-          { trigger: 'transaction.created', action: 'update' }
+          { trigger: "account.updated", action: "refresh" },
+          { trigger: "transaction.created", action: "update" },
         ],
         compressionEnabled: true,
-        priority: 'high'
+        priority: "high",
       },
       {
-        key: 'transactions:*',
+        key: "transactions:*",
         ttl: 120, // 2 minutes
-        strategy: 'refresh-ahead',
+        strategy: "refresh-ahead",
         invalidationRules: [
-          { trigger: 'transaction.created', action: 'refresh' },
-          { trigger: 'transaction.updated', action: 'refresh' }
+          { trigger: "transaction.created", action: "refresh" },
+          { trigger: "transaction.updated", action: "refresh" },
         ],
         compressionEnabled: false, // Keep fast access
-        priority: 'medium'
+        priority: "medium",
       },
       {
-        key: 'reports:*',
+        key: "reports:*",
         ttl: 1800, // 30 minutes
-        strategy: 'cache-aside',
+        strategy: "cache-aside",
         invalidationRules: [
-          { trigger: 'transaction.created', action: 'invalidate' },
-          { trigger: 'transaction.updated', action: 'invalidate' }
+          { trigger: "transaction.created", action: "invalidate" },
+          { trigger: "transaction.updated", action: "invalidate" },
         ],
         compressionEnabled: true,
-        priority: 'low'
+        priority: "low",
       },
       {
-        key: 'search:*',
+        key: "search:*",
         ttl: 300, // 5 minutes
-        strategy: 'cache-aside',
-        invalidationRules: [
-          { trigger: 'data.changed', action: 'invalidate' }
-        ],
+        strategy: "cache-aside",
+        invalidationRules: [{ trigger: "data.changed", action: "invalidate" }],
         compressionEnabled: true,
-        priority: 'medium'
-      }
+        priority: "medium",
+      },
     ];
 
     for (const strategy of strategies) {
@@ -274,16 +277,16 @@ export class BackendPerformanceEngine {
     try {
       // Create performance indexes
       await this.createPerformanceIndexes();
-      
+
       // Configure connection pool
       await this.configureConnectionPool();
-      
+
       // Setup query optimization
       await this.setupQueryOptimization();
-      
-      this.logger.info('Database optimizations configured');
+
+      this.logger.info("Database optimizations configured");
     } catch (error) {
-      this.logger.error('Failed to setup database optimizations:', error);
+      this.logger.error("Failed to setup database optimizations:", error);
     }
   }
 
@@ -298,7 +301,7 @@ export class BackendPerformanceEngine {
       'CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_accounts_type_active ON "Account"(type, isActive)',
       'CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_invoices_status_due ON "Invoice"(status, dueDate)',
       'CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_audit_timestamp_category ON "AuditEvent"(timestamp DESC, category)',
-      'CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_activity_user_timestamp ON "Activity"(userId, timestamp DESC)'
+      'CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_activity_user_timestamp ON "Activity"(userId, timestamp DESC)',
     ];
 
     for (const indexSql of indexes) {
@@ -319,13 +322,13 @@ export class BackendPerformanceEngine {
     const config = {
       datasources: {
         db: {
-          url: process.env.DATABASE_URL
-        }
-      }
+          url: process.env.DATABASE_URL,
+        },
+      },
     };
 
     // These would be configured in prisma schema or environment
-    this.logger.info('Connection pool configured');
+    this.logger.info("Connection pool configured");
   }
 
   /**
@@ -333,8 +336,8 @@ export class BackendPerformanceEngine {
    */
   private async setupQueryOptimization(): Promise<void> {
     // Enable query logging for optimization
-    process.env.PRISMA_QUERY_LOG = 'true';
-    
+    process.env.PRISMA_QUERY_LOG = "true";
+
     // Setup slow query monitoring
     await this.setupSlowQueryMonitoring();
   }
@@ -372,10 +375,10 @@ export class BackendPerformanceEngine {
    */
   recordMetrics(metrics: PerformanceMetrics): void {
     this.metrics.push(metrics);
-    
+
     // Check against thresholds
     this.checkThresholds(metrics);
-    
+
     // Keep only recent metrics (last 10000)
     if (this.metrics.length > 10000) {
       this.metrics = this.metrics.slice(-5000);
@@ -388,53 +391,71 @@ export class BackendPerformanceEngine {
   private checkThresholds(metrics: PerformanceMetrics): void {
     const key = `${metrics.method}:${metrics.endpoint}`;
     const threshold = this.thresholds.get(key);
-    
+
     if (!threshold) return;
 
     const alerts: PerformanceAlert[] = [];
 
     // Check duration
-    if (metrics.duration > threshold.maxDuration * (threshold.alertThreshold / 100)) {
+    if (
+      metrics.duration >
+      threshold.maxDuration * (threshold.alertThreshold / 100)
+    ) {
       alerts.push({
         id: this.generateAlertId(),
-        type: 'api_degradation',
-        severity: this.calculateSeverity(metrics.duration, threshold.maxDuration),
+        type: "api_degradation",
+        severity: this.calculateSeverity(
+          metrics.duration,
+          threshold.maxDuration,
+        ),
         endpoint: metrics.endpoint,
         message: `Response time ${metrics.duration}ms exceeds threshold of ${threshold.maxDuration}ms`,
         metrics,
         threshold,
         triggeredAt: new Date(),
-        status: 'open'
+        status: "open",
       });
     }
 
     // Check memory usage
-    if (metrics.memoryUsage > threshold.maxMemory * (threshold.alertThreshold / 100)) {
+    if (
+      metrics.memoryUsage >
+      threshold.maxMemory * (threshold.alertThreshold / 100)
+    ) {
       alerts.push({
         id: this.generateAlertId(),
-        type: 'memory_leak',
-        severity: this.calculateSeverity(metrics.memoryUsage, threshold.maxMemory),
+        type: "memory_leak",
+        severity: this.calculateSeverity(
+          metrics.memoryUsage,
+          threshold.maxMemory,
+        ),
         endpoint: metrics.endpoint,
         message: `Memory usage ${metrics.memoryUsage}MB exceeds threshold of ${threshold.maxMemory}MB`,
         metrics,
         threshold,
         triggeredAt: new Date(),
-        status: 'open'
+        status: "open",
       });
     }
 
     // Check database queries
-    if (metrics.dbQueries > threshold.maxQueries * (threshold.alertThreshold / 100)) {
+    if (
+      metrics.dbQueries >
+      threshold.maxQueries * (threshold.alertThreshold / 100)
+    ) {
       alerts.push({
         id: this.generateAlertId(),
-        type: 'slow_query',
-        severity: this.calculateSeverity(metrics.dbQueries, threshold.maxQueries),
+        type: "slow_query",
+        severity: this.calculateSeverity(
+          metrics.dbQueries,
+          threshold.maxQueries,
+        ),
         endpoint: metrics.endpoint,
         message: `Database queries ${metrics.dbQueries} exceeds threshold of ${threshold.maxQueries}`,
         metrics,
         threshold,
         triggeredAt: new Date(),
-        status: 'open'
+        status: "open",
       });
     }
 
@@ -442,17 +463,23 @@ export class BackendPerformanceEngine {
     const totalRequests = metrics.cacheHits + metrics.cacheMisses;
     if (totalRequests > 0) {
       const missRate = (metrics.cacheMisses / totalRequests) * 100;
-      if (missRate > threshold.maxCacheMissRate * (threshold.alertThreshold / 100)) {
+      if (
+        missRate >
+        threshold.maxCacheMissRate * (threshold.alertThreshold / 100)
+      ) {
         alerts.push({
           id: this.generateAlertId(),
-          type: 'cache_miss',
-          severity: this.calculateSeverity(missRate, threshold.maxCacheMissRate),
+          type: "cache_miss",
+          severity: this.calculateSeverity(
+            missRate,
+            threshold.maxCacheMissRate,
+          ),
           endpoint: metrics.endpoint,
           message: `Cache miss rate ${missRate.toFixed(2)}% exceeds threshold of ${threshold.maxCacheMissRate}%`,
           metrics,
           threshold,
           triggeredAt: new Date(),
-          status: 'open'
+          status: "open",
         });
       }
     }
@@ -460,20 +487,23 @@ export class BackendPerformanceEngine {
     // Add alerts and emit events
     for (const alert of alerts) {
       this.performanceAlerts.push(alert);
-      this.eventBus.emit('performance.alert', alert);
+      this.eventBus.emit("performance.alert", alert);
     }
   }
 
   /**
    * Calculate alert severity
    */
-  private calculateSeverity(actual: number, threshold: number): PerformanceAlert['severity'] {
+  private calculateSeverity(
+    actual: number,
+    threshold: number,
+  ): PerformanceAlert["severity"] {
     const percentage = (actual / threshold) * 100;
-    
-    if (percentage >= 150) return 'critical';
-    if (percentage >= 120) return 'high';
-    if (percentage >= 100) return 'medium';
-    return 'low';
+
+    if (percentage >= 150) return "critical";
+    if (percentage >= 120) return "high";
+    if (percentage >= 100) return "medium";
+    return "low";
   }
 
   /**
@@ -484,7 +514,7 @@ export class BackendPerformanceEngine {
 
     // Store metrics in database (commented out until Prisma schema is updated)
     const recentMetrics = this.metrics.slice(-100);
-    
+
     try {
       // await this.prisma.performanceMetrics.createMany({
       //   data: recentMetrics.map(m => ({
@@ -506,7 +536,7 @@ export class BackendPerformanceEngine {
       //   }))
       // });
     } catch (error) {
-      this.logger.error('Failed to store performance metrics:', error);
+      this.logger.error("Failed to store performance metrics:", error);
     }
 
     // Update performance aggregations (commented out until Prisma schema is updated)
@@ -516,33 +546,31 @@ export class BackendPerformanceEngine {
   /**
    * Update performance aggregations
    */
-  private async updatePerformanceAggregations(metrics: PerformanceMetrics[]): Promise<void> {
+  private async updatePerformanceAggregations(
+    metrics: PerformanceMetrics[],
+  ): Promise<void> {
     // Implementation commented out until Prisma schema is updated
     // const now = new Date();
     // const hourStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours());
-    
     // // Group metrics by endpoint and hour
     // const grouped: Record<string, PerformanceMetrics[]> = {};
-    
     // for (const metric of metrics) {
     //   const key = `${metric.endpoint}:${metric.method}:${hourStart.getTime()}`;
     //   if (!grouped[key]) grouped[key] = [];
     //   grouped[key].push(metric);
     // }
-
     // // Update aggregations
     // for (const [key, group] of Object.entries(grouped)) {
     //   const [endpoint, method] = key.split(':');
-    //   
+    //
     //   const avgDuration = group.reduce((sum, m) => sum + m.duration, 0) / group.length;
     //   const avgMemory = group.reduce((sum, m) => sum + m.memoryUsage, 0) / group.length;
     //   const avgQueries = group.reduce((sum, m) => sum + m.dbQueries, 0) / group.length;
     //   const totalCacheHits = group.reduce((sum, m) => sum + m.cacheHits, 0);
     //   const totalCacheMisses = group.reduce((sum, m) => sum + m.cacheMisses, 0);
-    //   const cacheHitRate = totalCacheHits + totalCacheMisses > 0 
-    //     ? (totalCacheHits / (totalCacheHits + totalCacheMisses)) * 100 
+    //   const cacheHitRate = totalCacheHits + totalCacheMisses > 0
+    //     ? (totalCacheHits / (totalCacheHits + totalCacheMisses)) * 100
     //     : 0;
-
     //   await this.prisma.performanceAggregation.upsert({
     //     where: {
     //       endpoint_method_hour: {
@@ -592,7 +620,7 @@ export class BackendPerformanceEngine {
         await this.optimizeQuery(query);
       }
     } catch (error) {
-      this.logger.error('Failed to analyze slow queries:', error);
+      this.logger.error("Failed to analyze slow queries:", error);
     }
   }
 
@@ -601,7 +629,7 @@ export class BackendPerformanceEngine {
    */
   private async optimizeQuery(queryData: any): Promise<void> {
     const queryHash = this.hashQuery(queryData.query);
-    
+
     if (this.queryCache.has(queryHash)) {
       return; // Already optimized
     }
@@ -612,14 +640,14 @@ export class BackendPerformanceEngine {
       improvement: 0, // Would be calculated from actual performance
       recommendations: this.generateQueryRecommendations(queryData.query),
       indexes: await this.suggestIndexes(queryData.query),
-      analyzedAt: new Date()
+      analyzedAt: new Date(),
     };
 
     this.queryCache.set(queryHash, optimization);
-    
-    this.logger.info('Query optimization generated', {
-      query: queryData.query.substring(0, 100) + '...',
-      recommendations: optimization.recommendations.length
+
+    this.logger.info("Query optimization generated", {
+      query: queryData.query.substring(0, 100) + "...",
+      recommendations: optimization.recommendations.length,
     });
   }
 
@@ -631,12 +659,12 @@ export class BackendPerformanceEngine {
     let optimized = originalQuery;
 
     // Add LIMIT if not present
-    if (!optimized.includes('LIMIT') && !optimized.includes('limit')) {
-      optimized += ' LIMIT 1000';
+    if (!optimized.includes("LIMIT") && !optimized.includes("limit")) {
+      optimized += " LIMIT 1000";
     }
 
     // Optimize JOIN order (simplified)
-    if (optimized.includes('JOIN')) {
+    if (optimized.includes("JOIN")) {
       // Would implement more sophisticated join optimization
     }
 
@@ -649,20 +677,22 @@ export class BackendPerformanceEngine {
   private generateQueryRecommendations(query: string): string[] {
     const recommendations: string[] = [];
 
-    if (query.includes('SELECT *')) {
-      recommendations.push('Avoid SELECT *, specify only needed columns');
+    if (query.includes("SELECT *")) {
+      recommendations.push("Avoid SELECT *, specify only needed columns");
     }
 
-    if (query.includes('WHERE') && !query.includes('INDEX')) {
-      recommendations.push('Consider adding indexes for WHERE clause columns');
+    if (query.includes("WHERE") && !query.includes("INDEX")) {
+      recommendations.push("Consider adding indexes for WHERE clause columns");
     }
 
-    if (query.includes('ORDER BY') && !query.includes('INDEX')) {
-      recommendations.push('Consider adding indexes for ORDER BY columns');
+    if (query.includes("ORDER BY") && !query.includes("INDEX")) {
+      recommendations.push("Consider adding indexes for ORDER BY columns");
     }
 
-    if (query.includes('LIKE') && !query.includes('ILIKE')) {
-      recommendations.push('Consider using ILIKE for case-insensitive search or full-text search');
+    if (query.includes("LIKE") && !query.includes("ILIKE")) {
+      recommendations.push(
+        "Consider using ILIKE for case-insensitive search or full-text search",
+      );
     }
 
     return recommendations;
@@ -671,26 +701,28 @@ export class BackendPerformanceEngine {
   /**
    * Suggest indexes for query
    */
-  private async suggestIndexes(query: string): Promise<QueryOptimization['indexes']> {
-    const indexes: QueryOptimization['indexes'] = [];
+  private async suggestIndexes(
+    query: string,
+  ): Promise<QueryOptimization["indexes"]> {
+    const indexes: QueryOptimization["indexes"] = [];
 
     // Extract table and column information from query
     // This is a simplified implementation
-    if (query.includes('WHERE accountId')) {
+    if (query.includes("WHERE accountId")) {
       indexes.push({
-        table: 'Transaction',
-        columns: ['accountId'],
-        type: 'btree',
-        estimatedImpact: 0.8
+        table: "Transaction",
+        columns: ["accountId"],
+        type: "btree",
+        estimatedImpact: 0.8,
       });
     }
 
-    if (query.includes('ORDER BY date')) {
+    if (query.includes("ORDER BY date")) {
       indexes.push({
-        table: 'Transaction',
-        columns: ['date'],
-        type: 'btree',
-        estimatedImpact: 0.7
+        table: "Transaction",
+        columns: ["date"],
+        type: "btree",
+        estimatedImpact: 0.7,
       });
     }
 
@@ -701,7 +733,7 @@ export class BackendPerformanceEngine {
    * Hash query for caching
    */
   private hashQuery(query: string): string {
-    return require('crypto').createHash('md5').update(query).digest('hex');
+    return require("crypto").createHash("md5").update(query).digest("hex");
   }
 
   /**
@@ -710,22 +742,24 @@ export class BackendPerformanceEngine {
   private async generatePeriodicReports(): Promise<void> {
     try {
       // Generate hourly report
-      await this.generateReport('hour');
-      
+      await this.generateReport("hour");
+
       // Generate daily report at midnight
       const now = new Date();
       if (now.getHours() === 0 && now.getMinutes() < 5) {
-        await this.generateReport('day');
+        await this.generateReport("day");
       }
     } catch (error) {
-      this.logger.error('Failed to generate periodic reports:', error);
+      this.logger.error("Failed to generate periodic reports:", error);
     }
   }
 
   /**
    * Generate performance report
    */
-  async generateReport(period: PerformanceReport['period']): Promise<PerformanceReport> {
+  async generateReport(
+    period: PerformanceReport["period"],
+  ): Promise<PerformanceReport> {
     const endTime = new Date();
     const startTime = this.getReportStartTime(endTime, period);
 
@@ -741,23 +775,25 @@ export class BackendPerformanceEngine {
     // });
 
     // Use mock data for now
-    const metrics = this.metrics.filter(m => m.timestamp >= startTime && m.timestamp <= endTime);
+    const metrics = this.metrics.filter(
+      (m) => m.timestamp >= startTime && m.timestamp <= endTime,
+    );
 
     // Calculate summary statistics
     const summary = this.calculateSummary(metrics);
-    
+
     // Get slowest endpoints
     const slowestEndpoints = await this.getSlowestEndpoints(startTime, endTime);
-    
+
     // Get database metrics
     const databaseMetrics = await this.getDatabaseMetrics();
-    
+
     // Get cache metrics
     const cacheMetrics = await this.getCacheMetrics();
-    
+
     // Get recent alerts
-    const alerts = this.performanceAlerts.filter(a => 
-      a.triggeredAt >= startTime && a.triggeredAt <= endTime
+    const alerts = this.performanceAlerts.filter(
+      (a) => a.triggeredAt >= startTime && a.triggeredAt <= endTime,
     );
 
     // Generate recommendations
@@ -774,7 +810,7 @@ export class BackendPerformanceEngine {
       cacheMetrics,
       alerts,
       recommendations,
-      generatedAt: new Date()
+      generatedAt: new Date(),
     };
 
     // Store report (commented out until Prisma schema is updated)
@@ -795,7 +831,7 @@ export class BackendPerformanceEngine {
     // });
 
     // Emit report event
-    this.eventBus.emit('performance.report.generated', report);
+    this.eventBus.emit("performance.report.generated", report);
 
     return report;
   }
@@ -803,31 +839,36 @@ export class BackendPerformanceEngine {
   /**
    * Get report start time
    */
-  private getReportStartTime(endTime: Date, period: PerformanceReport['period']): Date {
+  private getReportStartTime(
+    endTime: Date,
+    period: PerformanceReport["period"],
+  ): Date {
     const start = new Date(endTime);
-    
+
     switch (period) {
-      case 'hour':
+      case "hour":
         start.setHours(start.getHours() - 1);
         break;
-      case 'day':
+      case "day":
         start.setDate(start.getDate() - 1);
         break;
-      case 'week':
+      case "week":
         start.setDate(start.getDate() - 7);
         break;
-      case 'month':
+      case "month":
         start.setMonth(start.getMonth() - 1);
         break;
     }
-    
+
     return start;
   }
 
   /**
    * Calculate summary statistics
    */
-  private calculateSummary(metrics: PerformanceMetrics[]): PerformanceReport['summary'] {
+  private calculateSummary(
+    metrics: PerformanceMetrics[],
+  ): PerformanceReport["summary"] {
     if (metrics.length === 0) {
       return {
         totalRequests: 0,
@@ -836,23 +877,31 @@ export class BackendPerformanceEngine {
         p99ResponseTime: 0,
         errorRate: 0,
         cacheHitRate: 0,
-        throughput: 0
+        throughput: 0,
       };
     }
 
-    const durations = metrics.map(m => m.duration).sort((a, b) => a - b);
+    const durations = metrics.map((m) => m.duration).sort((a, b) => a - b);
     const totalRequests = metrics.length;
-    const averageResponseTime = durations.reduce((sum, d) => sum + d, 0) / totalRequests;
+    const averageResponseTime =
+      durations.reduce((sum, d) => sum + d, 0) / totalRequests;
     const p95ResponseTime = durations[Math.floor(totalRequests * 0.95)];
     const p99ResponseTime = durations[Math.floor(totalRequests * 0.99)];
-    const errorCount = metrics.filter(m => m.statusCode >= 400).length;
+    const errorCount = metrics.filter((m) => m.statusCode >= 400).length;
     const errorRate = (errorCount / totalRequests) * 100;
-    
+
     const totalCacheHits = metrics.reduce((sum, m) => sum + m.cacheHits, 0);
-    const totalCacheRequests = metrics.reduce((sum, m) => sum + m.cacheHits + m.cacheMisses, 0);
-    const cacheHitRate = totalCacheRequests > 0 ? (totalCacheHits / totalCacheRequests) * 100 : 0;
-    
-    const timeSpan = (metrics[metrics.length - 1].timestamp.getTime() - metrics[0].timestamp.getTime()) / 1000;
+    const totalCacheRequests = metrics.reduce(
+      (sum, m) => sum + m.cacheHits + m.cacheMisses,
+      0,
+    );
+    const cacheHitRate =
+      totalCacheRequests > 0 ? (totalCacheHits / totalCacheRequests) * 100 : 0;
+
+    const timeSpan =
+      (metrics[metrics.length - 1].timestamp.getTime() -
+        metrics[0].timestamp.getTime()) /
+      1000;
     const throughput = timeSpan > 0 ? totalRequests / timeSpan : 0;
 
     return {
@@ -862,14 +911,17 @@ export class BackendPerformanceEngine {
       p99ResponseTime,
       errorRate,
       cacheHitRate,
-      throughput
+      throughput,
     };
   }
 
   /**
    * Get slowest endpoints
    */
-  private async getSlowestEndpoints(startTime: Date, endTime: Date): Promise<PerformanceReport['slowestEndpoints']> {
+  private async getSlowestEndpoints(
+    startTime: Date,
+    endTime: Date,
+  ): Promise<PerformanceReport["slowestEndpoints"]> {
     // Get slowest endpoints (commented out until Prisma schema is updated)
     // const aggregations = await this.prisma.performanceAggregation.findMany({
     //   where: {
@@ -883,38 +935,53 @@ export class BackendPerformanceEngine {
     // });
 
     // Use mock data for now
-    const aggregations: Array<{endpoint: string; averageDuration: number; requestCount: number}> = [];
+    const aggregations: Array<{
+      endpoint: string;
+      averageDuration: number;
+      requestCount: number;
+    }> = [];
     const endpointGroups = this.metrics
-      .filter(m => m.timestamp >= startTime && m.timestamp <= endTime)
-      .reduce((acc, m) => {
-        const key = m.endpoint;
-        if (!acc[key]) {
-          acc[key] = { totalDuration: 0, count: 0 };
-        }
-        acc[key].totalDuration += m.duration;
-        acc[key].count += 1;
-        return acc;
-      }, {} as Record<string, {totalDuration: number; count: number}>);
+      .filter((m) => m.timestamp >= startTime && m.timestamp <= endTime)
+      .reduce(
+        (acc, m) => {
+          const key = m.endpoint;
+          if (!acc[key]) {
+            acc[key] = { totalDuration: 0, count: 0 };
+          }
+          acc[key].totalDuration += m.duration;
+          acc[key].count += 1;
+          return acc;
+        },
+        {} as Record<string, { totalDuration: number; count: number }>,
+      );
 
     for (const [endpoint, data] of Object.entries(endpointGroups)) {
       aggregations.push({
         endpoint,
         averageDuration: data.totalDuration / data.count,
-        requestCount: data.count
+        requestCount: data.count,
       });
     }
 
-    return aggregations.map((agg: {endpoint: string; averageDuration: number; requestCount: number}) => ({
-      endpoint: agg.endpoint,
-      averageDuration: agg.averageDuration,
-      requestCount: agg.requestCount
-    }));
+    return aggregations.map(
+      (agg: {
+        endpoint: string;
+        averageDuration: number;
+        requestCount: number;
+      }) => ({
+        endpoint: agg.endpoint,
+        averageDuration: agg.averageDuration,
+        requestCount: agg.requestCount,
+      }),
+    );
   }
 
   /**
    * Get database metrics
    */
-  private async getDatabaseMetrics(): Promise<PerformanceReport['databaseMetrics']> {
+  private async getDatabaseMetrics(): Promise<
+    PerformanceReport["databaseMetrics"]
+  > {
     try {
       const dbStats = await this.prisma.$queryRaw`
         SELECT 
@@ -942,15 +1009,15 @@ export class BackendPerformanceEngine {
         connectionPool: {
           active: pool[0]?.active || 0,
           idle: pool[0]?.idle || 0,
-          total: pool[0]?.total || 0
-        }
+          total: pool[0]?.total || 0,
+        },
       };
     } catch (error) {
-      this.logger.error('Failed to get database metrics:', error);
+      this.logger.error("Failed to get database metrics:", error);
       return {
         averageQueryTime: 0,
         slowQueries: 0,
-        connectionPool: { active: 0, idle: 0, total: 0 }
+        connectionPool: { active: 0, idle: 0, total: 0 },
       };
     }
   }
@@ -958,41 +1025,54 @@ export class BackendPerformanceEngine {
   /**
    * Get cache metrics
    */
-  private async getCacheMetrics(): Promise<PerformanceReport['cacheMetrics']> {
+  private async getCacheMetrics(): Promise<PerformanceReport["cacheMetrics"]> {
     const cacheStats = this.cache.getStats();
-    
+
     return {
       hitRate: cacheStats.hitRate || 0,
       missRate: cacheStats.missRate || 0,
       evictionRate: cacheStats.evictionRate || 0,
-      memoryUsage: cacheStats.memoryUsage || 0
+      memoryUsage: cacheStats.memoryUsage || 0,
     };
   }
 
   /**
    * Generate recommendations
    */
-  private generateRecommendations(summary: PerformanceReport['summary'], alerts: PerformanceAlert[]): string[] {
+  private generateRecommendations(
+    summary: PerformanceReport["summary"],
+    alerts: PerformanceAlert[],
+  ): string[] {
     const recommendations: string[] = [];
 
     if (summary.averageResponseTime > 50) {
-      recommendations.push('Average response time is high. Consider optimizing slow endpoints and adding caching.');
+      recommendations.push(
+        "Average response time is high. Consider optimizing slow endpoints and adding caching.",
+      );
     }
 
     if (summary.errorRate > 5) {
-      recommendations.push('Error rate is elevated. Review error logs and fix failing endpoints.');
+      recommendations.push(
+        "Error rate is elevated. Review error logs and fix failing endpoints.",
+      );
     }
 
     if (summary.cacheHitRate < 80) {
-      recommendations.push('Cache hit rate is low. Review caching strategies and increase cache TTL.');
+      recommendations.push(
+        "Cache hit rate is low. Review caching strategies and increase cache TTL.",
+      );
     }
 
-    if (alerts.some(a => a.type === 'slow_query')) {
-      recommendations.push('Slow queries detected. Review database indexes and query optimization.');
+    if (alerts.some((a) => a.type === "slow_query")) {
+      recommendations.push(
+        "Slow queries detected. Review database indexes and query optimization.",
+      );
     }
 
-    if (alerts.some(a => a.type === 'memory_leak')) {
-      recommendations.push('Memory usage is high. Monitor for memory leaks and optimize memory usage.');
+    if (alerts.some((a) => a.type === "memory_leak")) {
+      recommendations.push(
+        "Memory usage is high. Monitor for memory leaks and optimize memory usage.",
+      );
     }
 
     return recommendations;
@@ -1001,26 +1081,30 @@ export class BackendPerformanceEngine {
   /**
    * Get performance alerts
    */
-  async getPerformanceAlerts(status?: PerformanceAlert['status']): Promise<PerformanceAlert[]> {
+  async getPerformanceAlerts(
+    status?: PerformanceAlert["status"],
+  ): Promise<PerformanceAlert[]> {
     let alerts = this.performanceAlerts;
-    
+
     if (status) {
-      alerts = alerts.filter(a => a.status === status);
+      alerts = alerts.filter((a) => a.status === status);
     }
-    
-    return alerts.sort((a, b) => b.triggeredAt.getTime() - a.triggeredAt.getTime());
+
+    return alerts.sort(
+      (a, b) => b.triggeredAt.getTime() - a.triggeredAt.getTime(),
+    );
   }
 
   /**
    * Acknowledge alert
    */
   async acknowledgeAlert(alertId: string, userId: string): Promise<void> {
-    const alert = this.performanceAlerts.find(a => a.id === alertId);
+    const alert = this.performanceAlerts.find((a) => a.id === alertId);
     if (!alert) {
-      throw new Error('Alert not found');
+      throw new Error("Alert not found");
     }
 
-    alert.status = 'acknowledged';
+    alert.status = "acknowledged";
     alert.acknowledgedAt = new Date();
     alert.acknowledgedBy = userId;
 
@@ -1038,13 +1122,17 @@ export class BackendPerformanceEngine {
   /**
    * Resolve alert
    */
-  async resolveAlert(alertId: string, resolution: string, userId: string): Promise<void> {
-    const alert = this.performanceAlerts.find(a => a.id === alertId);
+  async resolveAlert(
+    alertId: string,
+    resolution: string,
+    userId: string,
+  ): Promise<void> {
+    const alert = this.performanceAlerts.find((a) => a.id === alertId);
     if (!alert) {
-      throw new Error('Alert not found');
+      throw new Error("Alert not found");
     }
 
-    alert.status = 'resolved';
+    alert.status = "resolved";
     alert.resolution = resolution;
     alert.resolvedAt = new Date();
     alert.resolvedBy = userId;
@@ -1073,19 +1161,23 @@ export class BackendPerformanceEngine {
   }> {
     const now = Date.now();
     const oneMinuteAgo = now - 60000;
-    
-    const recentMetrics = this.metrics.filter(m => m.timestamp.getTime() >= oneMinuteAgo);
-    
+
+    const recentMetrics = this.metrics.filter(
+      (m) => m.timestamp.getTime() >= oneMinuteAgo,
+    );
+
     const currentRPS = recentMetrics.length / 60;
-    const averageResponseTime = recentMetrics.length > 0 
-      ? recentMetrics.reduce((sum, m) => sum + m.duration, 0) / recentMetrics.length 
-      : 0;
-    
+    const averageResponseTime =
+      recentMetrics.length > 0
+        ? recentMetrics.reduce((sum, m) => sum + m.duration, 0) /
+          recentMetrics.length
+        : 0;
+
     const memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024; // MB
-    
+
     const cacheStats = this.cache.getStats();
     const cacheHitRate = cacheStats.hitRate || 0;
-    
+
     const activeConnections = await this.getActiveConnections();
 
     return {
@@ -1093,7 +1185,7 @@ export class BackendPerformanceEngine {
       averageResponseTime,
       activeConnections,
       memoryUsage,
-      cacheHitRate
+      cacheHitRate,
     };
   }
 
@@ -1107,7 +1199,7 @@ export class BackendPerformanceEngine {
         FROM pg_stat_activity
         WHERE state = 'active' AND datname = current_database()
       `;
-      
+
       return (result as any[])[0]?.count || 0;
     } catch (error) {
       return 0;
@@ -1119,22 +1211,23 @@ export class BackendPerformanceEngine {
    */
   async optimizeCacheConfiguration(): Promise<void> {
     const realTimeMetrics = await this.getRealTimeMetrics();
-    
+
     // Adjust cache TTL based on hit rate
     if (realTimeMetrics.cacheHitRate < 70) {
       // Increase TTL for frequently accessed data
       for (const [key, strategy] of this.cacheStrategies) {
-        if (strategy.priority === 'high' && strategy.ttl < 600) {
+        if (strategy.priority === "high" && strategy.ttl < 600) {
           strategy.ttl = Math.min(strategy.ttl * 1.5, 1800); // Max 30 minutes
         }
       }
     }
 
     // Adjust cache size based on memory usage
-    if (realTimeMetrics.memoryUsage > 500) { // 500MB threshold
+    if (realTimeMetrics.memoryUsage > 500) {
+      // 500MB threshold
       // Enable compression for low priority strategies
       for (const [key, strategy] of this.cacheStrategies) {
-        if (strategy.priority === 'low' && !strategy.compressionEnabled) {
+        if (strategy.priority === "low" && !strategy.compressionEnabled) {
           strategy.compressionEnabled = true;
         }
       }
@@ -1170,7 +1263,7 @@ export class BackendPerformanceEngine {
     //   }
     // });
 
-    this.logger.info('Performance data cleanup completed');
+    this.logger.info("Performance data cleanup completed");
   }
 
   // Helper methods

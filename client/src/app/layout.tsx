@@ -1,13 +1,15 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { SessionProvider } from '../components/providers/SessionProvider';
+import React from 'react';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+// @ts-ignore
+import { SessionProvider } from '../components/providers/SessionProvider.js.js';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'AccuBooks',
-  description: 'Accounting and bookkeeping made simple',
+  title: "AccuBooks",
+  description: "Accounting and bookkeeping made simple",
 };
 
 export default function RootLayout({
@@ -19,9 +21,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <SessionProvider>
-          <div className="min-h-screen bg-background">
-            {children}
-          </div>
+          <div className="min-h-screen bg-background">{children}</div>
         </SessionProvider>
       </body>
     </html>

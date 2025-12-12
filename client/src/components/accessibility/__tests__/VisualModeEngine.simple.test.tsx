@@ -1,33 +1,33 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { VisualModeEngine } from '../VisualModeEngine';
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { VisualModeEngine } from '../VisualModeEngine.js';
 
-describe('VisualModeEngine - Basic Tests', () => {
-  it('renders children correctly', () => {
+describe("VisualModeEngine - Basic Tests", () => {
+  it("renders children correctly", () => {
     render(
       <VisualModeEngine>
         <div data-testid="child">Test Child</div>
-      </VisualModeEngine>
+      </VisualModeEngine>,
     );
 
-    expect(screen.getByTestId('child')).toBeInTheDocument();
+    expect(screen.getByTestId("child")).toBeInTheDocument();
   });
 
-  it('provides visual mode context', () => {
+  it("provides visual mode context", () => {
     render(
       <VisualModeEngine>
         <div data-testid="test-content">Visual Mode Test</div>
-      </VisualModeEngine>
+      </VisualModeEngine>,
     );
 
-    expect(screen.getByTestId('test-content')).toBeInTheDocument();
+    expect(screen.getByTestId("test-content")).toBeInTheDocument();
   });
 
-  it('handles basic functionality', () => {
+  it("handles basic functionality", () => {
     render(
       <VisualModeEngine>
         <div>Basic Visual Mode Test</div>
-      </VisualModeEngine>
+      </VisualModeEngine>,
     );
 
     // Basic smoke test - should render without crashing

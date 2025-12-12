@@ -1,112 +1,122 @@
-import React, { createContext, useContext, useEffect, useState } from "react"
 
-type Theme = 'light' | 'dark' | 'system'
-
-interface ThemeContextType {
-  theme: Theme
-  setTheme: (theme: Theme) => void
-  resolvedTheme: 'light' | 'dark'
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+import React, { createContext, useContext, useEffect, useState } from "react";
+
+type Theme = "light" | "dark" | "system";
+
+interface ThemeContextType {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  resolvedTheme: "light" | "dark";
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function useTheme() {
-  const context = useContext(ThemeContext)
+  const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider')
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
-  return context
+  return context;
 }
 
 interface ThemeProviderProps {
-  children: React.ReactNode
-  defaultTheme?: Theme
-  storageKey?: string
+  children: React.ReactNode;
+  defaultTheme?: Theme;
+  storageKey?: string;
 }
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
-  storageKey = 'accu-books-theme'
+  defaultTheme = "system",
+  storageKey = "accu-books-theme",
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem(storageKey) as Theme) || defaultTheme
+    if (typeof window !== "undefined") {
+// @ts-ignore
+      return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
     }
-    return defaultTheme
-  })
+    return defaultTheme;
+  });
 
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const root = window.document.documentElement
+    const root = window.document.documentElement;
 
     // Remove previous theme classes
-    root.classList.remove('light', 'dark')
+    root.classList.remove("light", "dark");
 
     // Determine the actual theme
-    let actualTheme: 'light' | 'dark'
-    if (theme === 'system') {
-      actualTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    let actualTheme: "light" | "dark";
+    if (theme === "system") {
+      actualTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
     } else {
-      actualTheme = theme
+      actualTheme = theme;
     }
 
     // Apply the theme
-    root.classList.add(actualTheme)
-    root.setAttribute('data-theme', actualTheme)
-    setResolvedTheme(actualTheme)
+    root.classList.add(actualTheme);
+    root.setAttribute("data-theme", actualTheme);
+    setResolvedTheme(actualTheme);
 
     // Store preference
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(storageKey, theme)
+    if (typeof window !== "undefined") {
+      localStorage.setItem(storageKey, theme);
     }
-  }, [theme, storageKey])
+  }, [theme, storageKey]);
 
   // Listen for system theme changes
   useEffect(() => {
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    if (theme === "system") {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
       const handleChange = () => {
-        const actualTheme = mediaQuery.matches ? 'dark' : 'light'
-        document.documentElement.classList.add(actualTheme)
-        document.documentElement.classList.remove(mediaQuery.matches ? 'light' : 'dark')
-        document.documentElement.setAttribute('data-theme', actualTheme)
-        setResolvedTheme(actualTheme)
-      }
+        const actualTheme = mediaQuery.matches ? "dark" : "light";
+        document.documentElement.classList.add(actualTheme);
+        document.documentElement.classList.remove(
+          mediaQuery.matches ? "light" : "dark",
+        );
+        document.documentElement.setAttribute("data-theme", actualTheme);
+        setResolvedTheme(actualTheme);
+      };
 
-      mediaQuery.addEventListener('change', handleChange)
-      return () => mediaQuery.removeEventListener('change', handleChange)
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
     }
-  }, [theme])
+  }, [theme]);
 
   const value = {
     theme,
     setTheme,
-    resolvedTheme
-  }
+    resolvedTheme,
+  };
 
   return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
-  )
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 // Theme toggle component
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme();
 
   const toggleTheme = () => {
-    if (theme === 'light') {
-      setTheme('dark')
-    } else if (theme === 'dark') {
-      setTheme('light')
+    if (theme === "light") {
+      setTheme("dark");
+    } else if (theme === "dark") {
+      setTheme("light");
     } else {
       // If system, toggle to opposite of current resolved theme
-      setTheme('light')
+      setTheme("light");
     }
-  }
+  };
 
   return (
     <button
@@ -120,7 +130,7 @@ export function ThemeToggle() {
         stroke="currentColor"
         viewBox="0 0 24 24"
       >
-        {theme === 'dark' ? (
+        {theme === "dark" ? (
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -137,5 +147,5 @@ export function ThemeToggle() {
         )}
       </svg>
     </button>
-  )
+  );
 }

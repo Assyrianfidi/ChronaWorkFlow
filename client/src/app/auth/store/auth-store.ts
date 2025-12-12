@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import axios from 'axios';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import axios from "axios";
 
 type User = {
   id: string;
@@ -34,10 +34,10 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
       login: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
-        
+
         try {
           // Replace with your actual API endpoint
-          const response = await axios.post('/api/auth/login', {
+          const response = await axios.post("/api/auth/login", {
             email,
             password,
           });
@@ -49,13 +49,13 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             isLoading: false,
           });
         } catch (error) {
-          let errorMessage = 'Failed to log in. Please check your credentials.';
-          
+          let errorMessage = "Failed to log in. Please check your credentials.";
+
           if (axios.isAxiosError(error) && error.response) {
             errorMessage = error.response.data.message || errorMessage;
           }
-          
-          set({ 
+
+          set({
             error: errorMessage,
             isLoading: false,
           });
@@ -70,9 +70,9 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           token: null,
           isAuthenticated: false,
         });
-        
+
         // Clear persisted state
-        localStorage.removeItem('auth-storage');
+        localStorage.removeItem("auth-storage");
       },
 
       clearError: () => {
@@ -80,12 +80,12 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       },
     }),
     {
-      name: 'auth-storage', // name of the item in the storage (must be unique)
+      name: "auth-storage", // name of the item in the storage (must be unique)
       partialize: (state) => ({
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  )
+    },
+  ),
 );

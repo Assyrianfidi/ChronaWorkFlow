@@ -1,3 +1,11 @@
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React, { useState } from 'react';
 /**
  * Smart Logging System
  * Intelligent log filtering, anomaly detection, predictive issue identification, automated alerts
@@ -13,16 +21,16 @@ export interface SmartLogConfig {
     maxLogSize: number;
     bufferSize: number;
   };
-  
+
   // Anomaly detection
   anomalyDetection: {
     enabled: boolean;
-    sensitivity: 'low' | 'medium' | 'high';
+    sensitivity: "low" | "medium" | "high";
     windowSize: number;
     thresholdMultiplier: number;
     patterns: AnomalyPattern[];
   };
-  
+
   // Predictive analytics
   predictive: {
     enabled: boolean;
@@ -31,7 +39,7 @@ export interface SmartLogConfig {
     confidenceThreshold: number;
     models: PredictionModel[];
   };
-  
+
   // Automated alerts
   alerts: {
     enabled: boolean;
@@ -42,18 +50,18 @@ export interface SmartLogConfig {
       timeWindow: number;
     };
   };
-  
+
   // Storage and retention
   storage: {
     enabled: boolean;
-    provider: 'localStorage' | 'indexedDB' | 'remote';
+    provider: "localStorage" | "indexedDB" | "remote";
     retentionPeriod: number;
     compressionEnabled: boolean;
     encryptionEnabled: boolean;
   };
 }
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal";
 
 export interface LogEntry {
   id: string;
@@ -99,9 +107,9 @@ export interface AnomalyPattern {
   id: string;
   name: string;
   description: string;
-  type: 'frequency' | 'pattern' | 'sequence' | 'performance' | 'error_rate';
+  type: "frequency" | "pattern" | "sequence" | "performance" | "error_rate";
   conditions: AnomalyCondition[];
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   enabled: boolean;
   cooldown: number; // milliseconds
   lastTriggered?: Date;
@@ -109,20 +117,20 @@ export interface AnomalyPattern {
 
 export interface AnomalyCondition {
   field: string;
-  operator: 'gt' | 'lt' | 'eq' | 'ne' | 'contains' | 'regex' | 'custom';
+  operator: "gt" | "lt" | "eq" | "ne" | "contains" | "regex" | "custom";
   value: any;
   timeWindow?: number; // milliseconds
-  aggregation?: 'count' | 'avg' | 'sum' | 'min' | 'max';
+  aggregation?: "count" | "avg" | "sum" | "min" | "max";
   customLogic?: (data: LogEntry[]) => boolean;
 }
 
 export interface PredictionModel {
   id: string;
   name: string;
-  type: 'time_series' | 'classification' | 'regression' | 'anomaly';
+  type: "time_series" | "classification" | "regression" | "anomaly";
   target: string;
   features: string[];
-  algorithm: 'linear_regression' | 'random_forest' | 'neural_network' | 'arima';
+  algorithm: "linear_regression" | "random_forest" | "neural_network" | "arima";
   accuracy: number;
   lastTrained: Date;
   enabled: boolean;
@@ -145,8 +153,8 @@ export interface Prediction {
 
 export interface Alert {
   id: string;
-  type: 'anomaly' | 'prediction' | 'threshold' | 'system';
-  severity: 'info' | 'warning' | 'error' | 'critical';
+  type: "anomaly" | "prediction" | "threshold" | "system";
+  severity: "info" | "warning" | "error" | "critical";
   title: string;
   message: string;
   timestamp: Date;
@@ -164,7 +172,7 @@ export interface Alert {
 export interface AlertChannel {
   id: string;
   name: string;
-  type: 'console' | 'email' | 'slack' | 'webhook' | 'sms' | 'push';
+  type: "console" | "email" | "slack" | "webhook" | "sms" | "push";
   enabled: boolean;
   config: Record<string, any>;
   filters: AlertFilter[];
@@ -172,7 +180,7 @@ export interface AlertChannel {
 
 export interface AlertFilter {
   field: string;
-  operator: 'eq' | 'ne' | 'contains' | 'regex';
+  operator: "eq" | "ne" | "contains" | "regex";
   value: any;
 }
 
@@ -186,13 +194,13 @@ export interface EscalationRule {
 
 export interface EscalationCondition {
   field: string;
-  operator: 'eq' | 'ne' | 'gt' | 'lt';
+  operator: "eq" | "ne" | "gt" | "lt";
   value: any;
   timeWindow?: number;
 }
 
 export interface EscalationAction {
-  type: 'notify' | 'escalate' | 'auto_resolve' | 'create_ticket';
+  type: "notify" | "escalate" | "auto_resolve" | "create_ticket";
   parameters: Record<string, any>;
   delay: number;
 }
@@ -227,7 +235,7 @@ export interface SmartLogReport {
   alerts: Alert[];
   trends: Array<{
     metric: string;
-    trend: 'increasing' | 'decreasing' | 'stable';
+    trend: "increasing" | "decreasing" | "stable";
     change: number;
     significance: number;
   }>;
@@ -265,25 +273,25 @@ export class SmartLoggingEngine {
     return {
       filtering: {
         enabled: true,
-        logLevels: ['info', 'warn', 'error', 'fatal'],
-        excludePatterns: ['password', 'token', 'secret', 'key'],
+        logLevels: ["info", "warn", "error", "fatal"],
+        excludePatterns: ["password", "token", "secret", "key"],
         includePatterns: [],
         maxLogSize: 1000,
-        bufferSize: 10000
+        bufferSize: 10000,
       },
       anomalyDetection: {
         enabled: true,
-        sensitivity: 'medium',
+        sensitivity: "medium",
         windowSize: 1000,
         thresholdMultiplier: 2.0,
-        patterns: []
+        patterns: [],
       },
       predictive: {
         enabled: true,
         lookbackPeriod: 24 * 60 * 60 * 1000, // 24 hours
         predictionHorizon: 60 * 60 * 1000, // 1 hour
         confidenceThreshold: 0.7,
-        models: []
+        models: [],
       },
       alerts: {
         enabled: true,
@@ -291,44 +299,44 @@ export class SmartLoggingEngine {
         escalationRules: [],
         rateLimit: {
           maxAlerts: 50,
-          timeWindow: 60 * 60 * 1000 // 1 hour
-        }
+          timeWindow: 60 * 60 * 1000, // 1 hour
+        },
       },
       storage: {
         enabled: true,
-        provider: 'localStorage',
+        provider: "localStorage",
         retentionPeriod: 7 * 24 * 60 * 60 * 1000, // 7 days
         compressionEnabled: true,
-        encryptionEnabled: false
-      }
+        encryptionEnabled: false,
+      },
     };
   }
 
   private initializeSmartLogging(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // Start processing
     this.startProcessing();
-    
+
     // Initialize anomaly patterns
     this.initializeAnomalyPatterns();
-    
+
     // Initialize prediction models
     this.initializePredictionModels();
-    
+
     // Initialize alert channels
     this.initializeAlertChannels();
-    
+
     // Set up performance monitoring
     this.setupPerformanceMonitoring();
-    
+
     // Load existing data
     this.loadExistingData();
   }
 
   private startProcessing(): void {
     this.isProcessing = true;
-    
+
     // Process logs every 5 seconds
     this.processingInterval = window.setInterval(() => {
       this.processLogBuffer();
@@ -341,233 +349,262 @@ export class SmartLoggingEngine {
   private initializeAnomalyPatterns(): void {
     // High error rate pattern
     const highErrorRatePattern: AnomalyPattern = {
-      id: 'high-error-rate',
-      name: 'High Error Rate',
-      description: 'Detects when error rate exceeds normal levels',
-      type: 'error_rate',
+      id: "high-error-rate",
+      name: "High Error Rate",
+      description: "Detects when error rate exceeds normal levels",
+      type: "error_rate",
       conditions: [
         {
-          field: 'level',
-          operator: 'eq',
-          value: 'error',
-          aggregation: 'count',
-          timeWindow: 5 * 60 * 1000 // 5 minutes
-        }
+          field: "level",
+          operator: "eq",
+          value: "error",
+          aggregation: "count",
+          timeWindow: 5 * 60 * 1000, // 5 minutes
+        },
       ],
-      severity: 'high',
+      severity: "high",
       enabled: true,
-      cooldown: 10 * 60 * 1000 // 10 minutes
+      cooldown: 10 * 60 * 1000, // 10 minutes
     };
 
     // Memory usage pattern
     const memoryUsagePattern: AnomalyPattern = {
-      id: 'high-memory-usage',
-      name: 'High Memory Usage',
-      description: 'Detects unusual memory consumption patterns',
-      type: 'performance',
+      id: "high-memory-usage",
+      name: "High Memory Usage",
+      description: "Detects unusual memory consumption patterns",
+      type: "performance",
       conditions: [
         {
-          field: 'metadata.memoryUsage',
-          operator: 'gt',
+          field: "metadata.memoryUsage",
+          operator: "gt",
           value: 0.8,
-          aggregation: 'avg',
-          timeWindow: 2 * 60 * 1000 // 2 minutes
-        }
+          aggregation: "avg",
+          timeWindow: 2 * 60 * 1000, // 2 minutes
+        },
       ],
-      severity: 'medium',
+      severity: "medium",
       enabled: true,
-      cooldown: 5 * 60 * 1000 // 5 minutes
+      cooldown: 5 * 60 * 1000, // 5 minutes
     };
 
     // Performance degradation pattern
     const performancePattern: AnomalyPattern = {
-      id: 'performance-degradation',
-      name: 'Performance Degradation',
-      description: 'Detects performance issues',
-      type: 'performance',
+      id: "performance-degradation",
+      name: "Performance Degradation",
+      description: "Detects performance issues",
+      type: "performance",
       conditions: [
         {
-          field: 'metadata.performance.loadComplete',
-          operator: 'gt',
+          field: "metadata.performance.loadComplete",
+          operator: "gt",
           value: 3000, // 3 seconds
-          aggregation: 'avg',
-          timeWindow: 10 * 60 * 1000 // 10 minutes
-        }
+          aggregation: "avg",
+          timeWindow: 10 * 60 * 1000, // 10 minutes
+        },
       ],
-      severity: 'medium',
+      severity: "medium",
       enabled: true,
-      cooldown: 15 * 60 * 1000 // 15 minutes
+      cooldown: 15 * 60 * 1000, // 15 minutes
     };
 
     // Network issues pattern
     const networkPattern: AnomalyPattern = {
-      id: 'network-issues',
-      name: 'Network Connectivity Issues',
-      description: 'Detects network-related problems',
-      type: 'frequency',
+      id: "network-issues",
+      name: "Network Connectivity Issues",
+      description: "Detects network-related problems",
+      type: "frequency",
       conditions: [
         {
-          field: 'metadata.network.online',
-          operator: 'eq',
+          field: "metadata.network.online",
+          operator: "eq",
           value: false,
-          aggregation: 'count',
-          timeWindow: 1 * 60 * 1000 // 1 minute
-        }
+          aggregation: "count",
+          timeWindow: 1 * 60 * 1000, // 1 minute
+        },
       ],
-      severity: 'high',
+      severity: "high",
       enabled: true,
-      cooldown: 5 * 60 * 1000 // 5 minutes
+      cooldown: 5 * 60 * 1000, // 5 minutes
     };
 
     this.config.anomalyDetection.patterns.push(
       highErrorRatePattern,
       memoryUsagePattern,
       performancePattern,
-      networkPattern
+      networkPattern,
     );
   }
 
   private initializePredictionModels(): void {
     // Error rate prediction model
     const errorRateModel: PredictionModel = {
-      id: 'error-rate-prediction',
-      name: 'Error Rate Prediction',
-      type: 'time_series',
-      target: 'errorRate',
-      features: ['timeOfDay', 'dayOfWeek', 'recentErrorRate', 'memoryUsage', 'networkStatus'],
-      algorithm: 'linear_regression',
+      id: "error-rate-prediction",
+      name: "Error Rate Prediction",
+      type: "time_series",
+      target: "errorRate",
+      features: [
+        "timeOfDay",
+        "dayOfWeek",
+        "recentErrorRate",
+        "memoryUsage",
+        "networkStatus",
+      ],
+      algorithm: "linear_regression",
       accuracy: 0.75,
       lastTrained: new Date(),
-      enabled: true
+      enabled: true,
     };
 
     // Performance prediction model
     const performanceModel: PredictionModel = {
-      id: 'performance-prediction',
-      name: 'Performance Prediction',
-      type: 'regression',
-      target: 'loadTime',
-      features: ['memoryUsage', 'domSize', 'networkSpeed', 'concurrentUsers'],
-      algorithm: 'random_forest',
-      accuracy: 0.80,
+      id: "performance-prediction",
+      name: "Performance Prediction",
+      type: "regression",
+      target: "loadTime",
+      features: ["memoryUsage", "domSize", "networkSpeed", "concurrentUsers"],
+      algorithm: "random_forest",
+      accuracy: 0.8,
       lastTrained: new Date(),
-      enabled: true
+      enabled: true,
     };
 
     // User behavior prediction model
     const userBehaviorModel: PredictionModel = {
-      id: 'user-behavior-prediction',
-      name: 'User Behavior Prediction',
-      type: 'classification',
-      target: 'userSatisfaction',
-      features: ['sessionDuration', 'errorCount', 'featureUsage', 'responseTime'],
-      algorithm: 'neural_network',
-      accuracy: 0.70,
+      id: "user-behavior-prediction",
+      name: "User Behavior Prediction",
+      type: "classification",
+      target: "userSatisfaction",
+      features: [
+        "sessionDuration",
+        "errorCount",
+        "featureUsage",
+        "responseTime",
+      ],
+      algorithm: "neural_network",
+      accuracy: 0.7,
       lastTrained: new Date(),
-      enabled: true
+      enabled: true,
     };
 
     this.config.predictive.models.push(
       errorRateModel,
       performanceModel,
-      userBehaviorModel
+      userBehaviorModel,
     );
   }
 
   private initializeAlertChannels(): void {
     // Console channel
     const consoleChannel: AlertChannel = {
-      id: 'console',
-      name: 'Console Output',
-      type: 'console',
+      id: "console",
+      name: "Console Output",
+      type: "console",
       enabled: true,
       config: {
         colors: true,
-        timestamps: true
+        timestamps: true,
       },
-      filters: []
+      filters: [],
     };
 
     // Email channel (placeholder)
     const emailChannel: AlertChannel = {
-      id: 'email',
-      name: 'Email Notifications',
-      type: 'email',
+      id: "email",
+      name: "Email Notifications",
+      type: "email",
       enabled: false, // Disabled by default
       config: {
-        recipients: ['admin@accubooks.com'],
-        template: 'default'
+        recipients: ["admin@accubooks.com"],
+        template: "default",
       },
       filters: [
         {
-          field: 'severity',
-          operator: 'eq',
-          value: 'critical'
-        }
-      ]
+          field: "severity",
+          operator: "eq",
+          value: "critical",
+        },
+      ],
     };
 
     // Webhook channel
     const webhookChannel: AlertChannel = {
-      id: 'webhook',
-      name: 'Webhook Integration',
-      type: 'webhook',
+      id: "webhook",
+      name: "Webhook Integration",
+      type: "webhook",
       enabled: false,
       config: {
-        url: 'https://api.accubooks.com/webhooks/alerts',
+        url: "https://api.accubooks.com/webhooks/alerts",
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       },
       filters: [
         {
-          field: 'severity',
-          operator: 'ne',
-          value: 'info'
-        }
-      ]
+          field: "severity",
+          operator: "ne",
+          value: "info",
+        },
+      ],
     };
 
-    this.config.alerts.channels.push(consoleChannel, emailChannel, webhookChannel);
+    this.config.alerts.channels.push(
+      consoleChannel,
+      emailChannel,
+      webhookChannel,
+    );
   }
 
   private setupPerformanceMonitoring(): void {
     // Monitor performance metrics
-    if ('performance' in window) {
-      window.addEventListener('load', () => {
-        const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-        
-        this.log('info', 'Performance metrics collected', 'performance', {
-          domContentLoaded: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
+    if ("performance" in window) {
+      window.addEventListener("load", () => {
+        const perfData = performance.getEntriesByType(
+          "navigation",
+// @ts-ignore
+        )[0] as PerformanceNavigationTiming;
+
+        this.log("info", "Performance metrics collected", "performance", {
+          domContentLoaded:
+            perfData.domContentLoadedEventEnd -
+            perfData.domContentLoadedEventStart,
           loadComplete: perfData.loadEventEnd - perfData.loadEventStart,
           firstPaint: this.getFirstPaint(),
-          firstContentfulPaint: this.getFirstContentfulPaint()
+          firstContentfulPaint: this.getFirstContentfulPaint(),
         });
       });
     }
   }
 
   private getFirstPaint(): number {
-    const paintEntries = performance.getEntriesByType('paint');
-    const firstPaint = paintEntries.find(entry => entry.name === 'first-paint');
+    const paintEntries = performance.getEntriesByType("paint");
+    const firstPaint = paintEntries.find(
+      (entry) => entry.name === "first-paint",
+    );
     return firstPaint ? firstPaint.startTime : 0;
   }
 
   private getFirstContentfulPaint(): number {
-    const paintEntries = performance.getEntriesByType('paint');
-    const fcp = paintEntries.find(entry => entry.name === 'first-contentful-paint');
+    const paintEntries = performance.getEntriesByType("paint");
+    const fcp = paintEntries.find(
+      (entry) => entry.name === "first-contentful-paint",
+    );
     return fcp ? fcp.startTime : 0;
   }
 
   private loadExistingData(): void {
     // Load existing logs and data from storage
-    this.storageManager.loadLogs().then(logs => {
+    this.storageManager.loadLogs().then((logs) => {
       this.logBuffer.push(...logs);
     });
   }
 
   // Public API: Logging methods
-  public log(level: LogLevel, message: string, category: string = 'general', context: Record<string, any> = {}): void {
+  public log(
+    level: LogLevel,
+    message: string,
+    category: string = "general",
+    context: Record<string, any> = {},
+  ): void {
     if (!this.shouldLog(level, message, category)) return;
 
     const logEntry: LogEntry = {
@@ -581,33 +618,58 @@ export class SmartLoggingEngine {
       metadata: this.extractMetadata(),
       tags: this.extractTags(level, category),
       correlationId: this.getCorrelationId(),
-      stackTrace: level === 'error' || level === 'fatal' ? new Error().stack : undefined
+      stackTrace:
+        level === "error" || level === "fatal" ? new Error().stack : undefined,
     };
 
     this.addToBuffer(logEntry);
   }
 
-  public debug(message: string, category: string = 'debug', context: Record<string, any> = {}): void {
-    this.log('debug', message, category, context);
+  public debug(
+    message: string,
+    category: string = "debug",
+    context: Record<string, any> = {},
+  ): void {
+    this.log("debug", message, category, context);
   }
 
-  public info(message: string, category: string = 'info', context: Record<string, any> = {}): void {
-    this.log('info', message, category, context);
+  public info(
+    message: string,
+    category: string = "info",
+    context: Record<string, any> = {},
+  ): void {
+    this.log("info", message, category, context);
   }
 
-  public warn(message: string, category: string = 'warning', context: Record<string, any> = {}): void {
-    this.log('warn', message, category, context);
+  public warn(
+    message: string,
+    category: string = "warning",
+    context: Record<string, any> = {},
+  ): void {
+    this.log("warn", message, category, context);
   }
 
-  public error(message: string, category: string = 'error', context: Record<string, any> = {}): void {
-    this.log('error', message, category, context);
+  public error(
+    message: string,
+    category: string = "error",
+    context: Record<string, any> = {},
+  ): void {
+    this.log("error", message, category, context);
   }
 
-  public fatal(message: string, category: string = 'fatal', context: Record<string, any> = {}): void {
-    this.log('fatal', message, category, context);
+  public fatal(
+    message: string,
+    category: string = "fatal",
+    context: Record<string, any> = {},
+  ): void {
+    this.log("fatal", message, category, context);
   }
 
-  private shouldLog(level: LogLevel, message: string, category: string): boolean {
+  private shouldLog(
+    level: LogLevel,
+    message: string,
+    category: string,
+  ): boolean {
     // Check log level filtering
     if (!this.config.filtering.logLevels.includes(level)) {
       return false;
@@ -622,8 +684,8 @@ export class SmartLoggingEngine {
 
     // Check include patterns (if specified)
     if (this.config.filtering.includePatterns.length > 0) {
-      const matches = this.config.filtering.includePatterns.some(pattern =>
-        message.toLowerCase().includes(pattern.toLowerCase())
+      const matches = this.config.filtering.includePatterns.some((pattern) =>
+        message.toLowerCase().includes(pattern.toLowerCase()),
       );
       if (!matches) {
         return false;
@@ -637,29 +699,31 @@ export class SmartLoggingEngine {
     return `log-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private extractSource(): LogEntry['source'] {
+  private extractSource(): LogEntry["source"] {
     const stack = new Error().stack;
-    if (!stack) return { file: 'unknown', function: 'unknown', line: 0 };
+    if (!stack) return { file: "unknown", function: "unknown", line: 0 };
 
-    const lines = stack.split('\n');
+    const lines = stack.split("\n");
     // Skip the first few lines to get to the actual caller
     const callerLine = lines[4] || lines[3] || lines[2];
-    
+
     const match = callerLine.match(/at\s+(.+?)\s+\((.+?):(\d+):\d+\)/);
     if (match) {
       return {
         function: match[1],
-        file: match[2].split('/').pop() || match[2],
-        line: parseInt(match[3])
+        file: match[2].split("/").pop() || match[2],
+        line: parseInt(match[3]),
       };
     }
 
-    return { file: 'unknown', function: 'unknown', line: 0 };
+    return { file: "unknown", function: "unknown", line: 0 };
   }
 
-  private extractMetadata(): LogEntry['metadata'] {
+  private extractMetadata(): LogEntry["metadata"] {
+// @ts-ignore
+// @ts-ignore
     const connection = (navigator as any).connection;
-    
+
     return {
       userAgent: navigator.userAgent,
       url: window.location.href,
@@ -669,31 +733,40 @@ export class SmartLoggingEngine {
         domContentLoaded: 0,
         loadComplete: 0,
         firstPaint: this.getFirstPaint(),
-        firstContentfulPaint: this.getFirstContentfulPaint()
+        firstContentfulPaint: this.getFirstContentfulPaint(),
       },
       network: {
         online: navigator.onLine,
-        effectiveType: connection?.effectiveType || 'unknown',
+        effectiveType: connection?.effectiveType || "unknown",
         downlink: connection?.downlink || 0,
-        rtt: connection?.rtt || 0
-      }
+        rtt: connection?.rtt || 0,
+      },
     };
   }
 
   private getMemoryUsage(): number {
+// @ts-ignore
+// @ts-ignore
     if ((performance as any).memory) {
-      return (performance as any).memory.usedJSHeapSize / (performance as any).memory.jsHeapSizeLimit;
+      return (
+// @ts-ignore
+// @ts-ignore
+        (performance as any).memory.usedJSHeapSize /
+// @ts-ignore
+// @ts-ignore
+        (performance as any).memory.jsHeapSizeLimit
+      );
     }
     return 0;
   }
 
   private extractTags(level: LogLevel, category: string): string[] {
     const tags = [level, category];
-    
+
     // Add contextual tags
-    if (!navigator.onLine) tags.push('offline');
-    if (this.getMemoryUsage() > 0.8) tags.push('high-memory');
-    
+    if (!navigator.onLine) tags.push("offline");
+    if (this.getMemoryUsage() > 0.8) tags.push("high-memory");
+
     return tags;
   }
 
@@ -704,14 +777,14 @@ export class SmartLoggingEngine {
 
   private addToBuffer(logEntry: LogEntry): void {
     this.logBuffer.push(logEntry);
-    
+
     // Maintain buffer size
     if (this.logBuffer.length > this.config.filtering.bufferSize) {
       this.logBuffer.shift();
     }
-    
+
     // Store immediately for critical logs
-    if (logEntry.level === 'fatal' || logEntry.level === 'error') {
+    if (logEntry.level === "fatal" || logEntry.level === "error") {
       this.storageManager.storeLog(logEntry);
     }
   }
@@ -722,9 +795,9 @@ export class SmartLoggingEngine {
     // Process logs in batches
     const batchSize = 100;
     const batch = this.logBuffer.splice(0, batchSize);
-    
+
     // Store logs
-    batch.forEach(log => {
+    batch.forEach((log) => {
       this.storageManager.storeLog(log);
     });
   }
@@ -732,17 +805,21 @@ export class SmartLoggingEngine {
   private performAnomalyDetection(): void {
     if (!this.config.anomalyDetection.enabled) return;
 
-    const recentLogs = this.getRecentLogs(this.config.anomalyDetection.windowSize);
-    
-    this.config.anomalyDetection.patterns.forEach(pattern => {
+    const recentLogs = this.getRecentLogs(
+      this.config.anomalyDetection.windowSize,
+    );
+
+    this.config.anomalyDetection.patterns.forEach((pattern) => {
       if (!pattern.enabled) return;
-      
+
       // Check cooldown
-      if (pattern.lastTriggered && 
-          Date.now() - pattern.lastTriggered.getTime() < pattern.cooldown) {
+      if (
+        pattern.lastTriggered &&
+        Date.now() - pattern.lastTriggered.getTime() < pattern.cooldown
+      ) {
         return;
       }
-      
+
       const anomaly = this.anomalyDetector.detectAnomaly(pattern, recentLogs);
       if (anomaly) {
         this.handleAnomalyDetected(pattern, anomaly);
@@ -756,20 +833,20 @@ export class SmartLoggingEngine {
   }
 
   private handleAnomalyDetected(pattern: AnomalyPattern, anomaly: any): void {
-    this.log('warn', `Anomaly detected: ${pattern.name}`, 'anomaly', {
+    this.log("warn", `Anomaly detected: ${pattern.name}`, "anomaly", {
       patternId: pattern.id,
       severity: pattern.severity,
-      data: anomaly
+      data: anomaly,
     });
 
     // Create alert
     if (this.config.alerts.enabled) {
       this.alertManager.createAlert({
-        type: 'anomaly',
+        type: "anomaly",
         severity: pattern.severity,
         title: `Anomaly: ${pattern.name}`,
         message: pattern.description,
-        data: { pattern, anomaly }
+        data: { pattern, anomaly },
       });
     }
   }
@@ -777,13 +854,21 @@ export class SmartLoggingEngine {
   private generatePredictions(): void {
     if (!this.config.predictive.enabled) return;
 
-    const historicalData = this.getHistoricalData(this.config.predictive.lookbackPeriod);
-    
-    this.config.predictive.models.forEach(model => {
+    const historicalData = this.getHistoricalData(
+      this.config.predictive.lookbackPeriod,
+    );
+
+    this.config.predictive.models.forEach((model) => {
       if (!model.enabled) return;
-      
-      const prediction = this.predictionEngine.generatePrediction(model, historicalData);
-      if (prediction && prediction.confidence >= this.config.predictive.confidenceThreshold) {
+
+      const prediction = this.predictionEngine.generatePrediction(
+        model,
+        historicalData,
+      );
+      if (
+        prediction &&
+        prediction.confidence >= this.config.predictive.confidenceThreshold
+      ) {
         this.handlePredictionGenerated(model, prediction);
       }
     });
@@ -791,72 +876,90 @@ export class SmartLoggingEngine {
 
   private getHistoricalData(period: number): LogEntry[] {
     const cutoff = Date.now() - period;
-    return this.logBuffer.filter(log => log.timestamp.getTime() > cutoff);
+    return this.logBuffer.filter((log) => log.timestamp.getTime() > cutoff);
   }
 
-  private handlePredictionGenerated(model: PredictionModel, prediction: Prediction): void {
-    this.log('info', `Prediction generated: ${model.name}`, 'prediction', {
+  private handlePredictionGenerated(
+    model: PredictionModel,
+    prediction: Prediction,
+  ): void {
+    this.log("info", `Prediction generated: ${model.name}`, "prediction", {
       modelId: model.id,
       target: prediction.target,
       confidence: prediction.confidence,
-      predictedValue: prediction.predictedValue
+      predictedValue: prediction.predictedValue,
     });
 
     // Create alert for high-confidence critical predictions
     if (prediction.confidence > 0.9 && this.isCriticalPrediction(prediction)) {
       this.alertManager.createAlert({
-        type: 'prediction',
-        severity: 'warning',
+        type: "prediction",
+        severity: "warning",
         title: `Critical Prediction: ${model.name}`,
         message: `High confidence prediction for ${prediction.target}`,
-        data: { model, prediction }
+        data: { model, prediction },
       });
     }
   }
 
   private isCriticalPrediction(prediction: Prediction): boolean {
     // Determine if prediction is critical based on target and value
-    if (prediction.target === 'errorRate' && prediction.predictedValue > 0.1) return true;
-    if (prediction.target === 'loadTime' && prediction.predictedValue > 5000) return true;
-    if (prediction.target === 'userSatisfaction' && prediction.predictedValue < 0.5) return true;
-    
+    if (prediction.target === "errorRate" && prediction.predictedValue > 0.1)
+      return true;
+    if (prediction.target === "loadTime" && prediction.predictedValue > 5000)
+      return true;
+    if (
+      prediction.target === "userSatisfaction" &&
+      prediction.predictedValue < 0.5
+    )
+      return true;
+
     return false;
   }
 
   private checkEscalationRules(): void {
     if (!this.config.alerts.enabled) return;
-    
+
     this.alertManager.checkEscalationRules(this.config.alerts.escalationRules);
   }
 
   // Public API methods
-  public getLogs(level?: LogLevel, category?: string, limit?: number): LogEntry[] {
+  public getLogs(
+    level?: LogLevel,
+    category?: string,
+    limit?: number,
+  ): LogEntry[] {
     let filtered = this.logBuffer;
-    
+
     if (level) {
-      filtered = filtered.filter(log => log.level === level);
+      filtered = filtered.filter((log) => log.level === level);
     }
-    
+
     if (category) {
-      filtered = filtered.filter(log => log.category === category);
+      filtered = filtered.filter((log) => log.category === category);
     }
-    
+
     if (limit) {
       filtered = filtered.slice(-limit);
     }
-    
+
     return filtered;
   }
 
-  public getSmartLogReport(period?: { start: Date; end: Date }): SmartLogReport {
+  public getSmartLogReport(period?: {
+    start: Date;
+    end: Date;
+  }): SmartLogReport {
     const now = new Date();
     const reportPeriod = period || {
       start: new Date(now.getTime() - 24 * 60 * 60 * 1000), // 24 hours ago
-      end: now
+      end: now,
     };
 
-    const periodLogs = this.logBuffer.filter(log => 
-      log.timestamp >= reportPeriod.start && log.timestamp <= reportPeriod.end
+    const periodLogs = this.logBuffer.filter(
+      (log) =>
+        log.timestamp >= reportPeriod.start &&
+        log.timestamp <= reportPeriod.end,
     );
 
     const summary = this.generateSummary(periodLogs);
@@ -872,22 +975,22 @@ export class SmartLoggingEngine {
       anomalies,
       predictions,
       alerts,
-      trends
+      trends,
     };
   }
 
-  private generateSummary(logs: LogEntry[]): SmartLogReport['summary'] {
+  private generateSummary(logs: LogEntry[]): SmartLogReport["summary"] {
     const logsByLevel: Record<LogLevel, number> = {
       debug: 0,
       info: 0,
       warn: 0,
       error: 0,
-      fatal: 0
+      fatal: 0,
     };
 
     const logsByCategory: Record<string, number> = {};
 
-    logs.forEach(log => {
+    logs.forEach((log) => {
       logsByLevel[log.level]++;
       logsByCategory[log.category] = (logsByCategory[log.category] || 0) + 1;
     });
@@ -898,89 +1001,100 @@ export class SmartLoggingEngine {
       logsByCategory,
       anomalyCount: this.anomalyDetector.getAnomalyCount(),
       predictionCount: this.predictionEngine.getPredictionCount(),
-      alertCount: this.alertManager.getAlertCount()
+      alertCount: this.alertManager.getAlertCount(),
     };
   }
 
-  private getAnomalySummary(): SmartLogReport['anomalies'] {
+  private getAnomalySummary(): SmartLogReport["anomalies"] {
     return this.config.anomalyDetection.patterns
-      .filter(pattern => pattern.lastTriggered)
-      .map(pattern => ({
+      .filter((pattern) => pattern.lastTriggered)
+      .map((pattern) => ({
         pattern: pattern.name,
         count: 1, // Would track actual count
         severity: pattern.severity,
         firstDetected: pattern.lastTriggered || new Date(),
-        lastDetected: pattern.lastTriggered || new Date()
+        lastDetected: pattern.lastTriggered || new Date(),
       }));
   }
 
-  private getPredictionSummary(): SmartLogReport['predictions'] {
-    return this.predictionEngine.getRecentPredictions().map(prediction => ({
+  private getPredictionSummary(): SmartLogReport["predictions"] {
+    return this.predictionEngine.getRecentPredictions().map((prediction) => ({
       target: prediction.target,
       confidence: prediction.confidence,
       predictedValue: prediction.predictedValue,
-      accuracy: 0.8 // Would calculate actual accuracy
+      accuracy: 0.8, // Would calculate actual accuracy
     }));
   }
 
-  private analyzeTrends(logs: LogEntry[]): SmartLogReport['trends'] {
-    const trends: SmartLogReport['trends'] = [];
-    
+  private analyzeTrends(logs: LogEntry[]): SmartLogReport["trends"] {
+    const trends: SmartLogReport["trends"] = [];
+
     // Analyze error rate trend
     const errorRateTrend = this.analyzeErrorRateTrend(logs);
     if (errorRateTrend) trends.push(errorRateTrend);
-    
+
     // Analyze performance trend
     const performanceTrend = this.analyzePerformanceTrend(logs);
     if (performanceTrend) trends.push(performanceTrend);
-    
+
     return trends;
   }
 
-  private analyzeErrorRateTrend(logs: LogEntry[]): SmartLogReport['trends'][0] | null {
-    const errorLogs = logs.filter(log => log.level === 'error');
+  private analyzeErrorRateTrend(
+    logs: LogEntry[],
+  ): SmartLogReport["trends"][0] | null {
+    const errorLogs = logs.filter((log) => log.level === "error");
     const totalLogs = logs.length;
-    
+
     if (totalLogs < 10) return null;
-    
+
     const errorRate = errorLogs.length / totalLogs;
     const previousErrorRate = 0.05; // Would calculate from previous period
-    
+
     const change = errorRate - previousErrorRate;
     const significance = Math.abs(change) / previousErrorRate;
-    
+
     return {
-      metric: 'errorRate',
-      trend: change > 0.01 ? 'increasing' : change < -0.01 ? 'decreasing' : 'stable',
+      metric: "errorRate",
+      trend:
+        change > 0.01 ? "increasing" : change < -0.01 ? "decreasing" : "stable",
       change: change * 100, // percentage
-      significance
+      significance,
     };
   }
 
-  private analyzePerformanceTrend(logs: LogEntry[]): SmartLogReport['trends'][0] | null {
-    const performanceLogs = logs.filter(log => log.metadata.performance.loadComplete > 0);
-    
+  private analyzePerformanceTrend(
+    logs: LogEntry[],
+  ): SmartLogReport["trends"][0] | null {
+    const performanceLogs = logs.filter(
+      (log) => log.metadata.performance.loadComplete > 0,
+    );
+
     if (performanceLogs.length < 5) return null;
-    
-    const avgLoadTime = performanceLogs.reduce((sum, log) => 
-      sum + log.metadata.performance.loadComplete, 0) / performanceLogs.length;
-    
+
+    const avgLoadTime =
+      performanceLogs.reduce(
+        (sum, log) => sum + log.metadata.performance.loadComplete,
+        0,
+      ) / performanceLogs.length;
+
     const previousAvgLoadTime = 2000; // Would calculate from previous period
-    
+
     const change = avgLoadTime - previousAvgLoadTime;
     const significance = Math.abs(change) / previousAvgLoadTime;
-    
+
     return {
-      metric: 'loadTime',
-      trend: change > 100 ? 'increasing' : change < -100 ? 'decreasing' : 'stable',
+      metric: "loadTime",
+      trend:
+        change > 100 ? "increasing" : change < -100 ? "decreasing" : "stable",
       change,
-      significance
+      significance,
     };
   }
 
   public updateConfig(newConfig: Partial<SmartLogConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Update sub-systems
     this.anomalyDetector.updateConfig(this.config.anomalyDetection);
     this.predictionEngine.updateConfig(this.config.predictive);
@@ -993,8 +1107,8 @@ export class SmartLoggingEngine {
   }
 
   public removeAnomalyPattern(patternId: string): void {
-    this.config.anomalyDetection.patterns = 
-      this.config.anomalyDetection.patterns.filter(p => p.id !== patternId);
+    this.config.anomalyDetection.patterns =
+      this.config.anomalyDetection.patterns.filter((p) => p.id !== patternId);
   }
 
   public addPredictionModel(model: PredictionModel): void {
@@ -1022,7 +1136,7 @@ export class SmartLoggingEngine {
 class AnomalyDetector {
   private anomalyCount = 0;
 
-  constructor(private config: SmartLogConfig['anomalyDetection']) {}
+  constructor(private config: SmartLogConfig["anomalyDetection"]) {}
 
   detectAnomaly(pattern: AnomalyPattern, logs: LogEntry[]): any {
     // Simple anomaly detection implementation
@@ -1033,54 +1147,66 @@ class AnomalyDetector {
           condition: condition.field,
           value: this.calculateAggregatedValue(condition, logs),
           threshold: condition.value,
-          timestamp: new Date()
+          timestamp: new Date(),
         };
       }
     }
-    
+
     return null;
   }
 
-  private evaluateCondition(condition: AnomalyCondition, logs: LogEntry[]): boolean {
+  private evaluateCondition(
+    condition: AnomalyCondition,
+    logs: LogEntry[],
+  ): boolean {
     const value = this.calculateAggregatedValue(condition, logs);
-    
+
     switch (condition.operator) {
-      case 'gt':
+      case "gt":
         return value > condition.value;
-      case 'lt':
+      case "lt":
         return value < condition.value;
-      case 'eq':
+      case "eq":
         return value === condition.value;
-      case 'ne':
+      case "ne":
         return value !== condition.value;
-      case 'contains':
-        return logs.some(log => 
-          this.getFieldValue(log, condition.field).toString().includes(condition.value)
+      case "contains":
+        return logs.some((log) =>
+          this.getFieldValue(log, condition.field)
+            .toString()
+            .includes(condition.value),
         );
-      case 'regex':
-        return logs.some(log => 
-          new RegExp(condition.value).test(this.getFieldValue(log, condition.field).toString())
+      case "regex":
+        return logs.some((log) =>
+          new RegExp(condition.value).test(
+            this.getFieldValue(log, condition.field).toString(),
+          ),
         );
-      case 'custom':
+      case "custom":
         return condition.customLogic ? condition.customLogic(logs) : false;
       default:
         return false;
     }
   }
 
-  private calculateAggregatedValue(condition: AnomalyCondition, logs: LogEntry[]): number {
-    const values = logs.map(log => this.getFieldValue(log, condition.field));
-    
+  private calculateAggregatedValue(
+    condition: AnomalyCondition,
+    logs: LogEntry[],
+  ): number {
+    const values = logs.map((log) => this.getFieldValue(log, condition.field));
+
     switch (condition.aggregation) {
-      case 'count':
+      case "count":
         return values.length;
-      case 'avg':
-        return values.reduce((sum, val) => sum + Number(val), 0) / values.length;
-      case 'sum':
+      case "avg":
+        return (
+          values.reduce((sum, val) => sum + Number(val), 0) / values.length
+        );
+      case "sum":
         return values.reduce((sum, val) => sum + Number(val), 0);
-      case 'min':
+      case "min":
         return Math.min(...values.map(Number));
-      case 'max':
+      case "max":
         return Math.max(...values.map(Number));
       default:
         return values.length;
@@ -1088,13 +1214,13 @@ class AnomalyDetector {
   }
 
   private getFieldValue(log: LogEntry, field: string): any {
-    const parts = field.split('.');
+    const parts = field.split(".");
     let value: any = log;
-    
+
     for (const part of parts) {
       value = value?.[part];
     }
-    
+
     return value;
   }
 
@@ -1102,7 +1228,7 @@ class AnomalyDetector {
     return this.anomalyCount;
   }
 
-  updateConfig(config: SmartLogConfig['anomalyDetection']): void {
+  updateConfig(config: SmartLogConfig["anomalyDetection"]): void {
     this.config = config;
   }
 }
@@ -1111,9 +1237,12 @@ class PredictionEngine {
   private predictionCount = 0;
   private recentPredictions: Prediction[] = [];
 
-  constructor(private config: SmartLogConfig['predictive']) {}
+  constructor(private config: SmartLogConfig["predictive"]) {}
 
-  generatePrediction(model: PredictionModel, data: LogEntry[]): Prediction | null {
+  generatePrediction(
+    model: PredictionModel,
+    data: LogEntry[],
+  ): Prediction | null {
     // Simple prediction implementation
     const prediction: Prediction = {
       id: `pred-${Date.now()}`,
@@ -1123,27 +1252,30 @@ class PredictionEngine {
       confidence: Math.random() * 0.3 + 0.7, // 0.7-1.0
       timestamp: new Date(),
       horizon: this.config.predictionHorizon,
-      factors: model.features.map(feature => ({
+      factors: model.features.map((feature) => ({
         feature,
         importance: Math.random(),
-        value: this.extractFeatureValue(data, feature)
-      }))
+        value: this.extractFeatureValue(data, feature),
+      })),
     };
-    
+
     this.recentPredictions.push(prediction);
     this.predictionCount++;
-    
+
     return prediction;
   }
 
-  private generatePredictedValue(model: PredictionModel, data: LogEntry[]): any {
+  private generatePredictedValue(
+    model: PredictionModel,
+    data: LogEntry[],
+  ): any {
     // Simple prediction logic based on model type
     switch (model.target) {
-      case 'errorRate':
+      case "errorRate":
         return Math.random() * 0.1; // 0-10% error rate
-      case 'loadTime':
+      case "loadTime":
         return 1000 + Math.random() * 2000; // 1-3 seconds
-      case 'userSatisfaction':
+      case "userSatisfaction":
         return 0.6 + Math.random() * 0.4; // 0.6-1.0
       default:
         return Math.random();
@@ -1153,15 +1285,17 @@ class PredictionEngine {
   private extractFeatureValue(data: LogEntry[], feature: string): any {
     // Extract feature value from log data
     switch (feature) {
-      case 'timeOfDay':
+      case "timeOfDay":
         return new Date().getHours();
-      case 'dayOfWeek':
+      case "dayOfWeek":
         return new Date().getDay();
-      case 'recentErrorRate':
-        const errorLogs = data.filter(log => log.level === 'error');
+      case "recentErrorRate":
+        const errorLogs = data.filter((log) => log.level === "error");
         return errorLogs.length / data.length;
-      case 'memoryUsage':
-        const avgMemory = data.reduce((sum, log) => sum + log.metadata.memoryUsage, 0) / data.length;
+      case "memoryUsage":
+        const avgMemory =
+          data.reduce((sum, log) => sum + log.metadata.memoryUsage, 0) /
+          data.length;
         return avgMemory;
       default:
         return Math.random();
@@ -1176,7 +1310,7 @@ class PredictionEngine {
     return this.recentPredictions.slice(-10);
   }
 
-  updateConfig(config: SmartLogConfig['predictive']): void {
+  updateConfig(config: SmartLogConfig["predictive"]): void {
     this.config = config;
   }
 }
@@ -1185,34 +1319,34 @@ class AlertManager {
   private alerts: Alert[] = [];
   private alertCount = 0;
 
-  constructor(private config: SmartLogConfig['alerts']) {}
+  constructor(private config: SmartLogConfig["alerts"]) {}
 
   createAlert(alertData: Partial<Alert>): void {
     const alert: Alert = {
       id: `alert-${Date.now()}`,
-      type: alertData.type || 'system',
-      severity: alertData.severity || 'info',
-      title: alertData.title || 'Alert',
-      message: alertData.message || '',
+      type: alertData.type || "system",
+      severity: alertData.severity || "info",
+      title: alertData.title || "Alert",
+      message: alertData.message || "",
       timestamp: new Date(),
       data: alertData.data || {},
       acknowledged: false,
       resolved: false,
       escalationLevel: 0,
-      correlationId: alertData.correlationId
+      correlationId: alertData.correlationId,
     };
 
     this.alerts.push(alert);
     this.alertCount++;
-    
+
     // Send to channels
     this.sendToChannels(alert);
   }
 
   private sendToChannels(alert: Alert): void {
     this.config.channels
-      .filter(channel => channel.enabled)
-      .forEach(channel => {
+      .filter((channel) => channel.enabled)
+      .forEach((channel) => {
         if (this.passesFilters(alert, channel.filters)) {
           this.sendToChannel(alert, channel);
         }
@@ -1220,17 +1354,17 @@ class AlertManager {
   }
 
   private passesFilters(alert: Alert, filters: AlertFilter[]): boolean {
-    return filters.every(filter => {
+    return filters.every((filter) => {
       const value = this.getAlertFieldValue(alert, filter.field);
-      
+
       switch (filter.operator) {
-        case 'eq':
+        case "eq":
           return value === filter.value;
-        case 'ne':
+        case "ne":
           return value !== filter.value;
-        case 'contains':
+        case "contains":
           return value.toString().includes(filter.value);
-        case 'regex':
+        case "regex":
           return new RegExp(filter.value).test(value.toString());
         default:
           return true;
@@ -1239,18 +1373,20 @@ class AlertManager {
   }
 
   private getAlertFieldValue(alert: Alert, field: string): any {
+// @ts-ignore
+// @ts-ignore
     return (alert as any)[field];
   }
 
   private sendToChannel(alert: Alert, channel: AlertChannel): void {
     switch (channel.type) {
-      case 'console':
+      case "console":
         this.sendToConsole(alert, channel);
         break;
-      case 'email':
+      case "email":
         this.sendToEmail(alert, channel);
         break;
-      case 'webhook':
+      case "webhook":
         this.sendToWebhook(alert, channel);
         break;
       default:
@@ -1261,15 +1397,15 @@ class AlertManager {
   private sendToConsole(alert: Alert, channel: AlertChannel): void {
     const config = channel.config;
     const message = `[${alert.severity.toUpperCase()}] ${alert.title}: ${alert.message}`;
-    
+
     if (config.colors) {
       const colors = {
-        info: '\x1b[36m',    // cyan
-        warning: '\x1b[33m', // yellow
-        error: '\x1b[31m',   // red
-        critical: '\x1b[35m' // magenta
+        info: "\x1b[36m", // cyan
+        warning: "\x1b[33m", // yellow
+        error: "\x1b[31m", // red
+        critical: "\x1b[35m", // magenta
       };
-      
+
       console.log(`${colors[alert.severity]}${message}\x1b[0m`);
     } else {
       console.log(message);
@@ -1278,18 +1414,18 @@ class AlertManager {
 
   private sendToEmail(alert: Alert, channel: AlertChannel): void {
     // Email implementation would go here
-    console.log('Email alert:', alert);
+    console.log("Email alert:", alert);
   }
 
   private sendToWebhook(alert: Alert, channel: AlertChannel): void {
     // Webhook implementation would go here
-    console.log('Webhook alert:', alert);
+    console.log("Webhook alert:", alert);
   }
 
   checkEscalationRules(rules: EscalationRule[]): void {
-    rules.forEach(rule => {
+    rules.forEach((rule) => {
       if (!rule.enabled) return;
-      
+
       if (this.evaluateEscalationRule(rule)) {
         this.executeEscalationActions(rule);
       }
@@ -1297,17 +1433,17 @@ class AlertManager {
   }
 
   private evaluateEscalationRule(rule: EscalationRule): boolean {
-    return rule.conditions.every(condition => {
+    return rule.conditions.every((condition) => {
       const value = this.getConditionValue(condition.field);
-      
+
       switch (condition.operator) {
-        case 'eq':
+        case "eq":
           return value === condition.value;
-        case 'ne':
+        case "ne":
           return value !== condition.value;
-        case 'gt':
+        case "gt":
           return value > condition.value;
-        case 'lt':
+        case "lt":
           return value < condition.value;
         default:
           return true;
@@ -1317,29 +1453,31 @@ class AlertManager {
 
   private getConditionValue(field: string): any {
     switch (field) {
-      case 'alertCount':
-        return this.alerts.filter(a => !a.resolved).length;
-      case 'criticalAlertCount':
-        return this.alerts.filter(a => a.severity === 'critical' && !a.resolved).length;
+      case "alertCount":
+        return this.alerts.filter((a) => !a.resolved).length;
+      case "criticalAlertCount":
+        return this.alerts.filter(
+          (a) => a.severity === "critical" && !a.resolved,
+        ).length;
       default:
         return 0;
     }
   }
 
   private executeEscalationActions(rule: EscalationRule): void {
-    rule.actions.forEach(action => {
+    rule.actions.forEach((action) => {
       setTimeout(() => {
         switch (action.type) {
-          case 'notify':
+          case "notify":
             this.executeNotify(action);
             break;
-          case 'escalate':
+          case "escalate":
             this.executeEscalate(action);
             break;
-          case 'auto_resolve':
+          case "auto_resolve":
             this.executeAutoResolve(action);
             break;
-          case 'create_ticket':
+          case "create_ticket":
             this.executeCreateTicket(action);
             break;
         }
@@ -1348,19 +1486,19 @@ class AlertManager {
   }
 
   private executeNotify(action: EscalationAction): void {
-    console.log('Escalation notification:', action.parameters);
+    console.log("Escalation notification:", action.parameters);
   }
 
   private executeEscalate(action: EscalationAction): void {
-    console.log('Escalation action:', action.parameters);
+    console.log("Escalation action:", action.parameters);
   }
 
   private executeAutoResolve(action: EscalationAction): void {
-    console.log('Auto-resolve action:', action.parameters);
+    console.log("Auto-resolve action:", action.parameters);
   }
 
   private executeCreateTicket(action: EscalationAction): void {
-    console.log('Create ticket action:', action.parameters);
+    console.log("Create ticket action:", action.parameters);
   }
 
   getAlertCount(): number {
@@ -1371,31 +1509,31 @@ class AlertManager {
     return this.alerts.slice(-20);
   }
 
-  updateConfig(config: SmartLogConfig['alerts']): void {
+  updateConfig(config: SmartLogConfig["alerts"]): void {
     this.config = config;
   }
 }
 
 class StorageManager {
-  constructor(private config: SmartLogConfig['storage']) {}
+  constructor(private config: SmartLogConfig["storage"]) {}
 
   async storeLog(log: LogEntry): Promise<void> {
     if (!this.config.enabled) return;
 
     try {
       switch (this.config.provider) {
-        case 'localStorage':
+        case "localStorage":
           await this.storeToLocalStorage(log);
           break;
-        case 'indexedDB':
+        case "indexedDB":
           await this.storeToIndexedDB(log);
           break;
-        case 'remote':
+        case "remote":
           await this.storeToRemote(log);
           break;
       }
     } catch (error) {
-      console.error('Failed to store log:', error);
+      console.error("Failed to store log:", error);
     }
   }
 
@@ -1404,17 +1542,17 @@ class StorageManager {
 
     try {
       switch (this.config.provider) {
-        case 'localStorage':
+        case "localStorage":
           return await this.loadFromLocalStorage();
-        case 'indexedDB':
+        case "indexedDB":
           return await this.loadFromIndexedDB();
-        case 'remote':
+        case "remote":
           return await this.loadFromRemote();
         default:
           return [];
       }
     } catch (error) {
-      console.error('Failed to load logs:', error);
+      console.error("Failed to load logs:", error);
       return [];
     }
   }
@@ -1427,28 +1565,29 @@ class StorageManager {
 
   private async storeToIndexedDB(log: LogEntry): Promise<void> {
     // IndexedDB implementation would go here
-    console.log('Store to IndexedDB:', log.id);
+    console.log("Store to IndexedDB:", log.id);
   }
 
   private async storeToRemote(log: LogEntry): Promise<void> {
     // Remote storage implementation would go here
-    console.log('Store to remote:', log.id);
+    console.log("Store to remote:", log.id);
   }
 
   private async loadFromLocalStorage(): Promise<LogEntry[]> {
     const logs: LogEntry[] = [];
-    
+
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (key && key.startsWith('smart-log-')) {
+      if (key && key.startsWith("smart-log-")) {
         const value = localStorage.getItem(key);
         if (value) {
+// @ts-ignore
           const log = JSON.parse(value) as LogEntry;
           logs.push(log);
         }
       }
     }
-    
+
     return logs;
   }
 
@@ -1462,7 +1601,7 @@ class StorageManager {
     return [];
   }
 
-  updateConfig(config: SmartLogConfig['storage']): void {
+  updateConfig(config: SmartLogConfig["storage"]): void {
     this.config = config;
   }
 }
@@ -1494,7 +1633,7 @@ export function useSmartLogging() {
     addAnomalyPattern: engine.addAnomalyPattern.bind(engine),
     addPredictionModel: engine.addPredictionModel.bind(engine),
     addAlertChannel: engine.addAlertChannel.bind(engine),
-    addEscalationRule: engine.addEscalationRule.bind(engine)
+    addEscalationRule: engine.addEscalationRule.bind(engine),
   };
 }
 

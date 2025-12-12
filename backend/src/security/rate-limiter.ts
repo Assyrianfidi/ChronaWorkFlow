@@ -23,7 +23,7 @@ export class RateLimiter {
   constructor(config: RateLimitConfig) {
     this.config = {
       keyGenerator: (id: string) => id,
-      ...config
+      ...config,
     };
 
     // Clean up expired buckets periodically
@@ -35,24 +35,30 @@ export class RateLimiter {
   /**
    * Check if a request is allowed
    */
-  isAllowed(identifier: string, customConfig?: Partial<RateLimitConfig>): RateLimitResult {
+  isAllowed(
+    identifier: string,
+    customConfig?: Partial<RateLimitConfig>,
+  ): RateLimitResult {
     const key = this.config.keyGenerator!(identifier);
     const config = { ...this.config, ...customConfig };
-    
+
     let bucket = this.buckets.get(key);
-    
+
     if (!bucket) {
       bucket = new TokenBucket(config.maxRequests, config.windowMs);
       this.buckets.set(key, bucket);
     }
 
     const result = bucket.consume();
-    
+
     return {
       allowed: result.consumed > 0,
       remaining: result.remaining,
       resetTime: bucket.resetTime,
-      retryAfter: result.consumed === 0 ? Math.ceil(bucket.timeToRefill() / 1000) : undefined
+      retryAfter:
+        result.consumed === 0
+          ? Math.ceil(bucket.timeToRefill() / 1000)
+          : undefined,
     };
   }
 
@@ -62,7 +68,7 @@ export class RateLimiter {
   getRetryAfter(identifier: string): number {
     const key = this.config.keyGenerator!(identifier);
     const bucket = this.buckets.get(key);
-    
+
     if (!bucket) {
       return 0;
     }
@@ -81,17 +87,19 @@ export class RateLimiter {
   /**
    * Get current status for identifier
    */
-  getStatus(identifier: string): { remaining: number; resetTime: number } | null {
+  getStatus(
+    identifier: string,
+  ): { remaining: number; resetTime: number } | null {
     const key = this.config.keyGenerator!(identifier);
     const bucket = this.buckets.get(key);
-    
+
     if (!bucket) {
       return null;
     }
 
     return {
       remaining: bucket.tokens,
-      resetTime: bucket.resetTime
+      resetTime: bucket.resetTime,
     };
   }
 
@@ -100,7 +108,7 @@ export class RateLimiter {
    */
   private cleanup(): void {
     const now = Date.now();
-    
+
     for (const [key, bucket] of this.buckets.entries()) {
       if (bucket.resetTime <= now) {
         this.buckets.delete(key);
@@ -113,12 +121,13 @@ export class RateLimiter {
    */
   getStats(): { totalBuckets: number; activeBuckets: number } {
     const now = Date.now();
-    const activeBuckets = Array.from(this.buckets.values())
-      .filter(bucket => bucket.resetTime > now).length;
+    const activeBuckets = Array.from(this.buckets.values()).filter(
+      (bucket) => bucket.resetTime > now,
+    ).length;
 
     return {
       totalBuckets: this.buckets.size,
-      activeBuckets
+      activeBuckets,
     };
   }
 }
@@ -163,14 +172,17 @@ class TokenBucket {
   private refill(): void {
     const now = Date.now();
     const elapsed = now - this.lastRefill;
-    
+
     if (elapsed > 0) {
-      const tokensToAdd = Math.min(elapsed * this.refillRate, this.maxTokens - this.tokens);
+      const tokensToAdd = Math.min(
+        elapsed * this.refillRate,
+        this.maxTokens - this.tokens,
+      );
       this.tokens += tokensToAdd;
       this.lastRefill = now;
-      
+
       // Update reset time (make it mutable)
-      (this as any).resetTime = now + (this.maxTokens / this.refillRate);
+      (this as any).resetTime = now + this.maxTokens / this.refillRate;
     }
   }
 

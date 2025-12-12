@@ -1,21 +1,34 @@
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { useAuthStore } from '../store/auth-store';
-import { RegistrationForm } from '../components/auth/RegistrationForm';
-import { Wallet } from 'lucide-react';
+import { useRouter } from "next/router";
+import Link from "next/link";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '../components/ui/card.js';
+import { useAuthStore } from '../store/auth-store.js';
+import { RegistrationForm } from '../components/auth/RegistrationForm.js';
+import { Wallet } from "lucide-react";
 
 export default function Register() {
   const router = useRouter();
   const { register, isLoading, error, clearError } = useAuthStore();
 
-  const handleSubmit = async (data: { name: string; email: string; password: string }) => {
+  const handleSubmit = async (data: {
+    name: string;
+    email: string;
+    password: string;
+  }) => {
     try {
-      await register({ name: data.name, email: data.email, password: data.password });
-      router.push('/dashboard');
+      await register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+      router.push("/dashboard");
     } catch (err) {
       // Error is handled by the auth store and displayed in the form
-      console.error('Registration error:', err);
+      console.error("Registration error:", err);
     }
   };
 
@@ -32,9 +45,9 @@ export default function Register() {
             Create your account
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link 
-              href="/login" 
+            Already have an account?{" "}
+            <Link
+              href="/login"
               className="font-medium text-primary hover:underline"
               data-testid="link-login"
             >

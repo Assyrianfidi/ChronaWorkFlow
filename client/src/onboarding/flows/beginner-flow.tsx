@@ -3,31 +3,35 @@
  * Comprehensive step-by-step guide for new users
  */
 
-import { OnboardingFlow } from '../OnboardingEngine';
+import { OnboardingFlow } from '../OnboardingEngine.js';
 
 export const beginnerFlow: OnboardingFlow = {
-  id: 'beginner-getting-started',
-  name: 'Getting Started with AccuBooks',
-  description: 'Learn the basics of AccuBooks and set up your first account',
-  targetAudience: 'beginner',
-  category: 'getting-started',
+  id: "beginner-getting-started",
+  name: "Getting Started with AccuBooks",
+  description: "Learn the basics of AccuBooks and set up your first account",
+  targetAudience: "beginner",
+  category: "getting-started",
   steps: [
     {
-      id: 'welcome',
-      title: 'Welcome to AccuBooks!',
-      description: 'Let\'s get you started with the basics of modern accounting software.',
-      type: 'modal',
+      id: "welcome",
+      title: "Welcome to AccuBooks!",
+      description:
+        "Let's get you started with the basics of modern accounting software.",
+      type: "modal",
       skippable: false,
       required: true,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 1,
       estimatedTime: 30,
       content: (
         <div className="welcome-content">
           <div className="welcome-icon">🎉</div>
           <h3>Welcome to Your New Accounting System!</h3>
-          <p>AccuBooks is designed to make accounting simple and intuitive for small businesses.</p>
-          
+          <p>
+            AccuBooks is designed to make accounting simple and intuitive for
+            small businesses.
+          </p>
+
           <div className="welcome-features">
             <div className="feature-item">
               <div className="feature-icon">💰</div>
@@ -64,74 +68,89 @@ export const beginnerFlow: OnboardingFlow = {
             <span>This tour will take approximately 15 minutes</span>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'account-setup',
-      title: 'Set Up Your Business Profile',
-      description: 'First, let\'s configure your business information for accurate reports.',
-      target: '.business-profile-section',
-      position: 'right',
-      type: 'tooltip',
+      id: "account-setup",
+      title: "Set Up Your Business Profile",
+      description:
+        "First, let's configure your business information for accurate reports.",
+      target: ".business-profile-section",
+      position: "right",
+      type: "tooltip",
       skippable: false,
       required: true,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 2,
       estimatedTime: 120,
       action: {
-        type: 'click',
-        target: '.edit-profile-button'
+        type: "click",
+        target: ".edit-profile-button",
       },
       validation: {
-        type: 'element_clicked',
-        target: '.edit-profile-button'
+        type: "element_clicked",
+        target: ".edit-profile-button",
       },
       resources: [
         {
-          title: 'Business Setup Guide',
-          url: '/help/business-setup',
-          type: 'article'
-        }
-      ]
+          title: "Business Setup Guide",
+          url: "/help/business-setup",
+          type: "article",
+        },
+      ],
     },
     {
-      id: 'dashboard-overview',
-      title: 'Your Dashboard Command Center',
-      description: 'This is your dashboard - here you can see your business health at a glance.',
-      target: '.dashboard-container',
-      position: 'bottom',
-      type: 'tooltip',
+      id: "dashboard-overview",
+      title: "Your Dashboard Command Center",
+      description:
+        "This is your dashboard - here you can see your business health at a glance.",
+      target: ".dashboard-container",
+      position: "bottom",
+      type: "tooltip",
       skippable: true,
       required: true,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 3,
       estimatedTime: 45,
       content: (
         <div className="dashboard-overview-content">
           <h4>Key Dashboard Features:</h4>
           <ul>
-            <li><strong>KPI Cards:</strong> Real-time metrics like revenue, expenses, and profit</li>
-            <li><strong>Quick Actions:</strong> Add transactions, invoices, and customers</li>
-            <li><strong>Recent Activity:</strong> See your latest transactions and updates</li>
-            <li><strong>Charts & Graphs:</strong> Visual insights into your business performance</li>
+            <li>
+              <strong>KPI Cards:</strong> Real-time metrics like revenue,
+              expenses, and profit
+            </li>
+            <li>
+              <strong>Quick Actions:</strong> Add transactions, invoices, and
+              customers
+            </li>
+            <li>
+              <strong>Recent Activity:</strong> See your latest transactions and
+              updates
+            </li>
+            <li>
+              <strong>Charts & Graphs:</strong> Visual insights into your
+              business performance
+            </li>
           </ul>
         </div>
       ),
       action: {
-        type: 'hover',
-        target: '.dashboard-kpi-card:first-child'
-      }
+        type: "hover",
+        target: ".dashboard-kpi-card:first-child",
+      },
     },
     {
-      id: 'understand-kpis',
-      title: 'Understanding Your KPIs',
-      description: 'KPIs (Key Performance Indicators) help you track your business health.',
-      target: '.kpi-cards-container',
-      position: 'top',
-      type: 'interactive',
+      id: "understand-kpis",
+      title: "Understanding Your KPIs",
+      description:
+        "KPIs (Key Performance Indicators) help you track your business health.",
+      target: ".kpi-cards-container",
+      position: "top",
+      type: "interactive",
       skippable: true,
       required: true,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 4,
       estimatedTime: 90,
       content: (
@@ -140,7 +159,9 @@ export const beginnerFlow: OnboardingFlow = {
           <div className="kpi-list">
             <div className="kpi-item">
               <span className="kpi-name">Revenue</span>
-              <span className="kpi-desc">Total money coming into your business</span>
+              <span className="kpi-desc">
+                Total money coming into your business
+              </span>
             </div>
             <div className="kpi-item">
               <span className="kpi-name">Expenses</span>
@@ -148,44 +169,50 @@ export const beginnerFlow: OnboardingFlow = {
             </div>
             <div className="kpi-item">
               <span className="kpi-name">Net Profit</span>
-              <span className="kpi-desc">Revenue minus expenses - your bottom line</span>
+              <span className="kpi-desc">
+                Revenue minus expenses - your bottom line
+              </span>
             </div>
             <div className="kpi-item">
               <span className="kpi-name">Cash Flow</span>
-              <span className="kpi-desc">Available cash for daily operations</span>
+              <span className="kpi-desc">
+                Available cash for daily operations
+              </span>
             </div>
           </div>
           <p className="kpi-tip">
-            💡 <strong>Tip:</strong> Check these KPIs weekly to stay on top of your finances!
+            💡 <strong>Tip:</strong> Check these KPIs weekly to stay on top of
+            your finances!
           </p>
         </div>
       ),
       validation: {
-        type: 'custom',
+        type: "custom",
         handler: async () => {
           // Check if user has interacted with at least one KPI card
-          const cards = document.querySelectorAll('.dashboard-kpi-card');
+          const cards = document.querySelectorAll(".dashboard-kpi-card");
           return cards.length > 0;
-        }
-      }
+        },
+      },
     },
     {
-      id: 'first-transaction',
-      title: 'Record Your First Transaction',
-      description: 'Let\'s record your first income or expense. This is the core of bookkeeping.',
-      target: '.add-transaction-button',
-      position: 'left',
-      type: 'interactive',
+      id: "first-transaction",
+      title: "Record Your First Transaction",
+      description:
+        "Let's record your first income or expense. This is the core of bookkeeping.",
+      target: ".add-transaction-button",
+      position: "left",
+      type: "interactive",
       skippable: false,
       required: true,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 5,
       estimatedTime: 120,
       content: (
         <div className="transaction-guide">
           <h4>Every Transaction Matters!</h4>
           <p>Accurate bookkeeping starts with recording every transaction.</p>
-          
+
           <div className="transaction-types">
             <div className="transaction-type">
               <div className="type-icon">📈</div>
@@ -202,6 +229,7 @@ export const beginnerFlow: OnboardingFlow = {
           <div className="transaction-tips">
             <h5>💡 Best Practices:</h5>
             <ul>
+// @ts-ignore
               <li>Record transactions as soon as they happen</li>
               <li>Use clear, descriptive names</li>
               <li>Attach receipts when possible</li>
@@ -211,24 +239,24 @@ export const beginnerFlow: OnboardingFlow = {
         </div>
       ),
       action: {
-        type: 'click',
-        target: '.add-transaction-button'
+        type: "click",
+        target: ".add-transaction-button",
       },
       validation: {
-        type: 'element_clicked',
-        target: '.add-transaction-button'
-      }
+        type: "element_clicked",
+        target: ".add-transaction-button",
+      },
     },
     {
-      id: 'transaction-form',
-      title: 'Filling Out Transaction Details',
-      description: 'Let\'s fill in the important details for accurate tracking.',
-      target: '.transaction-form',
-      position: 'right',
-      type: 'interactive',
+      id: "transaction-form",
+      title: "Filling Out Transaction Details",
+      description: "Let's fill in the important details for accurate tracking.",
+      target: ".transaction-form",
+      position: "right",
+      type: "interactive",
       skippable: false,
       required: true,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 6,
       estimatedTime: 180,
       content: (
@@ -242,7 +270,8 @@ export const beginnerFlow: OnboardingFlow = {
               <strong>Amount:</strong> How much money was involved
             </div>
             <div className="field-item">
-              <strong>Category:</strong> Type of income/expense for tax reporting
+              <strong>Category:</strong> Type of income/expense for tax
+              reporting
             </div>
             <div className="field-item">
               <strong>Description:</strong> What this transaction was for
@@ -251,7 +280,7 @@ export const beginnerFlow: OnboardingFlow = {
               <strong>Customer/Vendor:</strong> Who paid you or who you paid
             </div>
           </div>
-          
+
           <div className="form-example">
             <h5>Example:</h5>
             <div className="example-form">
@@ -265,7 +294,7 @@ export const beginnerFlow: OnboardingFlow = {
               </div>
               <div className="form-field">
                 <label>Category:</label>
-              <span>Services Income</span>
+                <span>Services Income</span>
               </div>
               <div className="form-field">
                 <label>Description:</label>
@@ -276,48 +305,62 @@ export const beginnerFlow: OnboardingFlow = {
         </div>
       ),
       validation: {
-        type: 'custom',
+        type: "custom",
         handler: async () => {
           // Check if form has been filled out
-          const amountField = document.querySelector('#transaction-amount') as HTMLInputElement;
-          const categoryField = document.querySelector('#transaction-category') as HTMLSelectElement;
-          const descriptionField = document.querySelector('#transaction-description') as HTMLInputElement;
-          
-          return !!(amountField?.value && categoryField?.value && descriptionField?.value);
-        }
-      }
+          const amountField = document.querySelector(
+            "#transaction-amount",
+// @ts-ignore
+          ) as HTMLInputElement;
+          const categoryField = document.querySelector(
+            "#transaction-category",
+// @ts-ignore
+          ) as HTMLSelectElement;
+          const descriptionField = document.querySelector(
+            "#transaction-description",
+// @ts-ignore
+          ) as HTMLInputElement;
+
+          return !!(
+            amountField?.value &&
+            categoryField?.value &&
+            descriptionField?.value
+          );
+        },
+      },
     },
     {
-      id: 'save-transaction',
-      title: 'Save Your Transaction',
-      description: 'Great! Now let\'s save this transaction to your records.',
-      target: '.save-transaction-button',
-      position: 'top',
-      type: 'interactive',
+      id: "save-transaction",
+      title: "Save Your Transaction",
+      description: "Great! Now let's save this transaction to your records.",
+      target: ".save-transaction-button",
+      position: "top",
+      type: "interactive",
       skippable: false,
       required: true,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 7,
       estimatedTime: 30,
       action: {
-        type: 'click',
-        target: '.save-transaction-button'
+        type: "click",
+        target: ".save-transaction-button",
       },
       validation: {
-        type: 'element_clicked',
-        target: '.save-transaction-button'
-      }
+        type: "element_clicked",
+        target: ".save-transaction-button",
+      },
     },
     {
-      id: 'navigation-basics',
-      title: 'Navigate Like a Pro',
-      description: 'Learn how to move around AccuBooks efficiently using the sidebar.',
-      target: '.navigation-sidebar',
-      position: 'right',
-      type: 'tooltip',
+      id: "navigation-basics",
+      title: "Navigate Like a Pro",
+      description:
+        "Learn how to move around AccuBooks efficiently using the sidebar.",
+      target: ".navigation-sidebar",
+      position: "right",
+      type: "tooltip",
       skippable: true,
       required: true,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 8,
       estimatedTime: 60,
       content: (
@@ -340,7 +383,7 @@ export const beginnerFlow: OnboardingFlow = {
               <strong>Settings:</strong> Configure your account
             </div>
           </div>
-          
+
           <div className="nav-shortcuts">
             <h5>⌨️ Keyboard Shortcuts:</h5>
             <div className="shortcut-item">
@@ -351,18 +394,19 @@ export const beginnerFlow: OnboardingFlow = {
             </div>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'customers-section',
-      title: 'Managing Customers',
-      description: 'Keep track of who you do business with in the Customers section.',
-      target: '.customers-menu-item',
-      position: 'right',
-      type: 'interactive',
+      id: "customers-section",
+      title: "Managing Customers",
+      description:
+        "Keep track of who you do business with in the Customers section.",
+      target: ".customers-menu-item",
+      position: "right",
+      type: "interactive",
       skippable: true,
       required: false,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 9,
       estimatedTime: 90,
       content: (
@@ -374,7 +418,7 @@ export const beginnerFlow: OnboardingFlow = {
             <li>Manage customer relationships</li>
             <li>Generate customer-specific reports</li>
           </ul>
-          
+
           <div className="customer-benefits">
             <h5>🌟 Benefits:</h5>
             <ul>
@@ -386,24 +430,25 @@ export const beginnerFlow: OnboardingFlow = {
         </div>
       ),
       action: {
-        type: 'click',
-        target: '.customers-menu-item'
+        type: "click",
+        target: ".customers-menu-item",
       },
       validation: {
-        type: 'element_clicked',
-        target: '.customers-menu-item'
-      }
+        type: "element_clicked",
+        target: ".customers-menu-item",
+      },
     },
     {
-      id: 'reports-overview',
-      title: 'Understanding Reports',
-      description: 'Reports help you make informed business decisions and prepare for taxes.',
-      target: '.reports-section',
-      position: 'top',
-      type: 'tooltip',
+      id: "reports-overview",
+      title: "Understanding Reports",
+      description:
+        "Reports help you make informed business decisions and prepare for taxes.",
+      target: ".reports-section",
+      position: "top",
+      type: "tooltip",
       skippable: true,
       required: false,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 10,
       estimatedTime: 90,
       content: (
@@ -427,23 +472,25 @@ export const beginnerFlow: OnboardingFlow = {
               <p>Tax-ready reports for filing season</p>
             </div>
           </div>
-          
+
           <div className="report-tip">
-            💡 <strong>Pro Tip:</strong> Review your Profit & Loss report monthly to spot trends!
+            💡 <strong>Pro Tip:</strong> Review your Profit & Loss report
+            monthly to spot trends!
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'mobile-app',
-      title: 'AccuBooks on the Go',
-      description: 'Don\'t forget our mobile app for recording transactions anywhere!',
-      target: '.mobile-app-banner',
-      position: 'bottom',
-      type: 'tooltip',
+      id: "mobile-app",
+      title: "AccuBooks on the Go",
+      description:
+        "Don't forget our mobile app for recording transactions anywhere!",
+      target: ".mobile-app-banner",
+      position: "bottom",
+      type: "tooltip",
       skippable: true,
       required: false,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 11,
       estimatedTime: 30,
       content: (
@@ -455,7 +502,7 @@ export const beginnerFlow: OnboardingFlow = {
             <li>View dashboard and reports</li>
             <li>Send invoices from anywhere</li>
           </ul>
-          
+
           <div className="app-download">
             <p>Download from:</p>
             <div className="app-stores">
@@ -464,24 +511,28 @@ export const beginnerFlow: OnboardingFlow = {
             </div>
           </div>
         </div>
-      )
+      ),
     },
     {
-      id: 'next-steps',
-      title: 'You\'re All Set! What\'s Next?',
-      description: 'Congratulations! You\'ve learned the basics. Here\'s how to continue growing.',
-      type: 'modal',
+      id: "next-steps",
+      title: "You're All Set! What's Next?",
+      description:
+        "Congratulations! You've learned the basics. Here's how to continue growing.",
+      type: "modal",
       skippable: false,
       required: true,
-      audience: 'beginner',
+      audience: "beginner",
       priority: 12,
       estimatedTime: 60,
       content: (
         <div className="completion-content">
           <div className="completion-icon">🎉</div>
           <h2>Congratulations, You\'re Ready!</h2>
-          <p>You\'ve successfully learned the basics of AccuBooks. Here\'s what to do next:</p>
-          
+          <p>
+            You\'ve successfully learned the basics of AccuBooks. Here\'s what
+            to do next:
+          </p>
+
           <div className="next-steps-list">
             <div className="step-item">
               <div className="step-number">1</div>
@@ -548,27 +599,27 @@ export const beginnerFlow: OnboardingFlow = {
       ),
       resources: [
         {
-          title: 'Video Tutorial Library',
-          url: '/help/video-tutorials',
-          type: 'video'
+          title: "Video Tutorial Library",
+          url: "/help/video-tutorials",
+          type: "video",
         },
         {
-          title: 'Accounting Best Practices',
-          url: '/help/accounting-tips',
-          type: 'article'
+          title: "Accounting Best Practices",
+          url: "/help/accounting-tips",
+          type: "article",
         },
         {
-          title: 'Support Center',
-          url: '/help/support',
-          type: 'documentation'
-        }
-      ]
-    }
+          title: "Support Center",
+          url: "/help/support",
+          type: "documentation",
+        },
+      ],
+    },
   ],
   estimatedDuration: 15,
   prerequisites: [],
-  tags: ['beginner', 'essentials', 'quick-start', 'comprehensive'],
-  version: '1.0.0'
+  tags: ["beginner", "essentials", "quick-start", "comprehensive"],
+  version: "1.0.0",
 };
 
 export default beginnerFlow;

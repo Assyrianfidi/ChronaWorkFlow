@@ -30,13 +30,17 @@ export class CacheManager {
   private stats = {
     hits: 0,
     misses: 0,
-    evictions: 0
+    evictions: 0,
   };
 
   /**
    * Set a value in cache
    */
-  async set<T>(key: string, value: T, options: CacheOptions = {}): Promise<void> {
+  async set<T>(
+    key: string,
+    value: T,
+    options: CacheOptions = {},
+  ): Promise<void> {
     const now = Date.now();
     const entry: CacheEntry<T> = {
       value,
@@ -44,7 +48,7 @@ export class CacheManager {
       accessCount: 0,
       lastAccessed: now,
       ...(options.ttl && { expiresAt: now + options.ttl }),
-      ...(options.tags && { tags: options.tags })
+      ...(options.tags && { tags: options.tags }),
     };
 
     this.cache.set(key, entry);
@@ -56,7 +60,7 @@ export class CacheManager {
    */
   async get<T>(key: string): Promise<T | null> {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       this.stats.misses++;
       return null;
@@ -89,15 +93,15 @@ export class CacheManager {
    */
   async deletePattern(pattern: string): Promise<number> {
     let deleted = 0;
-    const regex = new RegExp(pattern.replace(/\*/g, '.*'));
-    
+    const regex = new RegExp(pattern.replace(/\*/g, ".*"));
+
     for (const key of this.cache.keys()) {
       if (regex.test(key)) {
         this.cache.delete(key);
         deleted++;
       }
     }
-    
+
     return deleted;
   }
 
@@ -106,14 +110,14 @@ export class CacheManager {
    */
   async deleteByTag(tag: string): Promise<number> {
     let deleted = 0;
-    
+
     for (const [key, entry] of this.cache.entries()) {
       if (entry.tags?.includes(tag)) {
         this.cache.delete(key);
         deleted++;
       }
     }
-    
+
     return deleted;
   }
 
@@ -122,7 +126,7 @@ export class CacheManager {
    */
   async has(key: string): Promise<boolean> {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       return false;
     }
@@ -149,9 +153,11 @@ export class CacheManager {
    */
   getStats(): CacheStats {
     const totalRequests = this.stats.hits + this.stats.misses;
-    const hitRate = totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0;
-    const missRate = totalRequests > 0 ? (this.stats.misses / totalRequests) * 100 : 0;
-    
+    const hitRate =
+      totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0;
+    const missRate =
+      totalRequests > 0 ? (this.stats.misses / totalRequests) * 100 : 0;
+
     // Estimate memory usage (rough calculation)
     let memoryUsage = 0;
     for (const entry of this.cache.values()) {
@@ -163,7 +169,7 @@ export class CacheManager {
       hitRate,
       missRate,
       evictionRate: this.stats.evictions,
-      memoryUsage
+      memoryUsage,
     };
   }
 

@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { 
-  ScreenReaderEnhancements, 
-  ScreenReaderControls, 
-  useScreenReader 
-} from '../ScreenReaderEnhancements';
+import React from 'react';
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  ScreenReaderEnhancements,
+  ScreenReaderControls,
+  useScreenReader,
+} from '../ScreenReaderEnhancements.js.js';
 
 // Mock speech synthesis
 const mockSpeechSynthesis = {
@@ -13,17 +14,17 @@ const mockSpeechSynthesis = {
   pause: vi.fn(),
   resume: vi.fn(),
   getVoices: vi.fn(() => [
-    { name: 'Alex', lang: 'en-US' },
-    { name: 'Samantha', lang: 'en-US' }
+    { name: "Alex", lang: "en-US" },
+    { name: "Samantha", lang: "en-US" },
   ]),
   onstart: null,
   onend: null,
-  onvoiceschanged: null
+  onvoiceschanged: null,
 };
 
-Object.defineProperty(window, 'speechSynthesis', {
+Object.defineProperty(window, "speechSynthesis", {
   value: mockSpeechSynthesis,
-  writable: true
+  writable: true,
 });
 
 // Create a proper mock constructor for SpeechSynthesisUtterance
@@ -39,37 +40,47 @@ class MockSpeechSynthesisUtterance {
     this.rate = 1.0;
     this.pitch = 1.0;
     this.volume = 1.0;
-    this.lang = 'en-US';
+    this.lang = "en-US";
   }
 }
 
-Object.defineProperty(window, 'SpeechSynthesisUtterance', {
+Object.defineProperty(window, "SpeechSynthesisUtterance", {
   value: MockSpeechSynthesisUtterance,
-  writable: true
+  writable: true,
 });
 
 // Test component
+// @ts-ignore
 const TestComponent: React.FC = () => {
-  const { speak, isSpeaking, settings, updateSettings, announce } = useScreenReader();
-  
+  const { speak, isSpeaking, settings, updateSettings, announce } =
+    useScreenReader();
+
   return (
     <div>
-      <div data-testid="speaking-status">{isSpeaking ? 'speaking' : 'not-speaking'}</div>
+      <div data-testid="speaking-status">
+        {isSpeaking ? "speaking" : "not-speaking"}
+      </div>
       <div data-testid="speech-rate">{settings.rate}</div>
-      <button onClick={() => speak('Hello world')} data-testid="speak-btn">
+      <button onClick={() => speak("Hello world")} data-testid="speak-btn">
         Speak
       </button>
-      <button onClick={() => updateSettings({ rate: 1.5 })} data-testid="update-rate-btn">
+      <button
+        onClick={() => updateSettings({ rate: 1.5 })}
+        data-testid="update-rate-btn"
+      >
         Update Rate
       </button>
-      <button onClick={() => announce('Test announcement')} data-testid="announce-btn">
+      <button
+        onClick={() => announce("Test announcement")}
+        data-testid="announce-btn"
+      >
         Announce
       </button>
     </div>
   );
 };
 
-describe('ScreenReaderEnhancements', () => {
+describe("ScreenReaderEnhancements", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -78,241 +89,243 @@ describe('ScreenReaderEnhancements', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders children correctly', () => {
+  it("renders children correctly", () => {
     render(
       <ScreenReaderEnhancements>
         <div data-testid="child">Test Child</div>
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    expect(screen.getByTestId('child')).toBeInTheDocument();
+    expect(screen.getByTestId("child")).toBeInTheDocument();
   });
 
-  it('provides screen reader context', () => {
+  it("provides screen reader context", () => {
     render(
       <ScreenReaderEnhancements>
         <TestComponent />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    expect(screen.getByTestId('speaking-status')).toHaveTextContent('not-speaking');
-    expect(screen.getByTestId('speech-rate')).toHaveTextContent('1');
+    expect(screen.getByTestId("speaking-status")).toHaveTextContent(
+      "not-speaking",
+    );
+    expect(screen.getByTestId("speech-rate")).toHaveTextContent("1");
   });
 
-  it('speaks text when speak is called', () => {
+  it("speaks text when speak is called", () => {
     render(
       <ScreenReaderEnhancements>
         <TestComponent />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    const speakBtn = screen.getByTestId('speak-btn');
+    const speakBtn = screen.getByTestId("speak-btn");
     fireEvent.click(speakBtn);
 
     expect(mockSpeechSynthesis.speak).toHaveBeenCalled();
     // Verify that the utterance was created with the correct text
     const utterance = mockSpeechSynthesis.speak.mock.calls[0][0];
-    expect(utterance.text).toBe('Hello world');
+    expect(utterance.text).toBe("Hello world");
   });
 
-  it('updates settings correctly', () => {
+  it("updates settings correctly", () => {
     render(
       <ScreenReaderEnhancements>
         <TestComponent />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    const updateBtn = screen.getByTestId('update-rate-btn');
+    const updateBtn = screen.getByTestId("update-rate-btn");
     fireEvent.click(updateBtn);
 
-    expect(screen.getByTestId('speech-rate')).toHaveTextContent('1.5');
+    expect(screen.getByTestId("speech-rate")).toHaveTextContent("1.5");
   });
 
-  it('announces messages to live regions', () => {
+  it("announces messages to live regions", () => {
     render(
       <ScreenReaderEnhancements>
         <TestComponent />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    const announceBtn = screen.getByTestId('announce-btn');
+    const announceBtn = screen.getByTestId("announce-btn");
     fireEvent.click(announceBtn);
 
     // Should create live region
     const liveRegion = document.querySelector('[aria-live="polite"]');
     expect(liveRegion).toBeInTheDocument();
-    expect(liveRegion).toHaveTextContent('Test announcement');
+    expect(liveRegion).toHaveTextContent("Test announcement");
   });
 
-  it('loads available voices on mount', () => {
+  it("loads available voices on mount", () => {
     render(
       <ScreenReaderEnhancements>
         <div>Test</div>
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
     expect(mockSpeechSynthesis.getVoices).toHaveBeenCalled();
   });
 
-  it('renders ScreenReaderControls', () => {
+  it("renders ScreenReaderControls", () => {
     render(
       <ScreenReaderEnhancements>
         <ScreenReaderControls />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    expect(screen.getByText('Screen Reader Settings')).toBeInTheDocument();
-    expect(screen.getByText('Speech Rate: 1.0')).toBeInTheDocument();
-    expect(screen.getByText('Speech Pitch: 1.0')).toBeInTheDocument();
-    expect(screen.getByText('Volume: 100%')).toBeInTheDocument();
+    expect(screen.getByText("Screen Reader Settings")).toBeInTheDocument();
+    expect(screen.getByText("Speech Rate: 1.0")).toBeInTheDocument();
+    expect(screen.getByText("Speech Pitch: 1.0")).toBeInTheDocument();
+    expect(screen.getByText("Volume: 100%")).toBeInTheDocument();
   });
 
-  it('updates settings through controls', () => {
+  it("updates settings through controls", () => {
     render(
       <ScreenReaderEnhancements>
         <ScreenReaderControls />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
     // Use getAllByDisplayValue to handle multiple sliders with same value
-    const rateSliders = screen.getAllByDisplayValue('1');
+    const rateSliders = screen.getAllByDisplayValue("1");
     const rateSlider = rateSliders[0]; // First slider is rate
-    fireEvent.change(rateSlider, { target: { value: '1.5' } });
+    fireEvent.change(rateSlider, { target: { value: "1.5" } });
 
     // Should update the rate setting
-    expect(rateSlider).toHaveDisplayValue('1.5');
+    expect(rateSlider).toHaveDisplayValue("1.5");
   });
 
-  it('handles language selection', () => {
+  it("handles language selection", () => {
     render(
       <ScreenReaderEnhancements>
         <ScreenReaderControls />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    const languageSelect = screen.getByDisplayValue('English (US)');
-    fireEvent.change(languageSelect, { target: { value: 'es-ES' } });
+    const languageSelect = screen.getByDisplayValue("English (US)");
+    fireEvent.change(languageSelect, { target: { value: "es-ES" } });
 
-    expect(languageSelect).toHaveValue('es-ES');
+    expect(languageSelect).toHaveValue("es-ES");
   });
 
-  it('handles punctuation setting', () => {
+  it("handles punctuation setting", () => {
     render(
       <ScreenReaderEnhancements>
         <ScreenReaderControls />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    const punctuationSelect = screen.getByDisplayValue('Some');
-    fireEvent.change(punctuationSelect, { target: { value: 'all' } });
+    const punctuationSelect = screen.getByDisplayValue("Some");
+    fireEvent.change(punctuationSelect, { target: { value: "all" } });
 
-    expect(punctuationSelect).toHaveValue('all');
+    expect(punctuationSelect).toHaveValue("all");
   });
 
-  it('handles verbosity setting', () => {
+  it("handles verbosity setting", () => {
     render(
       <ScreenReaderEnhancements>
         <ScreenReaderControls />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    const verbositySelect = screen.getByDisplayValue('Normal');
-    fireEvent.change(verbositySelect, { target: { value: 'verbose' } });
+    const verbositySelect = screen.getByDisplayValue("Normal");
+    fireEvent.change(verbositySelect, { target: { value: "verbose" } });
 
-    expect(verbositySelect).toHaveValue('verbose');
+    expect(verbositySelect).toHaveValue("verbose");
   });
 
-  it('stops speaking when stop button is clicked', () => {
+  it("stops speaking when stop button is clicked", () => {
     render(
       <ScreenReaderEnhancements>
         <ScreenReaderControls />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
     // Test that the component renders without errors
-    expect(screen.getByText('Screen Reader Settings')).toBeInTheDocument();
-    
+    expect(screen.getByText("Screen Reader Settings")).toBeInTheDocument();
+
     // The stop button appears conditionally, so we just test the basic functionality
     expect(mockSpeechSynthesis.cancel).toBeDefined();
   });
 });
 
-describe('ScreenReaderEnhancements Integration', () => {
-  it('integrates with accessibility features', () => {
+describe("ScreenReaderEnhancements Integration", () => {
+  it("integrates with accessibility features", () => {
     render(
       <ScreenReaderEnhancements>
         <div data-testid="accessibility-integration">
           Screen reader integrated
         </div>
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    expect(screen.getByTestId('accessibility-integration')).toBeInTheDocument();
+    expect(screen.getByTestId("accessibility-integration")).toBeInTheDocument();
   });
 
-  it('handles keyboard shortcuts', () => {
+  it("handles keyboard shortcuts", () => {
     render(
       <ScreenReaderEnhancements>
         <TestComponent />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
     // Test Alt+S shortcut
-    fireEvent.keyDown(document, { altKey: true, key: 's' });
-    
+    fireEvent.keyDown(document, { altKey: true, key: "s" });
+
     // Should toggle speech (mocked)
     expect(true).toBe(true); // Placeholder for keyboard shortcut tests
   });
 
-  it('announces page changes', () => {
+  it("announces page changes", () => {
     render(
       <ScreenReaderEnhancements>
         <TestComponent />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
     // Simulate page title change
-    document.title = 'New Page Title';
-    
+    document.title = "New Page Title";
+
     // Should announce title change (mocked)
     expect(true).toBe(true); // Placeholder for page change tests
   });
 });
 
-describe('ScreenReaderEnhancements Error Handling', () => {
-  it('handles missing speech synthesis API', () => {
+describe("ScreenReaderEnhancements Error Handling", () => {
+  it("handles missing speech synthesis API", () => {
     // Test that the component handles gracefully when speech synthesis is not available
     render(
       <ScreenReaderEnhancements>
         <div data-testid="test-content">Test Content</div>
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
     // Should render without crashing
-    expect(screen.getByTestId('test-content')).toBeInTheDocument();
+    expect(screen.getByTestId("test-content")).toBeInTheDocument();
   });
 
-  it('handles speech synthesis errors', () => {
+  it("handles speech synthesis errors", () => {
     render(
       <ScreenReaderEnhancements>
         <TestComponent />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
-    const speakBtn = screen.getByTestId('speak-btn');
-    
+    const speakBtn = screen.getByTestId("speak-btn");
+
     // Should handle error gracefully when speech synthesis fails
     expect(() => fireEvent.click(speakBtn)).not.toThrow();
   });
 
-  it('handles voice loading errors', () => {
+  it("handles voice loading errors", () => {
     render(
       <ScreenReaderEnhancements>
         <TestComponent />
-      </ScreenReaderEnhancements>
+      </ScreenReaderEnhancements>,
     );
 
     // Should handle gracefully without crashing
-    expect(screen.getByTestId('speaking-status')).toBeInTheDocument();
+    expect(screen.getByTestId("speaking-status")).toBeInTheDocument();
   });
 });

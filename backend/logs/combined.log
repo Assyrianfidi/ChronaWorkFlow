@@ -2055,3 +2055,651 @@
   message: 'Server starting up',
   timestamp: '2025-12-03 23:21:20'
 }
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}

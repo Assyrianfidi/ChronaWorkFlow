@@ -1,46 +1,60 @@
-import * as React from "react"
-import { Link } from "react-router-dom"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Alert, AlertDescription } from "../components/ui/alert"
-import { Mail, ArrowLeft, Loader2, CheckCircle } from "lucide-react"
+import React, { useState } from 'react';
+// @ts-ignore
+import * as React from "react";
+import { Link } from "react-router-dom";
+// @ts-ignore
+import { Button } from '../components/ui/button.js.js';
+// @ts-ignore
+import { Input } from '../components/ui/input.js.js';
+// @ts-ignore
+import { Label } from '../components/ui/label.js.js';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js.js';
+// @ts-ignore
+import { Alert, AlertDescription } from '../components/ui/alert.js.js';
+import { Mail, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
 
+// @ts-ignore
 const ForgotPasswordPage: React.FC = () => {
-  const [email, setEmail] = React.useState("")
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [error, setError] = React.useState("")
-  const [isSuccess, setIsSuccess] = React.useState(false)
+  const [email, setEmail] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [isSuccess, setIsSuccess] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    
+    e.preventDefault();
+    setError("");
+
     if (!email) {
-      setError("Please enter your email address")
-      return
+      setError("Please enter your email address");
+      return;
     }
 
     if (!email.includes("@")) {
-      setError("Please enter a valid email address")
-      return
+      setError("Please enter a valid email address");
+      return;
     }
 
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       // For demo purposes, we'll simulate successful email sending
-      setIsSuccess(true)
+      setIsSuccess(true);
     } catch (error) {
-      setError("Failed to send reset email. Please try again.")
+      setError("Failed to send reset email. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   if (isSuccess) {
     return (
@@ -56,14 +70,15 @@ const ForgotPasswordPage: React.FC = () => {
               Check Your Email
             </CardTitle>
             <CardDescription className="text-center">
-              We've sent a password reset link to<br />
+              We've sent a password reset link to
+              <br />
               <span className="font-medium text-gray-900">{email}</span>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-center text-sm text-gray-600">
               Didn't receive the email? Check your spam folder or
-              <button 
+              <button
                 onClick={() => setIsSuccess(false)}
                 className="text-enterprise-navy hover:text-enterprise-navy/80 font-medium ml-1"
               >
@@ -81,7 +96,7 @@ const ForgotPasswordPage: React.FC = () => {
           </CardFooter>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -107,7 +122,7 @@ const ForgotPasswordPage: React.FC = () => {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -140,7 +155,7 @@ const ForgotPasswordPage: React.FC = () => {
                 "Send Reset Link"
               )}
             </Button>
-            
+
             <Link to="/login" className="w-full">
               <Button variant="outline" className="w-full">
                 <ArrowLeft className="w-4 h-4 mr-2" />
@@ -151,7 +166,7 @@ const ForgotPasswordPage: React.FC = () => {
         </form>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default ForgotPasswordPage
+export default ForgotPasswordPage;

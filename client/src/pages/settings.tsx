@@ -1,17 +1,32 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Switch } from "../components/ui/switch";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js.js';
+// @ts-ignore
+import { Button } from '../components/ui/button.js.js';
+// @ts-ignore
+import { Input } from '../components/ui/input.js.js';
+// @ts-ignore
+import { Label } from '../components/ui/label.js.js';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../components/ui/tabs.js.js';
+// @ts-ignore
+import { Switch } from '../components/ui/switch.js.js';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
+} from '../components/ui/select.js.js';
 import {
   Dialog,
   DialogContent,
@@ -19,13 +34,31 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../components/ui/dialog";
-import { Building2, User, CreditCard, Bell, Shield, Users, Database, Globe, Zap } from "lucide-react";
-import { useCompanies, useCreateCompany, useUpdateCompany, useUsers } from "../hooks/use-api";
-import { format } from 'date-fns';
-import { Skeleton } from "../components/ui/skeleton";
-import { useToast } from "../hooks/use-toast";
-import { useAuthStore } from "../store/auth-store";
+} from '../components/ui/dialog.js.js';
+import {
+  Building2,
+  User,
+  CreditCard,
+  Bell,
+  Shield,
+  Users,
+  Database,
+  Globe,
+  Zap,
+} from "lucide-react";
+import {
+  useCompanies,
+  useCreateCompany,
+  useUpdateCompany,
+  useUsers,
+} from '../hooks/use-api.js.js';
+import { format } from "date-fns";
+// @ts-ignore
+import { Skeleton } from '../components/ui/skeleton.js.js';
+// @ts-ignore
+import { useToast } from '../hooks/use-toast.js.js';
+// @ts-ignore
+import { useAuthStore } from '../store/auth-store.js.js';
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("company");
@@ -65,7 +98,7 @@ export default function Settings() {
   const updateCompanyMutation = useUpdateCompany();
 
   // Get current company
-  const currentCompany = companies.find(c => c.id === user?.currentCompanyId);
+  const currentCompany = companies.find((c) => c.id === user?.currentCompanyId);
 
   // Initialize forms with current data
   React.useEffect(() => {
@@ -123,7 +156,11 @@ export default function Settings() {
       title: "Success",
       description: "Password updated successfully",
     });
-    setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
   };
 
   const handleNotificationSave = () => {
@@ -149,10 +186,16 @@ export default function Settings() {
     <div className="p-6 lg:p-8 space-y-6 max-w-4xl">
       <div>
         <h1 className="text-3xl font-semibold mb-2">Settings</h1>
-        <p className="text-muted-foreground">Manage your account and company preferences</p>
+        <p className="text-muted-foreground">
+          Manage your account and company preferences
+        </p>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full max-w-2xl grid-cols-6">
           <TabsTrigger value="company" data-testid="tab-company">
             <Building2 className="h-4 w-4 mr-2" />
@@ -184,7 +227,9 @@ export default function Settings() {
           <Card>
             <CardHeader>
               <CardTitle>Company Information</CardTitle>
-              <CardDescription>Update your company details and preferences</CardDescription>
+              <CardDescription>
+                Update your company details and preferences
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
@@ -193,7 +238,12 @@ export default function Settings() {
                   <Input
                     id="company-name"
                     value={companyForm.name}
-                    onChange={(e) => setCompanyForm(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setCompanyForm((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
                     data-testid="input-company-name"
                   />
                 </div>
@@ -202,7 +252,12 @@ export default function Settings() {
                   <Input
                     id="tax-id"
                     value={companyForm.taxId}
-                    onChange={(e) => setCompanyForm(prev => ({ ...prev, taxId: e.target.value }))}
+                    onChange={(e) =>
+                      setCompanyForm((prev) => ({
+                        ...prev,
+                        taxId: e.target.value,
+                      }))
+                    }
                     data-testid="input-tax-id"
                   />
                 </div>
@@ -212,7 +267,12 @@ export default function Settings() {
                 <Input
                   id="address"
                   value={companyForm.address}
-                  onChange={(e) => setCompanyForm(prev => ({ ...prev, address: e.target.value }))}
+                  onChange={(e) =>
+                    setCompanyForm((prev) => ({
+                      ...prev,
+                      address: e.target.value,
+                    }))
+                  }
                   data-testid="input-address"
                 />
               </div>
@@ -222,7 +282,12 @@ export default function Settings() {
                   <Input
                     id="phone"
                     value={companyForm.phone}
-                    onChange={(e) => setCompanyForm(prev => ({ ...prev, phone: e.target.value }))}
+                    onChange={(e) =>
+                      setCompanyForm((prev) => ({
+                        ...prev,
+                        phone: e.target.value,
+                      }))
+                    }
                     data-testid="input-phone"
                   />
                 </div>
@@ -232,7 +297,12 @@ export default function Settings() {
                     id="email"
                     type="email"
                     value={companyForm.email}
-                    onChange={(e) => setCompanyForm(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setCompanyForm((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
                     data-testid="input-email"
                   />
                 </div>
@@ -242,7 +312,9 @@ export default function Settings() {
                   <Label htmlFor="currency">Currency</Label>
                   <Select
                     value={companyForm.currency}
-                    onValueChange={(value) => setCompanyForm(prev => ({ ...prev, currency: value }))}
+                    onValueChange={(value) =>
+                      setCompanyForm((prev) => ({ ...prev, currency: value }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -252,7 +324,9 @@ export default function Settings() {
                       <SelectItem value="EUR">EUR - Euro</SelectItem>
                       <SelectItem value="GBP">GBP - British Pound</SelectItem>
                       <SelectItem value="CAD">CAD - Canadian Dollar</SelectItem>
-                      <SelectItem value="AUD">AUD - Australian Dollar</SelectItem>
+                      <SelectItem value="AUD">
+                        AUD - Australian Dollar
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -261,7 +335,12 @@ export default function Settings() {
                   <Input
                     id="fiscal-year"
                     value={companyForm.fiscalYearEnd}
-                    onChange={(e) => setCompanyForm(prev => ({ ...prev, fiscalYearEnd: e.target.value }))}
+                    onChange={(e) =>
+                      setCompanyForm((prev) => ({
+                        ...prev,
+                        fiscalYearEnd: e.target.value,
+                      }))
+                    }
                     data-testid="input-fiscal-year"
                   />
                 </div>
@@ -272,7 +351,9 @@ export default function Settings() {
                   disabled={updateCompanyMutation.isPending}
                   data-testid="button-save-company"
                 >
-                  {updateCompanyMutation.isPending ? "Saving..." : "Save Changes"}
+                  {updateCompanyMutation.isPending
+                    ? "Saving..."
+                    : "Save Changes"}
                 </Button>
               </div>
             </CardContent>
@@ -286,14 +367,18 @@ export default function Settings() {
                   <Users className="h-5 w-5" />
                   User Management
                 </CardTitle>
-                <CardDescription>Manage company users and permissions</CardDescription>
+                <CardDescription>
+                  Manage company users and permissions
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">Total Users</p>
-                      <p className="text-sm text-muted-foreground">{users.length} active users</p>
+                      <p className="text-sm text-muted-foreground">
+                        {users.length} active users
+                      </p>
                     </div>
                     <Dialog>
                       <DialogTrigger asChild>
@@ -319,7 +404,9 @@ export default function Settings() {
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="user">User</SelectItem>
-                                <SelectItem value="accountant">Accountant</SelectItem>
+                                <SelectItem value="accountant">
+                                  Accountant
+                                </SelectItem>
                                 <SelectItem value="admin">Admin</SelectItem>
                               </SelectContent>
                             </Select>
@@ -335,10 +422,17 @@ export default function Settings() {
 
                   <div className="space-y-2">
                     {users.slice(0, 3).map((user: any) => (
-                      <div key={user.id} className="flex items-center justify-between p-3 border rounded-md">
+                      <div
+                        key={user.id}
+                        className="flex items-center justify-between p-3 border rounded-md"
+                      >
                         <div>
-                          <p className="font-medium">{user.name || user.username}</p>
-                          <p className="text-sm text-muted-foreground">{user.email}</p>
+                          <p className="font-medium">
+                            {user.name || user.username}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {user.email}
+                          </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <Select defaultValue={user.role}>
@@ -347,11 +441,15 @@ export default function Settings() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="user">User</SelectItem>
-                              <SelectItem value="accountant">Accountant</SelectItem>
+                              <SelectItem value="accountant">
+                                Accountant
+                              </SelectItem>
                               <SelectItem value="admin">Admin</SelectItem>
                             </SelectContent>
                           </Select>
-                          <Button variant="outline" size="sm">Edit</Button>
+                          <Button variant="outline" size="sm">
+                            Edit
+                          </Button>
                         </div>
                       </div>
                     ))}
@@ -366,7 +464,9 @@ export default function Settings() {
           <Card>
             <CardHeader>
               <CardTitle>Profile Settings</CardTitle>
-              <CardDescription>Manage your personal account details</CardDescription>
+              <CardDescription>
+                Manage your personal account details
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
@@ -375,7 +475,12 @@ export default function Settings() {
                   <Input
                     id="full-name"
                     value={profileForm.name}
-                    onChange={(e) => setProfileForm(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setProfileForm((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
                     data-testid="input-full-name"
                   />
                 </div>
@@ -385,7 +490,12 @@ export default function Settings() {
                     id="user-email"
                     type="email"
                     value={profileForm.email}
-                    onChange={(e) => setProfileForm(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setProfileForm((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
                     data-testid="input-user-email"
                   />
                 </div>
@@ -395,12 +505,20 @@ export default function Settings() {
                 <Input
                   id="username"
                   value={profileForm.username}
-                  onChange={(e) => setProfileForm(prev => ({ ...prev, username: e.target.value }))}
+                  onChange={(e) =>
+                    setProfileForm((prev) => ({
+                      ...prev,
+                      username: e.target.value,
+                    }))
+                  }
                   data-testid="input-username"
                 />
               </div>
               <div className="flex justify-end pt-4">
-                <Button onClick={handleProfileSave} data-testid="button-save-profile">
+                <Button
+                  onClick={handleProfileSave}
+                  data-testid="button-save-profile"
+                >
                   Save Changes
                 </Button>
               </div>
@@ -410,7 +528,9 @@ export default function Settings() {
           <Card>
             <CardHeader>
               <CardTitle>Change Password</CardTitle>
-              <CardDescription>Update your password to keep your account secure</CardDescription>
+              <CardDescription>
+                Update your password to keep your account secure
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -419,7 +539,12 @@ export default function Settings() {
                   id="current-password"
                   type="password"
                   value={passwordForm.currentPassword}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+                  onChange={(e) =>
+                    setPasswordForm((prev) => ({
+                      ...prev,
+                      currentPassword: e.target.value,
+                    }))
+                  }
                   data-testid="input-current-password"
                 />
               </div>
@@ -429,7 +554,12 @@ export default function Settings() {
                   id="new-password"
                   type="password"
                   value={passwordForm.newPassword}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                  onChange={(e) =>
+                    setPasswordForm((prev) => ({
+                      ...prev,
+                      newPassword: e.target.value,
+                    }))
+                  }
                   data-testid="input-new-password"
                 />
               </div>
@@ -439,12 +569,20 @@ export default function Settings() {
                   id="confirm-password"
                   type="password"
                   value={passwordForm.confirmPassword}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  onChange={(e) =>
+                    setPasswordForm((prev) => ({
+                      ...prev,
+                      confirmPassword: e.target.value,
+                    }))
+                  }
                   data-testid="input-confirm-password"
                 />
               </div>
               <div className="flex justify-end pt-4">
-                <Button onClick={handlePasswordChange} data-testid="button-change-password">
+                <Button
+                  onClick={handlePasswordChange}
+                  data-testid="button-change-password"
+                >
                   Change Password
                 </Button>
               </div>
@@ -459,7 +597,9 @@ export default function Settings() {
                 <Shield className="h-5 w-5" />
                 Security Settings
               </CardTitle>
-              <CardDescription>Manage your account security and authentication</CardDescription>
+              <CardDescription>
+                Manage your account security and authentication
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -471,7 +611,9 @@ export default function Settings() {
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm text-muted-foreground">Not Enabled</span>
+                    <span className="text-sm text-muted-foreground">
+                      Not Enabled
+                    </span>
                     <Button variant="outline">Enable 2FA</Button>
                   </div>
                 </div>
@@ -504,13 +646,19 @@ export default function Settings() {
           <Card>
             <CardHeader>
               <CardTitle>Billing Information</CardTitle>
-              <CardDescription>Manage your subscription and payment methods</CardDescription>
+              <CardDescription>
+                Manage your subscription and payment methods
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="p-4 bg-muted rounded-md">
-                <p className="text-sm font-medium mb-2">Current Plan: Professional</p>
+                <p className="text-sm font-medium mb-2">
+                  Current Plan: Professional
+                </p>
                 <p className="text-2xl font-semibold mb-1">$49.99/month</p>
-                <p className="text-xs text-muted-foreground">Next billing date: February 1, 2024</p>
+                <p className="text-xs text-muted-foreground">
+                  Next billing date: February 1, 2024
+                </p>
               </div>
               <div className="space-y-2">
                 <Label>Payment Method</Label>
@@ -519,14 +667,24 @@ export default function Settings() {
                     <CreditCard className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <p className="text-sm font-medium">Visa ending in 4242</p>
-                      <p className="text-xs text-muted-foreground">Expires 12/2025</p>
+                      <p className="text-xs text-muted-foreground">
+                        Expires 12/2025
+                      </p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" data-testid="button-update-payment">Update</Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    data-testid="button-update-payment"
+                  >
+                    Update
+                  </Button>
                 </div>
               </div>
               <div className="flex justify-end pt-4">
-                <Button variant="outline" data-testid="button-billing-history">View Billing History</Button>
+                <Button variant="outline" data-testid="button-billing-history">
+                  View Billing History
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -536,73 +694,120 @@ export default function Settings() {
           <Card>
             <CardHeader>
               <CardTitle>Notification Preferences</CardTitle>
-              <CardDescription>Manage how you receive alerts and updates</CardDescription>
+              <CardDescription>
+                Manage how you receive alerts and updates
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Overdue Invoices</p>
-                    <p className="text-xs text-muted-foreground">Get notified when invoices become overdue</p>
+                    <p className="text-xs text-muted-foreground">
+                      Get notified when invoices become overdue
+                    </p>
                   </div>
                   <Switch
                     checked={notificationSettings.overdueInvoices}
-                    onCheckedChange={(checked) => setNotificationSettings(prev => ({ ...prev, overdueInvoices: checked }))}
+                    onCheckedChange={(checked) =>
+                      setNotificationSettings((prev) => ({
+                        ...prev,
+                        overdueInvoices: checked,
+                      }))
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Payment Received</p>
-                    <p className="text-xs text-muted-foreground">Get notified when payments are received</p>
+                    <p className="text-xs text-muted-foreground">
+                      Get notified when payments are received
+                    </p>
                   </div>
                   <Switch
                     checked={notificationSettings.paymentReceived}
-                    onCheckedChange={(checked) => setNotificationSettings(prev => ({ ...prev, paymentReceived: checked }))}
+                    onCheckedChange={(checked) =>
+                      setNotificationSettings((prev) => ({
+                        ...prev,
+                        paymentReceived: checked,
+                      }))
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Low Balance Alert</p>
-                    <p className="text-xs text-muted-foreground">Alert when bank balance falls below threshold</p>
+                    <p className="text-xs text-muted-foreground">
+                      Alert when bank balance falls below threshold
+                    </p>
                   </div>
                   <Switch
                     checked={notificationSettings.lowBalance}
-                    onCheckedChange={(checked) => setNotificationSettings(prev => ({ ...prev, lowBalance: checked }))}
+                    onCheckedChange={(checked) =>
+                      setNotificationSettings((prev) => ({
+                        ...prev,
+                        lowBalance: checked,
+                      }))
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Monthly Reports</p>
-                    <p className="text-xs text-muted-foreground">Receive monthly financial summary via email</p>
+                    <p className="text-xs text-muted-foreground">
+                      Receive monthly financial summary via email
+                    </p>
                   </div>
                   <Switch
                     checked={notificationSettings.monthlyReports}
-                    onCheckedChange={(checked) => setNotificationSettings(prev => ({ ...prev, monthlyReports: checked }))}
+                    onCheckedChange={(checked) =>
+                      setNotificationSettings((prev) => ({
+                        ...prev,
+                        monthlyReports: checked,
+                      }))
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Bank Reconciliation</p>
-                    <p className="text-xs text-muted-foreground">Alerts for reconciliation status and issues</p>
+                    <p className="text-xs text-muted-foreground">
+                      Alerts for reconciliation status and issues
+                    </p>
                   </div>
                   <Switch
                     checked={notificationSettings.bankReconciliation}
-                    onCheckedChange={(checked) => setNotificationSettings(prev => ({ ...prev, bankReconciliation: checked }))}
+                    onCheckedChange={(checked) =>
+                      setNotificationSettings((prev) => ({
+                        ...prev,
+                        bankReconciliation: checked,
+                      }))
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium">Invoice Reminders</p>
-                    <p className="text-xs text-muted-foreground">Automated reminders for upcoming and overdue invoices</p>
+                    <p className="text-xs text-muted-foreground">
+                      Automated reminders for upcoming and overdue invoices
+                    </p>
                   </div>
                   <Switch
                     checked={notificationSettings.invoiceReminders}
-                    onCheckedChange={(checked) => setNotificationSettings(prev => ({ ...prev, invoiceReminders: checked }))}
+                    onCheckedChange={(checked) =>
+                      setNotificationSettings((prev) => ({
+                        ...prev,
+                        invoiceReminders: checked,
+                      }))
+                    }
                   />
                 </div>
               </div>
               <div className="flex justify-end pt-4">
-                <Button onClick={handleNotificationSave} data-testid="button-save-notifications">
+                <Button
+                  onClick={handleNotificationSave}
+                  data-testid="button-save-notifications"
+                >
                   Save Preferences
                 </Button>
               </div>
@@ -617,7 +822,9 @@ export default function Settings() {
                 <Database className="h-5 w-5" />
                 System Settings
               </CardTitle>
-              <CardDescription>Advanced system configuration and data management</CardDescription>
+              <CardDescription>
+                Advanced system configuration and data management
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -625,7 +832,8 @@ export default function Settings() {
                   <div className="space-y-1">
                     <p className="font-medium">Data Backup</p>
                     <p className="text-sm text-muted-foreground">
-                      Last backup: {format(new Date(), "MMM dd, yyyy 'at' h:mm a")}
+                      Last backup:{" "}
+                      {format(new Date(), "MMM dd, yyyy 'at' h:mm a")}
                     </p>
                   </div>
                   <Button variant="outline">Backup Now</Button>
@@ -673,7 +881,9 @@ export default function Settings() {
                           Reset all data to initial demo state
                         </p>
                       </div>
-                      <Button variant="destructive" size="sm">Reset Data</Button>
+                      <Button variant="destructive" size="sm">
+                        Reset Data
+                      </Button>
                     </div>
                     <div className="flex items-center justify-between p-3 border border-destructive/20 rounded-md">
                       <div>
@@ -682,7 +892,9 @@ export default function Settings() {
                           Permanently delete this company and all data
                         </p>
                       </div>
-                      <Button variant="destructive" size="sm">Delete Company</Button>
+                      <Button variant="destructive" size="sm">
+                        Delete Company
+                      </Button>
                     </div>
                   </div>
                 </div>

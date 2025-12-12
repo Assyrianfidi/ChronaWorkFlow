@@ -13,27 +13,28 @@ export interface BookkeepingRule {
 export class BookkeepingRules {
   private static rules: BookkeepingRule[] = [
     {
-      id: 'double-entry',
-      name: 'Double Entry Principle',
-      description: 'Every transaction must debit one account and credit another',
+      id: "double-entry",
+      name: "Double Entry Principle",
+      description:
+        "Every transaction must debit one account and credit another",
       apply: (transaction) => {
         // TODO: Implement double entry validation
         return true;
-      }
+      },
     },
     {
-      id: 'balance-sheet',
-      name: 'Balance Sheet Balance',
-      description: 'Assets must equal Liabilities + Equity',
+      id: "balance-sheet",
+      name: "Balance Sheet Balance",
+      description: "Assets must equal Liabilities + Equity",
       apply: (transaction) => {
         // TODO: Implement balance sheet validation
         return true;
-      }
-    }
+      },
+    },
   ];
 
   static validateTransaction(transaction: any): boolean {
-    return this.rules.every(rule => rule.apply(transaction));
+    return this.rules.every((rule) => rule.apply(transaction));
   }
 
   static getRules(): BookkeepingRule[] {

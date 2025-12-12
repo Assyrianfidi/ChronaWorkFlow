@@ -1,5 +1,5 @@
-import { sql } from 'drizzle-orm';
-import { db } from '../index.js';
+import { sql } from "drizzle-orm";
+import { db } from "../index.js";
 
 export async function up() {
   await db.execute(sql`
@@ -141,11 +141,11 @@ export async function down() {
 if (require.main === module) {
   up()
     .then(() => {
-      console.log('Migration completed successfully');
+      console.log("Migration completed successfully");
       process.exit(0);
     })
     .catch((error) => {
-      console.error('Migration failed:', error);
+      console.error("Migration failed:", error);
       process.exit(1);
     });
 }

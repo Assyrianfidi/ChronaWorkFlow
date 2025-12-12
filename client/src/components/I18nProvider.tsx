@@ -1,4 +1,6 @@
-import * as React from 'react';
+import React from 'react';
+// @ts-ignore
+import * as React from "react";
 
 interface I18nProviderProps {
   children: React.ReactNode;
@@ -11,10 +13,11 @@ interface I18nProviderProps {
  * In a real implementation, this would provide internationalization context
  * using libraries like react-intl, i18next, or similar.
  */
-export const I18nProvider: React.FC<I18nProviderProps> = ({ 
-  children, 
-  locale = 'en',
-  messages = {}
+// @ts-ignore
+export const I18nProvider: React.FC<I18nProviderProps> = ({
+  children,
+  locale = "en",
+  messages = {},
 }) => {
   // In a real implementation, this would provide i18n context
   return <>{children}</>;
@@ -29,10 +32,10 @@ export const useI18n = () => ({
     if (!values) return key;
     return Object.entries(values).reduce(
       (msg, [k, v]) => msg.replace(`{{${k}}}`, String(v)),
-      key
+      key,
     );
   },
-  locale: 'en',
+  locale: "en",
   changeLanguage: () => Promise.resolve(),
   tReady: true,
 });

@@ -3,25 +3,25 @@ function sanitizeXSS(req, res, next) {
   if (req.body) {
     // Simple XSS sanitization for JSON body
     const sanitizeString = (str) => {
-      if (typeof str !== 'string') return str;
+      if (typeof str !== "string") return str;
       return str
-        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-        .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
-        .replace(/javascript:/gi, '')
-        .replace(/on\w+\s*=/gi, '');
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+        .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, "")
+        .replace(/javascript:/gi, "")
+        .replace(/on\w+\s*=/gi, "");
     };
 
     const sanitizeObject = (obj) => {
-      if (typeof obj === 'string') {
+      if (typeof obj === "string") {
         return sanitizeString(obj);
       }
-      
-      if (typeof obj !== 'object' || obj === null) return obj;
-      
+
+      if (typeof obj !== "object" || obj === null) return obj;
+
       if (Array.isArray(obj)) {
         return obj.map(sanitizeObject);
       }
-      
+
       const sanitized = {};
       for (const key in obj) {
         if (obj.hasOwnProperty(key)) {

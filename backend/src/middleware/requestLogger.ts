@@ -1,10 +1,14 @@
-import { Request, Response, NextFunction } from 'express';
-import { logger } from '../utils/logger.js';
+import { Request, Response, NextFunction } from "express";
+import { logger } from "../utils/logger.js";
 
-export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
+export const requestLogger = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const start = Date.now();
-  
-  res.on('finish', () => {
+
+  res.on("finish", () => {
     const duration = Date.now() - start;
     const logData = {
       method: req.method,
@@ -12,13 +16,13 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
       statusCode: res.statusCode,
       duration: `${duration}ms`,
       ip: req.ip,
-      userAgent: req.get('User-Agent'),
+      userAgent: req.get("User-Agent"),
     };
 
     if (res.statusCode >= 400) {
-      logger.warn('HTTP Request', logData);
+      logger.warn("HTTP Request", logData);
     } else {
-      logger.info('HTTP Request', logData);
+      logger.info("HTTP Request", logData);
     }
   });
 

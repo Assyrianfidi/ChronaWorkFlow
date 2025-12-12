@@ -1,104 +1,146 @@
-import * as React from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../contexts/AuthContext"
-import { Button } from "../components/ui/button"
-import { InputWithIcon } from "../components/ui/input-with-icon"
-import { Label } from "../components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Alert, AlertDescription } from "../components/ui/alert"
-import { Eye, EyeOff, Loader2, Building2, Mail, Lock, ChevronDown, ChevronUp } from "lucide-react"
+import React, { useState } from 'react';
+// @ts-ignore
+import * as React from "react";
+import { Link, useNavigate } from "react-router-dom";
+// @ts-ignore
+import { useAuth } from '../contexts/AuthContext.js.js';
+// @ts-ignore
+import { Button } from '../components/ui/button.js.js';
+// @ts-ignore
+import Logo from '../assets/AccubooksEnterprise_Logo16_.jpg.js.js';
+// @ts-ignore
+import { InputWithIcon } from '../components/ui/input-with-icon.js.js';
+// @ts-ignore
+import { Label } from '../components/ui/label.js.js';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js.js';
+// @ts-ignore
+import { Alert, AlertDescription } from '../components/ui/alert.js.js';
+import {
+  Eye,
+  EyeOff,
+  Loader2,
+  Building2,
+  Mail,
+  Lock,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
+// @ts-ignore
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = React.useState({
     email: "",
     password: "",
-    rememberMe: false
-  })
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [error, setError] = React.useState("")
-  const [showPassword, setShowPassword] = React.useState(false)
-  const [showDemoAccounts, setShowDemoAccounts] = React.useState(false)
-  
-  const { login } = useAuth()
-  const navigate = useNavigate()
+    rememberMe: false,
+  });
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showDemoAccounts, setShowDemoAccounts] = React.useState(false);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.type === "checkbox" ? e.target.checked : e.target.value,
-    })
-  }
+      [e.target.name]:
+        e.target.type === "checkbox" ? e.target.checked : e.target.value,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    
+    e.preventDefault();
+    setError("");
+
     if (!formData.email || !formData.password) {
-      setError("Please enter both email and password")
-      return
+      setError("Please enter both email and password");
+      return;
     }
 
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     try {
-      await login(formData.email, formData.password)
-      
+      await login(formData.email, formData.password);
+
       // Store remember me preference
       if (formData.rememberMe) {
-        localStorage.setItem('accubooks_remember', formData.email)
+        localStorage.setItem("accubooks_remember", formData.email);
       } else {
-        localStorage.removeItem('accubooks_remember')
+        localStorage.removeItem("accubooks_remember");
       }
-      
-      navigate("/dashboard")
+
+      navigate("/dashboard");
     } catch (error) {
-      setError("Invalid email or password. Please try again.")
+      setError("Invalid email or password. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Load remembered email on mount
   React.useEffect(() => {
-    const rememberedEmail = localStorage.getItem('accubooks_remember')
+    const rememberedEmail = localStorage.getItem("accubooks_remember");
     if (rememberedEmail) {
-      setFormData(prev => ({ ...prev, email: rememberedEmail, rememberMe: true }))
+      setFormData((prev) => ({
+        ...prev,
+        email: rememberedEmail,
+        rememberMe: true,
+      }));
     }
-  }, [])
+  }, []);
 
   const demoAccounts = [
-    { email: 'admin@accubooks.com', password: 'admin123', role: 'Administrator' },
-    { email: 'manager@accubooks.com', password: 'manager123', role: 'Manager' },
-    { email: 'user@accubooks.com', password: 'user123', role: 'User' },
-    { email: 'auditor@accubooks.com', password: 'auditor123', role: 'Auditor' },
-    { email: 'inventory@accubooks.com', password: 'inventory123', role: 'Inventory Manager' }
-  ]
+    {
+      email: "admin@accubooks.com",
+      password: "admin123",
+      role: "Administrator",
+    },
+    { email: "manager@accubooks.com", password: "manager123", role: "Manager" },
+    { email: "user@accubooks.com", password: "user123", role: "User" },
+    { email: "auditor@accubooks.com", password: "auditor123", role: "Auditor" },
+    {
+      email: "inventory@accubooks.com",
+      password: "inventory123",
+      role: "Inventory Manager",
+    },
+  ];
 
   return (
     <div className="min-h-screen soft-professional-gradient flex flex-col">
       {/* Background Pattern Overlay */}
       <div className="fixed inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231E4DB7' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}></div>
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231E4DB7' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        ></div>
       </div>
 
       {/* Main Content */}
-      <div role="main" className="flex-1 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 relative z-10">
+      <div
+        role="main"
+        className="flex-1 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 relative z-10"
+      >
         <div className="w-full max-w-md animate-fade-in">
           {/* Logo and Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-6">
-              <img 
-                src="/assets/logo/logo-128.png" 
-                alt="AccuBooks logo" 
-                width={128} 
+              <img
+                src={Logo}
+                alt="AccuBooks Enterprise Logo"
+                width={128}
                 height={128}
                 loading="lazy"
                 className="rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
-                style={{
-                  animation: 'prefers-reduced-motion: reduce ? none : scale-in 0.3s ease-out'
-                }}
               />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">
@@ -119,18 +161,28 @@ const LoginPage: React.FC = () => {
                 Enter your credentials to access your account
               </CardDescription>
             </CardHeader>
-            <form onSubmit={handleSubmit} aria-label="Sign in to your AccuBooks account">
+            <form
+              onSubmit={handleSubmit}
+              aria-label="Sign in to your AccuBooks account"
+            >
               <CardContent className="space-y-5">
                 {error && (
-                  <Alert variant="destructive" className="border-0 shadow-md" aria-live="polite">
+                  <Alert
+                    variant="destructive"
+                    className="border-0 shadow-md"
+                    aria-live="polite"
+                  >
                     <AlertDescription className="text-sm font-medium">
                       {error}
                     </AlertDescription>
                   </Alert>
                 )}
-                
+
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+                  <Label
+                    htmlFor="email"
+                    className="text-sm font-semibold text-gray-700"
+                  >
                     Email Address
                   </Label>
                   <InputWithIcon
@@ -150,7 +202,10 @@ const LoginPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
+                  <Label
+                    htmlFor="password"
+                    className="text-sm font-semibold text-gray-700"
+                  >
                     Password
                   </Label>
                   <div className="relative">
@@ -196,7 +251,10 @@ const LoginPage: React.FC = () => {
                       className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded transition-colors duration-200"
                       disabled={isLoading}
                     />
-                    <Label htmlFor="rememberMe" className="text-sm font-medium text-gray-700 cursor-pointer">
+                    <Label
+                      htmlFor="rememberMe"
+                      className="text-sm font-medium text-gray-700 cursor-pointer"
+                    >
                       Remember me
                     </Label>
                   </div>
@@ -211,7 +269,7 @@ const LoginPage: React.FC = () => {
               <CardFooter className="flex flex-col space-y-4 pt-6">
                 <Button
                   type="submit"
-                  className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-black"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -223,7 +281,7 @@ const LoginPage: React.FC = () => {
                     "Sign In"
                   )}
                 </Button>
-                
+
                 <div className="text-center text-sm text-gray-600 font-medium">
                   Don't have an account?{" "}
                   <Link
@@ -253,14 +311,19 @@ const LoginPage: React.FC = () => {
                   <ChevronDown className="w-4 h-4" />
                 )}
               </Button>
-              
+
               {showDemoAccounts && (
                 <div className="px-6 pb-6 pt-2 animate-fade-in">
                   <div className="space-y-3">
                     {demoAccounts.map((account, index) => (
-                      <div key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:border-primary-300 transition-colors duration-200">
+                      <div
+                        key={index}
+                        className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:border-primary-300 transition-colors duration-200"
+                      >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-semibold text-sm text-gray-900">{account.role}</span>
+                          <span className="font-semibold text-sm text-gray-900">
+                            {account.role}
+                          </span>
                           <span className="text-xs font-medium text-primary-600 bg-primary-50 px-2 py-1 rounded">
                             Quick Access
                           </span>
@@ -296,14 +359,12 @@ const LoginPage: React.FC = () => {
               Terms of Service
             </Link>
             <span className="hidden sm:inline text-gray-400">•</span>
-            <span className="font-medium">
-              © AccuBooks 2025
-            </span>
+            <span className="font-medium">© AccuBooks 2025</span>
           </div>
         </div>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

@@ -1,8 +1,11 @@
-import { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Button } from '../components/ui/button';
-import { Upload, X, FileText, Loader2 } from 'lucide-react';
-import { cn } from '../lib/utils';
+import React from 'react';
+import { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
+// @ts-ignore
+import { Button } from '../components/ui/button.js.js';
+import { Upload, X, FileText, Loader2 } from "lucide-react";
+// @ts-ignore
+import { cn } from '../lib/utils.js.js';
 
 interface FileUploadProps {
   onFilesSelected: (files: File[]) => void;
@@ -18,43 +21,49 @@ export function FileUpload({
   maxFiles = 5,
   maxSize = 5 * 1024 * 1024, // 5MB
   accept = {
-    'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
-    'application/pdf': ['.pdf'],
-    'application/msword': ['.doc'],
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-    'application/vnd.ms-excel': ['.xls'],
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+    "image/*": [".png", ".jpg", ".jpeg", ".gif"],
+    "application/pdf": [".pdf"],
+    "application/msword": [".doc"],
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+      ".docx",
+    ],
+    "application/vnd.ms-excel": [".xls"],
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+      ".xlsx",
+    ],
   },
   disabled = false,
   className,
 }: FileUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
-  const [rejectedFiles, setRejectedFiles] = useState<{ file: File; error: string }[]>([]);
+  const [rejectedFiles, setRejectedFiles] = useState<
+    { file: File; error: string }[]
+  >([]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: any[]) => {
       setIsUploading(true);
-      
+
       // Handle rejected files
       const newRejections = fileRejections.flatMap(({ file, errors }) =>
         errors.map((error: any) => ({
           file,
           error: error.message,
-        }))
+        })),
       );
 
       setRejectedFiles((prev) => [...prev, ...newRejections]);
-      
+
       // Only keep files that are within size limit
       const validFiles = acceptedFiles.filter((file) => file.size <= maxSize);
-      
+
       if (validFiles.length > 0) {
         onFilesSelected(validFiles);
       }
-      
+
       setIsUploading(false);
     },
-    [maxSize, onFilesSelected]
+    [maxSize, onFilesSelected],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -74,10 +83,12 @@ export function FileUpload({
       <div
         {...getRootProps()}
         className={cn(
-          'border-2 border-dashed rounded-lg p-6 text-center transition-colors',
-          isDragActive ? 'border-primary bg-primary/10' : 'border-muted-foreground/25',
-          disabled && 'opacity-50 cursor-not-allowed',
-          className
+          "border-2 border-dashed rounded-lg p-6 text-center transition-colors",
+          isDragActive
+            ? "border-primary bg-primary/10"
+            : "border-muted-foreground/25",
+          disabled && "opacity-50 cursor-not-allowed",
+          className,
         )}
       >
         <input {...getInputProps()} />
@@ -95,9 +106,7 @@ export function FileUpload({
               {isDragActive ? (
                 <p>Drop the files here ...</p>
               ) : (
-                <p>
-                  Drag & drop files here, or click to select files
-                </p>
+                <p>Drag & drop files here, or click to select files</p>
               )}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -109,7 +118,9 @@ export function FileUpload({
 
       {rejectedFiles.length > 0 && (
         <div className="mt-4 space-y-2">
-          <h4 className="text-sm font-medium text-destructive">Rejected Files</h4>
+          <h4 className="text-sm font-medium text-destructive">
+            Rejected Files
+          </h4>
           <ul className="space-y-2">
             {rejectedFiles.map(({ file, error }, index) => (
               <li

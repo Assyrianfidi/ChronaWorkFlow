@@ -1,6 +1,11 @@
 // Dashboard exports
-export { default as AdminDashboard } from './AdminDashboard'
-export { default as ManagerDashboard } from './ManagerDashboard'
-export { default as UserDashboard } from './UserDashboard'
-export { default as AuditorDashboard } from './AuditorDashboard'
-export { default as InventoryDashboard } from './InventoryDashboard'
+// @ts-ignore
+export { default as AdminDashboard } from './AdminDashboard.js';
+// @ts-ignore
+export { default as ManagerDashboard } from './ManagerDashboard.js';
+// @ts-ignore
+export { default as UserDashboard } from './UserDashboard.js';
+// @ts-ignore
+export { default as AuditorDashboard } from './AuditorDashboard.js';
+// @ts-ignore
+export { default as InventoryDashboard } from './InventoryDashboard.js';

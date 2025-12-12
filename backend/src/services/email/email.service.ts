@@ -1,10 +1,11 @@
-import nodemailer from 'nodemailer';
-import fs from 'fs/promises';
-import path from 'path';
-import { PrismaClient } from '@prisma/client';
-import { pdfService } from '../invoicing/pdf.service';
+import nodemailer from "nodemailer";
+import fs from "fs/promises";
+import path from "path";
+import { PrismaClientSingleton } from '../lib/prisma';
+const prisma = PrismaClientSingleton.getInstance();
+import { pdfService } from "../invoicing/pdf.service";
 
-const prisma = new PrismaClient();
+// Fixed self-reference
 
 export interface EmailData {
   to: string;
@@ -26,36 +27,42 @@ export class EmailService {
 
   private setupTransporter() {
     // Check if production email credentials are available
-    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+    if (
+      process.env.SMTP_HOST &&
+      process.env.SMTP_USER &&
+      process.env.SMTP_PASS
+    ) {
       // Production configuration
       this.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: process.env.SMTP_SECURE === 'true',
+        port: parseInt(process.env.SMTP_PORT || "587"),
+        secure: process.env.SMTP_SECURE === "true",
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
       });
-      console.log('✅ Email service configured with production SMTP');
+      console.log("✅ Email service configured with production SMTP");
     } else {
       // Development/stub configuration
       this.transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
+        host: "smtp.ethereal.email",
         port: 587,
         auth: {
-          user: 'ethereal.user@ethereal.email',
-          pass: 'ethereal.pass',
+          user: "ethereal.user@ethereal.email",
+          pass: "ethereal.pass",
         },
       });
-      console.log('⚠️ Email service configured with development transport');
+      console.log("⚠️ Email service configured with development transport");
     }
   }
 
-  async sendEmail(data: EmailData): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  async sendEmail(
+    data: EmailData,
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
       const mailOptions = {
-        from: process.env.SMTP_FROM || 'noreply@accubooks.com',
+        from: process.env.SMTP_FROM || "noreply@accubooks.com",
         to: data.to,
         subject: data.subject,
         html: data.html,
@@ -63,36 +70,38 @@ export class EmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      
+
       // Save email to outbox for audit
       await this.saveEmailToOutbox({
         ...data,
         messageId: info.messageId,
         sentAt: new Date(),
-        status: 'sent'
+        status: "sent",
       });
 
-      console.log('✅ Email sent successfully:', info.messageId);
+      console.log("✅ Email sent successfully:", info.messageId);
       return { success: true, messageId: info.messageId };
     } catch (error) {
-      console.error('❌ Error sending email:', error);
-      
+      console.error("❌ Error sending email:", error);
+
       // Save failed email to outbox
       await this.saveEmailToOutbox({
         ...data,
         sentAt: new Date(),
-        status: 'failed',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        status: "failed",
+        error: error instanceof Error ? error.message : "Unknown error",
       });
 
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
 
-  async sendInvoiceEmail(invoiceId: string): Promise<{ success: boolean; messageId?: string; error?: string }> {
+  async sendInvoiceEmail(
+    invoiceId: string,
+  ): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
       // Get invoice details
       const invoice = await prisma.invoice.findUnique({
@@ -101,18 +110,18 @@ export class EmailService {
           customer: true,
           lines: {
             include: {
-              product: true
-            }
-          }
-        }
+              product: true,
+            },
+          },
+        },
       });
 
       if (!invoice) {
-        throw new Error('Invoice not found');
+        throw new Error("Invoice not found");
       }
 
       if (!invoice.customer.email) {
-        throw new Error('Customer email not found');
+        throw new Error("Customer email not found");
       }
 
       // Generate PDF
@@ -130,31 +139,31 @@ export class EmailService {
           {
             filename: `Invoice-${invoice.invoiceNumber}.pdf`,
             content: pdfBuffer,
-            contentType: 'application/pdf'
-          }
-        ]
+            contentType: "application/pdf",
+          },
+        ],
       });
 
       return result;
     } catch (error) {
-      console.error('❌ Error sending invoice email:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      console.error("❌ Error sending invoice email:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
 
   private generateInvoiceEmailHTML(invoice: any): string {
     const formatCurrency = (amount: number) => {
-      return new Intl.NumberFormat('en-CA', {
-        style: 'currency',
-        currency: invoice.currency || 'CAD'
+      return new Intl.NumberFormat("en-CA", {
+        style: "currency",
+        currency: invoice.currency || "CAD",
       }).format(amount / 100);
     };
 
     const formatDate = (date: Date) => {
-      return new Date(date).toLocaleDateString('en-CA');
+      return new Date(date).toLocaleDateString("en-CA");
     };
 
     return `
@@ -236,7 +245,7 @@ export class EmailService {
 
     <div class="content">
         <h2>Invoice ${invoice.invoiceNumber}</h2>
-        <p>Dear ${invoice.customer.firstName || 'Valued Customer'},</p>
+        <p>Dear ${invoice.customer.firstName || "Valued Customer"},</p>
         <p>Please find attached your invoice ${invoice.invoiceNumber} for your records.</p>
 
         <div class="invoice-details">
@@ -280,7 +289,7 @@ export class EmailService {
 
   private async saveEmailToOutbox(emailData: any) {
     try {
-      const outboxDir = path.join(process.cwd(), 'devops', 'email-outbox');
+      const outboxDir = path.join(process.cwd(), "devops", "email-outbox");
       await fs.mkdir(outboxDir, { recursive: true });
 
       const filename = `email-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.json`;
@@ -289,26 +298,31 @@ export class EmailService {
       await fs.writeFile(filepath, JSON.stringify(emailData, null, 2));
       console.log(`📧 Email saved to outbox: ${filename}`);
     } catch (error) {
-      console.error('Error saving email to outbox:', error);
+      console.error("Error saving email to outbox:", error);
     }
   }
 
   async getEmailOutbox(): Promise<any[]> {
     try {
-      const outboxDir = path.join(process.cwd(), 'devops', 'email-outbox');
+      const outboxDir = path.join(process.cwd(), "devops", "email-outbox");
       const files = await fs.readdir(outboxDir);
-      
+
       const emails = [];
       for (const file of files) {
-        if (file.endsWith('.json')) {
-          const content = await fs.readFile(path.join(outboxDir, file), 'utf-8');
+        if (file.endsWith(".json")) {
+          const content = await fs.readFile(
+            path.join(outboxDir, file),
+            "utf-8",
+          );
           emails.push(JSON.parse(content));
         }
       }
 
-      return emails.sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime());
+      return emails.sort(
+        (a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime(),
+      );
     } catch (error) {
-      console.error('Error reading email outbox:', error);
+      console.error("Error reading email outbox:", error);
       return [];
     }
   }
@@ -316,32 +330,32 @@ export class EmailService {
   async testEmailConfiguration(): Promise<{ success: boolean; details: any }> {
     try {
       const testEmail = {
-        to: 'test@example.com',
-        subject: 'AccuBooks Email Test',
-        html: '<h1>Test Email</h1><p>This is a test email from AccuBooks.</p>'
+        to: "test@example.com",
+        subject: "AccuBooks Email Test",
+        html: "<h1>Test Email</h1><p>This is a test email from AccuBooks.</p>",
       };
 
       const result = await this.sendEmail(testEmail);
-      
+
       return {
         success: result.success,
         details: {
           messageId: result.messageId,
           error: result.error,
           smtpConfig: {
-            host: process.env.SMTP_HOST || 'ethereal.email',
-            port: process.env.SMTP_PORT || '587',
-            secure: process.env.SMTP_SECURE || 'false',
-            hasCredentials: !!(process.env.SMTP_USER && process.env.SMTP_PASS)
-          }
-        }
+            host: process.env.SMTP_HOST || "ethereal.email",
+            port: process.env.SMTP_PORT || "587",
+            secure: process.env.SMTP_SECURE || "false",
+            hasCredentials: !!(process.env.SMTP_USER && process.env.SMTP_PASS),
+          },
+        },
       };
     } catch (error) {
       return {
         success: false,
         details: {
-          error: error instanceof Error ? error.message : 'Unknown error'
-        }
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
       };
     }
   }

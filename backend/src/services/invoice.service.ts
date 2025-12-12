@@ -1,6 +1,6 @@
-import { prisma } from '../utils/prisma.js';
-import { ApiError } from '../utils/errors.js';
-import type { Prisma } from '@prisma/client';
+import { prisma } from "../utils/prisma.js";
+import { ApiError } from "../utils/errors.js";
+import type { Prisma } from "@prisma/client";
 
 // Define the InvoiceWithItems type based on Prisma's generated types
 type InvoiceWithItems = Prisma.InvoiceGetPayload<{
@@ -11,7 +11,7 @@ export interface CreateInvoiceData {
   customerId: string;
   issueDate: Date;
   dueDate: Date;
-  status: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED';
+  status: "DRAFT" | "SENT" | "PAID" | "OVERDUE" | "CANCELLED";
   subtotal: number;
   tax: number;
   total: number;
@@ -26,13 +26,17 @@ export interface CreateInvoiceData {
 }
 
 export interface UpdateInvoiceData {
-  status?: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED';
+  status?: "DRAFT" | "SENT" | "PAID" | "OVERDUE" | "CANCELLED";
   notes?: string;
   // Add other fields that can be updated
 }
 
 export class InvoiceService {
-  async getInvoicesByCompany(companyId: string, page = 1, limit = 10): Promise<{
+  async getInvoicesByCompany(
+    companyId: string,
+    page = 1,
+    limit = 10,
+  ): Promise<{
     data: Array<Prisma.InvoiceGetPayload<{}>>;
     meta: {
       total: number;
@@ -48,7 +52,7 @@ export class InvoiceService {
         where: { companyId },
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       }),
       prisma.invoice.count({ where: { companyId } }),
     ]);
@@ -70,7 +74,7 @@ export class InvoiceService {
     });
 
     if (!invoice) {
-      throw new ApiError(404, 'Invoice not found');
+      throw new ApiError(404, "Invoice not found");
     }
 
     const items = await prisma.invoiceItem.findMany({
@@ -90,11 +94,13 @@ export class InvoiceService {
       // Create the invoice
       const invoice = await tx.invoice.create({
         data: {
-          invoiceNumber: await this.generateInvoiceNumber(invoiceData.companyId),
+          invoiceNumber: await this.generateInvoiceNumber(
+            invoiceData.companyId,
+          ),
           date: invoiceData.issueDate || new Date(),
           dueDate: invoiceData.dueDate,
           totalAmount: invoiceData.total || 0,
-          status: invoiceData.status || 'DRAFT',
+          status: invoiceData.status || "DRAFT",
           companyId: invoiceData.companyId,
           clientId: invoiceData.customerId || null,
         },
@@ -109,7 +115,7 @@ export class InvoiceService {
             quantity: item.quantity,
             unitPrice: item.unitPrice,
             totalAmount: item.amount,
-            accountId: 'default-account-id', // TODO: Get from company default account
+            accountId: "default-account-id", // TODO: Get from company default account
           })),
         });
       }
@@ -128,7 +134,7 @@ export class InvoiceService {
 
   async updateInvoice(
     id: string,
-    data: UpdateInvoiceData
+    data: UpdateInvoiceData,
   ): Promise<InvoiceWithItems> {
     // Check if invoice exists
     const existingInvoice = await prisma.invoice.findUnique({
@@ -136,7 +142,7 @@ export class InvoiceService {
     });
 
     if (!existingInvoice) {
-      throw new ApiError(404, 'Invoice not found');
+      throw new ApiError(404, "Invoice not found");
     }
 
     // Update the invoice
@@ -166,7 +172,7 @@ export class InvoiceService {
     });
 
     if (!existingInvoice) {
-      throw new ApiError(404, 'Invoice not found');
+      throw new ApiError(404, "Invoice not found");
     }
 
     // Delete invoice items first (due to foreign key constraint)
@@ -187,6 +193,6 @@ export class InvoiceService {
     });
 
     // Generate a unique invoice number (e.g., INV-0001, INV-0002, etc.)
-    return `INV-${String(count + 1).padStart(4, '0')}`;
+    return `INV-${String(count + 1).padStart(4, "0")}`;
   }
 }

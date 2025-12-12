@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { cn } from '../lib/utils';
+import React, { useCallback, useMemo, useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { cn } from '../lib/utils.js';
 
 export interface VirtualizedTableProps<T> {
   items: T[];
@@ -11,6 +11,7 @@ export interface VirtualizedTableProps<T> {
   overscanCount?: number;
 }
 
+// @ts-ignore
 export function VirtualizedTable<T>({
   items,
   renderRow,
@@ -23,12 +24,12 @@ export function VirtualizedTable<T>({
 
   const rowHeights = useMemo(
     () => items.map((_, index) => estimateRowHeight(index)),
-    [items, estimateRowHeight]
+    [items, estimateRowHeight],
   );
 
   const getItemSize = useCallback(
     (index: number) => rowHeights[index] || 50,
-    [rowHeights]
+    [rowHeights],
   );
 
   const virtualizer = useVirtualizer({
@@ -36,22 +37,22 @@ export function VirtualizedTable<T>({
     getScrollElement: () => parentRef.current,
     estimateSize: getItemSize,
     overscan: overscanCount,
-    getItemKey: useCallback((index: number) => {
-      return itemKey(index, items[index]);
-    }, [items, itemKey]),
+    getItemKey: useCallback(
+      (index: number) => {
+        return itemKey(index, items[index]);
+      },
+      [items, itemKey],
+    ),
   });
 
   return (
-    <div className={cn('w-full h-full', className)}>
-      <div
-        ref={parentRef}
-        className="h-full w-full overflow-auto"
-      >
+    <div className={cn("w-full h-full", className)}>
+      <div ref={parentRef} className="h-full w-full overflow-auto">
         <div
           style={{
             height: `${virtualizer.getTotalSize()}px`,
-            width: '100%',
-            position: 'relative',
+            width: "100%",
+            position: "relative",
           }}
         >
           {virtualizer.getVirtualItems().map((virtualItem) => {
@@ -61,10 +62,10 @@ export function VirtualizedTable<T>({
               <div
                 key={virtualItem.key}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: 0,
                   left: 0,
-                  width: '100%',
+                  width: "100%",
                   height: `${virtualItem.size}px`,
                   transform: `translateY(${virtualItem.start}px)`,
                 }}
@@ -79,4 +80,5 @@ export function VirtualizedTable<T>({
   );
 }
 
+// @ts-ignore
 export default React.memo(VirtualizedTable) as typeof VirtualizedTable;

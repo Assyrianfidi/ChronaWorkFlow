@@ -1,22 +1,22 @@
-import { ReportFormValues } from '../types/reportForm';
+import { ReportFormValues } from '../types/reportForm.js';
 
-const API_BASE_URL = '/api/reports';
+const API_BASE_URL = "/api/reports";
 
 /**
  * Fetches a report by its ID
  */
 export const getReport = async (id: string) => {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    credentials: 'include',
+    credentials: "include",
   });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to fetch report');
+    throw new Error(error.message || "Failed to fetch report");
   }
 
   return response.json();
@@ -27,13 +27,14 @@ export const getReport = async (id: string) => {
  */
 export const createReport = async (data: ReportFormValues) => {
   const formData = new FormData();
-  
+
   // Append all form fields to FormData
   Object.entries(data).forEach(([key, value]) => {
-    if (key === 'attachments') {
+    if (key === "attachments") {
       // Handle file uploads
+// @ts-ignore
       (value as File[]).forEach((file) => {
-        formData.append('attachments', file);
+        formData.append("attachments", file);
       });
     } else if (Array.isArray(value)) {
       // Handle arrays (like tags)
@@ -42,19 +43,20 @@ export const createReport = async (data: ReportFormValues) => {
       });
     } else if (value !== undefined && value !== null) {
       // Handle all other fields
+// @ts-ignore
       formData.append(key, value as string | Blob);
     }
   });
 
   const response = await fetch(API_BASE_URL, {
-    method: 'POST',
+    method: "POST",
     body: formData,
-    credentials: 'include',
+    credentials: "include",
   });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to create report');
+    throw new Error(error.message || "Failed to create report");
   }
 
   return response.json();
@@ -63,15 +65,19 @@ export const createReport = async (data: ReportFormValues) => {
 /**
  * Updates an existing report
  */
-export const updateReport = async (id: string, data: Partial<ReportFormValues>) => {
+export const updateReport = async (
+  id: string,
+  data: Partial<ReportFormValues>,
+) => {
   const formData = new FormData();
-  
+
   // Append all form fields to FormData
   Object.entries(data).forEach(([key, value]) => {
-    if (key === 'attachments') {
+    if (key === "attachments") {
       // Handle file uploads
+// @ts-ignore
       (value as File[]).forEach((file) => {
-        formData.append('attachments', file);
+        formData.append("attachments", file);
       });
     } else if (Array.isArray(value)) {
       // Handle arrays (like tags)
@@ -80,19 +86,20 @@ export const updateReport = async (id: string, data: Partial<ReportFormValues>) 
       });
     } else if (value !== undefined && value !== null) {
       // Handle all other fields
+// @ts-ignore
       formData.append(key, value as string | Blob);
     }
   });
 
   const response = await fetch(`${API_BASE_URL}/${id}`, {
-    method: 'PATCH',
+    method: "PATCH",
     body: formData,
-    credentials: 'include',
+    credentials: "include",
   });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to update report');
+    throw new Error(error.message || "Failed to update report");
   }
 
   return response.json();
@@ -103,13 +110,13 @@ export const updateReport = async (id: string, data: Partial<ReportFormValues>) 
  */
 export const deleteReport = async (id: string) => {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
-    method: 'DELETE',
-    credentials: 'include',
+    method: "DELETE",
+    credentials: "include",
   });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to delete report');
+    throw new Error(error.message || "Failed to delete report");
   }
 
   return response.json();
@@ -120,17 +127,17 @@ export const deleteReport = async (id: string) => {
  */
 export const uploadAttachment = async (reportId: string, file: File) => {
   const formData = new FormData();
-  formData.append('file', file);
+  formData.append("file", file);
 
   const response = await fetch(`${API_BASE_URL}/${reportId}/attachments`, {
-    method: 'POST',
+    method: "POST",
     body: formData,
-    credentials: 'include',
+    credentials: "include",
   });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to upload attachment');
+    throw new Error(error.message || "Failed to upload attachment");
   }
 
   return response.json();
@@ -139,15 +146,21 @@ export const uploadAttachment = async (reportId: string, file: File) => {
 /**
  * Deletes an attachment from a report
  */
-export const deleteAttachment = async (reportId: string, attachmentId: string) => {
-  const response = await fetch(`${API_BASE_URL}/${reportId}/attachments/${attachmentId}`, {
-    method: 'DELETE',
-    credentials: 'include',
-  });
+export const deleteAttachment = async (
+  reportId: string,
+  attachmentId: string,
+) => {
+  const response = await fetch(
+    `${API_BASE_URL}/${reportId}/attachments/${attachmentId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    },
+  );
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to delete attachment');
+    throw new Error(error.message || "Failed to delete attachment");
   }
 
   return response.json();

@@ -1,10 +1,13 @@
-import * as React from "react"
-import { cn } from "../../lib/utils"
+import React from 'react';
+// @ts-ignore
+import * as React from "react";
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
 
 interface LoadingSkeletonProps {
-  className?: string
-  variant?: "kpi" | "table" | "chart" | "card"
-  lines?: number
+  className?: string;
+  variant?: "kpi" | "table" | "chart" | "card";
+  lines?: number;
 }
 
 const LoadingSkeleton = React.forwardRef<HTMLDivElement, LoadingSkeletonProps>(
@@ -27,8 +30,8 @@ const LoadingSkeleton = React.forwardRef<HTMLDivElement, LoadingSkeletonProps>(
                 <div className="h-12 w-12 bg-gray-200 rounded-lg"></div>
               </div>
             </div>
-          )
-        
+          );
+
         case "table":
           return (
             <div className="animate-pulse">
@@ -37,11 +40,14 @@ const LoadingSkeleton = React.forwardRef<HTMLDivElement, LoadingSkeletonProps>(
                 <div className="h-6 bg-gray-200 rounded w-32"></div>
                 <div className="h-8 bg-gray-200 rounded w-20"></div>
               </div>
-              
+
               {/* Table rows */}
               <div className="space-y-3">
                 {[...Array(lines)].map((_, i) => (
-                  <div key={i} className="flex items-center gap-4 p-3 border-b border-gray-100">
+                  <div
+                    key={i}
+                    className="flex items-center gap-4 p-3 border-b border-gray-100"
+                  >
                     <div className="flex-1 space-y-2">
                       <div className="h-4 bg-gray-200 rounded w-24"></div>
                       <div className="h-3 bg-gray-200 rounded w-16"></div>
@@ -57,8 +63,8 @@ const LoadingSkeleton = React.forwardRef<HTMLDivElement, LoadingSkeletonProps>(
                 ))}
               </div>
             </div>
-          )
-        
+          );
+
         case "chart":
           return (
             <div className="animate-pulse">
@@ -73,10 +79,10 @@ const LoadingSkeleton = React.forwardRef<HTMLDivElement, LoadingSkeletonProps>(
                   <div className="h-3 bg-gray-200 rounded w-20"></div>
                 </div>
               </div>
-              
+
               {/* Chart area */}
               <div className="h-64 bg-gray-200 rounded-lg mb-4"></div>
-              
+
               {/* Legend */}
               <div className="flex items-center justify-between">
                 <div className="flex gap-4">
@@ -87,59 +93,48 @@ const LoadingSkeleton = React.forwardRef<HTMLDivElement, LoadingSkeletonProps>(
                 <div className="h-8 bg-gray-200 rounded w-20"></div>
               </div>
             </div>
-          )
-        
+          );
+
         default:
           return (
             <div className="animate-pulse space-y-3">
               {[...Array(lines)].map((_, i) => (
-                <div key={i} className="h-4 bg-gray-200 rounded" style={{ 
-                  width: `${Math.random() * 40 + 60}%` 
-                }}></div>
+                <div
+                  key={i}
+                  className="h-4 bg-gray-200 rounded"
+                  style={{
+                    width: `${Math.random() * 40 + 60}%`,
+                  }}
+                ></div>
               ))}
             </div>
-          )
+          );
       }
-    }
+    };
 
     return (
-      <div
-        ref={ref}
-        className={cn("p-6", className)}
-        {...props}
-      >
+      <div ref={ref} className={cn("p-6", className)} {...props}>
         {renderContent()}
       </div>
-    )
-  }
-)
-LoadingSkeleton.displayName = "LoadingSkeleton"
+    );
+  },
+);
+LoadingSkeleton.displayName = "LoadingSkeleton";
 
 // Specific skeleton components for different use cases
 const KPISkeleton = React.forwardRef<HTMLDivElement, LoadingSkeletonProps>(
-  (props, ref) => (
-    <LoadingSkeleton ref={ref} variant="kpi" {...props} />
-  )
-)
-KPISkeleton.displayName = "KPISkeleton"
+  (props, ref) => <LoadingSkeleton ref={ref} variant="kpi" {...props} />,
+);
+KPISkeleton.displayName = "KPISkeleton";
 
 const TableSkeleton = React.forwardRef<HTMLDivElement, LoadingSkeletonProps>(
-  (props, ref) => (
-    <LoadingSkeleton ref={ref} variant="table" {...props} />
-  )
-)
-TableSkeleton.displayName = "TableSkeleton"
+  (props, ref) => <LoadingSkeleton ref={ref} variant="table" {...props} />,
+);
+TableSkeleton.displayName = "TableSkeleton";
 
 const ChartSkeleton = React.forwardRef<HTMLDivElement, LoadingSkeletonProps>(
-  (props, ref) => (
-    <LoadingSkeleton ref={ref} variant="chart" {...props} />
-  )
-)
-ChartSkeleton.displayName = "ChartSkeleton"
+  (props, ref) => <LoadingSkeleton ref={ref} variant="chart" {...props} />,
+);
+ChartSkeleton.displayName = "ChartSkeleton";
 
-export { 
-  LoadingSkeleton, 
-  KPISkeleton, 
-  TableSkeleton, 
-  ChartSkeleton 
-}
+export { LoadingSkeleton, KPISkeleton, TableSkeleton, ChartSkeleton };

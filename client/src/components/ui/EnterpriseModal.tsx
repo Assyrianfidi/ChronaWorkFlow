@@ -1,15 +1,19 @@
-import * as React from "react"
-import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { X } from "lucide-react"
-import { cn } from "../../lib/utils"
+import React from 'react';
+// @ts-ignore
+import * as React from "react";
+// @ts-ignore
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
 
-const EnterpriseModal = DialogPrimitive.Root
+const EnterpriseModal = DialogPrimitive.Root;
 
-const EnterpriseModalTrigger = DialogPrimitive.Trigger
+const EnterpriseModalTrigger = DialogPrimitive.Trigger;
 
-const EnterpriseModalPortal = DialogPrimitive.Portal
+const EnterpriseModalPortal = DialogPrimitive.Portal;
 
-const EnterpriseModalClose = DialogPrimitive.Close
+const EnterpriseModalClose = DialogPrimitive.Close;
 
 const EnterpriseModalOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
@@ -18,13 +22,13 @@ const EnterpriseModalOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     className={cn(
       "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className
+      className,
     )}
     {...props}
     ref={ref}
   />
-))
-EnterpriseModalOverlay.displayName = DialogPrimitive.Overlay.displayName
+));
+EnterpriseModalOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const EnterpriseModalContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
@@ -36,7 +40,7 @@ const EnterpriseModalContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-xl",
-        className
+        className,
       )}
       {...props}
     >
@@ -47,8 +51,8 @@ const EnterpriseModalContent = React.forwardRef<
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </EnterpriseModalPortal>
-))
-EnterpriseModalContent.displayName = DialogPrimitive.Content.displayName
+));
+EnterpriseModalContent.displayName = DialogPrimitive.Content.displayName;
 
 const EnterpriseModalHeader = ({
   className,
@@ -57,12 +61,12 @@ const EnterpriseModalHeader = ({
   <div
     className={cn(
       "flex flex-col space-y-1.5 text-center sm:text-left",
-      className
+      className,
     )}
     {...props}
   />
-)
-EnterpriseModalHeader.displayName = "EnterpriseModalHeader"
+);
+EnterpriseModalHeader.displayName = "EnterpriseModalHeader";
 
 const EnterpriseModalFooter = ({
   className,
@@ -71,12 +75,12 @@ const EnterpriseModalFooter = ({
   <div
     className={cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-      className
+      className,
     )}
     {...props}
   />
-)
-EnterpriseModalFooter.displayName = "EnterpriseModalFooter"
+);
+EnterpriseModalFooter.displayName = "EnterpriseModalFooter";
 
 const EnterpriseModalTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -86,12 +90,12 @@ const EnterpriseModalTitle = React.forwardRef<
     ref={ref}
     className={cn(
       "text-lg font-semibold leading-none tracking-tight",
-      className
+      className,
     )}
     {...props}
   />
-))
-EnterpriseModalTitle.displayName = DialogPrimitive.Title.displayName
+));
+EnterpriseModalTitle.displayName = DialogPrimitive.Title.displayName;
 
 const EnterpriseModalDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
@@ -102,9 +106,9 @@ const EnterpriseModalDescription = React.forwardRef<
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
-))
+));
 EnterpriseModalDescription.displayName =
-  DialogPrimitive.Description.displayName
+  DialogPrimitive.Description.displayName;
 
 export {
   EnterpriseModal,
@@ -117,4 +121,4 @@ export {
   EnterpriseModalFooter,
   EnterpriseModalTitle,
   EnterpriseModalDescription,
-}
+};

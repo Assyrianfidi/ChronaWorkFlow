@@ -1,4 +1,4 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit from "express-rate-limit";
 
 // Auth limiter - 5 login attempts per minute
 export const authRateLimiter = rateLimit({
@@ -7,11 +7,11 @@ export const authRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    res.status(429).json({ 
-      message: 'Too many login attempts, please try again later.',
-      retryAfter: 60
+    res.status(429).json({
+      message: "Too many login attempts, please try again later.",
+      retryAfter: 60,
     });
-  }
+  },
 });
 
 // Global API limiter - 60 requests per minute
@@ -21,11 +21,11 @@ export const globalAPILimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    res.status(429).json({ 
-      message: 'Too many requests, please try again later.',
-      retryAfter: 60
+    res.status(429).json({
+      message: "Too many requests, please try again later.",
+      retryAfter: 60,
     });
-  }
+  },
 });
 
 // Sensitive routes limiter - 10 requests per 30 seconds
@@ -35,9 +35,9 @@ export const sensitiveRouteLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    res.status(429).json({ 
-      message: 'Too many sensitive operations, please try again later.',
-      retryAfter: 30
+    res.status(429).json({
+      message: "Too many sensitive operations, please try again later.",
+      retryAfter: 30,
     });
-  }
+  },
 });

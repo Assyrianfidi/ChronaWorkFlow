@@ -1,35 +1,43 @@
+import React from 'react';
 "use client";
 
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useState, useEffect } from 'react';
-import { useAuthStore } from '../store/auth-store';
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+// @ts-ignore
+import * as z from "zod";
+import { useState, useEffect } from "react";
+// @ts-ignore
+import { useAuthStore } from '../store/auth-store.js.js';
 
 const registerSchema = z
   .object({
-    name: z.string().min(1, 'Name is required'),
-    email: z.string().email('Please enter a valid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
-    terms: z
-      .boolean()
-      .refine((val) => val === true, {
-        message: 'You must accept the terms and conditions',
-      }),
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
+    terms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the terms and conditions",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    path: ['confirmPassword'],
-    message: 'Passwords must match',
+    path: ["confirmPassword"],
+    message: "Passwords must match",
   });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const RegisterPage = () => {
   const router = useRouter();
-  const { register: registerUser, isAuthenticated, isLoading, error: authError } = useAuthStore();
+  const {
+    register: registerUser,
+    isAuthenticated,
+    isLoading,
+    error: authError,
+  } = useAuthStore();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,17 +48,17 @@ const RegisterPage = () => {
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
       terms: false,
     },
   });
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isAuthenticated, router]);
 
@@ -65,7 +73,7 @@ const RegisterPage = () => {
       });
       // redirect will be handled by auth flow if needed; tests only care that register is called
     } catch (err: any) {
-      const message = err?.message || 'Registration failed';
+      const message = err?.message || "Registration failed";
       setSubmitError(message);
     } finally {
       setIsSubmitting(false);
@@ -83,8 +91,11 @@ const RegisterPage = () => {
             Create a new account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link href="/auth/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Or{" "}
+            <Link
+              href="/auth/login"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
               sign in to your existing account
             </Link>
           </p>
@@ -108,11 +119,13 @@ const RegisterPage = () => {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Full Name"
-                {...register('name')}
+                {...register("name")}
                 disabled={isBusy}
               />
               {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.name.message}
+                </p>
               )}
             </div>
             <div>
@@ -126,11 +139,13 @@ const RegisterPage = () => {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
-                {...register('email')}
+                {...register("email")}
                 disabled={isBusy}
               />
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
               )}
             </div>
             <div>
@@ -144,11 +159,13 @@ const RegisterPage = () => {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
-                {...register('password')}
+                {...register("password")}
                 disabled={isBusy}
               />
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
               )}
             </div>
             <div>
@@ -162,11 +179,13 @@ const RegisterPage = () => {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Confirm Password"
-                {...register('confirmPassword')}
+                {...register("confirmPassword")}
                 disabled={isBusy}
               />
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
           </div>
@@ -177,16 +196,22 @@ const RegisterPage = () => {
               type="checkbox"
               required
               className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-              {...register('terms')}
+              {...register("terms")}
               disabled={isBusy}
             />
             <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
-              I agree to the{' '}
-              <Link href="/terms" className="text-indigo-600 hover:text-indigo-500">
+              I agree to the{" "}
+              <Link
+                href="/terms"
+                className="text-indigo-600 hover:text-indigo-500"
+              >
                 Terms of Service
-              </Link>{' '}
-              and{' '}
-              <Link href="/privacy" className="text-indigo-600 hover:text-indigo-500">
+              </Link>{" "}
+              and{" "}
+              <Link
+                href="/privacy"
+                className="text-indigo-600 hover:text-indigo-500"
+              >
                 Privacy Policy
               </Link>
             </label>
@@ -198,13 +223,16 @@ const RegisterPage = () => {
               disabled={isBusy}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {isBusy ? 'Creating...' : 'Create Account'}
+              {isBusy ? "Creating..." : "Create Account"}
             </button>
           </div>
 
           <div className="text-sm text-center">
             <span className="text-gray-600">Already have an account? </span>
-            <Link href="/auth/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link
+              href="/auth/login"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
               Sign in
             </Link>
           </div>

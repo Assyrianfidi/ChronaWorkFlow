@@ -30,7 +30,15 @@ services:
     networks:
       - accu-books-network
     healthcheck:
-      test: [CMD, wget, --no-verbose, --tries=1, --spider, http://localhost:3000/api/health]
+      test:
+        [
+          CMD,
+          wget,
+          --no-verbose,
+          --tries=1,
+          --spider,
+          http://localhost:3000/api/health,
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -54,7 +62,11 @@ services:
     networks:
       - accu-books-network
     healthcheck:
-      test: [CMD-SHELL, "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-accu_books}"]
+      test:
+        [
+          CMD-SHELL,
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-accu_books}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5

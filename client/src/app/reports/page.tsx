@@ -1,21 +1,27 @@
-'use client';
+import React from 'react';
+"use client";
 
-import { MainLayout } from '../components/layout/MainLayout';
-import { EnterpriseButton } from '../components/ui/EnterpriseButton';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  PieChart, 
-  BarChart3, 
-  Download, 
+import { MainLayout } from '../components/layout/MainLayout.js';
+import { EnterpriseButton } from '../components/ui/EnterpriseButton.js';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js';
+import {
+  TrendingUp,
+  TrendingDown,
+  PieChart,
+  BarChart3,
+  Download,
   Calendar,
   Filter,
   DollarSign,
   Users,
-  FileText
-} from 'lucide-react';
-import { useState } from 'react';
+  FileText,
+} from "lucide-react";
+import { useState } from "react";
 
 // Mock data for reports
 const reportsData = {
@@ -54,19 +60,24 @@ const reportsData = {
     { vendor: "Utilities Inc", amount: 1200, days: 5, status: "Pending" },
     { vendor: "Marketing Agency", amount: 5500, days: 45, status: "Overdue" },
     { vendor: "IT Services", amount: 7500, days: 20, status: "Pending" },
-  ]
+  ],
 };
 
 export default function ReportsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState("quarter");
   const [selectedReport, setSelectedReport] = useState("overview");
 
-  const handleExport = (format: 'pdf' | 'excel') => {
+  const handleExport = (format: "pdf" | "excel") => {
+// @ts-ignore
     console.log(`Exporting report as ${format}`);
     // Implement export functionality
   };
 
-  const renderChartPlaceholder = (title: string, description: string, data: any) => (
+  const renderChartPlaceholder = (
+    title: string,
+    description: string,
+    data: any,
+  ) => (
     <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
       <div className="text-center">
         <div className="w-16 h-16 mx-auto mb-3 bg-gray-200 rounded-lg flex items-center justify-center">
@@ -75,29 +86,39 @@ export default function ReportsPage() {
         <h4 className="font-medium text-gray-700 mb-1">{title}</h4>
         <p className="text-sm text-gray-500 mb-3">{description}</p>
         <div className="space-y-1 text-xs text-gray-400 max-w-xs mx-auto">
-          {Array.isArray(data) && data.slice(0, 3).map((item, index) => (
-            <div key={index}>
-              {item.month || item.department || item.customer}: ${item.revenue || item.margin || item.amount || item.value}
-            </div>
-          ))}
+          {Array.isArray(data) &&
+            data.slice(0, 3).map((item, index) => (
+              <div key={index}>
+                {item.month || item.department || item.customer}: $
+                {item.revenue || item.margin || item.amount || item.value}
+              </div>
+            ))}
         </div>
       </div>
     </div>
   );
 
-  const renderPieChartPlaceholder = (title: string, description: string, data: any) => (
+  const renderPieChartPlaceholder = (
+    title: string,
+    description: string,
+    data: any,
+  ) => (
     <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
       <div className="text-center">
         <div className="w-16 h-16 mx-auto mb-3 rounded-full border-8 border-gray-200 border-t-blue-500 border-r-green-500 border-b-yellow-500 border-l-red-500" />
         <h4 className="font-medium text-gray-700 mb-1">{title}</h4>
         <p className="text-sm text-gray-500 mb-3">{description}</p>
         <div className="space-y-1 text-xs text-gray-400 max-w-xs mx-auto">
-          {Array.isArray(data) && data.slice(0, 3).map((item, index) => (
-            <div key={index} className="flex items-center justify-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-blue-500" />
-              {item.department || item.vendor}: {item.margin || item.amount}%
-            </div>
-          ))}
+          {Array.isArray(data) &&
+            data.slice(0, 3).map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-center gap-2"
+              >
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                {item.department || item.vendor}: {item.margin || item.amount}%
+              </div>
+            ))}
         </div>
       </div>
     </div>
@@ -108,8 +129,12 @@ export default function ReportsPage() {
       <div className="space-y-6">
         {/* Page Header */}
         <div>
-          <h1 className="text-3xl font-bold text-primary mb-2">Reports & Analytics</h1>
-          <p className="text-gray-600">Comprehensive financial insights and business analytics</p>
+          <h1 className="text-3xl font-bold text-primary mb-2">
+            Reports & Analytics
+          </h1>
+          <p className="text-gray-600">
+            Comprehensive financial insights and business analytics
+          </p>
         </div>
 
         {/* Report Controls */}
@@ -128,20 +153,20 @@ export default function ReportsPage() {
                   <option value="year">This Year</option>
                   <option value="custom">Custom Range</option>
                 </select>
-                
+
                 <EnterpriseButton
                   variant="outline"
                   icon={<Filter className="h-4 w-4" />}
                 >
                   Advanced Filters
                 </EnterpriseButton>
-                
+
                 <div className="flex gap-1">
                   <EnterpriseButton
                     variant="outline"
                     size="sm"
                     icon={<Download className="h-4 w-4" />}
-                    onClick={() => handleExport('pdf')}
+                    onClick={() => handleExport("pdf")}
                   >
                     PDF
                   </EnterpriseButton>
@@ -149,7 +174,7 @@ export default function ReportsPage() {
                     variant="outline"
                     size="sm"
                     icon={<Download className="h-4 w-4" />}
-                    onClick={() => handleExport('excel')}
+                    onClick={() => handleExport("excel")}
                   >
                     Excel
                   </EnterpriseButton>
@@ -170,48 +195,64 @@ export default function ReportsPage() {
                     <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                       <TrendingUp className="h-6 w-6 text-green-600" />
                     </div>
-                    <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">+12.5%</span>
+                    <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                      +12.5%
+                    </span>
                   </div>
-                  <h3 className="text-2xl font-bold text-primary mb-1">$328,000</h3>
+                  <h3 className="text-2xl font-bold text-primary mb-1">
+                    $328,000
+                  </h3>
                   <p className="text-sm text-gray-600">Total Revenue</p>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
                       <TrendingDown className="h-6 w-6 text-red-600" />
                     </div>
-                    <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">-8.3%</span>
+                    <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                      -8.3%
+                    </span>
                   </div>
-                  <h3 className="text-2xl font-bold text-primary mb-1">$214,000</h3>
+                  <h3 className="text-2xl font-bold text-primary mb-1">
+                    $214,000
+                  </h3>
                   <p className="text-sm text-gray-600">Total Expenses</p>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                       <DollarSign className="h-6 w-6 text-blue-600" />
                     </div>
-                    <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">+18.2%</span>
+                    <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                      +18.2%
+                    </span>
                   </div>
-                  <h3 className="text-2xl font-bold text-primary mb-1">$114,000</h3>
+                  <h3 className="text-2xl font-bold text-primary mb-1">
+                    $114,000
+                  </h3>
                   <p className="text-sm text-gray-600">Net Profit</p>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                       <Users className="h-6 w-6 text-purple-600" />
                     </div>
-                    <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full">+5.7%</span>
+                    <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
+                      +5.7%
+                    </span>
                   </div>
-                  <h3 className="text-2xl font-bold text-primary mb-1">1,848</h3>
+                  <h3 className="text-2xl font-bold text-primary mb-1">
+                    1,848
+                  </h3>
                   <p className="text-sm text-gray-600">Total Transactions</p>
                 </CardContent>
               </Card>
@@ -230,7 +271,7 @@ export default function ReportsPage() {
                   {renderChartPlaceholder(
                     "Revenue vs Expenses Trend",
                     "Monthly comparison of revenue and expenses",
-                    reportsData.revenueVsExpenses
+                    reportsData.revenueVsExpenses,
                   )}
                 </CardContent>
               </Card>
@@ -246,7 +287,7 @@ export default function ReportsPage() {
                   {renderPieChartPlaceholder(
                     "Department Profit Margins",
                     "Profit margin percentage by department",
-                    reportsData.profitMargins
+                    reportsData.profitMargins,
                   )}
                 </CardContent>
               </Card>
@@ -264,7 +305,7 @@ export default function ReportsPage() {
                   {renderChartPlaceholder(
                     "Transaction Volume Analysis",
                     "Number of transactions and total amount per month",
-                    reportsData.transactionVolume
+                    reportsData.transactionVolume,
                   )}
                 </CardContent>
               </Card>
@@ -280,7 +321,7 @@ export default function ReportsPage() {
                   {renderChartPlaceholder(
                     "Cash Flow Analysis",
                     "Monthly cash flow in and out",
-                    reportsData.revenueVsExpenses
+                    reportsData.revenueVsExpenses,
                   )}
                 </CardContent>
               </Card>
@@ -301,17 +342,27 @@ export default function ReportsPage() {
                   <div className="grid grid-cols-4 gap-4">
                     <div className="text-center p-4 bg-green-50 rounded-lg">
                       <h4 className="font-semibold text-green-800">Current</h4>
-                      <p className="text-2xl font-bold text-green-600">$55,000</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        $55,000
+                      </p>
                       <p className="text-sm text-green-600">3 invoices</p>
                     </div>
                     <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                      <h4 className="font-semibold text-yellow-800">1-30 Days</h4>
-                      <p className="text-2xl font-bold text-yellow-600">$18,000</p>
+                      <h4 className="font-semibold text-yellow-800">
+                        1-30 Days
+                      </h4>
+                      <p className="text-2xl font-bold text-yellow-600">
+                        $18,000
+                      </p>
                       <p className="text-sm text-yellow-600">2 invoices</p>
                     </div>
                     <div className="text-center p-4 bg-orange-50 rounded-lg">
-                      <h4 className="font-semibold text-orange-800">31-60 Days</h4>
-                      <p className="text-2xl font-bold text-orange-600">$8,500</p>
+                      <h4 className="font-semibold text-orange-800">
+                        31-60 Days
+                      </h4>
+                      <p className="text-2xl font-bold text-orange-600">
+                        $8,500
+                      </p>
                       <p className="text-sm text-orange-600">1 invoice</p>
                     </div>
                     <div className="text-center p-4 bg-red-50 rounded-lg">
@@ -326,22 +377,40 @@ export default function ReportsPage() {
                     <table className="w-full">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                          <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
-                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Days</th>
-                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                            Customer
+                          </th>
+                          <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                            Amount
+                          </th>
+                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                            Days
+                          </th>
+                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                            Status
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
                         {reportsData.accountsReceivable.map((item, index) => (
                           <tr key={index}>
-                            <td className="px-4 py-3 text-sm font-medium">{item.customer}</td>
-                            <td className="px-4 py-3 text-sm text-right font-semibold">${item.amount.toLocaleString()}</td>
-                            <td className="px-4 py-3 text-sm text-center">{item.days}</td>
+                            <td className="px-4 py-3 text-sm font-medium">
+                              {item.customer}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-right font-semibold">
+                              ${item.amount.toLocaleString()}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-center">
+                              {item.days}
+                            </td>
                             <td className="px-4 py-3 text-center">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                item.status === "Current" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                              }`}>
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  item.status === "Current"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-red-100 text-red-800"
+                                }`}
+                              >
                                 {item.status}
                               </span>
                             </td>
@@ -369,17 +438,27 @@ export default function ReportsPage() {
                   <div className="grid grid-cols-4 gap-4">
                     <div className="text-center p-4 bg-green-50 rounded-lg">
                       <h4 className="font-semibold text-green-800">Current</h4>
-                      <p className="text-2xl font-bold text-green-600">$4,400</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        $4,400
+                      </p>
                       <p className="text-sm text-green-600">2 bills</p>
                     </div>
                     <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                      <h4 className="font-semibold text-yellow-800">1-30 Days</h4>
-                      <p className="text-2xl font-bold text-yellow-600">$7,500</p>
+                      <h4 className="font-semibold text-yellow-800">
+                        1-30 Days
+                      </h4>
+                      <p className="text-2xl font-bold text-yellow-600">
+                        $7,500
+                      </p>
                       <p className="text-sm text-yellow-600">2 bills</p>
                     </div>
                     <div className="text-center p-4 bg-orange-50 rounded-lg">
-                      <h4 className="font-semibold text-orange-800">31-60 Days</h4>
-                      <p className="text-2xl font-bold text-orange-600">$8,500</p>
+                      <h4 className="font-semibold text-orange-800">
+                        31-60 Days
+                      </h4>
+                      <p className="text-2xl font-bold text-orange-600">
+                        $8,500
+                      </p>
                       <p className="text-sm text-orange-600">1 bill</p>
                     </div>
                     <div className="text-center p-4 bg-red-50 rounded-lg">
@@ -394,24 +473,42 @@ export default function ReportsPage() {
                     <table className="w-full">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Vendor</th>
-                          <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
-                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Days</th>
-                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                            Vendor
+                          </th>
+                          <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                            Amount
+                          </th>
+                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                            Days
+                          </th>
+                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                            Status
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
                         {reportsData.accountsPayable.map((item, index) => (
                           <tr key={index}>
-                            <td className="px-4 py-3 text-sm font-medium">{item.vendor}</td>
-                            <td className="px-4 py-3 text-sm text-right font-semibold">${item.amount.toLocaleString()}</td>
-                            <td className="px-4 py-3 text-sm text-center">{item.days}</td>
+                            <td className="px-4 py-3 text-sm font-medium">
+                              {item.vendor}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-right font-semibold">
+                              ${item.amount.toLocaleString()}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-center">
+                              {item.days}
+                            </td>
                             <td className="px-4 py-3 text-center">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                item.status === "Pending" ? "bg-yellow-100 text-yellow-800" :
-                                item.status === "Due" ? "bg-orange-100 text-orange-800" :
-                                "bg-red-100 text-red-800"
-                              }`}>
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  item.status === "Pending"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : item.status === "Due"
+                                      ? "bg-orange-100 text-orange-800"
+                                      : "bg-red-100 text-red-800"
+                                }`}
+                              >
                                 {item.status}
                               </span>
                             </td>

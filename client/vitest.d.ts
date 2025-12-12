@@ -2,11 +2,22 @@
 /// <reference types="vite/client" />
 
 // Import Vitest types
-import type { TestingLibraryMatchers } from '@testing-library/jest-dom/matchers';
-import type { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll, test, assert } from 'vitest';
+import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
+import type {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  beforeAll,
+  afterAll,
+  test,
+  assert,
+} from "vitest";
 
 // Extend Vitest's expect with Testing Library matchers
-declare module 'vitest' {
+declare module "vitest" {
   interface Assertion<T = any>
     extends jest.Matchers<void, T>,
       TestingLibraryMatchers<T, void> {}

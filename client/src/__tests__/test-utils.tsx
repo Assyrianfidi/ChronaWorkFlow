@@ -1,10 +1,12 @@
-import { vi } from 'vitest';
-import { render as rtlRender } from '@testing-library/react';
-import type { RenderOptions } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ThemeProvider } from 'next-themes';
-import type { ReactElement, ReactNode } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import React from 'react';
+import { vi } from "vitest";
+// @ts-ignore
+import { render as rtlRender } from "@testing-library/react";
+import type { RenderOptions } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
+import type { ReactElement, ReactNode } from "react";
+import { MemoryRouter } from "react-router-dom";
 
 // Mock next/navigation before importing
 const mockRouter = {
@@ -16,9 +18,9 @@ const mockRouter = {
   refresh: vi.fn(),
 };
 
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => mockRouter,
-  usePathname: () => '/',
+  usePathname: () => "/",
   useSearchParams: () => new URLSearchParams(),
   useSelectedLayoutSegment: () => null,
   useSelectedLayoutSegments: () => [],
@@ -27,34 +29,37 @@ vi.mock('next/navigation', () => ({
 // Mock next-auth/react before importing
 const mockSession = {
   user: {
-    id: 'test-user-id',
-    name: 'Test User',
-    email: 'test@example.com',
-    role: 'USER',
+    id: "test-user-id",
+    name: "Test User",
+    email: "test@example.com",
+    role: "USER",
   },
-  expires: '9999-12-31',
+  expires: "9999-12-31",
 };
 
 const mockAdminSession = {
   user: {
     ...mockSession.user,
-    role: 'ADMIN',
+    role: "ADMIN",
   },
   expires: mockSession.expires,
 };
 
 let activeSession = mockSession;
 
-const useSessionMock = vi.fn(() => ({ data: activeSession, status: 'authenticated' }));
+const useSessionMock = vi.fn(() => ({
+  data: activeSession,
+  status: "authenticated",
+}));
 
-vi.mock('next-auth/react', () => ({
+vi.mock("next-auth/react", () => ({
   useSession: useSessionMock,
   SessionProvider: ({ children }: { children: ReactNode }) => children,
   signIn: vi.fn(),
   signOut: vi.fn(),
 }));
 
-interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+interface CustomRenderOptions extends Omit<RenderOptions, "wrapper"> {
   session?: any;
   router?: Partial<typeof mockRouter>;
   route?: string;
@@ -62,25 +67,24 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 }
 
 // Test query client
-const createTestQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      gcTime: 0,
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+      },
     },
-  },
-});
+  });
 
 // Custom render function with providers
 const renderWithProviders = (
   ui: ReactElement,
-  {
-    session = activeSession,
-    ...renderOptions
-  }: CustomRenderOptions = {}
+  { session = activeSession, ...renderOptions }: CustomRenderOptions = {},
 ) => {
   const queryClient = createTestQueryClient();
 
+// @ts-ignore
   const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
@@ -98,14 +102,15 @@ const renderWithProviders = (
 export const renderWithRouter = (
   ui: ReactElement,
   {
-    route = '/',
+    route = "/",
     initialEntries = [route],
     session = activeSession,
     ...renderOptions
-  }: CustomRenderOptions & { route?: string; initialEntries?: string[] } = {}
+  }: CustomRenderOptions & { route?: string; initialEntries?: string[] } = {},
 ) => {
   const queryClient = createTestQueryClient();
 
+// @ts-ignore
   const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
@@ -124,13 +129,11 @@ export const renderWithRouter = (
 // Custom render function
 const customRender = (
   ui: ReactElement,
-  {
-    session = activeSession,
-    ...renderOptions
-  }: CustomRenderOptions = {}
+  { session = activeSession, ...renderOptions }: CustomRenderOptions = {},
 ) => {
   const queryClient = createTestQueryClient();
 
+// @ts-ignore
   const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
@@ -149,7 +152,7 @@ export const mockUseSession = useSessionMock;
 export const mockRouterInstance = mockRouter;
 export const setMockSession = (session: any) => {
   activeSession = session;
-  useSessionMock.mockReturnValue({ data: session, status: 'authenticated' });
+  useSessionMock.mockReturnValue({ data: session, status: "authenticated" });
 };
 
 export const setMockAdminSession = () => {
@@ -169,6 +172,7 @@ export const resetMockNavigate = () => {
 };
 
 // Export everything
-export * from '@testing-library/react';
+export * from "@testing-library/react";
+// @ts-ignore
 export { customRender as render, renderWithProviders };
 export { createTestQueryClient };

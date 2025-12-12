@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useUserExperienceMode } from '../adaptive/UserExperienceMode';
-import { usePerformance } from '../adaptive/UI-Performance-Engine';
-import { useAuthStore } from '../../store/auth-store';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+// @ts-ignore
+import { useUserExperienceMode } from '../adaptive/UserExperienceMode.js.js';
+// @ts-ignore
+import { usePerformance } from '../adaptive/UI-Performance-Engine.js.js';
+// @ts-ignore
+import { useAuthStore } from '../../store/auth-store.js.js';
 
 // GraphQL Types
 interface GraphQLSchema {
@@ -14,7 +17,15 @@ interface GraphQLSchema {
 
 interface GraphQLType {
   name: string;
-  kind: 'SCALAR' | 'OBJECT' | 'INTERFACE' | 'UNION' | 'ENUM' | 'INPUT_OBJECT' | 'LIST' | 'NON_NULL';
+  kind:
+    | "SCALAR"
+    | "OBJECT"
+    | "INTERFACE"
+    | "UNION"
+    | "ENUM"
+    | "INPUT_OBJECT"
+    | "LIST"
+    | "NON_NULL";
   description?: string;
   fields?: GraphQLField[];
   interfaces?: string[];
@@ -60,7 +71,7 @@ interface GraphQLQuery {
   name: string;
   query: string;
   variables?: Record<string, any>;
-  operation: 'query' | 'mutation' | 'subscription';
+  operation: "query" | "mutation" | "subscription";
   description?: string;
   tags: string[];
   createdAt: number;
@@ -113,12 +124,20 @@ interface GraphQLContextType {
   loadSchema: () => Promise<void>;
   addType: (type: GraphQLType) => Promise<void>;
   addField: (typeName: string, field: GraphQLField) => Promise<void>;
-  
+
   // Query Management
   queries: GraphQLQuery[];
-  saveQuery: (query: Omit<GraphQLQuery, 'id' | 'createdAt' | 'executionCount' | 'averageDuration' | 'successRate'>) => Promise<GraphQLQuery>;
-  executeQuery: (queryId: string, variables?: Record<string, any>) => Promise<GraphQLExecution>;
-  
+  saveQuery: (
+    query: Omit<
+      GraphQLQuery,
+      "id" | "createdAt" | "executionCount" | "averageDuration" | "successRate"
+    >,
+  ) => Promise<GraphQLQuery>;
+  executeQuery: (
+    queryId: string,
+    variables?: Record<string, any>,
+  ) => Promise<GraphQLExecution>;
+
   // Execution History
   executions: GraphQLExecution[];
   getExecutions: (filters?: {
@@ -126,12 +145,16 @@ interface GraphQLContextType {
     operation?: string;
     dateRange?: { start: number; end: number };
   }) => GraphQLExecution[];
-  
+
   // Subscriptions
   subscriptions: Map<string, GraphQLSubscription>;
-  subscribe: (query: string, variables?: Record<string, any>, clientId: string) => Promise<string>;
+  subscribe: (
+    query: string,
+    variables?: Record<string, any>,
+    clientId: string,
+  ) => Promise<string>;
   unsubscribe: (subscriptionId: string, clientId: string) => Promise<void>;
-  
+
   // Analytics
   getAnalytics: () => {
     totalQueries: number;
@@ -147,9 +170,13 @@ const GraphQLContext = React.createContext<GraphQLContextType | null>(null);
 // GraphQL Engine
 class GraphQLEngine {
   private schema: GraphQLSchema | null = null;
-  private resolvers: Map<string, (parent: any, args: any, context: any, info: any) => any> = new Map();
+  private resolvers: Map<
+    string,
+    (parent: any, args: any, context: any, info: any) => any
+  > = new Map();
   private subscriptions: Map<string, GraphQLSubscription> = new Map();
-  private middleware: Map<string, (req: any, res: any, next: any) => void> = new Map();
+  private middleware: Map<string, (req: any, res: any, next: any) => void> =
+    new Map();
   private queries: Map<string, GraphQLQuery> = new Map();
   private executions: GraphQLExecution[] = [];
   private complexityAnalyzer: ComplexityAnalyzer;
@@ -169,230 +196,260 @@ class GraphQLEngine {
       types: [
         // Scalars
         {
-          name: 'String',
-          kind: 'SCALAR',
-          description: 'The `String` scalar type represents textual data'
+          name: "String",
+          kind: "SCALAR",
+          description: "The `String` scalar type represents textual data",
         },
         {
-          name: 'Int',
-          kind: 'SCALAR',
-          description: 'The `Int` scalar type represents non-fractional signed whole numeric values'
+          name: "Int",
+          kind: "SCALAR",
+          description:
+            "The `Int` scalar type represents non-fractional signed whole numeric values",
         },
         {
-          name: 'Float',
-          kind: 'SCALAR',
-          description: 'The `Float` scalar type represents signed double-precision fractional values'
+          name: "Float",
+          kind: "SCALAR",
+          description:
+            "The `Float` scalar type represents signed double-precision fractional values",
         },
         {
-          name: 'Boolean',
-          kind: 'SCALAR',
-          description: 'The `Boolean` scalar type represents `true` or `false`'
+          name: "Boolean",
+          kind: "SCALAR",
+          description: "The `Boolean` scalar type represents `true` or `false`",
         },
         {
-          name: 'ID',
-          kind: 'SCALAR',
-          description: 'The `ID` scalar type represents a unique identifier'
+          name: "ID",
+          kind: "SCALAR",
+          description: "The `ID` scalar type represents a unique identifier",
         },
         // User type
         {
-          name: 'User',
-          kind: 'OBJECT',
-          description: 'A user account',
+          name: "User",
+          kind: "OBJECT",
+          description: "A user account",
           fields: [
             {
-              name: 'id',
-              type: { name: 'ID', kind: 'NON_NULL', ofType: { name: 'ID', kind: 'SCALAR' } },
+              name: "id",
+              type: {
+                name: "ID",
+                kind: "NON_NULL",
+                ofType: { name: "ID", kind: "SCALAR" },
+              },
               args: [],
-              isDeprecated: false
+              isDeprecated: false,
             },
             {
-              name: 'name',
-              type: { name: 'String', kind: 'SCALAR' },
+              name: "name",
+              type: { name: "String", kind: "SCALAR" },
               args: [],
-              isDeprecated: false
+              isDeprecated: false,
             },
             {
-              name: 'email',
-              type: { name: 'String', kind: 'SCALAR' },
+              name: "email",
+              type: { name: "String", kind: "SCALAR" },
               args: [],
-              isDeprecated: false
+              isDeprecated: false,
             },
             {
-              name: 'createdAt',
-              type: { name: 'String', kind: 'SCALAR' },
+              name: "createdAt",
+              type: { name: "String", kind: "SCALAR" },
               args: [],
-              isDeprecated: false
-            }
-          ]
+              isDeprecated: false,
+            },
+          ],
         },
         // Query type
         {
-          name: 'Query',
-          kind: 'OBJECT',
-          description: 'The root query type',
+          name: "Query",
+          kind: "OBJECT",
+          description: "The root query type",
           fields: [
             {
-              name: 'user',
-              description: 'Get a user by ID',
-              type: { name: 'User', kind: 'OBJECT' },
+              name: "user",
+              description: "Get a user by ID",
+              type: { name: "User", kind: "OBJECT" },
               args: [
                 {
-                  name: 'id',
-                  description: 'The user ID',
-                  type: { name: 'ID', kind: 'NON_NULL', ofType: { name: 'ID', kind: 'SCALAR' } }
-                }
+                  name: "id",
+                  description: "The user ID",
+                  type: {
+                    name: "ID",
+                    kind: "NON_NULL",
+                    ofType: { name: "ID", kind: "SCALAR" },
+                  },
+                },
               ],
               isDeprecated: false,
-              resolver: this.resolveUser.bind(this)
+              resolver: this.resolveUser.bind(this),
             },
             {
-              name: 'users',
-              description: 'Get a list of users',
-              type: { 
-                name: 'List', 
-                kind: 'LIST', 
-                ofType: { name: 'User', kind: 'OBJECT' } 
+              name: "users",
+              description: "Get a list of users",
+              type: {
+                name: "List",
+                kind: "LIST",
+                ofType: { name: "User", kind: "OBJECT" },
               },
               args: [
                 {
-                  name: 'limit',
-                  description: 'Maximum number of users to return',
-                  type: { name: 'Int', kind: 'SCALAR' }
+                  name: "limit",
+                  description: "Maximum number of users to return",
+                  type: { name: "Int", kind: "SCALAR" },
                 },
                 {
-                  name: 'offset',
-                  description: 'Number of users to skip',
-                  type: { name: 'Int', kind: 'SCALAR' }
-                }
+                  name: "offset",
+                  description: "Number of users to skip",
+                  type: { name: "Int", kind: "SCALAR" },
+                },
               ],
               isDeprecated: false,
-              resolver: this.resolveUsers.bind(this)
-            }
-          ]
+              resolver: this.resolveUsers.bind(this),
+            },
+          ],
         },
         // Mutation type
         {
-          name: 'Mutation',
-          kind: 'OBJECT',
-          description: 'The root mutation type',
+          name: "Mutation",
+          kind: "OBJECT",
+          description: "The root mutation type",
           fields: [
             {
-              name: 'createUser',
-              description: 'Create a new user',
-              type: { name: 'User', kind: 'OBJECT' },
+              name: "createUser",
+              description: "Create a new user",
+              type: { name: "User", kind: "OBJECT" },
               args: [
                 {
-                  name: 'input',
-                  description: 'User input data',
-                  type: { name: 'CreateUserInput', kind: 'INPUT_OBJECT' }
-                }
+                  name: "input",
+                  description: "User input data",
+                  type: { name: "CreateUserInput", kind: "INPUT_OBJECT" },
+                },
               ],
               isDeprecated: false,
-              resolver: this.resolveCreateUser.bind(this)
+              resolver: this.resolveCreateUser.bind(this),
             },
             {
-              name: 'updateUser',
-              description: 'Update an existing user',
-              type: { name: 'User', kind: 'OBJECT' },
+              name: "updateUser",
+              description: "Update an existing user",
+              type: { name: "User", kind: "OBJECT" },
               args: [
                 {
-                  name: 'id',
-                  description: 'The user ID',
-                  type: { name: 'ID', kind: 'NON_NULL', ofType: { name: 'ID', kind: 'SCALAR' } }
+                  name: "id",
+                  description: "The user ID",
+                  type: {
+                    name: "ID",
+                    kind: "NON_NULL",
+                    ofType: { name: "ID", kind: "SCALAR" },
+                  },
                 },
                 {
-                  name: 'input',
-                  description: 'User update data',
-                  type: { name: 'UpdateUserInput', kind: 'INPUT_OBJECT' }
-                }
+                  name: "input",
+                  description: "User update data",
+                  type: { name: "UpdateUserInput", kind: "INPUT_OBJECT" },
+                },
               ],
               isDeprecated: false,
-              resolver: this.resolveUpdateUser.bind(this)
-            }
-          ]
+              resolver: this.resolveUpdateUser.bind(this),
+            },
+          ],
         },
         // Subscription type
         {
-          name: 'Subscription',
-          kind: 'OBJECT',
-          description: 'The root subscription type',
+          name: "Subscription",
+          kind: "OBJECT",
+          description: "The root subscription type",
           fields: [
             {
-              name: 'userUpdated',
-              description: 'Subscribe to user updates',
-              type: { name: 'User', kind: 'OBJECT' },
+              name: "userUpdated",
+              description: "Subscribe to user updates",
+              type: { name: "User", kind: "OBJECT" },
               args: [
                 {
-                  name: 'id',
-                  description: 'The user ID to watch',
-                  type: { name: 'ID', kind: 'NON_NULL', ofType: { name: 'ID', kind: 'SCALAR' } }
-                }
+                  name: "id",
+                  description: "The user ID to watch",
+                  type: {
+                    name: "ID",
+                    kind: "NON_NULL",
+                    ofType: { name: "ID", kind: "SCALAR" },
+                  },
+                },
               ],
               isDeprecated: false,
-              resolver: this.resolveUserUpdated.bind(this)
-            }
-          ]
+              resolver: this.resolveUserUpdated.bind(this),
+            },
+          ],
         },
         // Input types
         {
-          name: 'CreateUserInput',
-          kind: 'INPUT_OBJECT',
-          description: 'Input for creating a user',
+          name: "CreateUserInput",
+          kind: "INPUT_OBJECT",
+          description: "Input for creating a user",
           inputFields: [
             {
-              name: 'name',
-              description: 'User name',
-              type: { name: 'String', kind: 'NON_NULL', ofType: { name: 'String', kind: 'SCALAR' } }
+              name: "name",
+              description: "User name",
+              type: {
+                name: "String",
+                kind: "NON_NULL",
+                ofType: { name: "String", kind: "SCALAR" },
+              },
             },
             {
-              name: 'email',
-              description: 'User email',
-              type: { name: 'String', kind: 'NON_NULL', ofType: { name: 'String', kind: 'SCALAR' } }
-            }
-          ]
+              name: "email",
+              description: "User email",
+              type: {
+                name: "String",
+                kind: "NON_NULL",
+                ofType: { name: "String", kind: "SCALAR" },
+              },
+            },
+          ],
         },
         {
-          name: 'UpdateUserInput',
-          kind: 'INPUT_OBJECT',
-          description: 'Input for updating a user',
+          name: "UpdateUserInput",
+          kind: "INPUT_OBJECT",
+          description: "Input for updating a user",
           inputFields: [
             {
-              name: 'name',
-              description: 'User name',
-              type: { name: 'String', kind: 'SCALAR' }
+              name: "name",
+              description: "User name",
+              type: { name: "String", kind: "SCALAR" },
             },
             {
-              name: 'email',
-              description: 'User email',
-              type: { name: 'String', kind: 'SCALAR' }
-            }
-          ]
-        }
+              name: "email",
+              description: "User email",
+              type: { name: "String", kind: "SCALAR" },
+            },
+          ],
+        },
       ],
       queries: [],
       mutations: [],
       subscriptions: [],
       directives: [
         {
-          name: 'deprecated',
-          description: 'Marks an element of a GraphQL schema as no longer supported',
-          locations: ['FIELD_DEFINITION', 'ENUM_VALUE'],
+          name: "deprecated",
+          description:
+// @ts-ignore
+            "Marks an element of a GraphQL schema as no longer supported",
+          locations: ["FIELD_DEFINITION", "ENUM_VALUE"],
           args: [
             {
-              name: 'reason',
-              description: 'Reason for deprecation',
-              type: { name: 'String', kind: 'SCALAR' }
-            }
+              name: "reason",
+              description: "Reason for deprecation",
+              type: { name: "String", kind: "SCALAR" },
+            },
           ],
-          isRepeatable: false
-        }
-      ]
+          isRepeatable: false,
+        },
+      ],
     };
 
     // Extract queries, mutations, and subscriptions
-    const queryType = defaultSchema.types.find(t => t.name === 'Query');
-    const mutationType = defaultSchema.types.find(t => t.name === 'Mutation');
-    const subscriptionType = defaultSchema.types.find(t => t.name === 'Subscription');
+    const queryType = defaultSchema.types.find((t) => t.name === "Query");
+    const mutationType = defaultSchema.types.find((t) => t.name === "Mutation");
+    const subscriptionType = defaultSchema.types.find(
+      (t) => t.name === "Subscription",
+    );
 
     defaultSchema.queries = queryType?.fields || [];
     defaultSchema.mutations = mutationType?.fields || [];
@@ -403,37 +460,41 @@ class GraphQLEngine {
 
   private initializeMiddleware(): void {
     // Authentication middleware
-    this.middleware.set('auth', async (context: any, info: any) => {
+    this.middleware.set("auth", async (context: any, info: any) => {
       // Simulate authentication check
       return context.user ? true : false;
     });
 
     // Rate limiting middleware
-    this.middleware.set('rateLimit', async (context: any, info: any) => {
+    this.middleware.set("rateLimit", async (context: any, info: any) => {
       // Simulate rate limiting
       return true;
     });
 
     // Logging middleware
-    this.middleware.set('logging', async (context: any, info: any) => {
+    this.middleware.set("logging", async (context: any, info: any) => {
       console.log(`GraphQL Query: ${info.operationName}`, {
         timestamp: Date.now(),
-        userId: context.user?.id
+        userId: context.user?.id,
       });
       return true;
     });
 
     // Complexity analysis middleware
-    this.middleware.set('complexity', async (context: any, info: any) => {
+    this.middleware.set("complexity", async (context: any, info: any) => {
       const complexity = this.complexityAnalyzer.analyze(info.query);
       if (complexity > 1000) {
-        throw new Error('Query too complex');
+        throw new Error("Query too complex");
       }
       return true;
     });
   }
 
-  async executeQuery(query: string, variables: Record<string, any> = {}, context: any = {}): Promise<GraphQLExecution> {
+  async executeQuery(
+    query: string,
+    variables: Record<string, any> = {},
+    context: any = {},
+  ): Promise<GraphQLExecution> {
     const startTime = Date.now();
     const executionId = Math.random().toString(36);
 
@@ -450,13 +511,17 @@ class GraphQLEngine {
 
       // Analyze complexity
       const complexity = this.complexityAnalyzer.analyze(query);
-      
+
       // Execute query
-      const result = await this.executeQueryOperation(parsedQuery, variables, context);
+      const result = await this.executeQueryOperation(
+        parsedQuery,
+        variables,
+        context,
+      );
 
       const execution: GraphQLExecution = {
         id: executionId,
-        queryId: 'adhoc',
+        queryId: "adhoc",
         operation: operation,
         query,
         variables,
@@ -464,35 +529,36 @@ class GraphQLEngine {
         duration: Date.now() - startTime,
         timestamp: Date.now(),
         metadata: {
-          userAgent: context.userAgent || 'unknown',
-          ip: context.ip || 'unknown',
+          userAgent: context.userAgent || "unknown",
+          ip: context.ip || "unknown",
           userId: context.user?.id,
           complexity,
-          depth: this.calculateQueryDepth(query)
-        }
+          depth: this.calculateQueryDepth(query),
+        },
       };
 
       this.executions.push(execution);
       return execution;
-
     } catch (error) {
       const execution: GraphQLExecution = {
         id: executionId,
-        queryId: 'adhoc',
-        operation: 'unknown',
+        queryId: "adhoc",
+        operation: "unknown",
         query,
         variables,
         result: { data: null },
-        errors: [{
-          message: error instanceof Error ? error.message : 'Unknown error',
-          locations: []
-        }],
+        errors: [
+          {
+            message: error instanceof Error ? error.message : "Unknown error",
+            locations: [],
+          },
+        ],
         duration: Date.now() - startTime,
         timestamp: Date.now(),
         metadata: {
-          userAgent: context.userAgent || 'unknown',
-          ip: context.ip || 'unknown'
-        }
+          userAgent: context.userAgent || "unknown",
+          ip: context.ip || "unknown",
+        },
       };
 
       this.executions.push(execution);
@@ -502,11 +568,13 @@ class GraphQLEngine {
 
   private parseQuery(query: string): any {
     // Simplified GraphQL parsing - in production use proper GraphQL parser
-    const operationMatch = query.match(/(query|mutation|subscription)\s+(\w+)?/);
+    const operationMatch = query.match(
+      /(query|mutation|subscription)\s+(\w+)?/,
+    );
     return {
-      operation: operationMatch?.[1] || 'query',
-      name: operationMatch?.[2] || 'anonymous',
-      raw: query
+      operation: operationMatch?.[1] || "query",
+      name: operationMatch?.[2] || "anonymous",
+      raw: query,
     };
   }
 
@@ -515,8 +583,8 @@ class GraphQLEngine {
   }
 
   private async applyMiddleware(context: any, info: any): Promise<void> {
-    const middlewareOrder = ['auth', 'rateLimit', 'logging', 'complexity'];
-    
+    const middlewareOrder = ["auth", "rateLimit", "logging", "complexity"];
+
     for (const middlewareName of middlewareOrder) {
       const middleware = this.middleware.get(middlewareName);
       if (middleware) {
@@ -525,23 +593,31 @@ class GraphQLEngine {
     }
   }
 
-  private async executeQueryOperation(parsedQuery: any, variables: Record<string, any>, context: any): Promise<any> {
+  private async executeQueryOperation(
+    parsedQuery: any,
+    variables: Record<string, any>,
+    context: any,
+  ): Promise<any> {
     // Simplified execution - in production use proper GraphQL execution engine
     const operation = parsedQuery.operation;
 
     switch (operation) {
-      case 'query':
+      case "query":
         return await this.executeQueries(parsedQuery, variables, context);
-      case 'mutation':
+      case "mutation":
         return await this.executeMutations(parsedQuery, variables, context);
-      case 'subscription':
+      case "subscription":
         return await this.executeSubscriptions(parsedQuery, variables, context);
       default:
         throw new Error(`Unknown operation: ${operation}`);
     }
   }
 
-  private async executeQueries(parsedQuery: any, variables: Record<string, any>, context: any): Promise<any> {
+  private async executeQueries(
+    parsedQuery: any,
+    variables: Record<string, any>,
+    context: any,
+  ): Promise<any> {
     // Extract field selections from query
     const fieldMatches = parsedQuery.raw.match(/\{(\w+)(\([^)]*\))?\s*{/g);
     if (!fieldMatches) {
@@ -554,7 +630,7 @@ class GraphQLEngine {
       const fieldName = fieldMatch.match(/\{(\w+)/)?.[1];
       if (!fieldName) continue;
 
-      const field = this.schema?.queries.find(f => f.name === fieldName);
+      const field = this.schema?.queries.find((f) => f.name === fieldName);
       if (!field?.resolver) continue;
 
       try {
@@ -568,7 +644,11 @@ class GraphQLEngine {
     return { data };
   }
 
-  private async executeMutations(parsedQuery: any, variables: Record<string, any>, context: any): Promise<any> {
+  private async executeMutations(
+    parsedQuery: any,
+    variables: Record<string, any>,
+    context: any,
+  ): Promise<any> {
     // Similar to queries but for mutations
     const fieldMatches = parsedQuery.raw.match(/\{(\w+)(\([^)]*\))?\s*{/g);
     if (!fieldMatches) {
@@ -581,7 +661,7 @@ class GraphQLEngine {
       const fieldName = fieldMatch.match(/\{(\w+)/)?.[1];
       if (!fieldName) continue;
 
-      const field = this.schema?.mutations.find(f => f.name === fieldName);
+      const field = this.schema?.mutations.find((f) => f.name === fieldName);
       if (!field?.resolver) continue;
 
       try {
@@ -595,9 +675,13 @@ class GraphQLEngine {
     return { data };
   }
 
-  private async executeSubscriptions(parsedQuery: any, variables: Record<string, any>, context: any): Promise<any> {
+  private async executeSubscriptions(
+    parsedQuery: any,
+    variables: Record<string, any>,
+    context: any,
+  ): Promise<any> {
     // Handle subscriptions
-    return { data: { subscription: 'created' } };
+    return { data: { subscription: "created" } };
   }
 
   private calculateQueryDepth(query: string): number {
@@ -612,9 +696,9 @@ class GraphQLEngine {
     // Mock user resolver
     return {
       id: args.id,
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      createdAt: new Date().toISOString()
+      name: "John Doe",
+      email: "john.doe@example.com",
+      createdAt: new Date().toISOString(),
     };
   }
 
@@ -622,17 +706,17 @@ class GraphQLEngine {
     // Mock users resolver
     const limit = args.limit || 10;
     const offset = args.offset || 0;
-    
+
     const users = [];
     for (let i = offset; i < offset + limit; i++) {
       users.push({
         id: `user-${i}`,
         name: `User ${i}`,
         email: `user${i}@example.com`,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       });
     }
-    
+
     return users;
   }
 
@@ -642,7 +726,7 @@ class GraphQLEngine {
       id: Math.random().toString(36),
       name: args.input.name,
       email: args.input.email,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
   }
 
@@ -650,9 +734,9 @@ class GraphQLEngine {
     // Mock update user resolver
     return {
       id: args.id,
-      name: args.input.name || 'Updated Name',
-      email: args.input.email || 'updated@example.com',
-      createdAt: new Date().toISOString()
+      name: args.input.name || "Updated Name",
+      email: args.input.email || "updated@example.com",
+      createdAt: new Date().toISOString(),
     };
   }
 
@@ -660,14 +744,18 @@ class GraphQLEngine {
     // Mock subscription resolver
     return {
       id: args.id,
-      name: 'Updated User',
-      email: 'updated@example.com',
-      createdAt: new Date().toISOString()
+      name: "Updated User",
+      email: "updated@example.com",
+      createdAt: new Date().toISOString(),
     };
   }
 
   // Subscription management
-  async subscribe(query: string, variables: Record<string, any>, clientId: string): Promise<string> {
+  async subscribe(
+    query: string,
+    variables: Record<string, any>,
+    clientId: string,
+  ): Promise<string> {
     return this.subscriptionManager.subscribe(query, variables, clientId);
   }
 
@@ -679,18 +767,23 @@ class GraphQLEngine {
   getAnalytics() {
     const executions = this.executions;
     const totalQueries = executions.length;
-    
-    const durations = executions.map(exec => exec.duration);
-    const averageDuration = durations.length > 0 
-      ? durations.reduce((sum, duration) => sum + duration, 0) / durations.length 
-      : 0;
 
-    const successfulExecutions = executions.filter(exec => !exec.errors || exec.errors.length === 0);
-    const successRate = totalQueries > 0 ? successfulExecutions.length / totalQueries : 0;
+    const durations = executions.map((exec) => exec.duration);
+    const averageDuration =
+      durations.length > 0
+        ? durations.reduce((sum, duration) => sum + duration, 0) /
+          durations.length
+        : 0;
+
+    const successfulExecutions = executions.filter(
+      (exec) => !exec.errors || exec.errors.length === 0,
+    );
+    const successRate =
+      totalQueries > 0 ? successfulExecutions.length / totalQueries : 0;
 
     // Top queries
     const queryCounts: Record<string, number> = {};
-    executions.forEach(exec => {
+    executions.forEach((exec) => {
       queryCounts[exec.query] = (queryCounts[exec.query] || 0) + 1;
     });
     const topQueries = Object.entries(queryCounts)
@@ -700,22 +793,24 @@ class GraphQLEngine {
 
     // Error analysis
     const errorCounts: Record<string, number> = {};
-    executions.forEach(exec => {
+    executions.forEach((exec) => {
       if (exec.errors) {
-        exec.errors.forEach(error => {
+        exec.errors.forEach((error) => {
           errorCounts[error.message] = (errorCounts[error.message] || 0) + 1;
         });
       }
     });
-    const errorAnalysis = Object.entries(errorCounts)
-      .map(([error, count]) => ({ error, count }));
+    const errorAnalysis = Object.entries(errorCounts).map(([error, count]) => ({
+      error,
+      count,
+    }));
 
     return {
       totalQueries,
       averageDuration,
       successRate,
       topQueries,
-      errorAnalysis
+      errorAnalysis,
     };
   }
 
@@ -738,7 +833,7 @@ class ComplexityAnalyzer {
   analyze(query: string): number {
     // Simple complexity analysis
     let complexity = 1;
-    
+
     // Add complexity for each field
     const fieldMatches = query.match(/\w+\s*{/g);
     if (fieldMatches) {
@@ -773,16 +868,20 @@ class QueryValidator {
 class SubscriptionManager {
   private subscriptions: Map<string, GraphQLSubscription> = new Map();
 
-  async subscribe(query: string, variables: Record<string, any>, clientId: string): Promise<string> {
+  async subscribe(
+    query: string,
+    variables: Record<string, any>,
+    clientId: string,
+  ): Promise<string> {
     const subscriptionId = Math.random().toString(36);
-    
+
     const subscription: GraphQLSubscription = {
       id: subscriptionId,
       query,
       variables,
       clients: new Set([clientId]),
       createdAt: Date.now(),
-      lastActivity: Date.now()
+      lastActivity: Date.now(),
     };
 
     this.subscriptions.set(subscriptionId, subscription);
@@ -793,7 +892,7 @@ class SubscriptionManager {
     const subscription = this.subscriptions.get(subscriptionId);
     if (subscription) {
       subscription.clients.delete(clientId);
-      
+
       if (subscription.clients.size === 0) {
         this.subscriptions.delete(subscriptionId);
       }
@@ -806,23 +905,28 @@ class SubscriptionManager {
 }
 
 // Main GraphQL Server Component
-export const GraphQLServer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+// @ts-ignore
+export const GraphQLServer: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { currentMode } = useUserExperienceMode();
   const { isLowPerformanceMode } = usePerformance();
   const { user } = useAuthStore();
-  
+
   const [schema, setSchema] = useState<GraphQLSchema | null>(null);
   const [queries, setQueries] = useState<GraphQLQuery[]>([]);
   const [executions, setExecutions] = useState<GraphQLExecution[]>([]);
-  const [subscriptions, setSubscriptions] = useState<Map<string, GraphQLSubscription>>(new Map());
-  
+  const [subscriptions, setSubscriptions] = useState<
+    Map<string, GraphQLSubscription>
+  >(new Map());
+
   const engineRef = useRef<GraphQLEngine>();
 
   // Initialize engine
   useEffect(() => {
     engineRef.current = new GraphQLEngine();
     loadData();
-    
+
     return () => {
       // Cleanup
     };
@@ -841,127 +945,187 @@ export const GraphQLServer: React.FC<{ children: React.ReactNode }> = ({ childre
     loadData();
   }, [loadData]);
 
-  const addType = useCallback(async (type: GraphQLType): Promise<void> => {
-    if (!engineRef.current || !schema) return;
+  const addType = useCallback(
+    async (type: GraphQLType): Promise<void> => {
+      if (!engineRef.current || !schema) return;
 
-    const updatedSchema = {
-      ...schema,
-      types: [...schema.types, type]
-    };
+      const updatedSchema = {
+        ...schema,
+        types: [...schema.types, type],
+      };
 
-    setSchema(updatedSchema);
-  }, [schema]);
+      setSchema(updatedSchema);
+    },
+    [schema],
+  );
 
-  const addField = useCallback(async (typeName: string, field: GraphQLField): Promise<void> => {
-    if (!engineRef.current || !schema) return;
+  const addField = useCallback(
+    async (typeName: string, field: GraphQLField): Promise<void> => {
+      if (!engineRef.current || !schema) return;
 
-    const updatedTypes = schema.types.map(type => {
-      if (type.name === typeName && type.fields) {
-        return {
-          ...type,
-          fields: [...type.fields, field]
-        };
+      const updatedTypes = schema.types.map((type) => {
+        if (type.name === typeName && type.fields) {
+          return {
+            ...type,
+            fields: [...type.fields, field],
+          };
+        }
+        return type;
+      });
+
+      const updatedSchema = {
+        ...schema,
+        types: updatedTypes,
+      };
+
+      setSchema(updatedSchema);
+    },
+    [schema],
+  );
+
+  const saveQuery = useCallback(
+    async (
+      queryData: Omit<
+        GraphQLQuery,
+        | "id"
+        | "createdAt"
+        | "executionCount"
+        | "averageDuration"
+        | "successRate"
+      >,
+    ): Promise<GraphQLQuery> => {
+      const query: GraphQLQuery = {
+        ...queryData,
+        id: Math.random().toString(36),
+        createdAt: Date.now(),
+        executionCount: 0,
+        averageDuration: 0,
+        successRate: 1.0,
+      };
+
+      setQueries((prev) => [...prev, query]);
+      return query;
+    },
+    [],
+  );
+
+  const executeQuery = useCallback(
+    async (
+      queryId: string,
+      variables?: Record<string, any>,
+    ): Promise<GraphQLExecution> => {
+      if (!engineRef.current) {
+        throw new Error("GraphQL Engine not initialized");
       }
-      return type;
-    });
 
-    const updatedSchema = {
-      ...schema,
-      types: updatedTypes
-    };
+      const query = queries.find((q) => q.id === queryId);
+      if (!query) {
+        throw new Error("Query not found");
+      }
 
-    setSchema(updatedSchema);
-  }, [schema]);
-
-  const saveQuery = useCallback(async (queryData: Omit<GraphQLQuery, 'id' | 'createdAt' | 'executionCount' | 'averageDuration' | 'successRate'>): Promise<GraphQLQuery> => {
-    const query: GraphQLQuery = {
-      ...queryData,
-      id: Math.random().toString(36),
-      createdAt: Date.now(),
-      executionCount: 0,
-      averageDuration: 0,
-      successRate: 1.0
-    };
-
-    setQueries(prev => [...prev, query]);
-    return query;
-  }, []);
-
-  const executeQuery = useCallback(async (queryId: string, variables?: Record<string, any>): Promise<GraphQLExecution> => {
-    if (!engineRef.current) {
-      throw new Error('GraphQL Engine not initialized');
-    }
-
-    const query = queries.find(q => q.id === queryId);
-    if (!query) {
-      throw new Error('Query not found');
-    }
-
-    const execution = await engineRef.current.executeQuery(query.query, variables, {
-      user,
-      userAgent: navigator.userAgent,
-      ip: '127.0.0.1'
-    });
-
-    setExecutions(prev => [...prev, execution]);
-    
-    // Update query statistics
-    setQueries(prev => prev.map(q => 
-      q.id === queryId 
-        ? {
-            ...q,
-            lastExecuted: Date.now(),
-            executionCount: q.executionCount + 1,
-            averageDuration: (q.averageDuration * q.executionCount + execution.duration) / (q.executionCount + 1),
-            successRate: (q.successRate * q.executionCount + (execution.errors?.length ? 0 : 1)) / (q.executionCount + 1)
-          }
-        : q
-    ));
-
-    return execution;
-  }, [queries, user]);
-
-  const getExecutions = useCallback((filters?: {
-    queryId?: string;
-    operation?: string;
-    dateRange?: { start: number; end: number };
-  }): GraphQLExecution[] => {
-    let filteredExecutions = executions;
-
-    if (filters?.queryId) {
-      filteredExecutions = filteredExecutions.filter(exec => exec.queryId === filters.queryId);
-    }
-
-    if (filters?.operation) {
-      filteredExecutions = filteredExecutions.filter(exec => exec.operation === filters.operation);
-    }
-
-    if (filters?.dateRange) {
-      filteredExecutions = filteredExecutions.filter(exec => 
-        exec.timestamp >= filters.dateRange!.start && 
-        exec.timestamp <= filters.dateRange!.end
+      const execution = await engineRef.current.executeQuery(
+        query.query,
+        variables,
+        {
+          user,
+          userAgent: navigator.userAgent,
+          ip: "127.0.0.1",
+        },
       );
-    }
 
-    return filteredExecutions.sort((a, b) => b.timestamp - a.timestamp);
-  }, [executions]);
+      setExecutions((prev) => [...prev, execution]);
 
-  const subscribe = useCallback(async (query: string, variables?: Record<string, any>, clientId?: string): Promise<string> => {
-    if (!engineRef.current) {
-      throw new Error('GraphQL Engine not initialized');
-    }
+      // Update query statistics
+      setQueries((prev) =>
+        prev.map((q) =>
+          q.id === queryId
+            ? {
+                ...q,
+                lastExecuted: Date.now(),
+                executionCount: q.executionCount + 1,
+                averageDuration:
+                  (q.averageDuration * q.executionCount + execution.duration) /
+                  (q.executionCount + 1),
+                successRate:
+                  (q.successRate * q.executionCount +
+                    (execution.errors?.length ? 0 : 1)) /
+                  (q.executionCount + 1),
+              }
+            : q,
+        ),
+      );
 
-    const subscriptionId = await engineRef.current.subscribe(query, variables, clientId || 'default');
-    loadData();
-    return subscriptionId;
-  }, [loadData]);
+      return execution;
+    },
+    [queries, user],
+  );
 
-  const unsubscribe = useCallback(async (subscriptionId: string, clientId?: string): Promise<void> => {
-    if (!engineRef.current) return;
+  const getExecutions = useCallback(
+    (filters?: {
+      queryId?: string;
+      operation?: string;
+      dateRange?: { start: number; end: number };
+    }): GraphQLExecution[] => {
+      let filteredExecutions = executions;
 
-    await engineRef.current.unsubscribe(subscriptionId, clientId || 'default');
-    loadData();
-  }, [loadData]);
+      if (filters?.queryId) {
+        filteredExecutions = filteredExecutions.filter(
+          (exec) => exec.queryId === filters.queryId,
+        );
+      }
+
+      if (filters?.operation) {
+        filteredExecutions = filteredExecutions.filter(
+          (exec) => exec.operation === filters.operation,
+        );
+      }
+
+      if (filters?.dateRange) {
+        filteredExecutions = filteredExecutions.filter(
+          (exec) =>
+            exec.timestamp >= filters.dateRange!.start &&
+            exec.timestamp <= filters.dateRange!.end,
+        );
+      }
+
+      return filteredExecutions.sort((a, b) => b.timestamp - a.timestamp);
+    },
+    [executions],
+  );
+
+  const subscribe = useCallback(
+    async (
+      query: string,
+      variables?: Record<string, any>,
+      clientId?: string,
+    ): Promise<string> => {
+      if (!engineRef.current) {
+        throw new Error("GraphQL Engine not initialized");
+      }
+
+      const subscriptionId = await engineRef.current.subscribe(
+        query,
+        variables,
+        clientId || "default",
+      );
+      loadData();
+      return subscriptionId;
+    },
+    [loadData],
+  );
+
+  const unsubscribe = useCallback(
+    async (subscriptionId: string, clientId?: string): Promise<void> => {
+      if (!engineRef.current) return;
+
+      await engineRef.current.unsubscribe(
+        subscriptionId,
+        clientId || "default",
+      );
+      loadData();
+    },
+    [loadData],
+  );
 
   const getAnalytics = useCallback(() => {
     if (!engineRef.current) {
@@ -970,7 +1134,7 @@ export const GraphQLServer: React.FC<{ children: React.ReactNode }> = ({ childre
         averageDuration: 0,
         successRate: 0,
         topQueries: [],
-        errorAnalysis: []
+        errorAnalysis: [],
       };
     }
 
@@ -990,7 +1154,7 @@ export const GraphQLServer: React.FC<{ children: React.ReactNode }> = ({ childre
     subscriptions,
     subscribe,
     unsubscribe,
-    getAnalytics
+    getAnalytics,
   };
 
   return (
@@ -1004,13 +1168,15 @@ export const GraphQLServer: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useGraphQL = (): GraphQLContextType => {
   const context = React.useContext(GraphQLContext);
   if (!context) {
-    throw new Error('useGraphQL must be used within GraphQLServer');
+    throw new Error("useGraphQL must be used within GraphQLServer");
   }
   return context;
 };
 
 // Higher-Order Components
-export const withGraphQL = <P extends object>(Component: React.ComponentType<P>) => {
+export const withGraphQL = <P extends object>(
+  Component: React.ComponentType<P>,
+) => {
   return React.forwardRef<any, P>((props, ref) => (
     <GraphQLServer>
       <Component {...props} ref={ref} />

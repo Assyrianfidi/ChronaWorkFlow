@@ -1,20 +1,25 @@
-import { prisma } from '../../utils/prisma.js';
-import { accountCreateSchema, accountUpdateSchema, AccountCreateInput, AccountUpdateInput } from './accounts.model.js';
-import { ApiError } from '../../utils/errors.js';
-import { StatusCodes } from 'http-status-codes';
-import { Decimal } from '@prisma/client/runtime/library';
+import { prisma } from "../../utils/prisma.js";
+import {
+  accountCreateSchema,
+  accountUpdateSchema,
+  AccountCreateInput,
+  AccountUpdateInput,
+} from "./accounts.model.js";
+import { ApiError } from "../../utils/errors.js";
+import { StatusCodes } from "http-status-codes";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export class AccountsService {
   async list(companyId: string) {
     return prisma.account.findMany({
       where: { companyId },
-      orderBy: { code: 'asc' },
+      orderBy: { code: "asc" },
     });
   }
 
   async create(payload: AccountCreateInput) {
     const parsed = accountCreateSchema.parse(payload);
-    return prisma.account.create({ 
+    return prisma.account.create({
       data: {
         companyId: parsed.companyId,
         code: parsed.code,
@@ -23,14 +28,14 @@ export class AccountsService {
         parentId: parsed.parentId,
         balance: parsed.balance ? new Decimal(parsed.balance) : new Decimal(0),
         description: parsed.description,
-        isActive: parsed.isActive ?? true
-      } 
+        isActive: parsed.isActive ?? true,
+      },
     });
   }
 
   async update(id: string, payload: AccountUpdateInput) {
     if (!payload || Object.keys(payload).length === 0) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, 'No update payload provided');
+      throw new ApiError(StatusCodes.BAD_REQUEST, "No update payload provided");
     }
     const parsed = accountUpdateSchema.parse(payload);
     return prisma.account.update({
@@ -41,7 +46,7 @@ export class AccountsService {
 
   async adjustBalance(id: string, amount: number) {
     if (Number.isNaN(amount)) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, 'amount must be a number');
+      throw new ApiError(StatusCodes.BAD_REQUEST, "amount must be a number");
     }
     return prisma.account.update({
       where: { id },

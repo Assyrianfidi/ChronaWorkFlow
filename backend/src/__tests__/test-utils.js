@@ -1,15 +1,16 @@
 // Test utilities and setup - CommonJS module
-const path = require('path');
-const dotenv = require('dotenv');
-const { v4: uuidv4 } = require('uuid');
-const jwt = require('jsonwebtoken');
+const path = require("path");
+const dotenv = require("dotenv");
+const { v4: uuidv4 } = require("uuid");
+const jwt = require("jsonwebtoken");
 
 // Load test environment variables from the project root
-dotenv.config({ path: path.resolve(__dirname, '../../.env.test') });
+dotenv.config({ path: path.resolve(__dirname, "../../.env.test") });
 
 // Set default test database URL if not provided
 if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/accubooks_test';
+  process.env.DATABASE_URL =
+    "postgresql://postgres:postgres@localhost:5432/accubooks_test";
 }
 
 // Mock console methods
@@ -25,11 +26,12 @@ const createTestUser = async (prisma, userData = {}) => {
   const testUser = {
     id: uuidv4(),
     email: userData.email || `test-${uuidv4()}@example.com`,
-    name: userData.name || 'Test User',
-    password: userData.password || 'testpassword',
-    isEmailVerified: userData.isEmailVerified !== undefined ? userData.isEmailVerified : true,
-    role: userData.role || 'USER',
-    ...userData
+    name: userData.name || "Test User",
+    password: userData.password || "testpassword",
+    isEmailVerified:
+      userData.isEmailVerified !== undefined ? userData.isEmailVerified : true,
+    role: userData.role || "USER",
+    ...userData,
   };
 
   return prisma.user.create({
@@ -39,8 +41,8 @@ const createTestUser = async (prisma, userData = {}) => {
       email: true,
       name: true,
       role: true,
-      isEmailVerified: true
-    }
+      isEmailVerified: true,
+    },
   });
 };
 
@@ -52,8 +54,8 @@ const createTestUser = async (prisma, userData = {}) => {
 const generateAuthToken = (user) => {
   return jwt.sign(
     { userId: user.id, email: user.email, role: user.role },
-    process.env.JWT_SECRET || 'test-secret-key',
-    { expiresIn: process.env.JWT_EXPIRES_IN || '1d' }
+    process.env.JWT_SECRET || "test-secret-key",
+    { expiresIn: process.env.JWT_EXPIRES_IN || "1d" },
   );
 };
 
@@ -63,10 +65,10 @@ const generateAuthToken = (user) => {
  */
 const setupTestEnv = () => {
   // Ensure test environment is set
-  process.env.NODE_ENV = 'test';
-  
+  process.env.NODE_ENV = "test";
+
   // Mock any necessary services or modules here
-  
+
   // Return cleanup function
   return () => {
     // Cleanup code that runs after each test
@@ -113,6 +115,6 @@ module.exports = {
   restoreConsole,
   originalConsole,
   // Add path and __dirname for backward compatibility
-  path: require('path'),
-  __dirname
+  path: require("path"),
+  __dirname,
 };

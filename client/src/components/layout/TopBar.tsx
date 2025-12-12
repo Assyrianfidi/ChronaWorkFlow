@@ -1,24 +1,28 @@
-import * as React from "react"
-import { Link } from "react-router-dom"
-import { Search, Bell, User, LogOut, Building } from "lucide-react"
-import { cn } from "../../lib/utils"
-import { EnterpriseButton } from "../ui/EnterpriseButton"
+import React, { useState } from 'react';
+// @ts-ignore
+import * as React from "react";
+import { Link } from "react-router-dom";
+import { Search, Bell, User, LogOut, Building } from "lucide-react";
+// @ts-ignore
+import { cn } from '../../lib/utils.js.js';
+// @ts-ignore
+import { EnterpriseButton } from '../ui/EnterpriseButton.js.js';
 
 interface TopBarProps {
-  className?: string
-  onToggleMobileMenu?: () => void
+  className?: string;
+  onToggleMobileMenu?: () => void;
 }
 
 const TopBar = React.forwardRef<HTMLDivElement, TopBarProps>(
   ({ className, onToggleMobileMenu, ...props }, ref) => {
-    const [showProfileMenu, setShowProfileMenu] = React.useState(false)
+    const [showProfileMenu, setShowProfileMenu] = React.useState(false);
 
     return (
       <div
         ref={ref}
         className={cn(
           "flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200",
-          className
+          className,
         )}
         {...props}
       >
@@ -27,8 +31,18 @@ const TopBar = React.forwardRef<HTMLDivElement, TopBarProps>(
           onClick={onToggleMobileMenu}
           className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
         </button>
 
@@ -93,9 +107,9 @@ const TopBar = React.forwardRef<HTMLDivElement, TopBarProps>(
           </div>
         </div>
       </div>
-    )
-  }
-)
-TopBar.displayName = "TopBar"
+    );
+  },
+);
+TopBar.displayName = "TopBar";
 
-export { TopBar }
+export { TopBar };

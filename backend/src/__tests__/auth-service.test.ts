@@ -1,9 +1,12 @@
-import { AuthService } from '../services/auth.service.js';
+jest.mock("dotenv", () => ({
+  config: () => ({ parsed: { JWT_SECRET: "test-secret" } }),
+}));
+import { AuthService } from "../services/auth.service.js";
 // Import the prisma client
-import { prisma } from '../utils/prisma.js';
+import { prisma } from "../utils/prisma.js";
 
 // Mock the prisma client
-jest.mock('../utils/prisma.js', () => ({
+jest.mock("../utils/prisma.js", () => ({
   prisma: {
     user: {
       findUnique: jest.fn(),
@@ -12,25 +15,25 @@ jest.mock('../utils/prisma.js', () => ({
     $disconnect: jest.fn(),
   },
 }));
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { ApiError } from '../utils/errors.js';
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { ApiError } from "../utils/errors.js";
 
 // Mock the dependencies
-jest.mock('../utils/prisma.js');
-jest.mock('bcryptjs');
-jest.mock('jsonwebtoken');
+jest.mock("../utils/prisma.js");
+jest.mock("bcryptjs");
+jest.mock("jsonwebtoken");
 
-describe('AuthService', () => {
+describe("AuthService", () => {
   let authService: AuthService;
-  
+
   // Mock data
   const mockUser = {
     id: 1,
-    email: 'test@example.com',
-    name: 'Test User',
-    password: 'hashedPassword',
-    role: 'USER',
+    email: "test@example.com",
+    name: "Test User",
+    password: "hashedPassword",
+    role: "USER",
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -43,25 +46,25 @@ describe('AuthService', () => {
   beforeEach(() => {
     // Reset all mocks
     jest.clearAllMocks();
-    
+
     // Setup bcrypt mocks
-    (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
+    (bcrypt.hash as jest.Mock).mockResolvedValue("hashedPassword");
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-    
+
     // Setup JWT mock
-    (jwt.sign as jest.Mock).mockReturnValue('test-token');
-    
+    (jwt.sign as jest.Mock).mockReturnValue("test-token");
+
     // Create a new instance of AuthService
     authService = new AuthService();
   });
 
-  describe('register', () => {
-    it('should register a new user successfully', async () => {
+  describe("register", () => {
+    it("should register a new user successfully", async () => {
       // Arrange
       const userData = {
-        email: 'test@example.com',
-        password: 'password123',
-        name: 'Test User',
+        email: "test@example.com",
+        password: "password123",
+        name: "Test User",
       };
 
       mockFindUnique.mockResolvedValue(null);
@@ -78,7 +81,7 @@ describe('AuthService', () => {
       expect(mockCreate).toHaveBeenCalledWith({
         data: {
           email: userData.email,
-          password: 'hashedPassword',
+          password: "hashedPassword",
           name: userData.name,
         },
       });
@@ -88,21 +91,21 @@ describe('AuthService', () => {
       expect(result.user).toEqual(expectedUser);
     });
 
-    it('should throw an error if user already exists', async () => {
+    it("should throw an error if user already exists", async () => {
       // Arrange
       const userData = {
-        email: 'existing@example.com',
-        password: 'password123',
-        name: 'Existing User',
+        email: "existing@example.com",
+        password: "password123",
+        name: "Existing User",
       };
 
       mockFindUnique.mockResolvedValue(mockUser);
 
       // Act & Assert
       await expect(authService.register(userData)).rejects.toThrow(
-        'User already exists'
+        "User already exists",
       );
-      
+
       // Verify the error is an instance of ApiError with status code 400
       try {
         await authService.register(userData);
@@ -115,12 +118,12 @@ describe('AuthService', () => {
     });
   });
 
-  describe('login', () => {
-    it('should login a user with valid credentials', async () => {
+  describe("login", () => {
+    it("should login a user with valid credentials", async () => {
       // Arrange
       const credentials = {
-        email: 'test@example.com',
-        password: 'password123',
+        email: "test@example.com",
+        password: "password123",
       };
 
       mockFindUnique.mockResolvedValue(mockUser);
@@ -135,12 +138,12 @@ describe('AuthService', () => {
       });
       expect(bcrypt.compare).toHaveBeenCalledWith(
         credentials.password,
-        mockUser.password
+        mockUser.password,
       );
       expect(jwt.sign).toHaveBeenCalledWith(
         { userId: mockUser.id },
-        process.env.JWT_SECRET || 'your-secret-key',
-        { expiresIn: '1d' }
+        process.env.JWT_SECRET || "your-secret-key",
+        { expiresIn: "1d" },
       );
 
       const { password, ...userWithoutPassword } = mockUser;
@@ -150,11 +153,11 @@ describe('AuthService', () => {
       });
     });
 
-    it('should throw an error for invalid credentials', async () => {
+    it("should throw an error for invalid credentials", async () => {
       // Arrange
       const credentials = {
-        email: 'test@example.com',
-        password: 'wrongpassword',
+        email: "test@example.com",
+        password: "wrongpassword",
       };
 
       mockFindUnique.mockResolvedValue(mockUser);
@@ -162,9 +165,9 @@ describe('AuthService', () => {
 
       // Act & Assert
       await expect(authService.login(credentials)).rejects.toThrow(
-        'Invalid credentials'
+        "Invalid credentials",
       );
-      
+
       // Verify the error is an instance of ApiError with status code 401
       try {
         await authService.login(credentials);
@@ -177,15 +180,15 @@ describe('AuthService', () => {
     });
   });
 
-  describe('getCurrentUser', () => {
-    it('should return the current user', async () => {
+  describe("getCurrentUser", () => {
+    it("should return the current user", async () => {
       // Arrange
       const userId = 1;
       const expectedUser = {
         id: userId,
-        email: 'test@example.com',
-        name: 'Test User',
-        role: 'USER',
+        email: "test@example.com",
+        name: "Test User",
+        role: "USER",
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -210,14 +213,14 @@ describe('AuthService', () => {
       expect(result).toEqual(expectedUser);
     });
 
-    it('should throw an error if user is not found', async () => {
+    it("should throw an error if user is not found", async () => {
       // Arrange
       const userId = 999;
       mockFindUnique.mockResolvedValue(null);
 
       // Act & Assert
       await expect(authService.getCurrentUser(userId)).rejects.toThrow(
-        'User not found'
+        "User not found",
       );
     });
   });

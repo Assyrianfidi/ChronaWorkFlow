@@ -1,24 +1,15 @@
-import { RouterProvider } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { ToastProvider } from './components/ui/EnterpriseToast';
-import { Toaster } from './components/ui/toaster';
-import { ThemeProvider } from './components/ThemeProvider';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import router from './routes';
-import './styles/globals.css';
+import React from 'react';
+import AppRouter from '@/router';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 function App() {
   return (
-    <ErrorBoundary>
+    <ThemeProvider>
       <AuthProvider>
-        <ToastProvider>
-          <ThemeProvider>
-            <RouterProvider router={router} />
-            <Toaster />
-          </ThemeProvider>
-        </ToastProvider>
+        <AppRouter />
       </AuthProvider>
-    </ErrorBoundary>
+    </ThemeProvider>
   );
 }
 

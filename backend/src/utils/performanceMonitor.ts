@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { logger } from './logger.js';
-import { CacheEngine } from './cacheEngine.js';
+import { Request, Response, NextFunction } from "express";
+import { logger } from "./logger.js";
+import { CacheEngine } from "./cacheEngine.js";
 
 /**
  * Performance metric interface
@@ -26,45 +26,45 @@ export class PerformanceMonitor {
    */
   static startTimer(name: string, metadata?: any): () => PerformanceMetric {
     const startTime = Date.now();
-    
+
     return (): PerformanceMetric => {
       const endTime = Date.now();
       const duration = endTime - startTime;
-      
+
       const metric: PerformanceMetric = {
         name,
         startTime,
         endTime,
         duration,
-        metadata
+        metadata,
       };
-      
+
       // Store metric
       if (!this.metrics.has(name)) {
         this.metrics.set(name, []);
       }
       this.metrics.get(name)!.push(metric);
-      
+
       // Keep only last 100 metrics per name
       const metrics = this.metrics.get(name)!;
       if (metrics.length > 100) {
         metrics.shift();
       }
-      
+
       // Log slow operations
       if (duration > this.SLOW_REQUEST_THRESHOLD) {
         logger.info({
-          type: 'WARNING',
-          message: 'Slow operation detected',
+          type: "WARNING",
+          message: "Slow operation detected",
           details: {
             name,
             duration: `${duration}ms`,
             threshold: `${this.SLOW_REQUEST_THRESHOLD}ms`,
-            metadata
-          }
+            metadata,
+          },
         });
       }
-      
+
       return metric;
     };
   }
@@ -83,17 +83,17 @@ export class PerformanceMonitor {
     const metrics = this.metrics.get(name);
     if (!metrics || metrics.length === 0) return null;
 
-    const durations = metrics.map(m => m.duration).sort((a, b) => a - b);
+    const durations = metrics.map((m) => m.duration).sort((a, b) => a - b);
     const count = durations.length;
     const sum = durations.reduce((a, b) => a + b, 0);
-    
+
     return {
       count,
       avgDuration: sum / count,
       minDuration: durations[0],
       maxDuration: durations[count - 1],
       p95Duration: durations[Math.floor(count * 0.95)],
-      p99Duration: durations[Math.floor(count * 0.99)]
+      p99Duration: durations[Math.floor(count * 0.99)],
     };
   }
 
@@ -102,34 +102,34 @@ export class PerformanceMonitor {
    */
   static performanceMiddleware() {
     return (req: Request, res: Response, next: NextFunction) => {
-      const endTimer = this.startTimer('http_request', {
+      const endTimer = this.startTimer("http_request", {
         method: req.method,
         path: req.path,
         ip: req.ip,
-        userAgent: req.get('User-Agent')
+        userAgent: req.get("User-Agent"),
       });
 
       // Override res.end to capture response time
       const originalEnd = res.end;
-      res.end = function(this: Response, ...args: any[]) {
+      res.end = function (this: Response, ...args: any[]) {
         const metric = endTimer();
-        
+
         // Add performance headers
-        res.set('X-Response-Time', `${metric.duration}ms`);
-        
+        res.set("X-Response-Time", `${metric.duration}ms`);
+
         // Log request performance
         logger.info({
-          type: 'INFO',
-          message: 'HTTP request completed',
+          type: "INFO",
+          message: "HTTP request completed",
           details: {
             method: req.method,
             path: req.path,
             statusCode: res.statusCode,
             duration: metric.duration,
-            ip: req.ip
-          }
+            ip: req.ip,
+          },
         });
-        
+
         // Call original end with proper context
         return originalEnd.apply(this, args as any);
       };
@@ -144,28 +144,28 @@ export class PerformanceMonitor {
   static async monitorQuery<T>(
     queryName: string,
     queryFn: () => Promise<T>,
-    metadata?: any
+    metadata?: any,
   ): Promise<T> {
     const endTimer = this.startTimer(`db_query_${queryName}`, metadata);
-    
+
     try {
       const result = await queryFn();
       const metric = endTimer();
-      
+
       // Log slow queries
       if (metric.duration > this.SLOW_QUERY_THRESHOLD) {
         logger.info({
-          type: 'WARNING',
-          message: 'Slow database query detected',
+          type: "WARNING",
+          message: "Slow database query detected",
           details: {
             queryName,
             duration: `${metric.duration}ms`,
             threshold: `${this.SLOW_QUERY_THRESHOLD}ms`,
-            metadata
-          }
+            metadata,
+          },
         });
       }
-      
+
       return result;
     } catch (error) {
       endTimer();
@@ -177,12 +177,12 @@ export class PerformanceMonitor {
    * Cache performance monitor
    */
   static async monitorCache<T>(
-    operation: 'get' | 'set' | 'del',
+    operation: "get" | "set" | "del",
     key: string,
-    operationFn: () => Promise<T>
+    operationFn: () => Promise<T>,
   ): Promise<T> {
     const endTimer = this.startTimer(`cache_${operation}`, { key });
-    
+
     try {
       const result = await operationFn();
       endTimer();
@@ -209,7 +209,7 @@ export class LoadTester {
       delay?: number;
       headers?: Record<string, string>;
       body?: any;
-    }
+    },
   ): Promise<{
     totalTime: number;
     requestsPerSecond: number;
@@ -229,9 +229,10 @@ export class LoadTester {
 
     for (let i = 0; i < options.totalRequests; i++) {
       const requestPromise = this.makeRequest(url, options)
-        .then(response => {
+        .then((response) => {
           responseTimes.push(response.duration);
-          statusCodes[response.statusCode] = (statusCodes[response.statusCode] || 0) + 1;
+          statusCodes[response.statusCode] =
+            (statusCodes[response.statusCode] || 0) + 1;
           if (response.statusCode >= 200 && response.statusCode < 400) {
             successCount++;
           } else {
@@ -253,7 +254,7 @@ export class LoadTester {
 
       // Add delay between requests
       if (options.delay && options.delay > 0) {
-        await new Promise(resolve => setTimeout(resolve, options.delay));
+        await new Promise((resolve) => setTimeout(resolve, options.delay));
       }
     }
 
@@ -261,11 +262,14 @@ export class LoadTester {
     await Promise.all(promises);
 
     const totalTime = Date.now() - startTime;
-    const avgResponseTime = responseTimes.length > 0 
-      ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length 
-      : 0;
-    const minResponseTime = responseTimes.length > 0 ? Math.min(...responseTimes) : 0;
-    const maxResponseTime = responseTimes.length > 0 ? Math.max(...responseTimes) : 0;
+    const avgResponseTime =
+      responseTimes.length > 0
+        ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
+        : 0;
+    const minResponseTime =
+      responseTimes.length > 0 ? Math.min(...responseTimes) : 0;
+    const maxResponseTime =
+      responseTimes.length > 0 ? Math.max(...responseTimes) : 0;
 
     return {
       totalTime,
@@ -275,7 +279,7 @@ export class LoadTester {
       maxResponseTime,
       errorCount,
       successCount,
-      statusCodeDistribution: statusCodes
+      statusCodeDistribution: statusCodes,
     };
   }
 
@@ -287,22 +291,22 @@ export class LoadTester {
     options: {
       headers?: Record<string, string>;
       body?: any;
-    }
+    },
   ): Promise<{ statusCode: number; duration: number }> {
     const startTime = Date.now();
-    
+
     try {
       // This is a simplified implementation
       // In a real scenario, you'd use fetch or axios
       const response = await fetch(url, {
-        method: options.body ? 'POST' : 'GET',
+        method: options.body ? "POST" : "GET",
         headers: {
-          'Content-Type': 'application/json',
-          ...options.headers
+          "Content-Type": "application/json",
+          ...options.headers,
         },
-        body: options.body ? JSON.stringify(options.body) : undefined
+        body: options.body ? JSON.stringify(options.body) : undefined,
       });
-      
+
       const duration = Date.now() - startTime;
       return { statusCode: response.status, duration };
     } catch (error) {
@@ -322,7 +326,7 @@ export class LoadTester {
       stepSize: number;
       requestsPerStep: number;
       maxErrorRate: number;
-    }
+    },
   ): Promise<{
     results: Array<{
       concurrency: number;
@@ -335,22 +339,23 @@ export class LoadTester {
     const results = [];
     let maxSustainedConcurrency = 0;
 
-    for (let concurrency = options.startConcurrency; 
-         concurrency <= options.maxConcurrency; 
-         concurrency += options.stepSize) {
-      
+    for (
+      let concurrency = options.startConcurrency;
+      concurrency <= options.maxConcurrency;
+      concurrency += options.stepSize
+    ) {
       const result = await this.runConcurrentRequests(url, {
         concurrency,
-        totalRequests: options.requestsPerStep
+        totalRequests: options.requestsPerStep,
       });
 
       const errorRate = result.errorCount / options.requestsPerStep;
-      
+
       results.push({
         concurrency,
         avgResponseTime: result.avgResponseTime,
         errorRate,
-        requestsPerSecond: result.requestsPerSecond
+        requestsPerSecond: result.requestsPerSecond,
       });
 
       if (errorRate <= options.maxErrorRate) {
@@ -360,12 +365,12 @@ export class LoadTester {
       }
 
       // Wait between steps
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     return {
       results,
-      maxSustainedConcurrency
+      maxSustainedConcurrency,
     };
   }
 }
@@ -392,25 +397,27 @@ export class DatabaseMonitor {
         SUM(CASE WHEN state = 'idle' THEN 1 ELSE 0 END) as idle,
         SUM(CASE WHEN waiting = true THEN 1 ELSE 0 END) as waiting
         FROM pg_stat_activity WHERE datname = current_database()`;
-      
+
       return {
         totalConnections: stats[0]?.total || 0,
         activeConnections: stats[0]?.active || 0,
         idleConnections: stats[0]?.idle || 0,
-        waitingClients: stats[0]?.waiting || 0
+        waitingClients: stats[0]?.waiting || 0,
       };
     } catch (error) {
       logger.info({
-        type: 'ERROR',
-        message: 'Failed to get connection pool stats',
-        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+        type: "ERROR",
+        message: "Failed to get connection pool stats",
+        details: {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
       });
-      
+
       return {
         totalConnections: 0,
         activeConnections: 0,
         idleConnections: 0,
-        waitingClients: 0
+        waitingClients: 0,
       };
     }
   }
@@ -418,7 +425,10 @@ export class DatabaseMonitor {
   /**
    * Monitor slow queries
    */
-  static async getSlowQueries(prisma: any, thresholdMs: number = 1000): Promise<any[]> {
+  static async getSlowQueries(
+    prisma: any,
+    thresholdMs: number = 1000,
+  ): Promise<any[]> {
     try {
       const slowQueries = await prisma.$queryRaw`
         SELECT 
@@ -432,15 +442,17 @@ export class DatabaseMonitor {
         ORDER BY mean_time DESC
         LIMIT 10
       `;
-      
+
       return slowQueries;
     } catch (error) {
       logger.info({
-        type: 'ERROR',
-        message: 'Failed to get slow queries',
-        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+        type: "ERROR",
+        message: "Failed to get slow queries",
+        details: {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
       });
-      
+
       return [];
     }
   }

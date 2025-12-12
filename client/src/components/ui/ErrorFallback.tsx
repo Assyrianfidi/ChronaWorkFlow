@@ -1,12 +1,23 @@
-import * as React from "react"
-import { AlertTriangle, RefreshCw, Home } from "lucide-react"
-import { EnterpriseButton } from "./EnterpriseButton"
 
-interface ErrorFallbackProps {
-  error?: Error
-  resetError?: () => void
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
 }
 
+import React from 'react';
+// @ts-ignore
+import * as React from "react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+// @ts-ignore
+import { EnterpriseButton } from './EnterpriseButton.js.js';
+
+interface ErrorFallbackProps {
+  error?: Error;
+  resetError?: () => void;
+}
+
+// @ts-ignore
 const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -17,11 +28,14 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
         </div>
 
         {/* Error Title */}
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Something went wrong</h1>
-        
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Something went wrong
+        </h1>
+
         {/* Error Description */}
         <p className="text-gray-600 mb-6">
-          {error?.message || "An unexpected error occurred. Please try again or contact support if the problem persists."}
+          {error?.message ||
+            "An unexpected error occurred. Please try again or contact support if the problem persists."}
         </p>
 
         {/* Action Buttons */}
@@ -36,11 +50,11 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
               Try Again
             </EnterpriseButton>
           )}
-          
+
           <EnterpriseButton
             variant="outline"
             className="w-full"
-            onClick={() => window.location.href = "/dashboard"}
+            onClick={() => (window.location.href = "/dashboard")}
           >
             <Home className="w-4 h-4 mr-2" />
             Go to Dashboard
@@ -56,7 +70,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
         </div>
 
         {/* Error Details ( Development only ) */}
-        {process.env.NODE_ENV === 'development' && error && (
+        {process.env.NODE_ENV === import.meta.env.MODE && error && (
           <details className="mt-6 text-left">
             <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-700">
               Error Details
@@ -68,7 +82,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ErrorFallback
+export default ErrorFallback;

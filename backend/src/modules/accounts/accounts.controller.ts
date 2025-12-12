@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
-import { accountsService } from './accounts.service.js';
-import { accountListQuerySchema } from './accounts.model.js';
-import { ApiError } from '../../utils/errors.js';
-import { StatusCodes } from 'http-status-codes';
+import { Request, Response, NextFunction } from "express";
+import { accountsService } from "./accounts.service.js";
+import { accountListQuerySchema } from "./accounts.model.js";
+import { ApiError } from "../../utils/errors.js";
+import { StatusCodes } from "http-status-codes";
 
 export const accountsController = {
   async list(req: Request, res: Response, next: NextFunction) {

@@ -1,62 +1,68 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
-import { AdaptiveLayoutEngine, useAdaptiveLayout, AdaptiveGrid, AdaptiveContainer, AdaptiveText } from '../AdaptiveLayoutEngine';
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
+import {
+  AdaptiveLayoutEngine,
+  useAdaptiveLayout,
+  AdaptiveGrid,
+  AdaptiveContainer,
+  AdaptiveText,
+} from '../AdaptiveLayoutEngine.js';
 
 // Mock the useWindowSize hook
-vi.mock('../hooks/useWindowSize', () => ({
+vi.mock("../hooks/useWindowSize", () => ({
   useWindowSize: vi.fn(() => ({ width: 1024, height: 768 })),
 }));
 
 // Mock the auth store
-vi.mock('../store/auth-store', () => ({
+vi.mock("../store/auth-store", () => ({
   useAuthStore: vi.fn(() => ({
-    user: { role: 'user' },
+    user: { role: "user" },
   })),
 }));
 
-describe('AdaptiveLayoutEngine', () => {
-  it('renders children correctly', () => {
+describe("AdaptiveLayoutEngine", () => {
+  it("renders children correctly", () => {
     render(
       <AdaptiveLayoutEngine>
         <div>Test Content</div>
-      </AdaptiveLayoutEngine>
+      </AdaptiveLayoutEngine>,
     );
 
-    expect(screen.getByText('Test Content')).toBeInTheDocument();
+    expect(screen.getByText("Test Content")).toBeInTheDocument();
   });
 
-  it('applies correct breakpoint classes based on screen width', () => {
+  it("applies correct breakpoint classes based on screen width", () => {
     render(
       <AdaptiveLayoutEngine>
         <div>Test Content</div>
-      </AdaptiveLayoutEngine>
+      </AdaptiveLayoutEngine>,
     );
 
-    const container = screen.getByText('Test Content').parentElement;
-    expect(container).toHaveClass('breakpoint-tablet');
+    const container = screen.getByText("Test Content").parentElement;
+    expect(container).toHaveClass("breakpoint-tablet");
   });
 
-  it('applies mobile adaptations for small screens', async () => {
-    const { useWindowSize } = require('../hooks/useWindowSize');
+  it("applies mobile adaptations for small screens", async () => {
+    const { useWindowSize } = require("../hooks/useWindowSize");
     useWindowSize.mockReturnValue({ width: 500, height: 768 });
 
     render(
       <AdaptiveLayoutEngine>
         <div>Test Content</div>
-      </AdaptiveLayoutEngine>
+      </AdaptiveLayoutEngine>,
     );
 
     await waitFor(() => {
-      const container = screen.getByText('Test Content').parentElement;
-      expect(container).toHaveClass('breakpoint-mobile');
-      expect(container).toHaveClass('compact-layout');
-      expect(container).toHaveClass('sidebar-collapsed');
+      const container = screen.getByText("Test Content").parentElement;
+      expect(container).toHaveClass("breakpoint-mobile");
+      expect(container).toHaveClass("compact-layout");
+      expect(container).toHaveClass("sidebar-collapsed");
     });
   });
 });
 
-describe('AdaptiveGrid', () => {
+describe("AdaptiveGrid", () => {
   const mockUseAdaptiveLayout = {
     config: {
       breakpoints: { mobile: 768, tablet: 1024, desktop: 1280, wide: 1536 },
@@ -64,51 +70,53 @@ describe('AdaptiveGrid', () => {
         compact: false,
         sidebarCollapsed: false,
         topNavigation: false,
-        cardDensity: 'comfortable',
+        cardDensity: "comfortable",
         animationsEnabled: true,
       },
     },
-    currentBreakpoint: 'tablet',
+    currentBreakpoint: "tablet",
     isMobile: false,
     isTablet: true,
     isDesktop: false,
-    screenOrientation: 'landscape',
+    screenOrientation: "landscape",
     updateConfig: vi.fn(),
   };
 
   beforeEach(() => {
-    vi.spyOn(React, 'useContext').mockReturnValue(mockUseAdaptiveLayout);
+    vi.spyOn(React, "useContext").mockReturnValue(mockUseAdaptiveLayout);
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('renders grid with correct columns for tablet breakpoint', () => {
+  it("renders grid with correct columns for tablet breakpoint", () => {
     render(
       <AdaptiveGrid>
         <div>Item 1</div>
         <div>Item 2</div>
-      </AdaptiveGrid>
+      </AdaptiveGrid>,
     );
 
-    const grid = screen.getByText('Item 1').parentElement;
-    expect(grid).toHaveStyle({ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' });
+    const grid = screen.getByText("Item 1").parentElement;
+    expect(grid).toHaveStyle({
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    });
   });
 
-  it('applies custom gap sizes', () => {
+  it("applies custom gap sizes", () => {
     render(
       <AdaptiveGrid gap={{ mobile: 2, tablet: 4, desktop: 6, wide: 8 }}>
         <div>Item 1</div>
-      </AdaptiveGrid>
+      </AdaptiveGrid>,
     );
 
-    const grid = screen.getByText('Item 1').parentElement;
-    expect(grid).toHaveStyle({ gap: '1rem' }); // 4 * 0.25rem
+    const grid = screen.getByText("Item 1").parentElement;
+    expect(grid).toHaveStyle({ gap: "1rem" }); // 4 * 0.25rem
   });
 });
 
-describe('AdaptiveContainer', () => {
+describe("AdaptiveContainer", () => {
   const mockUseAdaptiveLayout = {
     config: {
       breakpoints: { mobile: 768, tablet: 1024, desktop: 1280, wide: 1536 },
@@ -116,51 +124,51 @@ describe('AdaptiveContainer', () => {
         compact: false,
         sidebarCollapsed: false,
         topNavigation: false,
-        cardDensity: 'comfortable',
+        cardDensity: "comfortable",
         animationsEnabled: true,
       },
     },
-    currentBreakpoint: 'desktop',
+    currentBreakpoint: "desktop",
     isMobile: false,
     isTablet: false,
     isDesktop: true,
-    screenOrientation: 'landscape',
+    screenOrientation: "landscape",
     updateConfig: vi.fn(),
   };
 
   beforeEach(() => {
-    vi.spyOn(React, 'useContext').mockReturnValue(mockUseAdaptiveLayout);
+    vi.spyOn(React, "useContext").mockReturnValue(mockUseAdaptiveLayout);
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('applies correct padding for desktop breakpoint', () => {
+  it("applies correct padding for desktop breakpoint", () => {
     render(
       <AdaptiveContainer>
         <div>Container Content</div>
-      </AdaptiveContainer>
+      </AdaptiveContainer>,
     );
 
-    const container = screen.getByText('Container Content').parentElement;
-    expect(container).toHaveClass('px-8');
+    const container = screen.getByText("Container Content").parentElement;
+    expect(container).toHaveClass("px-8");
   });
 
-  it('applies max width when enabled', () => {
+  it("applies max width when enabled", () => {
     render(
       <AdaptiveContainer maxWidth={true}>
         <div>Container Content</div>
-      </AdaptiveContainer>
+      </AdaptiveContainer>,
     );
 
-    const container = screen.getByText('Container Content').parentElement;
-    expect(container).toHaveClass('max-w-7xl');
-    expect(container).toHaveClass('mx-auto');
+    const container = screen.getByText("Container Content").parentElement;
+    expect(container).toHaveClass("max-w-7xl");
+    expect(container).toHaveClass("mx-auto");
   });
 });
 
-describe('AdaptiveText', () => {
+describe("AdaptiveText", () => {
   const mockUseAdaptiveLayout = {
     config: {
       breakpoints: { mobile: 768, tablet: 1024, desktop: 1280, wide: 1536 },
@@ -168,34 +176,34 @@ describe('AdaptiveText', () => {
         compact: false,
         sidebarCollapsed: false,
         topNavigation: false,
-        cardDensity: 'comfortable',
+        cardDensity: "comfortable",
         animationsEnabled: true,
       },
     },
-    currentBreakpoint: 'desktop',
+    currentBreakpoint: "desktop",
     isMobile: false,
     isTablet: false,
     isDesktop: true,
-    screenOrientation: 'landscape',
+    screenOrientation: "landscape",
     updateConfig: vi.fn(),
   };
 
   beforeEach(() => {
-    vi.spyOn(React, 'useContext').mockReturnValue(mockUseAdaptiveLayout);
+    vi.spyOn(React, "useContext").mockReturnValue(mockUseAdaptiveLayout);
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('applies correct font size for heading variant on desktop', () => {
+  it("applies correct font size for heading variant on desktop", () => {
     render(<AdaptiveText variant="heading">Heading Text</AdaptiveText>);
 
-    const text = screen.getByText('Heading Text');
-    expect(text).toHaveClass('text-4xl');
+    const text = screen.getByText("Heading Text");
+    expect(text).toHaveClass("text-4xl");
   });
 
-  it('applies compact class when layout is compact', () => {
+  it("applies compact class when layout is compact", () => {
     const compactLayout = {
       ...mockUseAdaptiveLayout,
       config: {
@@ -207,32 +215,37 @@ describe('AdaptiveText', () => {
       },
     };
 
-    jest.spyOn(React, 'useContext').mockReturnValue(compactLayout);
+    jest.spyOn(React, "useContext").mockReturnValue(compactLayout);
 
     render(<AdaptiveText>Compact Text</AdaptiveText>);
 
-    const text = screen.getByText('Compact Text');
-    expect(text).toHaveClass('text-xs');
+    const text = screen.getByText("Compact Text");
+    expect(text).toHaveClass("text-xs");
   });
 });
 
-describe('useAdaptiveLayout hook', () => {
-  it('throws error when used outside provider', () => {
+describe("useAdaptiveLayout hook", () => {
+  it("throws error when used outside provider", () => {
     const TestComponent = () => {
       try {
         useAdaptiveLayout();
         return <div>Success</div>;
       } catch (error) {
+// @ts-ignore
         return <div>Error: {(error as Error).message}</div>;
       }
     };
 
     render(<TestComponent />);
     expect(screen.getByText(/Error:/)).toBeInTheDocument();
-    expect(screen.getByText(/useAdaptiveLayout must be used within AdaptiveLayoutEngine/)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /useAdaptiveLayout must be used within AdaptiveLayoutEngine/,
+      ),
+    ).toBeInTheDocument();
   });
 
-  it('returns context when used within provider', () => {
+  it("returns context when used within provider", () => {
     const mockContext = {
       config: {
         breakpoints: { mobile: 768, tablet: 1024, desktop: 1280, wide: 1536 },
@@ -240,19 +253,19 @@ describe('useAdaptiveLayout hook', () => {
           compact: false,
           sidebarCollapsed: false,
           topNavigation: false,
-          cardDensity: 'comfortable',
+          cardDensity: "comfortable",
           animationsEnabled: true,
         },
       },
       updateConfig: vi.fn(),
-      currentBreakpoint: 'desktop',
+      currentBreakpoint: "desktop",
       isMobile: false,
       isTablet: false,
       isDesktop: true,
-      screenOrientation: 'landscape',
+      screenOrientation: "landscape",
     };
 
-    vi.spyOn(React, 'useContext').mockReturnValue(mockContext);
+    vi.spyOn(React, "useContext").mockReturnValue(mockContext);
 
     const TestComponent = () => {
       const context = useAdaptiveLayout();
@@ -262,9 +275,9 @@ describe('useAdaptiveLayout hook', () => {
     render(
       <AdaptiveLayoutEngine>
         <TestComponent />
-      </AdaptiveLayoutEngine>
+      </AdaptiveLayoutEngine>,
     );
 
-    expect(screen.getByText('Current breakpoint: desktop')).toBeInTheDocument();
+    expect(screen.getByText("Current breakpoint: desktop")).toBeInTheDocument();
   });
 });

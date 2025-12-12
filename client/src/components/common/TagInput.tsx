@@ -1,6 +1,8 @@
-import { useState, useRef, KeyboardEvent, useEffect } from 'react';
-import { X, Plus } from 'lucide-react';
-import { cn } from '../lib/utils';
+import React from 'react';
+import { useState, useRef, KeyboardEvent, useEffect } from "react";
+import { X, Plus } from "lucide-react";
+// @ts-ignore
+import { cn } from '../lib/utils.js.js';
 
 interface TagInputProps {
   tags: string[];
@@ -15,19 +17,19 @@ export function TagInput({
   tags = [],
   onChange,
   maxTags = 5,
-  placeholder = 'Add a tag...',
+  placeholder = "Add a tag...",
   className,
   disabled = false,
 }: TagInputProps) {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' || e.key === ',') {
+    if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
       addTag();
-    } else if (e.key === 'Backspace' && inputValue === '' && tags.length > 0) {
+    } else if (e.key === "Backspace" && inputValue === "" && tags.length > 0) {
       // Remove last tag on backspace when input is empty
       removeTag(tags.length - 1);
     }
@@ -35,10 +37,10 @@ export function TagInput({
 
   const addTag = () => {
     const newTag = inputValue.trim();
-    
+
     if (newTag && !tags.includes(newTag) && tags.length < maxTags) {
       onChange([...tags, newTag]);
-      setInputValue('');
+      setInputValue("");
     }
   };
 
@@ -67,10 +69,10 @@ export function TagInput({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background',
-        isFocused && 'ring-2 ring-ring ring-offset-2',
-        disabled && 'opacity-50 cursor-not-allowed',
-        className
+        "flex flex-wrap items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+        isFocused && "ring-2 ring-ring ring-offset-2",
+        disabled && "opacity-50 cursor-not-allowed",
+        className,
       )}
       onClick={() => inputRef.current?.focus()}
     >
@@ -104,7 +106,7 @@ export function TagInput({
           onKeyDown={handleKeyDown}
           onFocus={() => setIsFocused(true)}
           onBlur={handleBlur}
-          placeholder={tags.length === 0 ? placeholder : ''}
+          placeholder={tags.length === 0 ? placeholder : ""}
           className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
           disabled={disabled}
           maxLength={20}

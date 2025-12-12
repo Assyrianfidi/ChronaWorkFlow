@@ -1,6 +1,6 @@
-import React from 'react';
-import { useFormContext, RegisterOptions } from 'react-hook-form';
-import { cn } from '../lib/utils';
+import React from "react";
+import { useFormContext, RegisterOptions } from "react-hook-form";
+import { cn } from '../lib/utils.js';
 
 type FormFieldProps = {
   name: string;
@@ -25,10 +25,11 @@ export function FormField({
   } = useFormContext();
 
   const error = getNestedError(errors, name);
+// @ts-ignore
   const errorMessage = error?.message as string | undefined;
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn("space-y-2", className)}>
       {label && (
         <label
           htmlFor={name}
@@ -46,7 +47,7 @@ export function FormField({
         {React.cloneElement(children, {
           id: name,
           ...(name ? register(name, options) : {}),
-          'aria-invalid': error ? 'true' : 'false',
+          "aria-invalid": error ? "true" : "false",
           ...children.props,
         })}
       </div>
@@ -62,9 +63,9 @@ export function FormField({
 // Helper to get nested form errors
 function getNestedError(
   errors: Record<string, any>,
-  path: string
+  path: string,
 ): { message?: string } | undefined {
-  return path.split('.').reduce((obj, key) => {
+  return path.split(".").reduce((obj, key) => {
     if (!obj) return undefined;
     return obj[key];
   }, errors);

@@ -1,39 +1,44 @@
+import React from 'react';
 "use client";
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useAuthStore } from '../store/auth-store';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Loader2 } from 'lucide-react';
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+// @ts-ignore
+import * as z from "zod";
+// @ts-ignore
+import { useAuthStore } from '../store/auth-store.js.js';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
 // Define form schema with validation
-const resetPasswordSchema = z.object({
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
-    ),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 const ResetPasswordPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
   const { resetPassword, isAuthenticated, isLoading } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -42,21 +47,21 @@ const ResetPasswordPage = () => {
   } = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      password: '',
-      confirmPassword: '',
+      password: "",
+      confirmPassword: "",
     },
   });
 
   // Redirect if already authenticated or missing token
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isAuthenticated, router]);
 
   const onSubmit = async (data: ResetPasswordFormValues) => {
     if (!token) {
-      setError('Invalid or missing reset token');
+      setError("Invalid or missing reset token");
       return;
     }
 
@@ -65,12 +70,13 @@ const ResetPasswordPage = () => {
 
     try {
       await resetPassword(token, data.password);
-      
+
       // Redirect to login with success state
-      router.push('/auth/login?reset=success');
+      router.push("/auth/login?reset=success");
     } catch (err) {
+// @ts-ignore
       const error = err as Error;
-      setError(error.message || 'Failed to reset password. Please try again.');
+      setError(error.message || "Failed to reset password. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -84,7 +90,8 @@ const ResetPasswordPage = () => {
             Invalid Reset Link
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            The password reset link is invalid or has expired. Please request a new one.
+            The password reset link is invalid or has expired. Please request a
+            new one.
           </p>
           <Link
             href="/auth/forgot-password"
@@ -133,7 +140,7 @@ const ResetPasswordPage = () => {
             </div>
           </div>
         )}
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -146,10 +153,10 @@ const ResetPasswordPage = () => {
                 autoComplete="new-password"
                 disabled={isSubmitting || isLoading}
                 className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
-                  errors.password ? 'border-red-300' : 'border-gray-300'
+                  errors.password ? "border-red-300" : "border-gray-300"
                 } placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
                 placeholder="New Password"
-                {...register('password')}
+                {...register("password")}
               />
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">
@@ -167,10 +174,10 @@ const ResetPasswordPage = () => {
                 autoComplete="new-password"
                 disabled={isSubmitting || isLoading}
                 className={`appearance-none rounded-none relative block w-full px-3 py-2 border ${
-                  errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
+                  errors.confirmPassword ? "border-red-300" : "border-gray-300"
                 } placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`}
                 placeholder="Confirm New Password"
-                {...register('confirmPassword')}
+                {...register("confirmPassword")}
               />
               {errors.confirmPassword && (
                 <p className="mt-1 text-sm text-red-600">
@@ -192,14 +199,14 @@ const ResetPasswordPage = () => {
                   Resetting...
                 </>
               ) : (
-                'Reset Password'
+                "Reset Password"
               )}
             </button>
           </div>
-          
+
           <div className="text-center">
-            <Link 
-              href="/auth/login" 
+            <Link
+              href="/auth/login"
               className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
             >
               Back to sign in

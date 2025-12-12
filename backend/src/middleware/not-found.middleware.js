@@ -6,12 +6,12 @@
  */
 const notFoundHandler = (req, res, next) => {
   res.status(404).json({
-    status: 'error',
-    message: 'Not Found',
+    status: "error",
+    message: "Not Found",
     error: {
       statusCode: 404,
-      message: 'The requested resource was not found.'
-    }
+      message: "The requested resource was not found.",
+    },
   });
 };
 

@@ -1,8 +1,8 @@
-const express = require('express');
-const { body } = require('express-validator');
-const { authController } = require('../controllers');
-const { validateRequest } = require('../middleware/validateRequest');
-const { auth } = require('../middleware/auth');
+const express = require("express");
+const { body } = require("express-validator");
+const { authController } = require("../controllers");
+const { validateRequest } = require("../middleware/validateRequest");
+const { auth } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -47,16 +47,16 @@ const router = express.Router();
  *         description: User already exists
  */
 router.post(
-  '/register',
+  "/register",
   [
-    body('email').isEmail().normalizeEmail(),
-    body('password').isLength({ min: 8 }),
-    body('firstName').notEmpty().trim(),
-    body('lastName').notEmpty().trim(),
-    body('businessName').notEmpty().trim(),
+    body("email").isEmail().normalizeEmail(),
+    body("password").isLength({ min: 8 }),
+    body("firstName").notEmpty().trim(),
+    body("lastName").notEmpty().trim(),
+    body("businessName").notEmpty().trim(),
     validateRequest,
   ],
-  authController.register
+  authController.register,
 );
 
 /**
@@ -88,13 +88,13 @@ router.post(
  *         description: Invalid credentials
  */
 router.post(
-  '/login',
+  "/login",
   [
-    body('email').isEmail().normalizeEmail(),
-    body('password').notEmpty(),
+    body("email").isEmail().normalizeEmail(),
+    body("password").notEmpty(),
     validateRequest,
   ],
-  authController.login
+  authController.login,
 );
 
 /**
@@ -111,7 +111,7 @@ router.post(
  *       401:
  *         description: Not authenticated
  */
-router.post('/logout', auth, authController.logout);
+router.post("/logout", auth, authController.logout);
 
 /**
  * @swagger
@@ -125,7 +125,7 @@ router.post('/logout', auth, authController.logout);
  *       401:
  *         description: Invalid or expired refresh token
  */
-router.post('/refresh-token', authController.refreshToken);
+router.post("/refresh-token", authController.refreshToken);
 
 /**
  * @swagger
@@ -141,6 +141,6 @@ router.post('/refresh-token', authController.refreshToken);
  *       401:
  *         description: Not authenticated
  */
-router.get('/me', auth, authController.getMe);
+router.get("/me", auth, authController.getMe);
 
 module.exports = router;

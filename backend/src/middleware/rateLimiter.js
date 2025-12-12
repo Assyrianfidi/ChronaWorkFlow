@@ -1,6 +1,6 @@
-const rateLimit = require('express-rate-limit');
-const { RATE_LIMIT_WINDOW_MS, RATE_LIMIT_MAX } = require('../config');
-const { logger } = require('../utils/logger');
+const rateLimit = require("express-rate-limit");
+const { RATE_LIMIT_WINDOW_MS, RATE_LIMIT_MAX } = require("../config");
+const { logger } = require("../utils/logger");
 
 /**
  * Rate limiting middleware to prevent abuse of the API
@@ -12,17 +12,17 @@ const rateLimiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: {
     success: false,
-    message: 'Too many requests, please try again later.',
+    message: "Too many requests, please try again later.",
   },
   handler: (req, res, next, options) => {
     logger.warn(
-      `Rate limit exceeded for IP: ${req.ip}, Path: ${req.originalUrl}, Method: ${req.method}`
+      `Rate limit exceeded for IP: ${req.ip}, Path: ${req.originalUrl}, Method: ${req.method}`,
     );
     res.status(options.statusCode).json(options.message);
   },
   skip: (req) => {
     // Skip rate limiting for health check endpoint
-    if (req.path === '/health') {
+    if (req.path === "/health") {
       return true;
     }
     return false;

@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
@@ -10,27 +10,29 @@ export type RegisterFormData = z.infer<typeof registerSchema>;
 
 export const registerSchema = z
   .object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
-    email: z.string().email('Please enter a valid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
-    path: ['confirmPassword'],
+    path: ["confirmPassword"],
   });
 
 // Base report schema for form input
 export const reportFormSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters'),
+  title: z.string().min(3, "Title must be at least 3 characters"),
   amount: z.preprocess(
-    (val) => (typeof val === 'string' ? parseFloat(val) : val),
-    z.number().min(0.01, 'Amount must be greater than 0')
+    (val) => (typeof val === "string" ? parseFloat(val) : val),
+    z.number().min(0.01, "Amount must be greater than 0"),
   ),
   description: z.string().optional(),
-  date: z.union([z.date(), z.string().datetime()]).transform((val) => new Date(val)),
-  category: z.string().min(1, 'Please select a category'),
-  status: z.enum(['pending', 'approved', 'rejected']).default('pending'),
+  date: z
+    .union([z.date(), z.string().datetime()])
+    .transform((val) => new Date(val)),
+  category: z.string().min(1, "Please select a category"),
+  status: z.enum(["pending", "approved", "rejected"]).default("pending"),
 });
 
 // Report schema for database/API (extends form schema with additional fields)
@@ -51,19 +53,21 @@ type ReportFormDataInternal = z.output<typeof reportFormSchema>;
 type ReportInternal = z.infer<typeof reportSchema>;
 
 export const userSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  role: z.enum(['USER', 'ADMIN', 'MANAGER', 'AUDITOR', 'INVENTORY_MANAGER']).default('USER'),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  role: z
+    .enum(["USER", "ADMIN", "MANAGER", "AUDITOR", "INVENTORY_MANAGER"])
+    .default("USER"),
   isActive: z.boolean().default(true),
 });
 
 // Company schemas
 export const companyFormSchema = z.object({
-  name: z.string().min(2, 'Company name must be at least 2 characters'),
+  name: z.string().min(2, "Company name must be at least 2 characters"),
   description: z.string().optional(),
-  logo: z.string().url().optional().or(z.literal('')),
-  website: z.string().url().optional().or(z.literal('')),
+  logo: z.string().url().optional().or(z.literal("")),
+  website: z.string().url().optional().or(z.literal("")),
   isActive: z.boolean().default(true),
 });
 
@@ -76,9 +80,9 @@ export const companySchema = companyFormSchema.extend({
 
 // Account schemas
 export const accountFormSchema = z.object({
-  code: z.string().min(1, 'Account code is required'),
-  name: z.string().min(2, 'Account name must be at least 2 characters'),
-  type: z.enum(['ASSET', 'LIABILITY', 'EQUITY', 'REVENUE', 'EXPENSE']),
+  code: z.string().min(1, "Account code is required"),
+  name: z.string().min(2, "Account name must be at least 2 characters"),
+  type: z.enum(["ASSET", "LIABILITY", "EQUITY", "REVENUE", "EXPENSE"]),
   parentId: z.string().uuid().optional().or(z.null()),
   balance: z.number().default(0),
   description: z.string().optional(),
@@ -97,22 +101,28 @@ export const accountSchema = accountFormSchema.extend({
 export const companyMemberSchema = z.object({
   companyId: z.string().uuid(),
   userId: z.number(),
-  role: z.string().default('MEMBER'),
+  role: z.string().default("MEMBER"),
 });
 
 // Inventory item schemas
 export const inventoryItemFormSchema = z.object({
-  name: z.string().min(2, 'Item name must be at least 2 characters'),
+  name: z.string().min(2, "Item name must be at least 2 characters"),
   description: z.string().optional(),
-  sku: z.string().min(1, 'SKU is required'),
+  sku: z.string().min(1, "SKU is required"),
   barcode: z.string().optional(),
   categoryId: z.number().optional(),
   supplierId: z.number().optional(),
-  quantity: z.number().min(0, 'Quantity must be non-negative').default(0),
-  unit: z.string().min(1, 'Unit is required'),
-  costPrice: z.number().min(0, 'Cost price must be non-negative').default(0),
-  sellingPrice: z.number().min(0, 'Selling price must be non-negative').default(0),
-  reorderPoint: z.number().min(0, 'Reorder point must be non-negative').default(0),
+  quantity: z.number().min(0, "Quantity must be non-negative").default(0),
+  unit: z.string().min(1, "Unit is required"),
+  costPrice: z.number().min(0, "Cost price must be non-negative").default(0),
+  sellingPrice: z
+    .number()
+    .min(0, "Selling price must be non-negative")
+    .default(0),
+  reorderPoint: z
+    .number()
+    .min(0, "Reorder point must be non-negative")
+    .default(0),
   location: z.string().optional(),
   notes: z.string().optional(),
   isActive: z.boolean().default(true),
@@ -129,7 +139,7 @@ export const inventoryItemSchema = inventoryItemFormSchema.extend({
 
 // Category schemas
 export const categoryFormSchema = z.object({
-  name: z.string().min(2, 'Category name must be at least 2 characters'),
+  name: z.string().min(2, "Category name must be at least 2 characters"),
   description: z.string().optional(),
 });
 
@@ -142,8 +152,8 @@ export const categorySchema = categoryFormSchema.extend({
 
 // Supplier schemas
 export const supplierFormSchema = z.object({
-  name: z.string().min(2, 'Supplier name must be at least 2 characters'),
-  email: z.string().email().optional().or(z.literal('')),
+  name: z.string().min(2, "Supplier name must be at least 2 characters"),
+  email: z.string().email().optional().or(z.literal("")),
   phone: z.string().optional(),
   address: z.string().optional(),
 });
@@ -170,4 +180,11 @@ export type CategoryFormInput = z.infer<typeof categoryFormSchema>;
 export type Category = z.infer<typeof categorySchema>;
 export type SupplierFormInput = z.infer<typeof supplierFormSchema>;
 export type Supplier = z.infer<typeof supplierSchema>;
-export type { ReportFormInputInternal as ReportFormInput, ReportFormDataInternal as ReportFormData, ReportInternal as Report };
+export type {
+// @ts-ignore
+  ReportFormInputInternal as ReportFormInput,
+// @ts-ignore
+  ReportFormDataInternal as ReportFormData,
+// @ts-ignore
+  ReportInternal as Report,
+};

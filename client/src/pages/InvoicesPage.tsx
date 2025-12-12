@@ -1,197 +1,270 @@
-import * as React from "react"
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Badge } from "../components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog"
-import { Label } from "../components/ui/label"
-import { Textarea } from "../components/ui/textarea"
-import { Plus, Search, Filter, Download, Eye, Edit, Trash2, Send, CheckCircle, Clock, AlertCircle } from "lucide-react"
+import React, { useState } from 'react';
+// @ts-ignore
+import * as React from "react";
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card.js.js';
+// @ts-ignore
+import { Button } from '../components/ui/button.js.js';
+// @ts-ignore
+import { Input } from '../components/ui/input.js.js';
+// @ts-ignore
+import { Badge } from '../components/ui/badge.js.js';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../components/ui/table.js.js';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select.js.js';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../components/ui/dialog.js.js';
+// @ts-ignore
+import { Label } from '../components/ui/label.js.js';
+// @ts-ignore
+import { Textarea } from '../components/ui/textarea.js.js';
+import {
+  Plus,
+  Search,
+  Filter,
+  Download,
+  Eye,
+  Edit,
+  Trash2,
+  Send,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+} from "lucide-react";
 
 interface Invoice {
-  id: string
-  invoiceNumber: string
-  customerName: string
-  customerEmail: string
-  amount: number
-  status: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED'
-  dueDate: string
-  createdAt: string
-  description?: string
+  id: string;
+  invoiceNumber: string;
+  customerName: string;
+  customerEmail: string;
+  amount: number;
+  status: "DRAFT" | "SENT" | "PAID" | "OVERDUE" | "CANCELLED";
+  dueDate: string;
+  createdAt: string;
+  description?: string;
 }
 
 const mockInvoices: Invoice[] = [
   {
-    id: '1',
-    invoiceNumber: 'INV-001',
-    customerName: 'ABC Corporation',
-    customerEmail: 'billing@abc-corp.com',
-    amount: 2500.00,
-    status: 'PAID',
-    dueDate: '2024-12-15',
-    createdAt: '2024-12-01',
-    description: 'Web development services - November 2024'
+    id: "1",
+    invoiceNumber: "INV-001",
+    customerName: "ABC Corporation",
+    customerEmail: "billing@abc-corp.com",
+    amount: 2500.0,
+    status: "PAID",
+    dueDate: "2024-12-15",
+    createdAt: "2024-12-01",
+    description: "Web development services - November 2024",
   },
   {
-    id: '2',
-    invoiceNumber: 'INV-002',
-    customerName: 'XYZ Industries',
-    customerEmail: 'accounts@xyz-ind.com',
-    amount: 1800.50,
-    status: 'SENT',
-    dueDate: '2024-12-20',
-    createdAt: '2024-12-05',
-    description: 'SEO consulting services'
+    id: "2",
+    invoiceNumber: "INV-002",
+    customerName: "XYZ Industries",
+    customerEmail: "accounts@xyz-ind.com",
+    amount: 1800.5,
+    status: "SENT",
+    dueDate: "2024-12-20",
+    createdAt: "2024-12-05",
+    description: "SEO consulting services",
   },
   {
-    id: '3',
-    invoiceNumber: 'INV-003',
-    customerName: 'Tech Solutions Ltd',
-    customerEmail: 'finance@tech-solutions.io',
-    amount: 3200.00,
-    status: 'OVERDUE',
-    dueDate: '2024-11-30',
-    createdAt: '2024-11-15',
-    description: 'Cloud infrastructure setup'
+    id: "3",
+    invoiceNumber: "INV-003",
+    customerName: "Tech Solutions Ltd",
+    customerEmail: "finance@tech-solutions.io",
+    amount: 3200.0,
+    status: "OVERDUE",
+    dueDate: "2024-11-30",
+    createdAt: "2024-11-15",
+    description: "Cloud infrastructure setup",
   },
   {
-    id: '4',
-    invoiceNumber: 'INV-004',
-    customerName: 'Global Marketing Inc',
-    customerEmail: 'payments@global-marketing.com',
-    amount: 950.00,
-    status: 'DRAFT',
-    dueDate: '2024-12-25',
-    createdAt: '2024-12-10',
-    description: 'Marketing campaign management'
+    id: "4",
+    invoiceNumber: "INV-004",
+    customerName: "Global Marketing Inc",
+    customerEmail: "payments@global-marketing.com",
+    amount: 950.0,
+    status: "DRAFT",
+    dueDate: "2024-12-25",
+    createdAt: "2024-12-10",
+    description: "Marketing campaign management",
   },
   {
-    id: '5',
-    invoiceNumber: 'INV-005',
-    customerName: 'StartUp Ventures',
-    customerEmail: 'admin@startup-ventures.co',
-    amount: 1500.00,
-    status: 'SENT',
-    dueDate: '2024-12-18',
-    createdAt: '2024-12-08',
-    description: 'Mobile app development consultation'
-  }
-]
+    id: "5",
+    invoiceNumber: "INV-005",
+    customerName: "StartUp Ventures",
+    customerEmail: "admin@startup-ventures.co",
+    amount: 1500.0,
+    status: "SENT",
+    dueDate: "2024-12-18",
+    createdAt: "2024-12-08",
+    description: "Mobile app development consultation",
+  },
+];
 
 const statusConfig = {
-  DRAFT: { color: 'bg-gray-100 text-gray-800', icon: Edit, label: 'Draft' },
-  SENT: { color: 'bg-blue-100 text-blue-800', icon: Send, label: 'Sent' },
-  PAID: { color: 'bg-green-100 text-green-800', icon: CheckCircle, label: 'Paid' },
-  OVERDUE: { color: 'bg-red-100 text-red-800', icon: AlertCircle, label: 'Overdue' },
-  CANCELLED: { color: 'bg-yellow-100 text-yellow-800', icon: Trash2, label: 'Cancelled' }
-}
+  DRAFT: { color: "bg-gray-100 text-gray-800", icon: Edit, label: "Draft" },
+  SENT: { color: "bg-blue-100 text-blue-800", icon: Send, label: "Sent" },
+  PAID: {
+    color: "bg-green-100 text-green-800",
+    icon: CheckCircle,
+    label: "Paid",
+  },
+  OVERDUE: {
+    color: "bg-red-100 text-red-800",
+    icon: AlertCircle,
+    label: "Overdue",
+  },
+  CANCELLED: {
+    color: "bg-yellow-100 text-yellow-800",
+    icon: Trash2,
+    label: "Cancelled",
+  },
+};
 
+// @ts-ignore
 const InvoicesPage: React.FC = () => {
-  const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices)
-  const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>(mockInvoices)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices);
+  const [filteredInvoices, setFilteredInvoices] =
+    useState<Invoice[]>(mockInvoices);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Mock fetch invoices
   const fetchInvoices = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800))
-      console.log('📄 Fetching invoices...')
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      console.log("📄 Fetching invoices...");
       // In real app: const response = await fetch('/api/invoices')
-      setInvoices(mockInvoices)
-      setFilteredInvoices(mockInvoices)
+      setInvoices(mockInvoices);
+      setFilteredInvoices(mockInvoices);
     } catch (error) {
-      console.error('Failed to fetch invoices:', error)
+      console.error("Failed to fetch invoices:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchInvoices()
-  }, [])
+    fetchInvoices();
+  }, []);
 
   // Filter invoices
   useEffect(() => {
-    let filtered = invoices
+    let filtered = invoices;
 
     if (searchTerm) {
-      filtered = filtered.filter(invoice =>
-        invoice.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        invoice.customerEmail.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      filtered = filtered.filter(
+        (invoice) =>
+          invoice.customerName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          invoice.invoiceNumber
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          invoice.customerEmail
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()),
+      );
     }
 
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(invoice => invoice.status === statusFilter)
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((invoice) => invoice.status === statusFilter);
     }
 
-    setFilteredInvoices(filtered)
-  }, [invoices, searchTerm, statusFilter])
+    setFilteredInvoices(filtered);
+  }, [invoices, searchTerm, statusFilter]);
 
   const handleCreateInvoice = async (formData: any) => {
     try {
-      console.log('📄 Creating invoice:', formData)
+      console.log("📄 Creating invoice:", formData);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       const newInvoice: Invoice = {
         id: Date.now().toString(),
-        invoiceNumber: `INV-${String(invoices.length + 1).padStart(3, '0')}`,
+        invoiceNumber: `INV-${String(invoices.length + 1).padStart(3, "0")}`,
         customerName: formData.customerName,
         customerEmail: formData.customerEmail,
         amount: parseFloat(formData.amount),
-        status: 'DRAFT',
+        status: "DRAFT",
         dueDate: formData.dueDate,
-        createdAt: new Date().toISOString().split('T')[0],
-        description: formData.description
-      }
+        createdAt: new Date().toISOString().split("T")[0],
+        description: formData.description,
+      };
 
-      setInvoices([newInvoice, ...invoices])
-      setIsCreateDialogOpen(false)
-      console.log('✅ Invoice created successfully')
+      setInvoices([newInvoice, ...invoices]);
+      setIsCreateDialogOpen(false);
+      console.log("✅ Invoice created successfully");
     } catch (error) {
-      console.error('Failed to create invoice:', error)
+      console.error("Failed to create invoice:", error);
     }
-  }
+  };
 
-  const handleUpdateStatus = async (invoiceId: string, newStatus: Invoice['status']) => {
+  const handleUpdateStatus = async (
+    invoiceId: string,
+    newStatus: Invoice["status"],
+  ) => {
     try {
-      console.log('📄 Updating invoice status:', invoiceId, newStatus)
+      console.log("📄 Updating invoice status:", invoiceId, newStatus);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      setInvoices(invoices.map(invoice =>
-        invoice.id === invoiceId ? { ...invoice, status: newStatus } : invoice
-      ))
-      console.log('✅ Invoice status updated successfully')
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      setInvoices(
+        invoices.map((invoice) =>
+          invoice.id === invoiceId
+            ? { ...invoice, status: newStatus }
+            : invoice,
+        ),
+      );
+      console.log("✅ Invoice status updated successfully");
     } catch (error) {
-      console.error('Failed to update invoice status:', error)
+      console.error("Failed to update invoice status:", error);
     }
-  }
+  };
 
   const handleDeleteInvoice = async (invoiceId: string) => {
-    if (!confirm('Are you sure you want to delete this invoice?')) return
-    
+    if (!confirm("Are you sure you want to delete this invoice?")) return;
+
     try {
-      console.log('📄 Deleting invoice:', invoiceId)
+      console.log("📄 Deleting invoice:", invoiceId);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      setInvoices(invoices.filter(invoice => invoice.id !== invoiceId))
-      console.log('✅ Invoice deleted successfully')
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      setInvoices(invoices.filter((invoice) => invoice.id !== invoiceId));
+      console.log("✅ Invoice deleted successfully");
     } catch (error) {
-      console.error('Failed to delete invoice:', error)
+      console.error("Failed to delete invoice:", error);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -224,7 +297,9 @@ const InvoicesPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Invoices</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Invoices
+            </CardTitle>
             <Plus className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -239,7 +314,7 @@ const InvoicesPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {invoices.filter(i => i.status === 'PAID').length}
+              {invoices.filter((i) => i.status === "PAID").length}
             </div>
             <p className="text-xs text-muted-foreground">Paid invoices</p>
           </CardContent>
@@ -251,7 +326,7 @@ const InvoicesPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
-              {invoices.filter(i => i.status === 'SENT').length}
+              {invoices.filter((i) => i.status === "SENT").length}
             </div>
             <p className="text-xs text-muted-foreground">Awaiting payment</p>
           </CardContent>
@@ -263,7 +338,7 @@ const InvoicesPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
-              {invoices.filter(i => i.status === 'OVERDUE').length}
+              {invoices.filter((i) => i.status === "OVERDUE").length}
             </div>
             <p className="text-xs text-muted-foreground">Overdue invoices</p>
           </CardContent>
@@ -318,7 +393,8 @@ const InvoicesPage: React.FC = () => {
         <CardHeader>
           <CardTitle>Invoices ({filteredInvoices.length})</CardTitle>
           <CardDescription>
-            A list of all invoices including their status and payment information.
+            A list of all invoices including their status and payment
+            information.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -341,7 +417,7 @@ const InvoicesPage: React.FC = () => {
               </TableHeader>
               <TableBody>
                 {filteredInvoices.map((invoice) => {
-                  const StatusIcon = statusConfig[invoice.status].icon
+                  const StatusIcon = statusConfig[invoice.status].icon;
                   return (
                     <TableRow key={invoice.id}>
                       <TableCell className="font-medium">
@@ -349,8 +425,12 @@ const InvoicesPage: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{invoice.customerName}</div>
-                          <div className="text-sm text-gray-500">{invoice.customerEmail}</div>
+                          <div className="font-medium">
+                            {invoice.customerName}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {invoice.customerEmail}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>${invoice.amount.toFixed(2)}</TableCell>
@@ -370,17 +450,19 @@ const InvoicesPage: React.FC = () => {
                           <Button variant="ghost" size="sm">
                             <Edit className="w-4 h-4" />
                           </Button>
-                          {invoice.status === 'SENT' && (
-                            <Button 
-                              variant="ghost" 
+                          {invoice.status === "SENT" && (
+                            <Button
+                              variant="ghost"
                               size="sm"
-                              onClick={() => handleUpdateStatus(invoice.id, 'PAID')}
+                              onClick={() =>
+                                handleUpdateStatus(invoice.id, "PAID")
+                              }
                             >
                               <CheckCircle className="w-4 h-4" />
                             </Button>
                           )}
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteInvoice(invoice.id)}
                           >
@@ -389,7 +471,7 @@ const InvoicesPage: React.FC = () => {
                         </div>
                       </TableCell>
                     </TableRow>
-                  )
+                  );
                 })}
               </TableBody>
             </Table>
@@ -397,27 +479,35 @@ const InvoicesPage: React.FC = () => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
 // Create Invoice Form Component
-const CreateInvoiceForm: React.FC<{ onSubmit: (data: any) => void }> = ({ onSubmit }) => {
+// @ts-ignore
+const CreateInvoiceForm: React.FC<{ onSubmit: (data: any) => void }> = ({
+  onSubmit,
+}) => {
   const [formData, setFormData] = useState({
-    customerName: '',
-    customerEmail: '',
-    amount: '',
-    dueDate: '',
-    description: ''
-  })
+    customerName: "",
+    customerEmail: "",
+    amount: "",
+    dueDate: "",
+    description: "",
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!formData.customerName || !formData.customerEmail || !formData.amount || !formData.dueDate) {
-      alert('Please fill in all required fields')
-      return
+    e.preventDefault();
+    if (
+      !formData.customerName ||
+      !formData.customerEmail ||
+      !formData.amount ||
+      !formData.dueDate
+    ) {
+      alert("Please fill in all required fields");
+      return;
     }
-    onSubmit(formData)
-  }
+    onSubmit(formData);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -427,7 +517,9 @@ const CreateInvoiceForm: React.FC<{ onSubmit: (data: any) => void }> = ({ onSubm
           <Input
             id="customerName"
             value={formData.customerName}
-            onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, customerName: e.target.value })
+            }
             placeholder="Enter customer name"
           />
         </div>
@@ -437,7 +529,9 @@ const CreateInvoiceForm: React.FC<{ onSubmit: (data: any) => void }> = ({ onSubm
             id="customerEmail"
             type="email"
             value={formData.customerEmail}
-            onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, customerEmail: e.target.value })
+            }
             placeholder="customer@example.com"
           />
         </div>
@@ -450,7 +544,9 @@ const CreateInvoiceForm: React.FC<{ onSubmit: (data: any) => void }> = ({ onSubm
             type="number"
             step="0.01"
             value={formData.amount}
-            onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, amount: e.target.value })
+            }
             placeholder="0.00"
           />
         </div>
@@ -460,7 +556,9 @@ const CreateInvoiceForm: React.FC<{ onSubmit: (data: any) => void }> = ({ onSubm
             id="dueDate"
             type="date"
             value={formData.dueDate}
-            onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, dueDate: e.target.value })
+            }
           />
         </div>
       </div>
@@ -469,19 +567,26 @@ const CreateInvoiceForm: React.FC<{ onSubmit: (data: any) => void }> = ({ onSubm
         <Textarea
           id="description"
           value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
           placeholder="Enter invoice description"
           rows={3}
         />
       </div>
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline">Cancel</Button>
-        <Button type="submit" className="bg-enterprise-navy hover:bg-enterprise-navy/90">
+        <Button type="button" variant="outline">
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          className="bg-enterprise-navy hover:bg-enterprise-navy/90"
+        >
           Create Invoice
         </Button>
       </div>
     </form>
-  )
-}
+  );
+};
 
-export default InvoicesPage
+export default InvoicesPage;

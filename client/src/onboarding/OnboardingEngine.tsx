@@ -1,3 +1,11 @@
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React from 'react';
 /**
  * Universal Onboarding Engine
  * Step-by-step onboarding with role-based flows, interactive tooltips, and feature discovery
@@ -9,28 +17,28 @@ export interface OnboardingStep {
   description: string;
   content?: React.ReactNode;
   target?: string; // CSS selector for target element
-  position?: 'top' | 'bottom' | 'left' | 'right' | 'center';
-  type: 'tooltip' | 'modal' | 'highlight' | 'interactive';
+  position?: "top" | "bottom" | "left" | "right" | "center";
+  type: "tooltip" | "modal" | "highlight" | "interactive";
   action?: {
-    type: 'click' | 'hover' | 'focus' | 'custom';
+    type: "click" | "hover" | "focus" | "custom";
     target?: string;
     handler?: () => void | Promise<void>;
   };
   validation?: {
-    type: 'element_exists' | 'element_clicked' | 'custom';
+    type: "element_exists" | "element_clicked" | "custom";
     target?: string;
     handler?: () => boolean | Promise<boolean>;
   };
   skippable?: boolean;
   required?: boolean;
-  category?: 'getting-started' | 'features' | 'advanced' | 'role-specific';
-  audience?: 'beginner' | 'professional' | 'admin' | 'all';
+  category?: "getting-started" | "features" | "advanced" | "role-specific";
+  audience?: "beginner" | "professional" | "admin" | "all";
   priority?: number;
   estimatedTime?: number; // in seconds
   resources?: {
     title: string;
     url: string;
-    type: 'video' | 'article' | 'documentation';
+    type: "video" | "article" | "documentation";
   }[];
 }
 
@@ -38,8 +46,8 @@ export interface OnboardingFlow {
   id: string;
   name: string;
   description: string;
-  targetAudience: 'beginner' | 'professional' | 'admin' | 'all';
-  category: 'getting-started' | 'features' | 'advanced' | 'role-specific';
+  targetAudience: "beginner" | "professional" | "admin" | "all";
+  category: "getting-started" | "features" | "advanced" | "role-specific";
   steps: OnboardingStep[];
   estimatedDuration: number; // in minutes
   prerequisites?: string[];
@@ -50,7 +58,7 @@ export interface OnboardingFlow {
 export interface OnboardingProgress {
   flowId: string;
   stepId: string;
-  status: 'pending' | 'in_progress' | 'completed' | 'skipped';
+  status: "pending" | "in_progress" | "completed" | "skipped";
   startTime?: Date;
   endTime?: Date;
   timeSpent?: number; // in seconds
@@ -62,8 +70,8 @@ export interface OnboardingProgress {
 
 export interface OnboardingUser {
   id: string;
-  role: 'beginner' | 'professional' | 'admin' | 'super_admin';
-  experienceLevel: 'novice' | 'intermediate' | 'expert';
+  role: "beginner" | "professional" | "admin" | "super_admin";
+  experienceLevel: "novice" | "intermediate" | "expert";
   preferences: {
     showTooltips: boolean;
     autoStart: boolean;
@@ -93,26 +101,30 @@ export class OnboardingEngine {
   private initializeDefaultFlows(): void {
     // Beginner Onboarding Flow
     const beginnerFlow: OnboardingFlow = {
-      id: 'beginner-getting-started',
-      name: 'Getting Started with AccuBooks',
-      description: 'Learn the basics of AccuBooks and set up your first account',
-      targetAudience: 'beginner',
-      category: 'getting-started',
+      id: "beginner-getting-started",
+      name: "Getting Started with AccuBooks",
+      description:
+        "Learn the basics of AccuBooks and set up your first account",
+      targetAudience: "beginner",
+      category: "getting-started",
       steps: [
         {
-          id: 'welcome',
-          title: 'Welcome to AccuBooks!',
-          description: 'Let\'s get you started with the basics of modern accounting software.',
-          type: 'modal',
+          id: "welcome",
+          title: "Welcome to AccuBooks!",
+          description:
+            "Let's get you started with the basics of modern accounting software.",
+          type: "modal",
           skippable: false,
           required: true,
-          audience: 'beginner',
+          audience: "beginner",
           priority: 1,
           estimatedTime: 30,
           content: (
             <div className="welcome-content">
               <h3>🎉 Welcome!</h3>
-              <p>AccuBooks is designed to make accounting simple and intuitive.</p>
+              <p>
+                AccuBooks is designed to make accounting simple and intuitive.
+              </p>
               <ul>
                 <li>Track income and expenses</li>
                 <li>Generate professional reports</li>
@@ -120,103 +132,110 @@ export class OnboardingEngine {
                 <li>Stay tax-compliant</li>
               </ul>
             </div>
-          )
+          ),
         },
         {
-          id: 'dashboard-overview',
-          title: 'Your Dashboard',
-          description: 'This is your command center. Here you can see your business at a glance.',
-          target: '.dashboard-container',
-          position: 'bottom',
-          type: 'tooltip',
+          id: "dashboard-overview",
+          title: "Your Dashboard",
+          description:
+            "This is your command center. Here you can see your business at a glance.",
+          target: ".dashboard-container",
+          position: "bottom",
+          type: "tooltip",
           skippable: true,
           required: true,
-          audience: 'beginner',
+          audience: "beginner",
           priority: 2,
           estimatedTime: 45,
           action: {
-            type: 'click',
-            target: '.dashboard-kpi-card:first-child'
-          }
+            type: "click",
+            target: ".dashboard-kpi-card:first-child",
+          },
         },
         {
-          id: 'first-transaction',
-          title: 'Record Your First Transaction',
-          description: 'Let\'s record your first income or expense. This is the core of bookkeeping.',
-          target: '.add-transaction-button',
-          position: 'left',
-          type: 'interactive',
+          id: "first-transaction",
+          title: "Record Your First Transaction",
+          description:
+            "Let's record your first income or expense. This is the core of bookkeeping.",
+          target: ".add-transaction-button",
+          position: "left",
+          type: "interactive",
           skippable: false,
           required: true,
-          audience: 'beginner',
+          audience: "beginner",
           priority: 3,
           estimatedTime: 120,
           validation: {
-            type: 'element_clicked',
-            target: '.add-transaction-button'
-          }
+            type: "element_clicked",
+            target: ".add-transaction-button",
+          },
         },
         {
-          id: 'navigation-basics',
-          title: 'Navigate Like a Pro',
-          description: 'Learn how to move around AccuBooks efficiently using the sidebar.',
-          target: '.navigation-sidebar',
-          position: 'right',
-          type: 'tooltip',
+          id: "navigation-basics",
+          title: "Navigate Like a Pro",
+          description:
+            "Learn how to move around AccuBooks efficiently using the sidebar.",
+          target: ".navigation-sidebar",
+          position: "right",
+          type: "tooltip",
           skippable: true,
           required: true,
-          audience: 'beginner',
+          audience: "beginner",
           priority: 4,
-          estimatedTime: 60
+          estimatedTime: 60,
         },
         {
-          id: 'reports-intro',
-          title: 'Understanding Reports',
-          description: 'Reports help you make informed business decisions. Let\'s explore them.',
-          target: '.reports-section',
-          position: 'top',
-          type: 'tooltip',
+          id: "reports-intro",
+          title: "Understanding Reports",
+          description:
+            "Reports help you make informed business decisions. Let's explore them.",
+          target: ".reports-section",
+          position: "top",
+          type: "tooltip",
           skippable: true,
           required: false,
-          audience: 'beginner',
+          audience: "beginner",
           priority: 5,
-          estimatedTime: 90
-        }
+          estimatedTime: 90,
+        },
       ],
       estimatedDuration: 15,
-      tags: ['beginner', 'essentials', 'quick-start'],
-      version: '1.0.0'
+      tags: ["beginner", "essentials", "quick-start"],
+      version: "1.0.0",
     };
 
     // Professional Onboarding Flow
     const professionalFlow: OnboardingFlow = {
-      id: 'professional-features',
-      name: 'Professional Features',
-      description: 'Master advanced features for professional accounting workflows',
-      targetAudience: 'professional',
-      category: 'features',
+      id: "professional-features",
+      name: "Professional Features",
+      description:
+        "Master advanced features for professional accounting workflows",
+      targetAudience: "professional",
+      category: "features",
       steps: [
         {
-          id: 'advanced-dashboard',
-          title: 'Advanced Dashboard Analytics',
-          description: 'Explore real-time KPIs, heatmaps, and predictive insights.',
-          target: '.enterprise-dashboard',
-          position: 'center',
-          type: 'modal',
+          id: "advanced-dashboard",
+          title: "Advanced Dashboard Analytics",
+          description:
+            "Explore real-time KPIs, heatmaps, and predictive insights.",
+          target: ".enterprise-dashboard",
+          position: "center",
+          type: "modal",
           skippable: true,
           required: false,
-          audience: 'professional',
+          audience: "professional",
           priority: 1,
-          estimatedTime: 120
+          estimatedTime: 120,
         },
         {
-          id: 'keyboard-shortcuts',
-          title: 'Keyboard Shortcuts',
-          description: 'Speed up your workflow with powerful keyboard shortcuts.',
-          type: 'modal',
+          id: "keyboard-shortcuts",
+          title: "Keyboard Shortcuts",
+          description:
+            "Speed up your workflow with powerful keyboard shortcuts.",
+          type: "modal",
           skippable: true,
           required: false,
-          audience: 'professional',
+          audience: "professional",
           priority: 2,
           estimatedTime: 60,
           content: (
@@ -237,78 +256,78 @@ export class OnboardingEngine {
                 </div>
               </div>
             </div>
-          )
+          ),
         },
         {
-          id: 'bulk-operations',
-          title: 'Bulk Operations',
-          description: 'Learn how to handle multiple transactions efficiently.',
-          target: '.bulk-actions-toolbar',
-          position: 'top',
-          type: 'interactive',
+          id: "bulk-operations",
+          title: "Bulk Operations",
+          description: "Learn how to handle multiple transactions efficiently.",
+          target: ".bulk-actions-toolbar",
+          position: "top",
+          type: "interactive",
           skippable: true,
           required: false,
-          audience: 'professional',
+          audience: "professional",
           priority: 3,
-          estimatedTime: 180
-        }
+          estimatedTime: 180,
+        },
       ],
       estimatedDuration: 10,
-      tags: ['professional', 'productivity', 'advanced'],
-      version: '1.0.0'
+      tags: ["professional", "productivity", "advanced"],
+      version: "1.0.0",
     };
 
     // Admin Onboarding Flow
     const adminFlow: OnboardingFlow = {
-      id: 'admin-configuration',
-      name: 'Admin Configuration',
-      description: 'Configure system settings, user management, and security',
-      targetAudience: 'admin',
-      category: 'role-specific',
+      id: "admin-configuration",
+      name: "Admin Configuration",
+      description: "Configure system settings, user management, and security",
+      targetAudience: "admin",
+      category: "role-specific",
       steps: [
         {
-          id: 'user-management',
-          title: 'User Management',
-          description: 'Add and manage users, roles, and permissions.',
-          target: '.admin-users-section',
-          position: 'right',
-          type: 'interactive',
+          id: "user-management",
+          title: "User Management",
+          description: "Add and manage users, roles, and permissions.",
+          target: ".admin-users-section",
+          position: "right",
+          type: "interactive",
           skippable: false,
           required: true,
-          audience: 'admin',
+          audience: "admin",
           priority: 1,
-          estimatedTime: 300
+          estimatedTime: 300,
         },
         {
-          id: 'security-settings',
-          title: 'Security Configuration',
-          description: 'Set up security policies and access controls.',
-          target: '.security-settings',
-          position: 'left',
-          type: 'tooltip',
+          id: "security-settings",
+          title: "Security Configuration",
+          description: "Set up security policies and access controls.",
+          target: ".security-settings",
+          position: "left",
+          type: "tooltip",
           skippable: false,
           required: true,
-          audience: 'admin',
+          audience: "admin",
           priority: 2,
-          estimatedTime: 240
+          estimatedTime: 240,
         },
         {
-          id: 'system-integrations',
-          title: 'System Integrations',
-          description: 'Connect third-party services and APIs.',
-          target: '.integrations-panel',
-          position: 'top',
-          type: 'modal',
+          id: "system-integrations",
+          title: "System Integrations",
+          description: "Connect third-party services and APIs.",
+          target: ".integrations-panel",
+          position: "top",
+          type: "modal",
           skippable: true,
           required: false,
-          audience: 'admin',
+          audience: "admin",
           priority: 3,
-          estimatedTime: 180
-        }
+          estimatedTime: 180,
+        },
       ],
       estimatedDuration: 20,
-      tags: ['admin', 'configuration', 'security'],
-      version: '1.0.0'
+      tags: ["admin", "configuration", "security"],
+      version: "1.0.0",
     };
 
     this.flows.set(beginnerFlow.id, beginnerFlow);
@@ -319,21 +338,21 @@ export class OnboardingEngine {
   private loadUserProgress(): void {
     // Load from localStorage or API
     try {
-      const stored = localStorage.getItem('onboarding-user');
+      const stored = localStorage.getItem("onboarding-user");
       if (stored) {
         this.user = JSON.parse(stored);
       }
     } catch (error) {
-      console.warn('Failed to load user progress:', error);
+      console.warn("Failed to load user progress:", error);
     }
   }
 
   private saveUserProgress(): void {
     if (this.user) {
       try {
-        localStorage.setItem('onboarding-user', JSON.stringify(this.user));
+        localStorage.setItem("onboarding-user", JSON.stringify(this.user));
       } catch (error) {
-        console.warn('Failed to save user progress:', error);
+        console.warn("Failed to save user progress:", error);
       }
     }
   }
@@ -348,11 +367,13 @@ export class OnboardingEngine {
   }
 
   public getAvailableFlows(userRole?: string): OnboardingFlow[] {
-    const role = userRole || this.user?.role || 'beginner';
-    
-    return Array.from(this.flows.values()).filter(flow => 
-      flow.targetAudience === role || flow.targetAudience === 'all'
-    ).sort((a, b) => (a.priority || 0) - (b.priority || 0));
+    const role = userRole || this.user?.role || "beginner";
+
+    return Array.from(this.flows.values())
+      .filter(
+        (flow) => flow.targetAudience === role || flow.targetAudience === "all",
+      )
+      .sort((a, b) => (a.priority || 0) - (b.priority || 0));
   }
 
   public startFlow(flowId: string): boolean {
@@ -361,8 +382,8 @@ export class OnboardingEngine {
 
     // Check prerequisites
     if (flow.prerequisites) {
-      const hasPrerequisites = flow.prerequisites.every(prereq => 
-        this.user!.completedFlows.includes(prereq)
+      const hasPrerequisites = flow.prerequisites.every((prereq) =>
+        this.user!.completedFlows.includes(prereq),
       );
       if (!hasPrerequisites) return false;
     }
@@ -372,13 +393,15 @@ export class OnboardingEngine {
     this.isActive = true;
 
     // Initialize progress
-    const existingProgress = this.user.progress.find(p => p.flowId === flowId);
+    const existingProgress = this.user.progress.find(
+      (p) => p.flowId === flowId,
+    );
     if (!existingProgress) {
       this.user.progress.push({
         flowId,
         stepId: flow.steps[0].id,
-        status: 'in_progress',
-        startTime: new Date()
+        status: "in_progress",
+        startTime: new Date(),
       });
     }
 
@@ -390,9 +413,11 @@ export class OnboardingEngine {
 
   public stopFlow(): void {
     if (this.currentFlow && this.user) {
-      const progress = this.user.progress.find(p => p.flowId === this.currentFlow!.id);
+      const progress = this.user.progress.find(
+        (p) => p.flowId === this.currentFlow!.id,
+      );
       if (progress) {
-        progress.status = 'pending';
+        progress.status = "pending";
         progress.endTime = new Date();
       }
     }
@@ -408,19 +433,22 @@ export class OnboardingEngine {
     if (!this.currentFlow || !this.user) return false;
 
     const currentStep = this.currentFlow.steps[this.currentStepIndex];
-    const progress = this.user.progress.find(p => p.flowId === this.currentFlow!.id);
-    
+    const progress = this.user.progress.find(
+      (p) => p.flowId === this.currentFlow!.id,
+    );
+
     if (progress) {
-      progress.status = 'completed';
+      progress.status = "completed";
       progress.endTime = new Date();
       if (progress.startTime) {
-        progress.timeSpent = (progress.endTime.getTime() - progress.startTime.getTime()) / 1000;
+        progress.timeSpent =
+          (progress.endTime.getTime() - progress.startTime.getTime()) / 1000;
       }
     }
 
     // Move to next step
     this.currentStepIndex++;
-    
+
     if (this.currentStepIndex >= this.currentFlow.steps.length) {
       // Flow completed
       this.completeFlow();
@@ -431,7 +459,7 @@ export class OnboardingEngine {
     const nextStep = this.currentFlow.steps[this.currentStepIndex];
     if (progress) {
       progress.stepId = nextStep.id;
-      progress.status = 'in_progress';
+      progress.status = "in_progress";
       progress.startTime = new Date();
     }
 
@@ -442,15 +470,18 @@ export class OnboardingEngine {
   }
 
   public previousStep(): boolean {
-    if (!this.currentFlow || this.currentStepIndex <= 0 || !this.user) return false;
+    if (!this.currentFlow || this.currentStepIndex <= 0 || !this.user)
+      return false;
 
     this.currentStepIndex--;
     const step = this.currentFlow.steps[this.currentStepIndex];
-    
-    const progress = this.user.progress.find(p => p.flowId === this.currentFlow!.id);
+
+    const progress = this.user.progress.find(
+      (p) => p.flowId === this.currentFlow!.id,
+    );
     if (progress) {
       progress.stepId = step.id;
-      progress.status = 'in_progress';
+      progress.status = "in_progress";
     }
 
     this.saveUserProgress();
@@ -465,9 +496,11 @@ export class OnboardingEngine {
     const currentStep = this.currentFlow.steps[this.currentStepIndex];
     if (!currentStep.skippable) return false;
 
-    const progress = this.user.progress.find(p => p.flowId === this.currentFlow!.id);
+    const progress = this.user.progress.find(
+      (p) => p.flowId === this.currentFlow!.id,
+    );
     if (progress) {
-      progress.status = 'skipped';
+      progress.status = "skipped";
       progress.endTime = new Date();
     }
 
@@ -477,15 +510,18 @@ export class OnboardingEngine {
   private completeFlow(): void {
     if (!this.currentFlow || !this.user) return;
 
+// @ts-ignore
     // Mark flow as completed
     if (!this.user.completedFlows.includes(this.currentFlow.id)) {
       this.user.completedFlows.push(this.currentFlow.id);
     }
 
     // Update progress
-    const progress = this.user.progress.find(p => p.flowId === this.currentFlow!.id);
+    const progress = this.user.progress.find(
+      (p) => p.flowId === this.currentFlow!.id,
+    );
     if (progress) {
-      progress.status = 'completed';
+      progress.status = "completed";
       progress.endTime = new Date();
     }
 
@@ -504,16 +540,16 @@ export class OnboardingEngine {
     this.cleanup();
 
     switch (step.type) {
-      case 'tooltip':
+      case "tooltip":
         this.showTooltip(step);
         break;
-      case 'modal':
+      case "modal":
         this.showModal(step);
         break;
-      case 'highlight':
+      case "highlight":
         this.highlightElement(step);
         break;
-      case 'interactive':
+      case "interactive":
         this.startInteractiveStep(step);
         break;
     }
@@ -525,15 +561,15 @@ export class OnboardingEngine {
   }
 
   private showTooltip(step: OnboardingStep): void {
-    const tooltip = document.createElement('div');
-    tooltip.className = 'onboarding-tooltip';
+    const tooltip = document.createElement("div");
+    tooltip.className = "onboarding-tooltip";
     tooltip.innerHTML = `
       <div class="tooltip-content">
         <h3>${step.title}</h3>
         <p>${step.description}</p>
-        ${step.content ? '<div class="tooltip-custom-content"></div>' : ''}
+        ${step.content ? '<div class="tooltip-custom-content"></div>' : ""}
         <div class="tooltip-actions">
-          ${step.skippable ? '<button class="skip-btn">Skip</button>' : ''}
+          ${step.skippable ? '<button class="skip-btn">Skip</button>' : ""}
           <button class="next-btn">Next</button>
         </div>
       </div>
@@ -545,52 +581,52 @@ export class OnboardingEngine {
     if (step.target) {
       const target = document.querySelector(step.target);
       if (target) {
-        this.positionTooltip(tooltip, target, step.position || 'top');
+        this.positionTooltip(tooltip, target, step.position || "top");
       }
     } else {
-      tooltip.style.position = 'fixed';
-      tooltip.style.top = '50%';
-      tooltip.style.left = '50%';
-      tooltip.style.transform = 'translate(-50%, -50%)';
+      tooltip.style.position = "fixed";
+      tooltip.style.top = "50%";
+      tooltip.style.left = "50%";
+      tooltip.style.transform = "translate(-50%, -50%)";
     }
 
     // Add custom content
-    if (step.content && tooltip.querySelector('.tooltip-custom-content')) {
-      const contentContainer = tooltip.querySelector('.tooltip-custom-content');
+    if (step.content && tooltip.querySelector(".tooltip-custom-content")) {
+      const contentContainer = tooltip.querySelector(".tooltip-custom-content");
       if (contentContainer && step.content) {
         // This would need React rendering in a real implementation
-        contentContainer.innerHTML = '<div>Custom content would go here</div>';
+        contentContainer.innerHTML = "<div>Custom content would go here</div>";
       }
     }
 
     // Setup event listeners
-    const nextBtn = tooltip.querySelector('.next-btn');
-    const skipBtn = tooltip.querySelector('.skip-btn');
+    const nextBtn = tooltip.querySelector(".next-btn");
+    const skipBtn = tooltip.querySelector(".skip-btn");
 
     if (nextBtn) {
       const handler = () => this.nextStep();
-      nextBtn.addEventListener('click', handler);
-      this.eventListeners.set('next-btn', handler);
+      nextBtn.addEventListener("click", handler);
+      this.eventListeners.set("next-btn", handler);
     }
 
     if (skipBtn) {
       const handler = () => this.skipStep();
-      skipBtn.addEventListener('click', handler);
-      this.eventListeners.set('skip-btn', handler);
+      skipBtn.addEventListener("click", handler);
+      this.eventListeners.set("skip-btn", handler);
     }
   }
 
   private showModal(step: OnboardingStep): void {
-    const modal = document.createElement('div');
-    modal.className = 'onboarding-modal-overlay';
+    const modal = document.createElement("div");
+    modal.className = "onboarding-modal-overlay";
     modal.innerHTML = `
       <div class="onboarding-modal">
         <div class="modal-content">
           <h2>${step.title}</h2>
           <p>${step.description}</p>
-          ${step.content ? '<div class="modal-custom-content"></div>' : ''}
+          ${step.content ? '<div class="modal-custom-content"></div>' : ""}
           <div class="modal-actions">
-            ${step.skippable ? '<button class="skip-btn">Skip</button>' : ''}
+            ${step.skippable ? '<button class="skip-btn">Skip</button>' : ""}
             <button class="next-btn">Next</button>
           </div>
         </div>
@@ -600,28 +636,28 @@ export class OnboardingEngine {
     document.body.appendChild(modal);
 
     // Add custom content
-    if (step.content && modal.querySelector('.modal-custom-content')) {
-      const contentContainer = modal.querySelector('.modal-custom-content');
+    if (step.content && modal.querySelector(".modal-custom-content")) {
+      const contentContainer = modal.querySelector(".modal-custom-content");
       if (contentContainer && step.content) {
         // This would need React rendering in a real implementation
-        contentContainer.innerHTML = '<div>Custom content would go here</div>';
+        contentContainer.innerHTML = "<div>Custom content would go here</div>";
       }
     }
 
     // Setup event listeners
-    const nextBtn = modal.querySelector('.next-btn');
-    const skipBtn = modal.querySelector('.skip-btn');
+    const nextBtn = modal.querySelector(".next-btn");
+    const skipBtn = modal.querySelector(".skip-btn");
 
     if (nextBtn) {
       const handler = () => this.nextStep();
-      nextBtn.addEventListener('click', handler);
-      this.eventListeners.set('next-btn', handler);
+      nextBtn.addEventListener("click", handler);
+      this.eventListeners.set("next-btn", handler);
     }
 
     if (skipBtn) {
       const handler = () => this.skipStep();
-      skipBtn.addEventListener('click', handler);
-      this.eventListeners.set('skip-btn', handler);
+      skipBtn.addEventListener("click", handler);
+      this.eventListeners.set("skip-btn", handler);
     }
   }
 
@@ -632,9 +668,9 @@ export class OnboardingEngine {
     if (!target) return;
 
     // Create highlight overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'onboarding-highlight-overlay';
-    
+    const overlay = document.createElement("div");
+    overlay.className = "onboarding-highlight-overlay";
+
     const rect = target.getBoundingClientRect();
     overlay.innerHTML = `
       <div class="highlight-spotlight" style="
@@ -650,7 +686,7 @@ export class OnboardingEngine {
         <h3>${step.title}</h3>
         <p>${step.description}</p>
         <div class="highlight-actions">
-          ${step.skippable ? '<button class="skip-btn">Skip</button>' : ''}
+          ${step.skippable ? '<button class="skip-btn">Skip</button>' : ""}
           <button class="next-btn">Got it</button>
         </div>
       </div>
@@ -659,32 +695,32 @@ export class OnboardingEngine {
     document.body.appendChild(overlay);
 
     // Setup event listeners
-    const nextBtn = overlay.querySelector('.next-btn');
-    const skipBtn = overlay.querySelector('.skip-btn');
+    const nextBtn = overlay.querySelector(".next-btn");
+    const skipBtn = overlay.querySelector(".skip-btn");
 
     if (nextBtn) {
       const handler = () => this.nextStep();
-      nextBtn.addEventListener('click', handler);
-      this.eventListeners.set('next-btn', handler);
+      nextBtn.addEventListener("click", handler);
+      this.eventListeners.set("next-btn", handler);
     }
 
     if (skipBtn) {
       const handler = () => this.skipStep();
-      skipBtn.addEventListener('click', handler);
-      this.eventListeners.set('skip-btn', handler);
+      skipBtn.addEventListener("click", handler);
+      this.eventListeners.set("skip-btn", handler);
     }
   }
 
   private startInteractiveStep(step: OnboardingStep): void {
     // Show instruction tooltip
-    const instruction = document.createElement('div');
-    instruction.className = 'onboarding-instruction';
+    const instruction = document.createElement("div");
+    instruction.className = "onboarding-instruction";
     instruction.innerHTML = `
       <div class="instruction-content">
         <h3>${step.title}</h3>
         <p>${step.description}</p>
         <div class="instruction-actions">
-          ${step.skippable ? '<button class="skip-btn">Skip</button>' : ''}
+          ${step.skippable ? '<button class="skip-btn">Skip</button>' : ""}
         </div>
       </div>
     `;
@@ -695,20 +731,20 @@ export class OnboardingEngine {
     if (step.target) {
       const target = document.querySelector(step.target);
       if (target) {
-        this.positionTooltip(instruction, target, step.position || 'top');
+        this.positionTooltip(instruction, target, step.position || "top");
       }
     } else {
-      instruction.style.position = 'fixed';
-      instruction.style.top = '20px';
-      instruction.style.right = '20px';
+      instruction.style.position = "fixed";
+      instruction.style.top = "20px";
+      instruction.style.right = "20px";
     }
 
     // Setup event listeners
-    const skipBtn = instruction.querySelector('.skip-btn');
+    const skipBtn = instruction.querySelector(".skip-btn");
     if (skipBtn) {
       const handler = () => this.skipStep();
-      skipBtn.addEventListener('click', handler);
-      this.eventListeners.set('skip-btn', handler);
+      skipBtn.addEventListener("click", handler);
+      this.eventListeners.set("skip-btn", handler);
     }
 
     // Execute action if specified
@@ -717,11 +753,11 @@ export class OnboardingEngine {
     }
   }
 
-  private executeAction(action: OnboardingStep['action']): void {
+  private executeAction(action: OnboardingStep["action"]): void {
     if (!action) return;
 
     switch (action.type) {
-      case 'click':
+      case "click":
         if (action.target) {
           const target = document.querySelector(action.target);
           if (target) {
@@ -729,24 +765,25 @@ export class OnboardingEngine {
           }
         }
         break;
-      case 'hover':
+      case "hover":
         if (action.target) {
           const target = document.querySelector(action.target);
           if (target) {
-            const event = new MouseEvent('mouseenter', { bubbles: true });
+            const event = new MouseEvent("mouseenter", { bubbles: true });
             target.dispatchEvent(event);
           }
         }
         break;
-      case 'focus':
+      case "focus":
         if (action.target) {
+// @ts-ignore
           const target = document.querySelector(action.target) as HTMLElement;
           if (target) {
             target.focus();
           }
         }
         break;
-      case 'custom':
+      case "custom":
         if (action.handler) {
           action.handler();
         }
@@ -761,16 +798,16 @@ export class OnboardingEngine {
       let isValid = false;
 
       switch (step.validation!.type) {
-        case 'element_exists':
+        case "element_exists":
           if (step.validation!.target) {
             const element = document.querySelector(step.validation!.target);
             isValid = !!element;
           }
           break;
-        case 'element_clicked':
+        case "element_clicked":
           // This would be handled by event listeners
           break;
-        case 'custom':
+        case "custom":
           if (step.validation!.handler) {
             isValid = await step.validation!.handler();
           }
@@ -783,15 +820,15 @@ export class OnboardingEngine {
     };
 
     // Setup validation based on type
-    if (step.validation.type === 'element_clicked' && step.validation.target) {
+    if (step.validation.type === "element_clicked" && step.validation.target) {
       const target = document.querySelector(step.validation.target);
       if (target) {
         const handler = () => {
           validate();
-          target.removeEventListener('click', handler);
+          target.removeEventListener("click", handler);
         };
-        target.addEventListener('click', handler);
-        this.eventListeners.set('validation', handler);
+        target.addEventListener("click", handler);
+        this.eventListeners.set("validation", handler);
       }
     } else {
       // For other types, validate periodically
@@ -803,7 +840,11 @@ export class OnboardingEngine {
     }
   }
 
-  private positionTooltip(tooltip: HTMLElement, target: Element, position: string): void {
+  private positionTooltip(
+    tooltip: HTMLElement,
+    target: Element,
+    position: string,
+  ): void {
     const rect = target.getBoundingClientRect();
     const tooltipRect = tooltip.getBoundingClientRect();
 
@@ -811,38 +852,38 @@ export class OnboardingEngine {
     let left = 0;
 
     switch (position) {
-      case 'top':
+      case "top":
         top = rect.top - tooltipRect.height - 10;
         left = rect.left + (rect.width - tooltipRect.width) / 2;
         break;
-      case 'bottom':
+      case "bottom":
         top = rect.bottom + 10;
         left = rect.left + (rect.width - tooltipRect.width) / 2;
         break;
-      case 'left':
+      case "left":
         top = rect.top + (rect.height - tooltipRect.height) / 2;
         left = rect.left - tooltipRect.width - 10;
         break;
-      case 'right':
+      case "right":
         top = rect.top + (rect.height - tooltipRect.height) / 2;
         left = rect.right + 10;
         break;
     }
 
-    tooltip.style.position = 'fixed';
+    tooltip.style.position = "fixed";
     tooltip.style.top = `${top}px`;
     tooltip.style.left = `${left}px`;
-    tooltip.style.zIndex = '10000';
+    tooltip.style.zIndex = "10000";
 
     // Adjust if out of bounds
     if (left < 10) {
-      tooltip.style.left = '10px';
+      tooltip.style.left = "10px";
     }
     if (left + tooltipRect.width > window.innerWidth - 10) {
       tooltip.style.left = `${window.innerWidth - tooltipRect.width - 10}px`;
     }
     if (top < 10) {
-      tooltip.style.top = '10px';
+      tooltip.style.top = "10px";
     }
     if (top + tooltipRect.height > window.innerHeight - 10) {
       tooltip.style.top = `${window.innerHeight - tooltipRect.height - 10}px`;
@@ -852,8 +893,8 @@ export class OnboardingEngine {
   private showCompletionMessage(): void {
     if (!this.currentFlow) return;
 
-    const message = document.createElement('div');
-    message.className = 'onboarding-completion-message';
+    const message = document.createElement("div");
+    message.className = "onboarding-completion-message";
     message.innerHTML = `
       <div class="completion-content">
         <div class="completion-icon">🎉</div>
@@ -868,17 +909,17 @@ export class OnboardingEngine {
 
     document.body.appendChild(message);
 
-    const closeBtn = message.querySelector('.close-btn');
-    const exploreBtn = message.querySelector('.explore-btn');
+    const closeBtn = message.querySelector(".close-btn");
+    const exploreBtn = message.querySelector(".explore-btn");
 
     if (closeBtn) {
-      closeBtn.addEventListener('click', () => {
+      closeBtn.addEventListener("click", () => {
         message.remove();
       });
     }
 
     if (exploreBtn) {
-      exploreBtn.addEventListener('click', () => {
+      exploreBtn.addEventListener("click", () => {
         message.remove();
         // Show available flows
         this.showAvailableFlows();
@@ -888,20 +929,22 @@ export class OnboardingEngine {
 
   private showAvailableFlows(): void {
     const availableFlows = this.getAvailableFlows();
-    const incompleteFlows = availableFlows.filter(flow => 
-      !this.user?.completedFlows.includes(flow.id)
+    const incompleteFlows = availableFlows.filter(
+      (flow) => !this.user?.completedFlows.includes(flow.id),
     );
 
     if (incompleteFlows.length === 0) return;
 
-    const modal = document.createElement('div');
-    modal.className = 'onboarding-flows-modal';
+    const modal = document.createElement("div");
+    modal.className = "onboarding-flows-modal";
     modal.innerHTML = `
       <div class="flows-content">
         <h2>Continue Learning</h2>
         <p>Here are more onboarding flows to help you master AccuBooks:</p>
         <div class="flows-list">
-          ${incompleteFlows.map(flow => `
+          ${incompleteFlows
+            .map(
+              (flow) => `
             <div class="flow-card" data-flow-id="${flow.id}">
               <h3>${flow.name}</h3>
               <p>${flow.description}</p>
@@ -911,7 +954,9 @@ export class OnboardingEngine {
               </div>
               <button class="start-flow-btn">Start</button>
             </div>
-          `).join('')}
+          `,
+            )
+            .join("")}
         </div>
         <button class="close-modal-btn">Close</button>
       </div>
@@ -920,21 +965,21 @@ export class OnboardingEngine {
     document.body.appendChild(modal);
 
     // Setup event listeners
-    modal.querySelectorAll('.start-flow-btn').forEach(btn => {
-      const flowCard = btn.closest('.flow-card');
-      const flowId = flowCard?.getAttribute('data-flow-id');
-      
+    modal.querySelectorAll(".start-flow-btn").forEach((btn) => {
+      const flowCard = btn.closest(".flow-card");
+      const flowId = flowCard?.getAttribute("data-flow-id");
+
       if (flowId) {
-        btn.addEventListener('click', () => {
+        btn.addEventListener("click", () => {
           modal.remove();
           this.startFlow(flowId);
         });
       }
     });
 
-    const closeBtn = modal.querySelector('.close-modal-btn');
+    const closeBtn = modal.querySelector(".close-modal-btn");
     if (closeBtn) {
-      closeBtn.addEventListener('click', () => {
+      closeBtn.addEventListener("click", () => {
         modal.remove();
       });
     }
@@ -948,17 +993,24 @@ export class OnboardingEngine {
     this.eventListeners.clear();
 
     // Remove observers
-    this.observers.forEach(observer => observer.disconnect());
+    this.observers.forEach((observer) => observer.disconnect());
     this.observers.clear();
 
     // Remove onboarding elements
-    document.querySelectorAll('.onboarding-tooltip, .onboarding-modal-overlay, .onboarding-highlight-overlay, .onboarding-instruction, .onboarding-completion-message, .onboarding-flows-modal').forEach(el => {
-      el.remove();
-    });
+    document
+      .querySelectorAll(
+        ".onboarding-tooltip, .onboarding-modal-overlay, .onboarding-highlight-overlay, .onboarding-instruction, .onboarding-completion-message, .onboarding-flows-modal",
+      )
+      .forEach((el) => {
+        el.remove();
+      });
   }
 
   public getCurrentStep(): OnboardingStep | null {
-    if (!this.currentFlow || this.currentStepIndex >= this.currentFlow.steps.length) {
+    if (
+      !this.currentFlow ||
+      this.currentStepIndex >= this.currentFlow.steps.length
+    ) {
       return null;
     }
     return this.currentFlow.steps[this.currentStepIndex];
@@ -974,7 +1026,7 @@ export class OnboardingEngine {
       currentStep: this.currentStepIndex + 1,
       totalSteps: this.currentFlow?.steps.length || 0,
       completedFlows: this.user?.completedFlows || [],
-      totalFlows: this.flows.size
+      totalFlows: this.flows.size,
     };
   }
 

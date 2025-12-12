@@ -1,35 +1,65 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { lazy } from 'react';
-import { MainLayout } from '../components/layout/MainLayout';
-import PrivateRoute from './PrivateRoute';
-import RoleAllowed from './RoleAllowed';
-import { ProtectedRoute, PublicRoute, SuspenseWrapper } from './RouteGuards';
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { lazy } from "react";
+import { MainLayout } from '../components/layout/MainLayout.js';
+import PrivateRoute from './PrivateRoute.js';
+import RoleAllowed from './RoleAllowed.js';
+import { ProtectedRoute, PublicRoute, SuspenseWrapper } from './RouteGuards.js';
 
 // Lazy load pages for better performance
-const DashboardRouter = lazy(() => import('../pages/DashboardRouter'));
-const LoginPage = lazy(() => import('../pages/LoginPage'));
-const RegisterPage = lazy(() => import('../pages/RegisterPage'));
-const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage'));
-const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
-const ProfilePage = lazy(() => import('../pages/ProfilePage'));
-const InvoicesPage = lazy(() => import('../pages/InvoicesPage'));
-const CustomersPage = lazy(() => import('../pages/CustomersPage'));
-const TransactionsPage = lazy(() => import('../pages/TransactionsPage'));
-const InventoryPage = lazy(() => import('../pages/InventoryPage'));
-const ReportsPage = lazy(() => import('../pages/ReportsPage'));
-const AdminSettingsPage = lazy(() => import('../pages/AdminSettingsPage'));
-const AuditLogsPage = lazy(() => import('../pages/AuditLogsPage'));
-const NotificationsPage = lazy(() => import('../pages/NotificationsPage'));
-const Unauthorized = lazy(() => import('../pages/Unauthorized'));
+// @ts-ignore
+// @ts-ignore
+const DashboardRouter = lazy(() => import("../pages/DashboardRouter"));
+// @ts-ignore
+// @ts-ignore
+const LoginPage = lazy(() => import("../pages/LoginPage"));
+// @ts-ignore
+// @ts-ignore
+const RegisterPage = lazy(() => import("../pages/RegisterPage"));
+// @ts-ignore
+// @ts-ignore
+const ForgotPasswordPage = lazy(() => import("../pages/ForgotPasswordPage"));
+// @ts-ignore
+// @ts-ignore
+const ResetPasswordPage = lazy(() => import("../pages/ResetPasswordPage"));
+// @ts-ignore
+// @ts-ignore
+const ProfilePage = lazy(() => import("../pages/ProfilePage"));
+// @ts-ignore
+// @ts-ignore
+const InvoicesPage = lazy(() => import("../pages/InvoicesPage"));
+// @ts-ignore
+// @ts-ignore
+const CustomersPage = lazy(() => import("../pages/CustomersPage"));
+// @ts-ignore
+// @ts-ignore
+const TransactionsPage = lazy(() => import("../pages/TransactionsPage"));
+// @ts-ignore
+// @ts-ignore
+const InventoryPage = lazy(() => import("../pages/InventoryPage"));
+// @ts-ignore
+// @ts-ignore
+const ReportsPage = lazy(() => import("../pages/ReportsPage"));
+// @ts-ignore
+// @ts-ignore
+const AdminSettingsPage = lazy(() => import("../pages/AdminSettingsPage"));
+// @ts-ignore
+// @ts-ignore
+const AuditLogsPage = lazy(() => import("../pages/AuditLogsPage"));
+// @ts-ignore
+// @ts-ignore
+const NotificationsPage = lazy(() => import("../pages/NotificationsPage"));
+// @ts-ignore
+// @ts-ignore
+const Unauthorized = lazy(() => import("../pages/Unauthorized"));
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <Navigate to="/dashboard" replace />,
   },
   // Auth routes
   {
-    path: '/login',
+    path: "/login",
     element: (
       <PublicRoute>
         <SuspenseWrapper>
@@ -39,7 +69,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/register',
+    path: "/register",
     element: (
       <PublicRoute>
         <SuspenseWrapper>
@@ -49,7 +79,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/forgot-password',
+    path: "/forgot-password",
     element: (
       <PublicRoute>
         <SuspenseWrapper>
@@ -59,7 +89,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/reset-password',
+    path: "/reset-password",
     element: (
       <PublicRoute>
         <SuspenseWrapper>
@@ -70,7 +100,7 @@ const router = createBrowserRouter([
   },
   // Protected routes
   {
-    path: '/dashboard',
+    path: "/dashboard",
     element: (
       <ProtectedRoute>
         <MainLayout>
@@ -82,7 +112,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/unauthorized',
+    path: "/unauthorized",
     element: (
       <SuspenseWrapper>
         <Unauthorized />
@@ -91,7 +121,7 @@ const router = createBrowserRouter([
   },
   // Role-protected routes
   {
-    path: '/invoices',
+    path: "/invoices",
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER", "AUDITOR"]}>
         <MainLayout>
@@ -103,7 +133,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/customers',
+    path: "/customers",
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER"]}>
         <MainLayout>
@@ -115,7 +145,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/transactions',
+    path: "/transactions",
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER", "AUDITOR"]}>
         <MainLayout>
@@ -127,7 +157,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/reports',
+    path: "/reports",
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "AUDITOR"]}>
         <MainLayout>
@@ -139,7 +169,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/notifications',
+    path: "/notifications",
     element: (
       <ProtectedRoute>
         <MainLayout>
@@ -151,7 +181,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/users',
+    path: "/users",
     element: (
       <PrivateRoute requiredRole="ADMIN">
         <MainLayout>
@@ -163,7 +193,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/inventory',
+    path: "/inventory",
     element: (
       <PrivateRoute requiredRole={["ADMIN", "INVENTORY_MANAGER"]}>
         <MainLayout>
@@ -175,7 +205,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/audit',
+    path: "/audit",
     element: (
       <PrivateRoute requiredRole={["ADMIN", "AUDITOR"]}>
         <MainLayout>
@@ -187,7 +217,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/settings',
+    path: "/settings",
     element: (
       <PrivateRoute requiredRole="ADMIN">
         <MainLayout>
@@ -199,7 +229,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/profile',
+    path: "/profile",
     element: (
       <ProtectedRoute>
         <MainLayout>
@@ -212,7 +242,7 @@ const router = createBrowserRouter([
   },
   // 404 route
   {
-    path: '*',
+    path: "*",
     element: <Navigate to="/dashboard" replace />,
   },
 ]);

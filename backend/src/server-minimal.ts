@@ -1,43 +1,45 @@
-import express from 'express';
-import cors from 'cors';
+import express from "express";
+import cors from "cors";
 
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 // Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+app.get("/api/health", (req, res) => {
+  res.json({ status: "healthy", timestamp: new Date().toISOString() });
 });
 
 // Simple auth login
-app.post('/api/auth/login', (req, res) => {
+app.post("/api/auth/login", (req, res) => {
   const { email, password } = req.body;
-  console.log('Login attempt:', email);
-  
-  if (email === 'admin@accubooks.com' && password === 'admin123') {
+  console.log("Login attempt:", email);
+
+  if (email === "admin@accubooks.com" && password === "admin123") {
     res.json({
       success: true,
       data: {
         user: {
-          id: '1',
-          name: 'Admin User',
-          email: 'admin@accubooks.com',
-          role: 'ADMIN',
+          id: "1",
+          name: "Admin User",
+          email: "admin@accubooks.com",
+          role: "ADMIN",
         },
-        accessToken: 'mock-token-123',
-        expiresIn: 3600
-      }
+        accessToken: "mock-token-123",
+        expiresIn: 3600,
+      },
     });
   } else {
     res.status(401).json({
       success: false,
-      message: 'Invalid credentials'
+      message: "Invalid credentials",
     });
   }
 });
@@ -51,7 +53,7 @@ app.listen(PORT, () => {
 });
 
 // Keep running
-process.on('SIGINT', () => {
-  console.log('\nShutting down...');
+process.on("SIGINT", () => {
+  console.log("\nShutting down...");
   process.exit(0);
 });

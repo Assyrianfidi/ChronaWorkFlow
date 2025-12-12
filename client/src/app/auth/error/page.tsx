@@ -1,21 +1,23 @@
-'use client';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
-import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { useSearchParams } from "next/navigation";
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert.js';
+import { AlertCircle } from "lucide-react";
 
 export default function AuthErrorPage() {
   const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  const error = searchParams.get("error");
 
   const errorMessages: Record<string, string> = {
-    Configuration: 'There is a problem with the server configuration.',
-    AccessDenied: 'You do not have permission to sign in.',
-    Verification: 'The token has expired or has already been used.',
-    Default: 'An error occurred during sign in.',
+    Configuration: "There is a problem with the server configuration.",
+    AccessDenied: "You do not have permission to sign in.",
+    Verification: "The token has expired or has already been used.",
+    Default: "An error occurred during sign in.",
   };
 
-  const errorMessage = error ? errorMessages[error] || errorMessages.Default : errorMessages.Default;
+  const errorMessage = error
+    ? errorMessages[error] || errorMessages.Default
+    : errorMessages.Default;
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">

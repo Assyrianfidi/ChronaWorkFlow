@@ -1,7 +1,7 @@
-import { PrismaClient, InvoiceStatus, PaymentMethod } from '@prisma/client';
-import { generateInvoiceNumber } from './utils/invoice-number.util';
+import { PrismaClient, InvoiceStatus, PaymentMethod } from "@prisma/client";
+import { generateInvoiceNumber } from "./utils/invoice-number.util";
 
-const prisma = new PrismaClient();
+// Fixed self-reference
 
 export interface CreateInvoiceData {
   customerId: string;
@@ -37,36 +37,40 @@ export class InvoiceService {
   async createInvoice(data: CreateInvoiceData) {
     try {
       const invoiceNumber = await generateInvoiceNumber();
-      
+
       // Get customer for tax calculation
       const customer = await prisma.customer.findUnique({
         where: { id: data.customerId },
-        include: { defaultTaxSettings: true }
+        include: { defaultTaxSettings: true },
       });
 
       if (!customer) {
-        throw new Error('Customer not found');
+        throw new Error("Customer not found");
       }
 
       // Get tax rules for customer's region
       const taxRules = await prisma.taxRule.findMany({
         where: {
           OR: [
-            { regionCode: customer.country || 'CA' },
-            { regionCode: customer.province ? `CA-${customer.province}` : undefined }
-          ].filter(Boolean)
-        }
+            { regionCode: customer.country || "CA" },
+            {
+              regionCode: customer.province
+                ? `CA-${customer.province}`
+                : undefined,
+            },
+          ].filter(Boolean),
+        },
       });
 
       // Calculate line items and totals
       const processedLines = await Promise.all(
         data.lines.map(async (line) => {
           let unitPrice = line.unitPrice;
-          
+
           // Get product price if productId provided
           if (line.productId) {
             const product = await prisma.product.findUnique({
-              where: { id: line.productId }
+              where: { id: line.productId },
             });
             if (product) {
               unitPrice = product.unitPrice;
@@ -74,7 +78,11 @@ export class InvoiceService {
           }
 
           const lineSubtotal = line.qty * unitPrice;
-          const lineTax = this.calculateLineTax(lineSubtotal, taxRules, customer);
+          const lineTax = this.calculateLineTax(
+            lineSubtotal,
+            taxRules,
+            customer,
+          );
           const lineTotal = lineSubtotal + lineTax;
 
           return {
@@ -84,13 +92,19 @@ export class InvoiceService {
             lineSubtotal,
             lineTax,
             lineTotal,
-            productId: line.productId
+            productId: line.productId,
           };
-        })
+        }),
       );
 
-      const subtotal = processedLines.reduce((sum, line) => sum + line.lineSubtotal, 0);
-      const taxTotal = processedLines.reduce((sum, line) => sum + line.lineTax, 0);
+      const subtotal = processedLines.reduce(
+        (sum, line) => sum + line.lineSubtotal,
+        0,
+      );
+      const taxTotal = processedLines.reduce(
+        (sum, line) => sum + line.lineTax,
+        0,
+      );
       const total = subtotal + taxTotal;
 
       // Create invoice with lines
@@ -100,37 +114,37 @@ export class InvoiceService {
           customerId: data.customerId,
           issueDate: data.issueDate || new Date(),
           dueDate: data.dueDate,
-          currency: data.currency || 'CAD',
+          currency: data.currency || "CAD",
           subtotal,
           taxTotal,
           total,
           notes: data.notes,
           status: InvoiceStatus.DRAFT,
           lines: {
-            create: processedLines.map(line => ({
+            create: processedLines.map((line) => ({
               productId: line.productId,
               description: line.description,
               qty: line.qty,
               unitPrice: line.unitPrice,
               lineSubtotal: line.lineSubtotal,
               lineTax: line.lineTax,
-              lineTotal: line.lineTotal
-            }))
-          }
+              lineTotal: line.lineTotal,
+            })),
+          },
         },
         include: {
           customer: true,
           lines: {
             include: {
-              product: true
-            }
-          }
-        }
+              product: true,
+            },
+          },
+        },
       });
 
       return invoice;
     } catch (error) {
-      console.error('Error creating invoice:', error);
+      console.error("Error creating invoice:", error);
       throw error;
     }
   }
@@ -143,20 +157,20 @@ export class InvoiceService {
           customer: true,
           lines: {
             include: {
-              product: true
-            }
+              product: true,
+            },
           },
-          payments: true
-        }
+          payments: true,
+        },
       });
 
       if (!invoice) {
-        throw new Error('Invoice not found');
+        throw new Error("Invoice not found");
       }
 
       return invoice;
     } catch (error) {
-      console.error('Error getting invoice:', error);
+      console.error("Error getting invoice:", error);
       throw error;
     }
   }
@@ -165,34 +179,41 @@ export class InvoiceService {
     try {
       const existingInvoice = await prisma.invoice.findUnique({
         where: { id },
-        include: { lines: true }
+        include: { lines: true },
       });
 
       if (!existingInvoice) {
-        throw new Error('Invoice not found');
+        throw new Error("Invoice not found");
       }
 
-      if (existingInvoice.status === InvoiceStatus.PAID || existingInvoice.status === InvoiceStatus.VOIDED) {
-        throw new Error('Cannot update paid or voided invoices');
+      if (
+        existingInvoice.status === InvoiceStatus.PAID ||
+        existingInvoice.status === /* InvoiceStatus.VOIDED */ "VOIDED"
+      ) {
+        throw new Error("Cannot update paid or voided invoices");
       }
 
       // Get customer for tax calculation
       const customer = await prisma.customer.findUnique({
-        where: { id: data.customerId || existingInvoice.customerId }
+        where: { id: data.customerId || existingInvoice.customerId },
       });
 
       if (!customer) {
-        throw new Error('Customer not found');
+        throw new Error("Customer not found");
       }
 
       // Get tax rules
       const taxRules = await prisma.taxRule.findMany({
         where: {
           OR: [
-            { regionCode: customer.country || 'CA' },
-            { regionCode: customer.province ? `CA-${customer.province}` : undefined }
-          ].filter(Boolean)
-        }
+            { regionCode: customer.country || "CA" },
+            {
+              regionCode: customer.province
+                ? `CA-${customer.province}`
+                : undefined,
+            },
+          ].filter(Boolean),
+        },
       });
 
       // Process lines if provided
@@ -201,10 +222,10 @@ export class InvoiceService {
         processedLines = await Promise.all(
           data.lines.map(async (line) => {
             let unitPrice = line.unitPrice;
-            
+
             if (line.productId) {
               const product = await prisma.product.findUnique({
-                where: { id: line.productId }
+                where: { id: line.productId },
               });
               if (product) {
                 unitPrice = product.unitPrice;
@@ -212,7 +233,11 @@ export class InvoiceService {
             }
 
             const lineSubtotal = line.qty * unitPrice;
-            const lineTax = this.calculateLineTax(lineSubtotal, taxRules, customer);
+            const lineTax = this.calculateLineTax(
+              lineSubtotal,
+              taxRules,
+              customer,
+            );
             const lineTotal = lineSubtotal + lineTax;
 
             return {
@@ -223,18 +248,20 @@ export class InvoiceService {
               lineSubtotal,
               lineTax,
               lineTotal,
-              productId: line.productId
+              productId: line.productId,
             };
-          })
+          }),
         );
       }
 
-      const subtotal = processedLines.length > 0 
-        ? processedLines.reduce((sum, line) => sum + line.lineSubtotal, 0)
-        : existingInvoice.subtotal;
-      const taxTotal = processedLines.length > 0
-        ? processedLines.reduce((sum, line) => sum + line.lineTax, 0)
-        : existingInvoice.taxTotal;
+      const subtotal =
+        processedLines.length > 0
+          ? processedLines.reduce((sum, line) => sum + line.lineSubtotal, 0)
+          : existingInvoice.subtotal;
+      const taxTotal =
+        processedLines.length > 0
+          ? processedLines.reduce((sum, line) => sum + line.lineTax, 0)
+          : existingInvoice.taxTotal;
       const total = subtotal + taxTotal;
 
       // Update invoice
@@ -250,32 +277,34 @@ export class InvoiceService {
           subtotal,
           taxTotal,
           total,
-          lines: data.lines ? {
-            deleteMany: {},
-            create: processedLines.map(line => ({
-              productId: line.productId,
-              description: line.description,
-              qty: line.qty,
-              unitPrice: line.unitPrice,
-              lineSubtotal: line.lineSubtotal,
-              lineTax: line.lineTax,
-              lineTotal: line.lineTotal
-            }))
-          } : undefined
+          lines: data.lines
+            ? {
+                deleteMany: {},
+                create: processedLines.map((line) => ({
+                  productId: line.productId,
+                  description: line.description,
+                  qty: line.qty,
+                  unitPrice: line.unitPrice,
+                  lineSubtotal: line.lineSubtotal,
+                  lineTax: line.lineTax,
+                  lineTotal: line.lineTotal,
+                })),
+              }
+            : undefined,
         },
         include: {
           customer: true,
           lines: {
             include: {
-              product: true
-            }
-          }
-        }
+              product: true,
+            },
+          },
+        },
       });
 
       return updatedInvoice;
     } catch (error) {
-      console.error('Error updating invoice:', error);
+      console.error("Error updating invoice:", error);
       throw error;
     }
   }
@@ -293,7 +322,7 @@ export class InvoiceService {
       const skip = (page - 1) * limit;
 
       const whereClause: any = {};
-      
+
       if (filters.status) whereClause.status = filters.status;
       if (filters.customerId) whereClause.customerId = filters.customerId;
       if (filters.dateFrom || filters.dateTo) {
@@ -309,16 +338,16 @@ export class InvoiceService {
             customer: true,
             lines: {
               include: {
-                product: true
-              }
+                product: true,
+              },
             },
-            payments: true
+            payments: true,
           },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: "desc" },
           skip,
-          take: limit
+          take: limit,
         }),
-        prisma.invoice.count({ where: whereClause })
+        prisma.invoice.count({ where: whereClause }),
       ]);
 
       return {
@@ -327,11 +356,11 @@ export class InvoiceService {
           page,
           limit,
           total,
-          pages: Math.ceil(total / limit)
-        }
+          pages: Math.ceil(total / limit),
+        },
       };
     } catch (error) {
-      console.error('Error listing invoices:', error);
+      console.error("Error listing invoices:", error);
       throw error;
     }
   }
@@ -339,43 +368,48 @@ export class InvoiceService {
   async sendInvoice(id: string) {
     try {
       const invoice = await this.getInvoice(id);
-      
+
       if (invoice.status === InvoiceStatus.DRAFT) {
         // Create accounting entries for double-entry bookkeeping
         await this.createAccountingEntries(invoice);
-        
+
         // Update invoice status
         const updatedInvoice = await prisma.invoice.update({
           where: { id },
           data: {
             status: InvoiceStatus.SENT,
-            sentAt: new Date()
-          }
+            sentAt: new Date(),
+          },
         });
 
         return updatedInvoice;
       }
 
-      throw new Error('Invoice can only be sent from DRAFT status');
+      throw new Error("Invoice can only be sent from DRAFT status");
     } catch (error) {
-      console.error('Error sending invoice:', error);
+      console.error("Error sending invoice:", error);
       throw error;
     }
   }
 
-  private calculateLineTax(lineSubtotal: number, taxRules: any[], customer: any): number {
+  private calculateLineTax(
+    lineSubtotal: number,
+    taxRules: any[],
+    customer: any,
+  ): number {
     let totalTax = 0;
-    
+
     for (const rule of taxRules) {
       if (customer.defaultTaxSettings) {
         const settings = customer.defaultTaxSettings as any;
-        
+
         // Check if this tax applies to customer
-        if ((rule.regionCode === 'CA' && settings.gst) ||
-            (rule.regionCode === 'CA-BC' && settings.pst) ||
-            (rule.regionCode === 'CA-ON' && settings.hst) ||
-            (rule.regionCode === 'CA-QC' && settings.qst)) {
-          
+        if (
+          (rule.regionCode === "CA" && settings.gst) ||
+          (rule.regionCode === "CA-BC" && settings.pst) ||
+          (rule.regionCode === "CA-ON" && settings.hst) ||
+          (rule.regionCode === "CA-QC" && settings.qst)
+        ) {
           if (rule.isCompound) {
             // Compound tax is calculated on subtotal + previous taxes
             totalTax += lineSubtotal * rule.rate;
@@ -386,7 +420,7 @@ export class InvoiceService {
         }
       }
     }
-    
+
     return Math.round(totalTax);
   }
 
@@ -395,21 +429,21 @@ export class InvoiceService {
       // Create double-entry accounting
       // Debit: Accounts Receivable (asset increases)
       // Credit: Revenue (revenue increases)
-      
+
       await prisma.accountEntry.createMany({
         data: [
           {
             refId: invoice.id,
-            refType: 'INVOICE',
-            debitAccount: '1200', // Accounts Receivable
-            creditAccount: '4000', // Revenue
+            refType: "INVOICE",
+            debitAccount: "1200", // Accounts Receivable
+            creditAccount: "4000", // Revenue
             amount: invoice.total,
-            description: `Invoice ${invoice.invoiceNumber} - ${invoice.customer.companyName || invoice.customer.firstName + ' ' + invoice.lastName}`
-          }
-        ]
+            description: `Invoice ${invoice.invoiceNumber} - ${invoice.customer.companyName || invoice.customer.firstName + " " + invoice.lastName}`,
+          },
+        ],
       });
     } catch (error) {
-      console.error('Error creating accounting entries:', error);
+      console.error("Error creating accounting entries:", error);
       throw error;
     }
   }

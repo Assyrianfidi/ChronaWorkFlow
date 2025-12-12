@@ -1,7 +1,61 @@
-import * as React from 'react';
-import { IconType } from 'react-icons';
-import { FiAlertCircle, FiAlertTriangle, FiCheckCircle, FiChevronDown, FiChevronRight, FiChevronUp, FiCircle, FiClock, FiCopy, FiCreditCard, FiDollarSign, FiDownload, FiEdit, FiEye, FiEyeOff, FiFileText, FiFilter, FiHelpCircle, FiHome, FiInfo, FiLayers, FiList, FiLoader, FiLock, FiLogOut, FiMail, FiMenu, FiMessageSquare, FiMinus, FiMoon, FiMoreHorizontal, FiPackage, FiPlus, FiRefreshCw, FiSave, FiSearch, FiSettings, FiShare2, FiShield, FiStar, FiSun, FiTrash2, FiTrendingDown, FiTrendingUp, FiUpload, FiUser, FiUserPlus, FiUsers, FiX, FiXCircle, FiZap } from 'react-icons/fi';
-import { FaGoogle, FaGithub } from 'react-icons/fa';
+import React from 'react';
+// @ts-ignore
+import * as React from "react";
+import { IconType } from "react-icons";
+import {
+  FiAlertCircle,
+  FiAlertTriangle,
+  FiCheckCircle,
+  FiChevronDown,
+  FiChevronRight,
+  FiChevronUp,
+  FiCircle,
+  FiClock,
+  FiCopy,
+  FiCreditCard,
+  FiDollarSign,
+  FiDownload,
+  FiEdit,
+  FiEye,
+  FiEyeOff,
+  FiFileText,
+  FiFilter,
+  FiHelpCircle,
+  FiHome,
+  FiInfo,
+  FiLayers,
+  FiList,
+  FiLoader,
+  FiLock,
+  FiLogOut,
+  FiMail,
+  FiMenu,
+  FiMessageSquare,
+  FiMinus,
+  FiMoon,
+  FiMoreHorizontal,
+  FiPackage,
+  FiPlus,
+  FiRefreshCw,
+  FiSave,
+  FiSearch,
+  FiSettings,
+  FiShare2,
+  FiShield,
+  FiStar,
+  FiSun,
+  FiTrash2,
+  FiTrendingDown,
+  FiTrendingUp,
+  FiUpload,
+  FiUser,
+  FiUserPlus,
+  FiUsers,
+  FiX,
+  FiXCircle,
+  FiZap,
+} from "react-icons/fi";
+import { FaGoogle, FaGithub } from "react-icons/fa";
 
 type IconProps = React.HTMLAttributes<SVGElement> & {
   className?: string;
@@ -39,11 +93,11 @@ export const Icons = {
       <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
     </svg>
   ),
-  
+
   // Social Icons
   google: FaGoogle,
   github: FaGithub,
-  
+
   // Feather Icons
   alertCircle: FiAlertCircle,
   alertTriangle: FiAlertTriangle,
@@ -96,7 +150,8 @@ export const Icons = {
   x: FiX,
   xCircle: FiXCircle,
   zap: FiZap,
-  
+
+// @ts-ignore
   // Add more custom icons as needed
 } as const;
 

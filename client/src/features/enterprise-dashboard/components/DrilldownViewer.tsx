@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Download, RefreshCw, Filter } from 'lucide-react';
+import { ArrowLeft, Download, RefreshCw, Filter } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -13,7 +13,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
+} from "recharts";
 
 interface DrilldownViewerProps {
   kpiId: string;
@@ -24,39 +24,50 @@ interface DrilldownViewerProps {
 const getChartData = (kpiId: string) => {
   const now = new Date();
   const data = [];
-  
+
   for (let i = 12; i >= 0; i--) {
     const date = new Date(now);
     date.setMonth(date.getMonth() - i);
-    
+
     data.push({
-      date: date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+      date: date.toLocaleDateString("en-US", {
+        month: "short",
+        year: "2-digit",
+      }),
       value: Math.floor(Math.random() * 100000) + 50000,
       previousYear: Math.floor(Math.random() * 80000) + 30000,
       target: 120000,
     });
   }
-  
+
   return data;
 };
 
-export const DrilldownViewer: React.FC<DrilldownViewerProps> = ({ kpiId, onBack }) => {
+// @ts-ignore
+export const DrilldownViewer: React.FC<DrilldownViewerProps> = ({
+  kpiId,
+  onBack,
+}) => {
   const chartData = getChartData(kpiId);
-  
+
   const getKpiTitle = (id: string) => {
     const titles: Record<string, string> = {
-      revenue: 'Revenue Analysis',
-      expenses: 'Expense Breakdown',
-      'profit-margin': 'Profit Margin Trends',
-      'invoices-outstanding': 'Aging Analysis',
+      revenue: "Revenue Analysis",
+      expenses: "Expense Breakdown",
+      "profit-margin": "Profit Margin Trends",
+      "invoices-outstanding": "Aging Analysis",
     };
-    return titles[id] || 'KPI Details';
+    return titles[id] || "KPI Details";
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" onClick={onBack} className="text-blue-600 hover:bg-blue-50">
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="text-blue-600 hover:bg-blue-50"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Dashboard
         </Button>
@@ -87,36 +98,39 @@ export const DrilldownViewer: React.FC<DrilldownViewerProps> = ({ kpiId, onBack 
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   tick={{ fontSize: 12 }}
                   tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
+                <YAxis
                   tickFormatter={(value) => `$${value.toLocaleString()}`}
                   tick={{ fontSize: 12 }}
                   tickLine={false}
                   axisLine={false}
                 />
-                <Tooltip 
-                  formatter={(value) => [`$${value.toLocaleString()}`, 'Current Year']}
+                <Tooltip
+                  formatter={(value) => [
+                    `$${value.toLocaleString()}`,
+                    "Current Year",
+                  ]}
                   labelFormatter={(label) => `Period: ${label}`}
                 />
                 <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="#3b82f6" 
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#3b82f6"
                   strokeWidth={2}
                   dot={false}
                   activeDot={{ r: 6 }}
                   name="Current Year"
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="previousYear" 
-                  stroke="#9ca3af" 
+                <Line
+                  type="monotone"
+                  dataKey="previousYear"
+                  stroke="#9ca3af"
                   strokeWidth={1.5}
                   strokeDasharray="5 5"
                   dot={false}
@@ -139,28 +153,28 @@ export const DrilldownViewer: React.FC<DrilldownViewerProps> = ({ kpiId, onBack 
                 <BarChart
                   layout="vertical"
                   data={[
-                    { name: 'Product Sales', value: 420000 },
-                    { name: 'Services', value: 380000 },
-                    { name: 'Subscriptions', value: 250000 },
-                    { name: 'Other Income', value: 200000 },
+                    { name: "Product Sales", value: 420000 },
+                    { name: "Services", value: 380000 },
+                    { name: "Subscriptions", value: 250000 },
+                    { name: "Other Income", value: 200000 },
                   ]}
                 >
                   <CartesianGrid horizontal={true} vertical={false} />
                   <XAxis type="number" hide />
-                  <YAxis 
-                    dataKey="name" 
-                    type="category" 
+                  <YAxis
+                    dataKey="name"
+                    type="category"
                     width={100}
                     tick={{ fontSize: 12 }}
                     tickLine={false}
                     axisLine={false}
                   />
-                  <Tooltip 
+                  <Tooltip
                     formatter={(value) => [`$${value.toLocaleString()}`]}
                   />
-                  <Bar 
-                    dataKey="value" 
-                    fill="#3b82f6" 
+                  <Bar
+                    dataKey="value"
+                    fill="#3b82f6"
                     radius={[0, 4, 4, 0]}
                     animationDuration={1500}
                   />
@@ -177,25 +191,28 @@ export const DrilldownViewer: React.FC<DrilldownViewerProps> = ({ kpiId, onBack 
           <CardContent>
             <div className="space-y-4">
               {[
-                { name: 'Enterprise Plan', value: 320000, change: 12.5 },
-                { name: 'Professional Services', value: 280000, change: 8.2 },
-                { name: 'Premium Support', value: 195000, change: 5.7 },
-                { name: 'Add-on Modules', value: 178000, change: -2.3 },
+                { name: "Enterprise Plan", value: 320000, change: 12.5 },
+                { name: "Professional Services", value: 280000, change: 8.2 },
+                { name: "Premium Support", value: 195000, change: 5.7 },
+                { name: "Add-on Modules", value: 178000, change: -2.3 },
               ].map((item) => (
-                <div key={item.name} className="flex items-center justify-between">
+                <div
+                  key={item.name}
+                  className="flex items-center justify-between"
+                >
                   <div className="text-sm font-medium">{item.name}</div>
                   <div className="flex items-center space-x-4">
                     <div className="font-medium">
                       ${item.value.toLocaleString()}
                     </div>
-                    <div 
+                    <div
                       className={`text-xs px-2 py-1 rounded-full ${
-                        item.change >= 0 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
+                        item.change >= 0
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {item.change >= 0 ? '↑' : '↓'} {Math.abs(item.change)}%
+                      {item.change >= 0 ? "↑" : "↓"} {Math.abs(item.change)}%
                     </div>
                   </div>
                 </div>

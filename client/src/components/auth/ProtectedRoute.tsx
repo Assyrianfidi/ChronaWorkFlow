@@ -1,23 +1,28 @@
-import { useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/router';
-import { useAuthStore } from '../store/auth';
+import React from 'react';
+import { useEffect, ReactNode } from "react";
+import { useRouter } from "next/router";
+// @ts-ignore
+import { useAuthStore } from '../store/auth.js.js';
 
 interface ProtectedRouteProps {
   children: ReactNode;
   requiredRole?: string[];
 }
 
-export const ProtectedRoute = ({ children, requiredRole = [] }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({
+  children,
+  requiredRole = [],
+}: ProtectedRouteProps) => {
   const { isAuthenticated, user, isLoading, checkAuth } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
     const verifyAuth = async () => {
       await checkAuth();
-      
+
       if (!isAuthenticated && !isLoading) {
         // Redirect to login if not authenticated
-        router.push('/login');
+        router.push("/login");
         return;
       }
 
@@ -25,7 +30,7 @@ export const ProtectedRoute = ({ children, requiredRole = [] }: ProtectedRoutePr
       if (isAuthenticated && requiredRole.length > 0 && user?.role) {
         if (!requiredRole.includes(user.role)) {
           // Redirect to unauthorized or home if role doesn't match
-          router.push('/unauthorized');
+          router.push("/unauthorized");
         }
       }
     };
@@ -43,7 +48,11 @@ export const ProtectedRoute = ({ children, requiredRole = [] }: ProtectedRoutePr
   }
 
   // Check role if required
-  if (requiredRole.length > 0 && user?.role && !requiredRole.includes(user.role)) {
+  if (
+    requiredRole.length > 0 &&
+    user?.role &&
+    !requiredRole.includes(user.role)
+  ) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">

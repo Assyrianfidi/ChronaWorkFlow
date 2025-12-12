@@ -1,4 +1,4 @@
-import { User, Role } from '@prisma/client';
+import { User, Role } from "@prisma/client";
 
 declare global {
   namespace Express {
@@ -10,13 +10,14 @@ declare global {
   }
 }
 
-export interface AuthUser extends Pick<User, 'id' | 'email' | 'role' | 'isActive'> {
+export interface AuthUser
+  extends Pick<User, "id" | "email" | "role" | "isActive"> {
   role: Role;
 }
 
 export interface TokenPayload {
   userId: number;
-  type: 'access' | 'refresh';
+  type: "access" | "refresh";
   role: string;
   iat: number;
   exp: number;

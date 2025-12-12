@@ -10,7 +10,7 @@ const ProfilePage = () => {
             Personal details and account settings.
           </p>
         </div>
-        
+
         <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
           <dl className="sm:divide-y sm:divide-gray-200">
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -23,9 +23,11 @@ const ProfilePage = () => {
                 />
               </dd>
             </div>
-            
+
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-medium text-gray-500">Email address</dt>
+              <dt className="text-sm font-medium text-gray-500">
+                Email address
+              </dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                 <input
                   type="email"
@@ -34,7 +36,7 @@ const ProfilePage = () => {
                 />
               </dd>
             </div>
-            
+
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-gray-500">Phone</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -45,7 +47,7 @@ const ProfilePage = () => {
                 />
               </dd>
             </div>
-            
+
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-gray-500">Password</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -57,16 +59,22 @@ const ProfilePage = () => {
                 </button>
               </dd>
             </div>
-            
+
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-              <dt className="text-sm font-medium text-gray-500">Profile photo</dt>
+              <dt className="text-sm font-medium text-gray-500">
+                Profile photo
+              </dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                 <div className="flex items-center">
-                  <div 
+                  <div
                     data-testid="profile-photo-placeholder"
                     className="h-12 w-12 rounded-full overflow-hidden bg-gray-100"
                   >
-                    <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="h-full w-full text-gray-300"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                   </div>
@@ -79,7 +87,7 @@ const ProfilePage = () => {
                 </div>
               </dd>
             </div>
-            
+
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-gray-500">About</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -92,7 +100,7 @@ const ProfilePage = () => {
             </div>
           </dl>
         </div>
-        
+
         <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
           <button
             type="button"

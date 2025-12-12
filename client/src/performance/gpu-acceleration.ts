@@ -1,3 +1,11 @@
+
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React, { useState } from 'react';
 /**
  * GPU Acceleration Engine
  * WebGL rendering, GPU-powered animations, hardware acceleration optimization, parallel processing
@@ -7,9 +15,9 @@ export interface GPUAccelerationConfig {
   // WebGL rendering
   webglRendering: {
     enabled: boolean;
-    contextType: 'webgl' | 'webgl2';
+    contextType: "webgl" | "webgl2";
     antialias: boolean;
-    powerPreference: 'default' | 'high-performance' | 'low-power';
+    powerPreference: "default" | "high-performance" | "low-power";
     failIfMajorPerformanceCaveat: boolean;
     preserveDrawingBuffer: boolean;
     premultipliedAlpha: boolean;
@@ -23,7 +31,7 @@ export interface GPUAccelerationConfig {
     useTransform3d: boolean;
     maxConcurrentAnimations: number;
     frameRate: number;
-    quality: 'low' | 'medium' | 'high' | 'ultra';
+    quality: "low" | "medium" | "high" | "ultra";
     adaptiveQuality: boolean;
     batteryOptimization: boolean;
   };
@@ -46,7 +54,7 @@ export interface GPUAccelerationConfig {
     useOffscreenCanvas: boolean;
     maxWorkers: number;
     workerPoolSize: number;
-    taskDistribution: 'round-robin' | 'load-balanced' | 'priority-based';
+    taskDistribution: "round-robin" | "load-balanced" | "priority-based";
     sharedArrayBuffer: boolean;
   };
 
@@ -91,15 +99,15 @@ export interface GPUCapabilities {
 
 export interface GPUAnimation {
   id: string;
-  type: 'transform' | 'opacity' | 'color' | 'texture' | 'custom';
+  type: "transform" | "opacity" | "color" | "texture" | "custom";
   target: HTMLElement | CanvasElement;
   properties: AnimationProperty[];
   duration: number;
   easing: string;
   delay: number;
   iterations: number;
-  direction: 'normal' | 'reverse' | 'alternate' | 'alternate-reverse';
-  fillMode: 'none' | 'forwards' | 'backwards' | 'both';
+  direction: "normal" | "reverse" | "alternate" | "alternate-reverse";
+  fillMode: "none" | "forwards" | "backwards" | "both";
   startTime: number;
   currentTime: number;
   paused: boolean;
@@ -121,7 +129,7 @@ export interface AnimationProperty {
 export interface GPUShader {
   id: string;
   name: string;
-  type: 'vertex' | 'fragment' | 'compute';
+  type: "vertex" | "fragment" | "compute";
   source: string;
   compiled: boolean;
   program?: WebGLProgram;
@@ -131,14 +139,22 @@ export interface GPUShader {
 
 export interface ShaderUniform {
   name: string;
-  type: 'float' | 'vec2' | 'vec3' | 'vec4' | 'mat3' | 'mat4' | 'sampler2D' | 'samplerCube';
+  type:
+    | "float"
+    | "vec2"
+    | "vec3"
+    | "vec4"
+    | "mat3"
+    | "mat4"
+    | "sampler2D"
+    | "samplerCube";
   value: any;
   location?: WebGLUniformLocation;
 }
 
 export interface ShaderAttribute {
   name: string;
-  type: 'float' | 'vec2' | 'vec3' | 'vec4';
+  type: "float" | "vec2" | "vec3" | "vec4";
   buffer?: WebGLBuffer;
   location?: number;
   size: number;
@@ -173,7 +189,7 @@ export interface GPUPerformanceMetrics {
   gpuUtilization: number;
   memoryUsage: number;
   powerConsumption: number;
-  thermalState: 'normal' | 'warm' | 'hot' | 'critical';
+  thermalState: "normal" | "warm" | "hot" | "critical";
   adaptiveQuality: string;
   activeAnimations: number;
   droppedFrames: number;
@@ -183,7 +199,7 @@ export interface GPUPerformanceMetrics {
 
 export interface GPUWorkerTask {
   id: string;
-  type: 'compute' | 'render' | 'process' | 'optimize';
+  type: "compute" | "render" | "process" | "optimize";
   priority: number;
   data: any;
   transferables?: Transferable[];
@@ -218,9 +234,15 @@ export class GPUAccelerationEngine {
     this.config = this.getDefaultConfig();
     this.webglRenderer = new WebGLRenderer(this.config.webglRendering);
     this.animationEngine = new GPUAnimationEngine(this.config.gpuAnimations);
-    this.hardwareOptimizer = new HardwareOptimizer(this.config.hardwareAcceleration);
-    this.parallelProcessor = new ParallelProcessor(this.config.parallelProcessing);
-    this.performanceMonitor = new GPUPerformanceMonitor(this.config.performanceMonitoring);
+    this.hardwareOptimizer = new HardwareOptimizer(
+      this.config.hardwareAcceleration,
+    );
+    this.parallelProcessor = new ParallelProcessor(
+      this.config.parallelProcessing,
+    );
+    this.performanceMonitor = new GPUPerformanceMonitor(
+      this.config.performanceMonitoring,
+    );
     this.capabilities = this.detectGPUCapabilities();
     this.metrics = this.initializeMetrics();
     this.initializeGPUAcceleration();
@@ -237,13 +259,13 @@ export class GPUAccelerationEngine {
     return {
       webglRendering: {
         enabled: true,
-        contextType: 'webgl2',
+        contextType: "webgl2",
         antialias: true,
-        powerPreference: 'high-performance',
+        powerPreference: "high-performance",
         failIfMajorPerformanceCaveat: false,
         preserveDrawingBuffer: false,
         premultipliedAlpha: true,
-        desynchronized: false
+        desynchronized: false,
       },
       gpuAnimations: {
         enabled: true,
@@ -251,9 +273,9 @@ export class GPUAccelerationEngine {
         useTransform3d: true,
         maxConcurrentAnimations: 50,
         frameRate: 60,
-        quality: 'high',
+        quality: "high",
         adaptiveQuality: true,
-        batteryOptimization: true
+        batteryOptimization: true,
       },
       hardwareAcceleration: {
         enabled: true,
@@ -262,8 +284,8 @@ export class GPUAccelerationEngine {
         optimizeForDevice: true,
         memoryManagement: true,
         textureOptimization: true,
-        shaderOptimization: true
-      }
+        shaderOptimization: true,
+      },
     };
   }
 
@@ -281,36 +303,42 @@ export class GPUAccelerationEngine {
       gpuUtilization: 0,
       memoryUsage: 0,
       powerConsumption: 0,
-      thermalState: 'normal',
-      adaptiveQuality: 'high',
+      thermalState: "normal",
+      adaptiveQuality: "high",
       activeAnimations: 0,
       droppedFrames: 0,
       renderingTime: 0,
-      compositingTime: 0
+      compositingTime: 0,
     };
   }
 
   private detectGPUCapabilities(): GPUCapabilities {
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
-    
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+
     if (!gl) {
       return this.getFallbackCapabilities();
     }
 
-    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-    
+    const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+
     return {
-      webglSupported: !!canvas.getContext('webgl'),
-      webgl2Supported: !!canvas.getContext('webgl2'),
+      webglSupported: !!canvas.getContext("webgl"),
+      webgl2Supported: !!canvas.getContext("webgl2"),
       maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
       maxVertexAttributes: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
       maxVertexUniformVectors: gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS),
-      maxFragmentUniformVectors: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS),
+      maxFragmentUniformVectors: gl.getParameter(
+        gl.MAX_FRAGMENT_UNIFORM_VECTORS,
+      ),
       maxVaryingVectors: gl.getParameter(gl.MAX_VARYING_VECTORS),
       maxDrawBuffers: gl.getParameter(gl.MAX_DRAW_BUFFERS),
-      vendor: debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : 'Unknown',
-      renderer: debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Unknown',
+      vendor: debugInfo
+        ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL)
+        : "Unknown",
+      renderer: debugInfo
+        ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
+        : "Unknown",
       version: gl.getParameter(gl.VERSION),
       shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
       extensions: gl.getSupportedExtensions() || [],
@@ -320,11 +348,15 @@ export class GPUAccelerationEngine {
       aliasedPointSizeRange: gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE),
       maxTextureImageUnits: gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
       maxRenderbufferSize: gl.getParameter(gl.MAX_RENDERBUFFER_SIZE),
-      maxCombinedTextureImageUnits: gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS),
+      maxCombinedTextureImageUnits: gl.getParameter(
+        gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS,
+      ),
       maxCubeMapTextureSize: gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE),
-      maxVertexTextureImageUnits: gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS),
+      maxVertexTextureImageUnits: gl.getParameter(
+        gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS,
+      ),
       max3DTextureSize: gl.getParameter(gl.MAX_3D_TEXTURE_SIZE) || 0,
-      maxArrayTextureLayers: gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS) || 0
+      maxArrayTextureLayers: gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS) || 0,
     };
   }
 
@@ -338,10 +370,10 @@ export class GPUAccelerationEngine {
       maxFragmentUniformVectors: 0,
       maxVaryingVectors: 0,
       maxDrawBuffers: 0,
-      vendor: 'Unknown',
-      renderer: 'Unknown',
-      version: '0.0',
-      shadingLanguageVersion: '0.0',
+      vendor: "Unknown",
+      renderer: "Unknown",
+      version: "0.0",
+      shadingLanguageVersion: "0.0",
       extensions: [],
       maxViewportDims: [0, 0],
       maxRenderBufferSize: 0,
@@ -353,16 +385,16 @@ export class GPUAccelerationEngine {
       maxCubeMapTextureSize: 0,
       maxVertexTextureImageUnits: 0,
       max3DTextureSize: 0,
-      maxArrayTextureLayers: 0
+      maxArrayTextureLayers: 0,
     };
   }
 
   private initializeGPUAcceleration(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // Check WebGL support
     if (!this.capabilities.webglSupported) {
-      console.warn('WebGL not supported, falling back to CSS animations');
+      console.warn("WebGL not supported, falling back to CSS animations");
       this.config.webglRendering.enabled = false;
       this.config.gpuAnimations.useWebGL = false;
     }
@@ -393,13 +425,13 @@ export class GPUAccelerationEngine {
 
   private initializeWorkerPool(): void {
     const poolSize = this.config.parallelProcessing.workerPoolSize;
-    
+
     for (let i = 0; i < poolSize; i++) {
       const worker = new Worker(this.createWorkerScript());
       this.workerPool.push(worker);
-      
-      worker.addEventListener('message', this.handleWorkerMessage.bind(this));
-      worker.addEventListener('error', this.handleWorkerError.bind(this));
+
+      worker.addEventListener("message", this.handleWorkerMessage.bind(this));
+      worker.addEventListener("error", this.handleWorkerError.bind(this));
     }
   }
 
@@ -441,17 +473,17 @@ export class GPUAccelerationEngine {
         }
       });
       
-      function performComputation(data) {
+      function performComputation(data: any) {
         // Perform GPU-optimized computations
         return { processed: true, data: data };
       }
       
-      function processData(data) {
+      function processData(data: any) {
         // Process data for GPU rendering
         return { processed: true, data: data };
       }
       
-      function optimizeData(data) {
+      function optimizeData(data: any) {
         // Optimize data for GPU performance
         return { optimized: true, data: data };
       }
@@ -460,30 +492,30 @@ export class GPUAccelerationEngine {
 
   private handleWorkerMessage(event: MessageEvent): void {
     const { taskId, result, success, error } = event.data;
-    
+
     const task = this.activeTasks.get(taskId);
     if (task) {
       task.endTime = performance.now();
       task.duration = task.endTime - task.startTime;
       task.completed = true;
-      
+
       if (success) {
         task.result = result;
       } else {
         task.error = error;
       }
-      
+
       this.activeTasks.delete(taskId);
     }
   }
 
   private handleWorkerError(event: ErrorEvent): void {
-    console.error('Worker error:', event.error);
+    console.error("Worker error:", event.error);
   }
 
   private setupEventListeners(): void {
     // Monitor visibility changes
-    document.addEventListener('visibilitychange', () => {
+    document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         this.pauseAnimations();
       } else {
@@ -492,23 +524,30 @@ export class GPUAccelerationEngine {
     });
 
     // Monitor battery level if available
-    if ('getBattery' in navigator) {
+    if ("getBattery" in navigator) {
+// @ts-ignore
+// @ts-ignore
       (navigator as any).getBattery().then((battery: any) => {
-        battery.addEventListener('levelchange', () => {
+        battery.addEventListener("levelchange", () => {
           this.handleBatteryChange(battery.level);
         });
-        
-        battery.addEventListener('chargingchange', () => {
+
+        battery.addEventListener("chargingchange", () => {
           this.handleChargingChange(battery.charging);
         });
       });
     }
 
     // Monitor thermal state if available
-    if ('thermal' in navigator) {
-      (navigator as any).thermal.addEventListener('temperaturechange', (event: any) => {
-        this.handleThermalChange(event.temperature);
-      });
+    if ("thermal" in navigator) {
+// @ts-ignore
+// @ts-ignore
+      (navigator as any).thermal.addEventListener(
+        "temperaturechange",
+        (event: any) => {
+          this.handleThermalChange(event.temperature);
+        },
+      );
     }
   }
 
@@ -516,13 +555,13 @@ export class GPUAccelerationEngine {
     if (this.config.gpuAnimations.batteryOptimization) {
       if (level < 0.2) {
         // Low battery - reduce quality
-        this.setAdaptiveQuality('low');
+        this.setAdaptiveQuality("low");
       } else if (level < 0.5) {
         // Medium battery - reduce quality slightly
-        this.setAdaptiveQuality('medium');
+        this.setAdaptiveQuality("medium");
       } else {
         // High battery - restore quality
-        this.setAdaptiveQuality('high');
+        this.setAdaptiveQuality("high");
       }
     }
   }
@@ -530,53 +569,55 @@ export class GPUAccelerationEngine {
   private handleChargingChange(charging: boolean): void {
     if (charging && this.config.gpuAnimations.batteryOptimization) {
       // Device is charging - restore high quality
-      this.setAdaptiveQuality('high');
+      this.setAdaptiveQuality("high");
     }
   }
 
   private handleThermalChange(temperature: number): void {
-    let thermalState: 'normal' | 'warm' | 'hot' | 'critical';
-    
+    let thermalState: "normal" | "warm" | "hot" | "critical";
+
     if (temperature < 40) {
-      thermalState = 'normal';
+      thermalState = "normal";
     } else if (temperature < 60) {
-      thermalState = 'warm';
+      thermalState = "warm";
     } else if (temperature < 80) {
-      thermalState = 'hot';
+      thermalState = "hot";
     } else {
-      thermalState = 'critical';
+      thermalState = "critical";
     }
-    
+
     this.metrics.thermalState = thermalState;
-    
+
     // Adjust quality based on thermal state
-    if (thermalState === 'critical') {
-      this.setAdaptiveQuality('low');
-    } else if (thermalState === 'hot') {
-      this.setAdaptiveQuality('medium');
-    } else if (thermalState === 'warm') {
-      this.setAdaptiveQuality('high');
+    if (thermalState === "critical") {
+      this.setAdaptiveQuality("low");
+    } else if (thermalState === "hot") {
+      this.setAdaptiveQuality("medium");
+    } else if (thermalState === "warm") {
+      this.setAdaptiveQuality("high");
     }
   }
 
-  private setAdaptiveQuality(quality: 'low' | 'medium' | 'high' | 'ultra'): void {
+  private setAdaptiveQuality(
+    quality: "low" | "medium" | "high" | "ultra",
+  ): void {
     this.metrics.adaptiveQuality = quality;
-    
+
     // Adjust rendering parameters based on quality
     switch (quality) {
-      case 'low':
+      case "low":
         this.config.gpuAnimations.frameRate = 30;
         this.config.webglRendering.antialias = false;
         break;
-      case 'medium':
+      case "medium":
         this.config.gpuAnimations.frameRate = 45;
         this.config.webglRendering.antialias = true;
         break;
-      case 'high':
+      case "high":
         this.config.gpuAnimations.frameRate = 60;
         this.config.webglRendering.antialias = true;
         break;
-      case 'ultra':
+      case "ultra":
         this.config.gpuAnimations.frameRate = 120;
         this.config.webglRendering.antialias = true;
         break;
@@ -586,44 +627,44 @@ export class GPUAccelerationEngine {
   private startRenderLoop(): void {
     let lastTime = 0;
     const targetFrameTime = 1000 / this.config.gpuAnimations.frameRate;
-    
+
     const render = (currentTime: number) => {
       const deltaTime = currentTime - lastTime;
-      
+
       if (deltaTime >= targetFrameTime) {
         this.render(deltaTime);
         lastTime = currentTime;
       }
-      
+
       this.animationFrameId = requestAnimationFrame(render);
     };
-    
+
     this.animationFrameId = requestAnimationFrame(render);
   }
 
   private render(deltaTime: number): void {
     const startTime = performance.now();
-    
+
     // Update performance metrics
     this.metrics.frameTime = deltaTime;
     this.metrics.frameRate = 1000 / deltaTime;
-    
+
     // Update animations
     this.animationEngine.update(deltaTime);
-    
+
     // Render WebGL content
     if (this.config.webglRendering.enabled) {
       this.webglRenderer.render(deltaTime);
     }
-    
+
     // Process parallel tasks
     this.parallelProcessor.process();
-    
+
     // Update performance metrics
     const renderTime = performance.now() - startTime;
     this.metrics.renderingTime = renderTime;
     this.metrics.activeAnimations = this.animations.size;
-    
+
     // Check for dropped frames
     if (deltaTime > targetFrameTime * 1.5) {
       this.metrics.droppedFrames++;
@@ -631,22 +672,29 @@ export class GPUAccelerationEngine {
   }
 
   // Public API: WebGL rendering methods
-  public createRenderTarget(canvas: HTMLCanvasElement, options: RenderTargetOptions = {}): GPURenderTarget {
+  public createRenderTarget(
+    canvas: HTMLCanvasElement,
+    options: RenderTargetOptions = {},
+  ): GPURenderTarget {
     const contextOptions: WebGLContextAttributes = {
       alpha: options.alpha !== false,
       antialias: this.config.webglRendering.antialias,
       depth: options.depth !== false,
-      failIfMajorPerformanceCaveat: this.config.webglRendering.failIfMajorPerformanceCaveat,
+      failIfMajorPerformanceCaveat:
+        this.config.webglRendering.failIfMajorPerformanceCaveat,
       premultipliedAlpha: this.config.webglRendering.premultipliedAlpha,
       preserveDrawingBuffer: this.config.webglRendering.preserveDrawingBuffer,
       stencil: options.stencil || false,
-      desynchronized: this.config.webglRendering.desynchronized
+      desynchronized: this.config.webglRendering.desynchronized,
     };
 
-    const context = canvas.getContext(this.config.webglRendering.contextType, contextOptions);
-    
+    const context = canvas.getContext(
+      this.config.webglRendering.contextType,
+      contextOptions,
+    );
+
     if (!context) {
-      throw new Error('Failed to create WebGL context');
+      throw new Error("Failed to create WebGL context");
     }
 
     const pixelRatio = options.pixelRatio || window.devicePixelRatio || 1;
@@ -656,8 +704,8 @@ export class GPUAccelerationEngine {
     // Set canvas size
     canvas.width = width * pixelRatio;
     canvas.height = height * pixelRatio;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
 
     const renderTarget: GPURenderTarget = {
       id: this.generateRenderTargetId(),
@@ -669,11 +717,11 @@ export class GPUAccelerationEngine {
       viewport: { x: 0, y: 0, width, height },
       clearColor: options.clearColor || { r: 0, g: 0, b: 0, a: 0 },
       clearDepth: options.clearDepth || 1.0,
-      clearStencil: options.clearStencil || 0
+      clearStencil: options.clearStencil || 0,
     };
 
     this.renderTargets.set(renderTarget.id, renderTarget);
-    
+
     return renderTarget;
   }
 
@@ -681,33 +729,37 @@ export class GPUAccelerationEngine {
     return `rt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  public createShader(vertexSource: string, fragmentSource: string, options: ShaderOptions = {}): GPUShader {
+  public createShader(
+    vertexSource: string,
+    fragmentSource: string,
+    options: ShaderOptions = {},
+  ): GPUShader {
     const shader: GPUShader = {
       id: this.generateShaderId(),
-      name: options.name || 'unnamed',
-      type: 'vertex', // Will be updated based on source
-      source: '',
+      name: options.name || "unnamed",
+      type: "vertex", // Will be updated based on source
+      source: "",
       compiled: false,
       uniforms: {},
-      attributes: {}
+      attributes: {},
     };
 
     // Create vertex shader
-    const vertexShader = this.compileShader(vertexSource, 'vertex');
+    const vertexShader = this.compileShader(vertexSource, "vertex");
     if (!vertexShader) {
-      throw new Error('Failed to compile vertex shader');
+      throw new Error("Failed to compile vertex shader");
     }
 
     // Create fragment shader
-    const fragmentShader = this.compileShader(fragmentSource, 'fragment');
+    const fragmentShader = this.compileShader(fragmentSource, "fragment");
     if (!fragmentShader) {
-      throw new Error('Failed to compile fragment shader');
+      throw new Error("Failed to compile fragment shader");
     }
 
     // Create program
     const program = this.linkProgram(vertexShader, fragmentShader);
     if (!program) {
-      throw new Error('Failed to link shader program');
+      throw new Error("Failed to link shader program");
     }
 
     shader.program = program;
@@ -727,14 +779,17 @@ export class GPUAccelerationEngine {
     return `shader-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private compileShader(source: string, type: 'vertex' | 'fragment'): WebGLShader | null {
+  private compileShader(
+    source: string,
+    type: "vertex" | "fragment",
+  ): WebGLShader | null {
     const gl = this.getWebGLContext();
     if (!gl) return null;
 
     const shader = gl.createShader(
-      type === 'vertex' ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER
+      type === "vertex" ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER,
     );
-    
+
     if (!shader) return null;
 
     gl.shaderSource(shader, source);
@@ -743,14 +798,17 @@ export class GPUAccelerationEngine {
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
       const error = gl.getShaderInfoLog(shader);
       gl.deleteShader(shader);
-      console.error('Shader compilation error:', error);
+      console.error("Shader compilation error:", error);
       return null;
     }
 
     return shader;
   }
 
-  private linkProgram(vertexShader: WebGLShader, fragmentShader: WebGLShader): WebGLProgram | null {
+  private linkProgram(
+    vertexShader: WebGLShader,
+    fragmentShader: WebGLShader,
+  ): WebGLProgram | null {
     const gl = this.getWebGLContext();
     if (!gl) return null;
 
@@ -764,7 +822,7 @@ export class GPUAccelerationEngine {
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
       const error = gl.getProgramInfoLog(program);
       gl.deleteProgram(program);
-      console.error('Program linking error:', error);
+      console.error("Program linking error:", error);
       return null;
     }
 
@@ -775,8 +833,11 @@ export class GPUAccelerationEngine {
     const gl = this.getWebGLContext();
     if (!gl || !shader.program) return;
 
-    const uniformCount = gl.getProgramParameter(shader.program, gl.ACTIVE_UNIFORMS);
-    
+    const uniformCount = gl.getProgramParameter(
+      shader.program,
+      gl.ACTIVE_UNIFORMS,
+    );
+
     for (let i = 0; i < uniformCount; i++) {
       const info = gl.getActiveUniform(shader.program, i);
       if (!info) continue;
@@ -788,7 +849,7 @@ export class GPUAccelerationEngine {
         name: info.name,
         type: this.mapUniformType(info.type),
         value: null,
-        location
+        location,
       };
     }
   }
@@ -797,8 +858,11 @@ export class GPUAccelerationEngine {
     const gl = this.getWebGLContext();
     if (!gl || !shader.program) return;
 
-    const attributeCount = gl.getProgramParameter(shader.program, gl.ACTIVE_ATTRIBUTES);
-    
+    const attributeCount = gl.getProgramParameter(
+      shader.program,
+      gl.ACTIVE_ATTRIBUTES,
+    );
+
     for (let i = 0; i < attributeCount; i++) {
       const info = gl.getActiveAttrib(shader.program, i);
       if (!info) continue;
@@ -813,56 +877,59 @@ export class GPUAccelerationEngine {
         size: info.size,
         normalized: false,
         stride: 0,
-        offset: 0
+        offset: 0,
       };
     }
   }
 
-  private mapUniformType(glType: number): ShaderUniform['type'] {
+  private mapUniformType(glType: number): ShaderUniform["type"] {
     const gl = this.getWebGLContext();
-    if (!gl) return 'float';
+    if (!gl) return "float";
 
     switch (glType) {
       case gl.FLOAT:
-        return 'float';
+        return "float";
       case gl.FLOAT_VEC2:
-        return 'vec2';
+        return "vec2";
       case gl.FLOAT_VEC3:
-        return 'vec3';
+        return "vec3";
       case gl.FLOAT_VEC4:
-        return 'vec4';
+        return "vec4";
       case gl.FLOAT_MAT3:
-        return 'mat3';
+        return "mat3";
       case gl.FLOAT_MAT4:
-        return 'mat4';
+        return "mat4";
       case gl.SAMPLER_2D:
-        return 'sampler2D';
+        return "sampler2D";
       case gl.SAMPLER_CUBE:
-        return 'samplerCube';
+        return "samplerCube";
       default:
-        return 'float';
+        return "float";
     }
   }
 
-  private mapAttributeType(glType: number): ShaderAttribute['type'] {
+  private mapAttributeType(glType: number): ShaderAttribute["type"] {
     const gl = this.getWebGLContext();
-    if (!gl) return 'float';
+    if (!gl) return "float";
 
     switch (glType) {
       case gl.FLOAT:
-        return 'float';
+        return "float";
       case gl.FLOAT_VEC2:
-        return 'vec2';
+        return "vec2";
       case gl.FLOAT_VEC3:
-        return 'vec3';
+        return "vec3";
       case gl.FLOAT_VEC4:
-        return 'vec4';
+        return "vec4";
       default:
-        return 'float';
+        return "float";
     }
   }
 
-  private getWebGLContext(): WebGLRenderingContext | WebGL2RenderingContext | null {
+  private getWebGLContext():
+    | WebGLRenderingContext
+    | WebGL2RenderingContext
+    | null {
     // Return the first available WebGL context
     for (const renderTarget of this.renderTargets.values()) {
       return renderTarget.context;
@@ -871,24 +938,29 @@ export class GPUAccelerationEngine {
   }
 
   // Public API: Animation methods
-  public createAnimation(target: HTMLElement | CanvasElement, properties: AnimationProperty[], options: AnimationOptions = {}): GPUAnimation {
+  public createAnimation(
+    target: HTMLElement | CanvasElement,
+    properties: AnimationProperty[],
+    options: AnimationOptions = {},
+  ): GPUAnimation {
     const animation: GPUAnimation = {
       id: this.generateAnimationId(),
-      type: options.type || 'transform',
+      type: options.type || "transform",
       target,
-      properties: properties.map(prop => ({ ...prop, current: prop.from })),
+      properties: properties.map((prop) => ({ ...prop, current: prop.from })),
       duration: options.duration || 1000,
-      easing: options.easing || 'ease',
+      easing: options.easing || "ease",
       delay: options.delay || 0,
       iterations: options.iterations || 1,
-      direction: options.direction || 'normal',
-      fillMode: options.fillMode || 'none',
+      direction: options.direction || "normal",
+      fillMode: options.fillMode || "none",
       startTime: performance.now() + options.delay,
       currentTime: 0,
       paused: false,
       completed: false,
-      gpuAccelerated: this.config.gpuAnimations.useWebGL && this.capabilities.webglSupported,
-      shaderUniforms: {}
+      gpuAccelerated:
+        this.config.gpuAnimations.useWebGL && this.capabilities.webglSupported,
+      shaderUniforms: {},
     };
 
     // Create WebGL program if needed
@@ -897,7 +969,7 @@ export class GPUAccelerationEngine {
     }
 
     this.animations.set(animation.id, animation);
-    
+
     return animation;
   }
 
@@ -905,7 +977,9 @@ export class GPUAccelerationEngine {
     return `anim-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private createAnimationShader(animation: GPUAnimation): WebGLProgram | undefined {
+  private createAnimationShader(
+    animation: GPUAnimation,
+  ): WebGLProgram | undefined {
     const vertexShaderSource = `
       attribute vec2 a_position;
       uniform mat4 u_transform;
@@ -931,10 +1005,13 @@ export class GPUAccelerationEngine {
     `;
 
     try {
-      const shader = this.createShader(vertexShaderSource, fragmentShaderSource);
+      const shader = this.createShader(
+        vertexShaderSource,
+        fragmentShaderSource,
+      );
       return shader.program;
     } catch (error) {
-      console.error('Failed to create animation shader:', error);
+      console.error("Failed to create animation shader:", error);
       return undefined;
     }
   }
@@ -960,22 +1037,22 @@ export class GPUAccelerationEngine {
     if (animation) {
       animation.paused = true;
       animation.completed = true;
-      
+
       // Reset to initial state
-      animation.properties.forEach(prop => {
+      animation.properties.forEach((prop) => {
         prop.current = prop.from;
       });
     }
   }
 
   private pauseAnimations(): void {
-    this.animations.forEach(animation => {
+    this.animations.forEach((animation) => {
       animation.paused = true;
     });
   }
 
   private resumeAnimations(): void {
-    this.animations.forEach(animation => {
+    this.animations.forEach((animation) => {
       if (!animation.completed) {
         animation.paused = false;
       }
@@ -983,7 +1060,18 @@ export class GPUAccelerationEngine {
   }
 
   // Public API: Parallel processing methods
-  public executeTask(task: Omit<GPUWorkerTask, 'id' | 'startTime' | 'endTime' | 'duration' | 'completed' | 'result' | 'error'>): Promise<any> {
+  public executeTask(
+    task: Omit<
+      GPUWorkerTask,
+      | "id"
+      | "startTime"
+      | "endTime"
+      | "duration"
+      | "completed"
+      | "result"
+      | "error"
+    >,
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
       const gpuTask: GPUWorkerTask = {
         id: this.generateTaskId(),
@@ -993,7 +1081,7 @@ export class GPUAccelerationEngine {
         duration: undefined,
         completed: false,
         result: undefined,
-        error: undefined
+        error: undefined,
       };
 
       // Find available worker
@@ -1013,7 +1101,7 @@ export class GPUAccelerationEngine {
         id: gpuTask.id,
         type: gpuTask.type,
         priority: gpuTask.priority,
-        data: gpuTask.data
+        data: gpuTask.data,
       };
 
       const transferables = gpuTask.transferables || [];
@@ -1046,11 +1134,11 @@ export class GPUAccelerationEngine {
     let availableWorker: Worker | null = null;
     let minTasks = Infinity;
 
-    this.workerPool.forEach(worker => {
-      const activeTasks = Array.from(this.activeTasks.values())
-        .filter(task => task.workerId === this.workerPool.indexOf(worker))
-        .length;
-      
+    this.workerPool.forEach((worker) => {
+      const activeTasks = Array.from(this.activeTasks.values()).filter(
+        (task) => task.workerId === this.workerPool.indexOf(worker),
+      ).length;
+
       if (activeTasks < minTasks) {
         minTasks = activeTasks;
         availableWorker = worker;
@@ -1086,7 +1174,7 @@ export class GPUAccelerationEngine {
 
   public updateConfig(newConfig: Partial<GPUAccelerationConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Update sub-systems
     this.webglRenderer.updateConfig(this.config.webglRendering);
     this.animationEngine.updateConfig(this.config.gpuAnimations);
@@ -1100,14 +1188,14 @@ export class GPUAccelerationEngine {
     const capabilities = this.getGPUCapabilities();
     const animations = this.getActiveAnimations();
     const tasks = this.getActiveTasks();
-    
+
     return `
 # GPU Acceleration Performance Report
 Generated: ${new Date().toISOString()}
 
 ## GPU Capabilities
-- WebGL Support: ${capabilities.webglSupported ? 'Yes' : 'No'}
-- WebGL2 Support: ${capabilities.webgl2Supported ? 'Yes' : 'No'}
+- WebGL Support: ${capabilities.webglSupported ? "Yes" : "No"}
+- WebGL2 Support: ${capabilities.webgl2Supported ? "Yes" : "No"}
 - Max Texture Size: ${capabilities.maxTextureSize}px
 - Max Vertex Attributes: ${capabilities.maxVertexAttributes}
 - Vendor: ${capabilities.vendor}
@@ -1130,14 +1218,14 @@ Generated: ${new Date().toISOString()}
 
 ## Animation Performance
 - Total Animations: ${animations.length}
-- GPU Accelerated: ${animations.filter(a => a.gpuAccelerated).length}
-- Completed: ${animations.filter(a => a.completed).length}
-- Paused: ${animations.filter(a => a.paused).length}
+- GPU Accelerated: ${animations.filter((a) => a.gpuAccelerated).length}
+- Completed: ${animations.filter((a) => a.completed).length}
+- Paused: ${animations.filter((a) => a.paused).length}
 
 ## Parallel Processing
 - Active Tasks: ${tasks.length}
-- Completed Tasks: ${tasks.filter(t => t.completed).length}
-- Failed Tasks: ${tasks.filter(t => t.error).length}
+- Completed Tasks: ${tasks.filter((t) => t.completed).length}
+- Failed Tasks: ${tasks.filter((t) => t.error).length}
 - Average Task Duration: ${tasks.length > 0 ? (tasks.reduce((sum, t) => sum + (t.duration || 0), 0) / tasks.length).toFixed(2) : 0}ms
 
 ## Recommendations
@@ -1145,34 +1233,52 @@ ${this.generateGPURecommendations(metrics, capabilities)}
     `;
   }
 
-  private generateGPURecommendations(metrics: GPUPerformanceMetrics, capabilities: GPUCapabilities): string {
+  private generateGPURecommendations(
+    metrics: GPUPerformanceMetrics,
+    capabilities: GPUCapabilities,
+  ): string {
     const recommendations: string[] = [];
-    
+
     if (metrics.frameRate < 30) {
-      recommendations.push('- Consider reducing animation complexity or quality');
+      recommendations.push(
+        "- Consider reducing animation complexity or quality",
+      );
     }
-    
+
     if (metrics.droppedFrames > 10) {
-      recommendations.push('- Optimize rendering pipeline to reduce dropped frames');
+      recommendations.push(
+        "- Optimize rendering pipeline to reduce dropped frames",
+      );
     }
-    
+
     if (metrics.gpuUtilization > 0.8) {
-      recommendations.push('- GPU utilization is high, consider reducing workload');
+      recommendations.push(
+        "- GPU utilization is high, consider reducing workload",
+      );
     }
-    
-    if (metrics.thermalState === 'hot' || metrics.thermalState === 'critical') {
-      recommendations.push('- Thermal throttling detected, reduce quality settings');
+
+    if (metrics.thermalState === "hot" || metrics.thermalState === "critical") {
+      recommendations.push(
+        "- Thermal throttling detected, reduce quality settings",
+      );
     }
-    
-    if (metrics.textureMemory > 100 * 1024 * 1024) { // 100MB
-      recommendations.push('- High texture memory usage, consider texture optimization');
+
+    if (metrics.textureMemory > 100 * 1024 * 1024) {
+      // 100MB
+      recommendations.push(
+        "- High texture memory usage, consider texture optimization",
+      );
     }
-    
+
     if (!capabilities.webgl2Supported) {
-      recommendations.push('- Consider upgrading to WebGL2 for better performance');
+      recommendations.push(
+        "- Consider upgrading to WebGL2 for better performance",
+      );
     }
-    
-    return recommendations.length > 0 ? recommendations.join('\n') : '- GPU performance is optimal';
+
+    return recommendations.length > 0
+      ? recommendations.join("\n")
+      : "- GPU performance is optimal";
   }
 
   public destroy(): void {
@@ -1183,7 +1289,7 @@ ${this.generateGPURecommendations(metrics, capabilities)}
     }
 
     // Terminate workers
-    this.workerPool.forEach(worker => {
+    this.workerPool.forEach((worker) => {
       worker.terminate();
     });
 
@@ -1214,18 +1320,18 @@ interface ShaderOptions {
 }
 
 interface AnimationOptions {
-  type?: 'transform' | 'opacity' | 'color' | 'texture' | 'custom';
+  type?: "transform" | "opacity" | "color" | "texture" | "custom";
   duration?: number;
   easing?: string;
   delay?: number;
   iterations?: number;
-  direction?: 'normal' | 'reverse' | 'alternate' | 'alternate-reverse';
-  fillMode?: 'none' | 'forwards' | 'backwards' | 'both';
+  direction?: "normal" | "reverse" | "alternate" | "alternate-reverse";
+  fillMode?: "none" | "forwards" | "backwards" | "both";
 }
 
 // Supporting classes (simplified implementations)
 class WebGLRenderer {
-  constructor(private config: GPUAccelerationConfig['webglRendering']) {}
+  constructor(private config: GPUAccelerationConfig["webglRendering"]) {}
 
   render(deltaTime: number): void {
     // Render WebGL content
@@ -1235,13 +1341,13 @@ class WebGLRenderer {
     // Optimize WebGL rendering
   }
 
-  updateConfig(config: GPUAccelerationConfig['webglRendering']): void {
+  updateConfig(config: GPUAccelerationConfig["webglRendering"]): void {
     this.config = config;
   }
 }
 
 class GPUAnimationEngine {
-  constructor(private config: GPUAccelerationConfig['gpuAnimations']) {}
+  constructor(private config: GPUAccelerationConfig["gpuAnimations"]) {}
 
   update(deltaTime: number): void {
     // Update GPU animations
@@ -1251,43 +1357,43 @@ class GPUAnimationEngine {
     // Optimize animations
   }
 
-  updateConfig(config: GPUAccelerationConfig['gpuAnimations']): void {
+  updateConfig(config: GPUAccelerationConfig["gpuAnimations"]): void {
     this.config = config;
   }
 }
 
 class HardwareOptimizer {
-  constructor(private config: GPUAccelerationConfig['hardwareAcceleration']) {}
+  constructor(private config: GPUAccelerationConfig["hardwareAcceleration"]) {}
 
   optimize(): void {
     // Optimize hardware acceleration
   }
 
-  updateConfig(config: GPUAccelerationConfig['hardwareAcceleration']): void {
+  updateConfig(config: GPUAccelerationConfig["hardwareAcceleration"]): void {
     this.config = config;
   }
 }
 
 class ParallelProcessor {
-  constructor(private config: GPUAccelerationConfig['parallelProcessing']) {}
+  constructor(private config: GPUAccelerationConfig["parallelProcessing"]) {}
 
   process(): void {
     // Process parallel tasks
   }
 
-  updateConfig(config: GPUAccelerationConfig['parallelProcessing']): void {
+  updateConfig(config: GPUAccelerationConfig["parallelProcessing"]): void {
     this.config = config;
   }
 }
 
 class GPUPerformanceMonitor {
-  constructor(private config: GPUAccelerationConfig['performanceMonitoring']) {}
+  constructor(private config: GPUAccelerationConfig["performanceMonitoring"]) {}
 
   startMonitoring(): void {
     // Start performance monitoring
   }
 
-  updateConfig(config: GPUAccelerationConfig['performanceMonitoring']): void {
+  updateConfig(config: GPUAccelerationConfig["performanceMonitoring"]): void {
     this.config = config;
   }
 }
@@ -1296,8 +1402,12 @@ class GPUPerformanceMonitor {
 export function useGPUAcceleration() {
   const engine = GPUAccelerationEngine.getInstance();
   const [metrics, setMetrics] = React.useState(engine.getPerformanceMetrics());
-  const [capabilities, setCapabilities] = React.useState(engine.getGPUCapabilities());
-  const [animations, setAnimations] = React.useState(engine.getActiveAnimations());
+  const [capabilities, setCapabilities] = React.useState(
+    engine.getGPUCapabilities(),
+  );
+  const [animations, setAnimations] = React.useState(
+    engine.getActiveAnimations(),
+  );
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -1327,7 +1437,7 @@ export function useGPUAcceleration() {
     optimizePerformance: engine.optimizePerformance.bind(engine),
     updateConfig: engine.updateConfig.bind(engine),
     generatePerformanceReport: engine.generatePerformanceReport.bind(engine),
-    destroy: engine.destroy.bind(engine)
+    destroy: engine.destroy.bind(engine),
   };
 }
 

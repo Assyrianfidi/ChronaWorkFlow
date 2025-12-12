@@ -3,7 +3,7 @@
  * Real-time communication server
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
 
 export interface WebSocketMessage {
   type: string;
@@ -39,14 +39,14 @@ export class WebSocketServer extends EventEmitter {
 
   constructor(options: WebSocketOptions = {}) {
     super();
-    
+
     this.options = {
       port: 8080,
-      path: '/ws',
+      path: "/ws",
       heartbeatInterval: 30000, // 30 seconds
       maxConnections: 1000,
       enableCompression: true,
-      ...options
+      ...options,
     };
 
     this.startHeartbeat();
@@ -57,9 +57,9 @@ export class WebSocketServer extends EventEmitter {
    */
   start(): void {
     // Mock implementation - in real scenario, this would use ws or socket.io
-    this.emit('server:started', {
+    this.emit("server:started", {
       port: this.options.port,
-      path: this.options.path
+      path: this.options.path,
     });
   }
 
@@ -73,10 +73,10 @@ export class WebSocketServer extends EventEmitter {
 
     // Disconnect all clients
     for (const client of this.clients.values()) {
-      this.disconnect(client.id, 'Server shutting down');
+      this.disconnect(client.id, "Server shutting down");
     }
 
-    this.emit('server:stopped');
+    this.emit("server:stopped");
   }
 
   /**
@@ -84,14 +84,14 @@ export class WebSocketServer extends EventEmitter {
    */
   addClient(socket: any, metadata: Record<string, any> = {}): string {
     const clientId = this.generateClientId();
-    
+
     const client: WebSocketClient = {
       id: clientId,
       socket,
       connectedAt: Date.now(),
       lastActivity: Date.now(),
       subscriptions: new Set(),
-      metadata
+      metadata,
     };
 
     this.clients.set(clientId, client);
@@ -99,8 +99,8 @@ export class WebSocketServer extends EventEmitter {
     // Set up socket event handlers
     this.setupSocketHandlers(client);
 
-    this.emit('client:connected', client);
-    
+    this.emit("client:connected", client);
+
     return clientId;
   }
 
@@ -109,7 +109,7 @@ export class WebSocketServer extends EventEmitter {
    */
   disconnect(clientId: string, reason?: string): boolean {
     const client = this.clients.get(clientId);
-    
+
     if (!client) {
       return false;
     }
@@ -123,12 +123,12 @@ export class WebSocketServer extends EventEmitter {
     this.clients.delete(clientId);
 
     // Close socket
-    if (client.socket && typeof client.socket.close === 'function') {
+    if (client.socket && typeof client.socket.close === "function") {
       client.socket.close();
     }
 
-    this.emit('client:disconnected', { clientId, reason });
-    
+    this.emit("client:disconnected", { clientId, reason });
+
     return true;
   }
 
@@ -137,7 +137,7 @@ export class WebSocketServer extends EventEmitter {
    */
   sendToClient(clientId: string, message: WebSocketMessage): boolean {
     const client = this.clients.get(clientId);
-    
+
     if (!client) {
       return false;
     }
@@ -146,17 +146,17 @@ export class WebSocketServer extends EventEmitter {
       const messageData = {
         ...message,
         timestamp: Date.now(),
-        id: message.id || this.generateMessageId()
+        id: message.id || this.generateMessageId(),
       };
 
-      if (client.socket && typeof client.socket.send === 'function') {
+      if (client.socket && typeof client.socket.send === "function") {
         client.socket.send(JSON.stringify(messageData));
         client.lastActivity = Date.now();
         return true;
       }
     } catch (error) {
       console.error(`Failed to send message to client ${clientId}:`, error);
-      this.disconnect(clientId, 'Send error');
+      this.disconnect(clientId, "Send error");
     }
 
     return false;
@@ -165,15 +165,19 @@ export class WebSocketServer extends EventEmitter {
   /**
    * Send message to room
    */
-  sendToRoom(roomName: string, message: WebSocketMessage, excludeClientId?: string): number {
+  sendToRoom(
+    roomName: string,
+    message: WebSocketMessage,
+    excludeClientId?: string,
+  ): number {
     const room = this.rooms.get(roomName);
-    
+
     if (!room) {
       return 0;
     }
 
     let sentCount = 0;
-    
+
     for (const clientId of room) {
       if (clientId !== excludeClientId) {
         if (this.sendToClient(clientId, message)) {
@@ -190,7 +194,7 @@ export class WebSocketServer extends EventEmitter {
    */
   sendToUser(userId: string, message: WebSocketMessage): number {
     let sentCount = 0;
-    
+
     for (const client of this.clients.values()) {
       if (client.userId === userId) {
         if (this.sendToClient(client.id, message)) {
@@ -207,7 +211,7 @@ export class WebSocketServer extends EventEmitter {
    */
   broadcastToRole(role: string, message: WebSocketMessage): number {
     let sentCount = 0;
-    
+
     for (const client of this.clients.values()) {
       if (client.metadata?.role === role) {
         if (this.sendToClient(client.id, message)) {
@@ -224,7 +228,7 @@ export class WebSocketServer extends EventEmitter {
    */
   broadcast(message: WebSocketMessage, excludeClientId?: string): number {
     let sentCount = 0;
-    
+
     for (const clientId of this.clients.keys()) {
       if (clientId !== excludeClientId) {
         if (this.sendToClient(clientId, message)) {
@@ -241,7 +245,7 @@ export class WebSocketServer extends EventEmitter {
    */
   joinRoom(clientId: string, roomName: string): boolean {
     const client = this.clients.get(clientId);
-    
+
     if (!client) {
       return false;
     }
@@ -255,8 +259,8 @@ export class WebSocketServer extends EventEmitter {
     }
     this.rooms.get(roomName)!.add(clientId);
 
-    this.emit('client:joined-room', { clientId, roomName });
-    
+    this.emit("client:joined-room", { clientId, roomName });
+
     return true;
   }
 
@@ -265,7 +269,7 @@ export class WebSocketServer extends EventEmitter {
    */
   leaveRoom(clientId: string, roomName: string): boolean {
     const client = this.clients.get(clientId);
-    
+
     if (!client) {
       return false;
     }
@@ -277,15 +281,15 @@ export class WebSocketServer extends EventEmitter {
     const room = this.rooms.get(roomName);
     if (room) {
       room.delete(clientId);
-      
+
       // Clean up empty rooms
       if (room.size === 0) {
         this.rooms.delete(roomName);
       }
     }
 
-    this.emit('client:left-room', { clientId, roomName });
-    
+    this.emit("client:left-room", { clientId, roomName });
+
     return true;
   }
 
@@ -308,26 +312,30 @@ export class WebSocketServer extends EventEmitter {
    */
   getClientsInRoom(roomName: string): WebSocketClient[] {
     const room = this.rooms.get(roomName);
-    
+
     if (!room) {
       return [];
     }
 
     return Array.from(room)
-      .map(clientId => this.clients.get(clientId))
+      .map((clientId) => this.clients.get(clientId))
       .filter((client): client is WebSocketClient => client !== undefined);
   }
 
   /**
    * Get room information
    */
-  getRoomInfo(roomName: string): { name: string; clientCount: number; clients: WebSocketClient[] } {
+  getRoomInfo(roomName: string): {
+    name: string;
+    clientCount: number;
+    clients: WebSocketClient[];
+  } {
     const clients = this.getClientsInRoom(roomName);
-    
+
     return {
       name: roomName,
       clientCount: clients.length,
-      clients
+      clients,
     };
   }
 
@@ -340,7 +348,7 @@ export class WebSocketServer extends EventEmitter {
     connectionsPerRoom: Record<string, number>;
   } {
     const connectionsPerRoom: Record<string, number> = {};
-    
+
     for (const [roomName, room] of this.rooms.entries()) {
       connectionsPerRoom[roomName] = room.size;
     }
@@ -348,7 +356,7 @@ export class WebSocketServer extends EventEmitter {
     return {
       totalClients: this.clients.size,
       totalRooms: this.rooms.size,
-      connectionsPerRoom
+      connectionsPerRoom,
     };
   }
 
@@ -361,8 +369,8 @@ export class WebSocketServer extends EventEmitter {
     }
 
     // Message handler
-    if (typeof client.socket.on === 'function') {
-      client.socket.on('message', (data: any) => {
+    if (typeof client.socket.on === "function") {
+      client.socket.on("message", (data: any) => {
         try {
           const message = JSON.parse(data.toString());
           this.handleMessage(client, message);
@@ -372,14 +380,14 @@ export class WebSocketServer extends EventEmitter {
       });
 
       // Close handler
-      client.socket.on('close', () => {
-        this.disconnect(client.id, 'Connection closed');
+      client.socket.on("close", () => {
+        this.disconnect(client.id, "Connection closed");
       });
 
       // Error handler
-      client.socket.on('error', (error: any) => {
+      client.socket.on("error", (error: any) => {
         console.error(`Socket error for client ${client.id}:`, error);
-        this.disconnect(client.id, 'Socket error');
+        this.disconnect(client.id, "Socket error");
       });
     }
   }
@@ -390,26 +398,26 @@ export class WebSocketServer extends EventEmitter {
   private handleMessage(client: WebSocketClient, message: any): void {
     client.lastActivity = Date.now();
 
-    this.emit('message:received', {
+    this.emit("message:received", {
       clientId: client.id,
-      message
+      message,
     });
 
     // Handle specific message types
     switch (message.type) {
-      case 'ping':
+      case "ping":
         this.sendToClient(client.id, {
-          type: 'pong',
+          type: "pong",
           data: { timestamp: Date.now() },
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         break;
 
-      case 'join-room':
+      case "join-room":
         this.joinRoom(client.id, message.data.room);
         break;
 
-      case 'leave-room':
+      case "leave-room":
         this.leaveRoom(client.id, message.data.room);
         break;
 
@@ -417,7 +425,7 @@ export class WebSocketServer extends EventEmitter {
         // Emit custom message event
         this.emit(`message:${message.type}`, {
           clientId: client.id,
-          message
+          message,
         });
     }
   }
@@ -432,13 +440,13 @@ export class WebSocketServer extends EventEmitter {
 
       for (const [clientId, client] of this.clients.entries()) {
         if (now - client.lastActivity > timeout) {
-          this.disconnect(clientId, 'Heartbeat timeout');
+          this.disconnect(clientId, "Heartbeat timeout");
         } else {
           // Send ping
           this.sendToClient(client.id, {
-            type: 'ping',
+            type: "ping",
             data: { timestamp: now },
-            timestamp: Date.now()
+            timestamp: Date.now(),
           });
         }
       }
