@@ -11,8 +11,8 @@ import {
 } from "../../middleware/security/auditLogger.middleware.js";
 
 // Mock the services
-jest.mock("../../services/auditLogger.service.js");
-jest.mock("../../services/monitoring.service.js");
+jest.mock("../../services/auditLogger.service");
+jest.mock("../../services/monitoring.service");
 
 const MockedAuditLoggerService = AuditLoggerService as jest.Mocked<
   typeof AuditLoggerService
@@ -62,7 +62,7 @@ const mockGetPerformanceReport = jest.fn().mockReturnValue({
 const mockCleanup = jest.fn();
 
 // Mock the MonitoringService class
-jest.mock("../../services/monitoring.service.js", () => {
+jest.mock("../../services/monitoring.service", () => {
   return {
     __esModule: true,
     default: jest.fn().mockImplementation(() => ({

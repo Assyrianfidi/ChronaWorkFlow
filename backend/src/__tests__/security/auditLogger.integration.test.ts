@@ -1,7 +1,7 @@
 import express from "express";
 
 // Mock the services before importing
-jest.mock("../../services/auditLogger.service.js", () => {
+jest.mock("../../services/auditLogger.service", () => {
   return {
     default: jest.fn().mockImplementation(() => ({
       logAuthEvent: jest.fn().mockResolvedValue(undefined),
@@ -16,7 +16,7 @@ jest.mock("../../services/auditLogger.service.js", () => {
   };
 });
 
-jest.mock("../../services/monitoring.service.js", () => {
+jest.mock("../../services/monitoring.service", () => {
   return {
     default: jest.fn().mockImplementation(() => ({
       recordAuthMetrics: jest.fn(),

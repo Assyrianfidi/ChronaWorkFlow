@@ -6,7 +6,7 @@ const mockLogger = {
   error: jest.fn(),
 };
 
-jest.mock("../utils/logger.js", () => ({
+jest.mock("../utils/logger", () => ({
   logger: mockLogger,
 }));
 

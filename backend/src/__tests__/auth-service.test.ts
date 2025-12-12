@@ -6,7 +6,7 @@ import { AuthService } from "../services/auth.service";
 import { prisma } from "../utils/prisma";
 
 // Mock the prisma client
-jest.mock("../utils/prisma.js", () => ({
+jest.mock("../utils/prisma", () => ({
   prisma: {
     user: {
       findUnique: jest.fn(),
@@ -20,7 +20,7 @@ import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/errors";
 
 // Mock the dependencies
-jest.mock("../utils/prisma.js");
+jest.mock("../utils/prisma");
 jest.mock("bcryptjs");
 jest.mock("jsonwebtoken");
 

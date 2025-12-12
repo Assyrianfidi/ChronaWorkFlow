@@ -61,7 +61,7 @@ const mockPrisma = {
 } as unknown as PrismaClient;
 
 // Mock the Prisma client
-jest.mock("../../utils/prisma.js", () => ({
+jest.mock("../../utils/prisma", () => ({
   prisma: mockPrisma,
 }));
 
@@ -69,12 +69,15 @@ jest.mock("../../utils/prisma.js", () => ({
 const mockGenerateInvoiceNumber = jest.fn().mockResolvedValue("INV-001");
 
 // Create a partial mock of the InvoiceService class
-jest.mock("../../services/invoice.service.js", () => {
-  return {
-    InvoiceService: jest.fn().mockImplementation(() => {
-      return {
-        ...jest.requireActual("../../services/invoice.service.js")
-          .InvoiceService.prototype,
+jest.mock("../../services/invoice.service", () => ({
+  InvoiceService: jest.fn().mockImplementation(() => {
+    return {
+      ...jest.requireActual("../../services/invoice.service")
+        .InvoiceService.prototype,
+      generateInvoiceNumber: mockGenerateInvoiceNumber,
+    };
+  }),
+}));
         generateInvoiceNumber: mockGenerateInvoiceNumber,
       };
     }),

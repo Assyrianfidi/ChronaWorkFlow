@@ -42,7 +42,7 @@ jest.mock("../utils/errors", () => ({
   ApiError: mockApiError,
 }));
 
-jest.mock("../middleware/errorHandler.js", () => ({}));
+jest.mock("../middleware/errorHandler", () => ({}));
 
 describe("Auth Controller - Unit Tests", () => {
   let login: any,

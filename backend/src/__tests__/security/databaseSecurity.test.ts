@@ -47,7 +47,7 @@ jest.mock("@prisma/client", () => ({
 }));
 
 // Mock roles constants
-jest.mock("../../constants/roles.js", () => ({
+jest.mock("../../constants/roles", () => ({
   ROLES: {
     ADMIN: "admin",
     MANAGER: "manager",

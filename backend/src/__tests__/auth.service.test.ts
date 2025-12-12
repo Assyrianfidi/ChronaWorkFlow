@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 // Mock the dependencies
-jest.mock("../utils/prisma.js", () => ({
+jest.mock("../utils/prisma", () => ({
   prisma: {
     user: {
       findUnique: jest.fn(),
