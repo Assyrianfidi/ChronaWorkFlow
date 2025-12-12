@@ -1,5 +1,5 @@
-import { prisma } from "../utils/prisma.js";
-import { ApiError } from "../utils/errors.js";
+import { prisma } from "../utils/prisma";
+import { ApiError } from "../utils/errors";
 import type { Prisma } from "@prisma/client";
 
 // Define the InvoiceWithItems type based on Prisma's generated types

@@ -1,7 +1,7 @@
 import { PrismaClientSingleton } from '../lib/prisma';
 const prisma = PrismaClientSingleton.getInstance();
 import crypto from "crypto";
-import { logger } from "../utils/logger.js";
+import { logger } from "../utils/logger";
 
 // Fixed self-reference
 

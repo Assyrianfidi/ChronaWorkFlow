@@ -1,12 +1,12 @@
-import { prisma } from "../../utils/prisma.js";
+import { prisma } from "../../utils/prisma";
 import {
   transactionCreateSchema,
   transactionListSchema,
   TransactionCreateInput,
   TransactionLineInput,
   toDecimal,
-} from "./transactions.model.js";
-import { ApiError } from "../../utils/errors.js";
+} from "./transactions.model";
+import { ApiError } from "../../utils/errors";
 import { StatusCodes } from "http-status-codes";
 
 export class TransactionsService {

@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClient, User } from "@prisma/client";
-import { config } from "../config/config.js";
-import { ApiError } from "../utils/errors.js";
+import { config } from "../config/config";
+import { ApiError } from "../utils/errors";
 
 // Define Role enum to match Prisma schema
 export enum UserRole {
@@ -20,7 +20,7 @@ type UserWithRole = Omit<User, "role"> & {
   deletedAt?: Date | null;
 };
 
-const prisma = prisma;
+import { prisma } from "../utils/prisma";
 
 // Token expiration times (in seconds)
 const ACCESS_TOKEN_EXPIRES_IN = 15 * 60; // 15 minutes
