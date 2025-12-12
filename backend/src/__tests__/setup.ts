@@ -10,8 +10,61 @@ process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'test-jwt-secret-that-is-at-least-32-characters-long';
 process.env.JWT_REFRESH_SECRET = 'test-jwt-refresh-secret-that-is-at-least-32-characters-long';
 process.env.SESSION_SECRET = 'test-session-secret-that-is-at-least-32-characters-long';
-process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test_db';
 process.env.SKIP_ENV_VALIDATION = 'true';
+
+// Mock Prisma client for all tests to avoid database connection issues
+jest.mock('../utils/prisma', () => ({
+  prisma: {
+    user: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    account: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    transaction: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    transactionLine: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    refreshToken: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    $transaction: jest.fn(),
+    $disconnect: jest.fn(),
+  },
+}));
+
+// Mock crypto module for all tests
+jest.mock('crypto', () => ({
+  randomBytes: jest.fn(() => ({
+    toString: jest.fn(() => 'mocked-random-hex-string-64-chars-long-abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'),
+  })),
+  createHash: jest.fn(() => ({
+    update: jest.fn().mockReturnThis(),
+    digest: jest.fn(() => 'mocked-sha256-hash-64-chars-long-abcdef1234567890abcdef1234567890abcdef1234567890'),
+  })),
+}));
 
 // Mock console methods to reduce noise in tests
 global.console = {

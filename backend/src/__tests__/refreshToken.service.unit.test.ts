@@ -27,7 +27,16 @@ jest.mock("../utils/logger.ts", () => ({
 
 // Mock crypto
 jest.mock("crypto", () => ({
-  randomBytes: jest.fn(() => Buffer.from("a".repeat(64))),
+  __esModule: true,
+  default: {
+    randomBytes: jest.fn(() => ({
+      toString: jest.fn(() => 'mocked-random-hex-string-64-chars-long-abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'),
+    })),
+    createHash: jest.fn(() => ({
+      update: jest.fn().mockReturnThis(),
+      digest: jest.fn(() => 'mocked-sha256-hash-64-chars-long-abcdef1234567890abcdef1234567890abcdef1234567890'),
+    })),
+  },
 }));
 
 import { RefreshTokenService } from "../services/refreshToken.service";
