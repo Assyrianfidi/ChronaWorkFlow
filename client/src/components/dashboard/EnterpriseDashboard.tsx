@@ -21,7 +21,7 @@ import {
   TransactionsCard,
 } from './KPICard.js.js';
 // @ts-ignore
-import { DataTable, type Column } from '../ui/DataTable.js.js';
+import { EnterpriseDataTable, type Column } from '../ui/EnterpriseDataTable.js.js';
 // @ts-ignore
 import { Button } from '../ui/button.js.js';
 // @ts-ignore
@@ -81,42 +81,42 @@ const EnterpriseDashboard = React.forwardRef<
     },
   ];
 
-  const transactionColumns: Column<(typeof recentTransactions)[0]>[] = [
+  const transactionColumns = [
     {
-      key: "id",
-      title: "Invoice ID",
-      sortable: true,
-      filterable: true,
-      className: "font-medium",
+      accessorKey: "id",
+      header: "Invoice ID",
+      cell: ({ row }) => (
+        <div className="font-medium">{row.getValue("id")}</div>
+      ),
     },
     {
-      key: "customer",
-      title: "Customer",
-      sortable: true,
-      filterable: true,
+      accessorKey: "customer",
+      header: "Customer",
+      cell: ({ row }) => (
+        <div>{row.getValue("customer")}</div>
+      ),
     },
     {
-      key: "amount",
-      title: "Amount",
-      sortable: true,
-      render: (value) => <span className="font-semibold">{value}</span>,
+      accessorKey: "amount",
+      header: "Amount",
+      cell: ({ row }) => (
+        <span className="font-semibold">{row.getValue("amount")}</span>
+      ),
     },
     {
-      key: "status",
-      title: "Status",
-      sortable: true,
-      filterable: true,
-      render: (value) => {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
         const statusColors = {
           Paid: "bg-green-100 text-green-800",
           Pending: "bg-yellow-100 text-yellow-800",
           Overdue: "bg-red-100 text-red-800",
         };
+        const value = row.getValue("status") as string;
         return (
           <span
             className={cn(
               "px-2 py-1 rounded-full text-xs font-medium",
-// @ts-ignore
               statusColors[value as keyof typeof statusColors],
             )}
           >
@@ -126,10 +126,11 @@ const EnterpriseDashboard = React.forwardRef<
       },
     },
     {
-      key: "date",
-      title: "Date",
-      sortable: true,
-      filterable: true,
+      accessorKey: "date",
+      header: "Date",
+      cell: ({ row }) => (
+        <div>{row.getValue("date")}</div>
+      ),
     },
   ];
 
@@ -297,12 +298,43 @@ const EnterpriseDashboard = React.forwardRef<
                 </Button>
               </CardHeader>
               <CardContent>
-                <DataTable
+                <EnterpriseDataTable
                   data={recentTransactions}
                   columns={transactionColumns}
-                  searchable={false}
-                  exportable={true}
+                  enableSorting={true}
+                  enableColumnFilters={false}
+                  enableGlobalFilter={false}
                   onRowClick={(row) => console.log("Transaction clicked:", row)}
+                  renderToolbar={(state, table) => (
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm" onClick={() => {
+                        // Export functionality
+                        const rows = table.getFilteredRowModel().rows;
+                        const csvContent = [
+                          ['Transaction #', 'Date', 'Description', 'Amount'].join(','),
+                          ...rows.map(row => [
+                            row.original.transactionNumber || '',
+                            row.original.date || '',
+                            row.original.description || '',
+                            row.original.totalAmount || ''
+                          ].join(','))
+                        ].join('\n');
+                        
+                        const blob = new Blob([csvContent], { type: 'text/csv' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'transactions.csv';
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                      }}>
+                        Export
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        View All
+                      </Button>
+                    </div>
+                  )}
                 />
               </CardContent>
             </Card>
