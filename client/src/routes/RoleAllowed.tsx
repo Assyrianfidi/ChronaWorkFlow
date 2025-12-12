@@ -1,7 +1,5 @@
 import React from 'react';
 // @ts-ignore
-import * as React from "react";
-// @ts-ignore
 import { useAuth } from '../contexts/AuthContext.js.js';
 // @ts-ignore
 import Unauthorized from '../pages/Unauthorized.js.js';

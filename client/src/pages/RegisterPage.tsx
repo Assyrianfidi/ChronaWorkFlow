@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-// @ts-ignore
-import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 // @ts-ignore
 import { useAuth } from '../contexts/AuthContext.js.js';
@@ -27,7 +25,7 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
-  role: "admin" | "accountant" | "business_owner";
+  role: "ADMIN" | "MANAGER" | "ACCOUNTANT" | "AUDITOR" | "INVENTORY_MANAGER";
 }
 
 // @ts-ignore
@@ -37,7 +35,7 @@ const RegisterPage: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "business_owner",
+    role: "MANAGER",
   });
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -165,9 +163,11 @@ const RegisterPage: React.FC = () => {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={isLoading}
                 >
-                  <option value="business_owner">Business Owner</option>
-                  <option value="accountant">Accountant</option>
-                  <option value="admin">Administrator</option>
+                  <option value="ADMIN">Administrator</option>
+                  <option value="MANAGER">Manager</option>
+                  <option value="ACCOUNTANT">Accountant</option>
+                  <option value="AUDITOR">Auditor</option>
+                  <option value="INVENTORY_MANAGER">Inventory Manager</option>
                 </select>
               </div>
 

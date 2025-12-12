@@ -92,7 +92,7 @@ export default function DashboardLayout() {
                   )}
                 >
                   <span className="flex-shrink-0">
-// @ts-ignore
+                    {/* @ts-ignore */}
                     {iconMap[item.icon as keyof typeof iconMap]}
                   </span>
                   {sidebarOpen && <span className="ml-3">{item.name}</span>}

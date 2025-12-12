@@ -312,8 +312,8 @@ export const ReportForm = ({
       <Card>
         <CardHeader>
           <CardTitle>
-// @ts-ignore
-// @ts-ignore
+            {/* @ts-ignore */}
+            {/* @ts-ignore */}
             {(initialValues as any)?.id ? "Edit Report" : "Create New Report"}
           </CardTitle>
         </CardHeader>

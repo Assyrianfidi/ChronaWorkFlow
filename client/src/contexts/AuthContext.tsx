@@ -1,10 +1,11 @@
 import * as React from "react";
 import { create } from "zustand";
+import { authApi } from "@/api";
 
 export type UserRole =
   | "ADMIN"
   | "MANAGER"
-  | "USER"
+  | "ACCOUNTANT"
   | "AUDITOR"
   | "INVENTORY_MANAGER";
 
@@ -65,7 +66,7 @@ function getPermissionsForRole(role: UserRole): string[] {
         "read:settings",
         "write:settings",
       ];
-    case "USER":
+    case "ACCOUNTANT":
       return [
         "read:dashboard",
         "write:dashboard",
@@ -73,6 +74,8 @@ function getPermissionsForRole(role: UserRole): string[] {
         "write:invoices",
         "read:reports",
         "write:reports",
+        "read:transactions",
+        "write:transactions",
       ];
     case "AUDITOR":
       return [
@@ -108,79 +111,26 @@ export const useAuth = create<AuthState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      console.log("🔐 Attempting login for:", email);
+      const response = await authApi.login(email, password);
+      const { user, accessToken } = response.data.data;
 
-      // Mock demo users for immediate functionality
-      const demoUsers = {
-        "admin@accubooks.com": {
-          password: "admin123",
-          user: {
-            id: "1",
-            name: "Admin User",
-            email: "admin@accubooks.com",
-// @ts-ignore
-            role: "ADMIN" as UserRole,
-          },
-        },
-        "manager@accubooks.com": {
-          password: "manager123",
-          user: {
-            id: "2",
-            name: "Manager User",
-            email: "manager@accubooks.com",
-// @ts-ignore
-            role: "MANAGER" as UserRole,
-          },
-        },
-        "user@accubooks.com": {
-          password: "user123",
-          user: {
-            id: "3",
-            name: "Regular User",
-            email: "user@accubooks.com",
-// @ts-ignore
-            role: "USER" as UserRole,
-          },
-        },
-        "auditor@accubooks.com": {
-          password: "auditor123",
-          user: {
-            id: "4",
-            name: "Auditor User",
-            email: "auditor@accubooks.com",
-// @ts-ignore
-            role: "AUDITOR" as UserRole,
-          },
-        },
-        "inventory@accubooks.com": {
-          password: "inventory123",
-          user: {
-            id: "5",
-            name: "Inventory Manager",
-            email: "inventory@accubooks.com",
-// @ts-ignore
-            role: "INVENTORY_MANAGER" as UserRole,
-          },
-        },
-      };
-
-// @ts-ignore
-      const demoUser = demoUsers[email as keyof typeof demoUsers];
-
-      if (!demoUser || demoUser.password !== password) {
-        throw new Error("Invalid email or password");
-      }
+      const role = (user?.role as UserRole) || "ACCOUNTANT";
+      const name =
+        user?.name ||
+        [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+        user?.email ||
+        "User";
 
       const transformedUser: User = {
-        id: demoUser.user.id,
-        name: demoUser.user.name,
-        email: demoUser.user.email,
-        role: demoUser.user.role,
-        permissions: getPermissionsForRole(demoUser.user.role),
+        id: String(user?.id ?? ""),
+        name,
+        email: String(user?.email ?? email),
+        avatar: user?.avatar,
+        role,
+        permissions: getPermissionsForRole(role),
       };
 
-      // Store token and user
-      localStorage.setItem("accubooks_token", "mock-jwt-token");
+      localStorage.setItem("accubooks_token", accessToken);
       localStorage.setItem("accubooks_user", JSON.stringify(transformedUser));
 
       set({
@@ -188,10 +138,7 @@ export const useAuth = create<AuthState>((set, get) => ({
         isAuthenticated: true,
         isLoading: false,
       });
-
-      console.log("✅ User authenticated successfully:", transformedUser);
     } catch (error) {
-      console.error("❌ Login failed:", error);
       set({ isLoading: false });
       throw error;
     }
@@ -206,8 +153,6 @@ export const useAuth = create<AuthState>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      console.log("🔐 Attempting registration for:", userData.email);
-
       const newUser: User = {
         id: Date.now().toString(),
         name: userData.name,
@@ -227,13 +172,7 @@ export const useAuth = create<AuthState>((set, get) => ({
         isAuthenticated: true,
         isLoading: false,
       });
-
-      console.log(
-        "✅ User registered and authenticated successfully:",
-        newUser,
-      );
     } catch (error) {
-      console.error("❌ Registration failed:", error);
       set({ isLoading: false });
       throw error;
     }
@@ -241,9 +180,7 @@ export const useAuth = create<AuthState>((set, get) => ({
 
   logout: async () => {
     try {
-      console.log("🔐 Logging out user");
     } catch (error) {
-      console.error("❌ Logout failed:", error);
     }
 
     set({
@@ -255,8 +192,6 @@ export const useAuth = create<AuthState>((set, get) => ({
     localStorage.removeItem("accubooks_token");
     localStorage.removeItem("accubooks_user");
     localStorage.removeItem("accubooks_remember");
-
-    console.log("✅ User logged out successfully");
   },
 
   updateUser: (userData: Partial<User>) => {
@@ -290,21 +225,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   React.useEffect(() => {
-    console.log("[AuthProvider] init start");
-
     try {
       const token = localStorage.getItem("accubooks_token");
       const storedUser = localStorage.getItem("accubooks_user");
 
-      console.log(
-        "[AuthProvider] stored token:",
-        !!token,
-        "stored user:",
-        !!storedUser,
-      );
-
       if (token && storedUser) {
-// @ts-ignore
+        // @ts-ignore
         const parsed = JSON.parse(storedUser) as User;
 
         const userWithPermissions: User = {

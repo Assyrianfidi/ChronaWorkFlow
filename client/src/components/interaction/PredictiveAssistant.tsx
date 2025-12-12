@@ -1311,7 +1311,7 @@ export function withBehaviorTracking<P extends object>(
 
     return (
       <div onClick={handleClick} onMouseUp={handleMouseUp}>
-// @ts-ignore
+        {/* @ts-ignore */}
         <Component {...(props as P)} />
       </div>
     );

@@ -8,7 +8,7 @@
     "build": "vite build",
     "build:no-storybook": "tsc --skipLibCheck && cross-env STORYBOOK_DISABLE=true vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "eslint src/routes src/pages src/components/layout src/components/ui src/contexts src/api src/store src/types --ext .ts,.tsx",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "storybook:check": "tsc --noEmit --skipLibCheck && storybook build",
@@ -40,7 +40,7 @@
     "test:smoke": "jest --testPathPattern=smoke",
     "test:ci": "jest --ci --coverage --watchAll=false --config jest.config.coverage.js",
     "test:report": "jest --coverage --config jest.config.coverage.js && jest-html-reporters",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "lint:fix": "eslint src/routes src/pages src/components/layout src/components/ui src/contexts src/api src/store src/types --ext .ts,.tsx --fix",
     "type-check": "tsc --noEmit",
     "analyze:bundle": "npm run build && npx webpack-bundle-analyzer dist/static/js/*.js",
     "test:coverage:report": "jest --coverage --config jest.config.coverage.js && open coverage/lcov-report/index.html",
@@ -267,6 +267,9 @@
       "project": "./tsconfig.eslint.json",
       "tsconfigRootDir": "."
     },
+    "plugins": [
+      "react-hooks"
+    ],
     "env": {
       "browser": true,
       "es2021": true,
@@ -297,7 +300,8 @@
     "extends": [
       "plugin:storybook/recommended",
       "plugin:@typescript-eslint/recommended",
-      "plugin:react/recommended"
+      "plugin:react/recommended",
+      "plugin:react-hooks/recommended"
     ]
   }
 }

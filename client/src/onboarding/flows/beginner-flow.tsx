@@ -229,7 +229,7 @@ export const beginnerFlow: OnboardingFlow = {
           <div className="transaction-tips">
             <h5>💡 Best Practices:</h5>
             <ul>
-// @ts-ignore
+              {/* @ts-ignore */}
               <li>Record transactions as soon as they happen</li>
               <li>Use clear, descriptive names</li>
               <li>Attach receipts when possible</li>

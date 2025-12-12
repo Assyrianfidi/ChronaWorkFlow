@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-// @ts-ignore
-import * as React from "react";
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -73,7 +70,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: "ADMIN" | "MANAGER" | "USER" | "AUDITOR" | "INVENTORY_MANAGER";
+  role: "ADMIN" | "MANAGER" | "ACCOUNTANT" | "AUDITOR" | "INVENTORY_MANAGER";
   status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
   lastLogin: string;
   createdAt: string;
@@ -114,11 +111,11 @@ const mockUsers: User[] = [
     id: "3",
     name: "Regular User",
     email: "user@accubooks.com",
-    role: "USER",
+    role: "ACCOUNTANT",
     status: "ACTIVE",
     lastLogin: "2024-12-09T16:45:00Z",
     createdAt: "2024-03-20T00:00:00Z",
-    permissions: ["dashboard", "profile"],
+    permissions: ["dashboard", "profile", "invoices", "customers", "transactions", "reports"],
   },
   {
     id: "4",
@@ -188,7 +185,7 @@ const mockSystemSettings: SystemSetting[] = [
 const roleConfig = {
   ADMIN: { color: "bg-purple-100 text-purple-800", label: "Administrator" },
   MANAGER: { color: "bg-blue-100 text-blue-800", label: "Manager" },
-  USER: { color: "bg-green-100 text-green-800", label: "User" },
+  ACCOUNTANT: { color: "bg-green-100 text-green-800", label: "Accountant" },
   AUDITOR: { color: "bg-orange-100 text-orange-800", label: "Auditor" },
   INVENTORY_MANAGER: {
     color: "bg-yellow-100 text-yellow-800",
@@ -230,12 +227,9 @@ const AdminSettingsPage: React.FC = () => {
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      console.log("👥 Fetching users...");
       await new Promise((resolve) => setTimeout(resolve, 800));
       setUsers(mockUsers);
       setFilteredUsers(mockUsers);
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
     } finally {
       setIsLoading(false);
     }
@@ -270,7 +264,6 @@ const AdminSettingsPage: React.FC = () => {
 
   const handleCreateUser = async (userData: any) => {
     try {
-      console.log("👥 Creating user:", userData);
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const newUser: User = {
@@ -286,9 +279,7 @@ const AdminSettingsPage: React.FC = () => {
 
       setUsers([newUser, ...users]);
       setIsCreateUserDialogOpen(false);
-      console.log("✅ User created successfully");
     } catch (error) {
-      console.error("Failed to create user:", error);
     }
   };
 
@@ -297,7 +288,6 @@ const AdminSettingsPage: React.FC = () => {
     newRole: User["role"],
   ) => {
     try {
-      console.log("👥 Updating user role:", userId, newRole);
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       setUsers(
@@ -311,9 +301,7 @@ const AdminSettingsPage: React.FC = () => {
             : user,
         ),
       );
-      console.log("✅ User role updated successfully");
     } catch (error) {
-      console.error("Failed to update user role:", error);
     }
   };
 
@@ -322,7 +310,6 @@ const AdminSettingsPage: React.FC = () => {
     newStatus: User["status"],
   ) => {
     try {
-      console.log("👥 Updating user status:", userId, newStatus);
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       setUsers(
@@ -330,9 +317,7 @@ const AdminSettingsPage: React.FC = () => {
           user.id === userId ? { ...user, status: newStatus } : user,
         ),
       );
-      console.log("✅ User status updated successfully");
     } catch (error) {
-      console.error("Failed to update user status:", error);
     }
   };
 
@@ -356,19 +341,15 @@ const AdminSettingsPage: React.FC = () => {
       return;
 
     try {
-      console.log("👥 Deleting user:", userId);
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       setUsers(users.filter((user) => user.id !== userId));
-      console.log("✅ User deleted successfully");
     } catch (error) {
-      console.error("Failed to delete user:", error);
     }
   };
 
   const handleUpdateSetting = async (settingId: string, newValue: any) => {
     try {
-      console.log("⚙️ Updating setting:", settingId, newValue);
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       setSystemSettings(
@@ -376,9 +357,7 @@ const AdminSettingsPage: React.FC = () => {
           setting.id === settingId ? { ...setting, value: newValue } : setting,
         ),
       );
-      console.log("✅ Setting updated successfully");
     } catch (error) {
-      console.error("Failed to update setting:", error);
     }
   };
 
@@ -388,8 +367,8 @@ const AdminSettingsPage: React.FC = () => {
         return ["all"];
       case "MANAGER":
         return ["invoices", "customers", "reports", "dashboard"];
-      case "USER":
-        return ["dashboard", "profile"];
+      case "ACCOUNTANT":
+        return ["dashboard", "profile", "invoices", "customers", "transactions", "reports"];
       case "AUDITOR":
         return ["reports", "audit_logs", "view"];
       case "INVENTORY_MANAGER":
@@ -751,7 +730,7 @@ const AdminSettingsPage: React.FC = () => {
                       <div className="space-y-2">
                         <div className="text-sm font-medium">Permissions:</div>
                         <div className="flex flex-wrap gap-1">
-// @ts-ignore
+                          {/* @ts-ignore */}
                           {getPermissionsForRole(role as User["role"]).map(
                             (permission) => (
                               <Badge

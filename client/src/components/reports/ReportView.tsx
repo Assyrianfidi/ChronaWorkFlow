@@ -170,8 +170,8 @@ export function ReportView() {
             <div className="rounded-lg border p-4">
               <p className="text-sm text-muted-foreground">Created By</p>
               <p className="font-medium">
-// @ts-ignore
-// @ts-ignore
+                {/* @ts-ignore */}
+                {/* @ts-ignore */}
                 {(report as any).createdBy?.name || "Unknown User"}
               </p>
             </div>
@@ -194,28 +194,28 @@ export function ReportView() {
             />
           </div>
 
-// @ts-ignore
-// @ts-ignore
+          {/* @ts-ignore */}
+          {/* @ts-ignore */}
           {(report as any).notes && (
             <div className="rounded-lg border p-4">
               <h3 className="mb-4 text-lg font-medium">Notes</h3>
-// @ts-ignore
-// @ts-ignore
+              {/* @ts-ignore */}
+              {/* @ts-ignore */}
               <p className="whitespace-pre-line">{(report as any).notes}</p>
             </div>
           )}
 
-// @ts-ignore
-// @ts-ignore
+          {/* @ts-ignore */}
+          {/* @ts-ignore */}
           {(report as any).attachments &&
-// @ts-ignore
-// @ts-ignore
+            /* @ts-ignore */
+            /* @ts-ignore */
             (report as any).attachments.length > 0 && (
               <div className="rounded-lg border p-4">
                 <h3 className="mb-4 text-lg font-medium">Attachments</h3>
                 <div className="space-y-2">
-// @ts-ignore
-// @ts-ignore
+                  {/* @ts-ignore */}
+                  {/* @ts-ignore */}
                   {(report as any).attachments.map((attachment: any) => (
                     <div
                       key={attachment.id}

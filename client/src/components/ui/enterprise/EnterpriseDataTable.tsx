@@ -108,7 +108,7 @@ function EnterpriseDataTableInner<TData, TValue>(
     >
       {renderToolbar && (
         <div className="mb-4">
-// @ts-ignore
+          {/* @ts-ignore */}
           {renderToolbar(table.getState(), table as unknown as ReactTable<any>)}
         </div>
       )}

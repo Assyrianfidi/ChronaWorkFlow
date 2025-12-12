@@ -1089,7 +1089,7 @@ export function withErrorBoundary<P extends object>(
   return function WrappedComponent(props: P) {
     return (
       <ErrorBoundary {...options}>
-// @ts-ignore
+        {/* @ts-ignore */}
         <Component {...(props as P)} />
       </ErrorBoundary>
     );

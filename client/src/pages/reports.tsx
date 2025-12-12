@@ -227,7 +227,7 @@ export default function Reports() {
                 onClick={() => exportReport("pdf")}
               >
                 <FileIcon className="w-4 h-4" />
-// @ts-ignore
+                {/* @ts-ignore */}
                 Export as PDF
               </button>
               <button
@@ -235,7 +235,7 @@ export default function Reports() {
                 onClick={() => exportReport("excel")}
               >
                 <FileSpreadsheet className="w-4 h-4" />
-// @ts-ignore
+                {/* @ts-ignore */}
                 Export as Excel
               </button>
               <button
@@ -243,7 +243,7 @@ export default function Reports() {
                 onClick={() => exportReport("csv")}
               >
                 <FileSpreadsheet className="w-4 h-4" />
-// @ts-ignore
+                {/* @ts-ignore */}
                 Export as CSV
               </button>
             </div>

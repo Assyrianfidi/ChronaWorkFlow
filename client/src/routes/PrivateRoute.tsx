@@ -1,11 +1,6 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-// @ts-ignore
-import { useAuth } from '../contexts/AuthContext.js.js';
-// @ts-ignore
-import Unauthorized from '../pages/Unauthorized.js.js';
+import { useAuth } from "../contexts/AuthContext";
 
 interface PrivateRouteProps {
   children: React.ReactNode;
@@ -41,7 +36,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
       : [requiredRole];
 
     if (!allowedRoles.includes(user.role)) {
-      return <Unauthorized />;
+      return <Navigate to="/unauthorized" replace />;
     }
   }
 

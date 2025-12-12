@@ -1,26 +1,19 @@
-import React, { useState } from 'react';
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
-import { MainLayout } from '../components/layout/MainLayout.js.js';
-// @ts-ignore
-import { DashboardShell } from '../components/ui/layout/DashboardShell.js.js';
-// @ts-ignore
-import { useAuth } from '../contexts/AuthContext.js.js';
+import React from "react";
+import { MainLayout } from "../components/layout/MainLayout";
+import { useAuth } from "../contexts/AuthContext";
 import {
   KPICard,
   MetricCard,
   StatusCard,
-} from '../components/ui/EnterpriseCards.js.js';
+} from "../components/ui/EnterpriseCards";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/EnterpriseCards.js.js';
-// @ts-ignore
-import { LoadingSpinner } from '../components/ui/EnterpriseLoading.js.js';
+} from "../components/ui/EnterpriseCards";
+import { LoadingSpinner } from "../components/ui/EnterpriseLoading";
 import {
   LayoutDashboard,
   TrendingUp,
@@ -68,7 +61,7 @@ const Dashboard: React.FC = () => {
   }
 
   const roleBasedKPIs = {
-    admin: [
+    ADMIN: [
       {
         title: "Total Revenue",
         value: "$124,563",
@@ -98,7 +91,7 @@ const Dashboard: React.FC = () => {
         description: "uptime",
       },
     ],
-    accountant: [
+    ACCOUNTANT: [
       {
         title: "Accounts Receivable",
         value: "$45,234",
@@ -128,7 +121,7 @@ const Dashboard: React.FC = () => {
         description: "current month",
       },
     ],
-    business_owner: [
+    MANAGER: [
       {
         title: "Cash Flow",
         value: "$34,567",
@@ -160,7 +153,8 @@ const Dashboard: React.FC = () => {
     ],
   };
 
-  const kpis = roleBasedKPIs[user?.role || "admin"] || roleBasedKPIs.admin;
+  const kpis =
+    roleBasedKPIs[user?.role || "ADMIN"] || roleBasedKPIs.ADMIN;
 
   const getQuickActions = () => {
     const baseActions = [
@@ -185,7 +179,7 @@ const Dashboard: React.FC = () => {
     ];
 
     const roleBasedActions = {
-      admin: [
+      ADMIN: [
         {
           icon: Shield,
           label: "System Admin",
@@ -193,7 +187,7 @@ const Dashboard: React.FC = () => {
           color: "error",
         },
       ],
-      accountant: [
+      ACCOUNTANT: [
         {
           icon: CreditCard,
           label: "Reconciliation",
@@ -201,7 +195,7 @@ const Dashboard: React.FC = () => {
           color: "info",
         },
       ],
-      business_owner: [
+      MANAGER: [
         {
           icon: Target,
           label: "Set Goals",

@@ -1,15 +1,12 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
-import { useAuth } from '../contexts/AuthContext.js.js';
+import React from "react";
+import { useAuth } from "../contexts/AuthContext";
 import {
   AdminDashboard,
+  AccountantDashboard,
   ManagerDashboard,
-  UserDashboard,
   AuditorDashboard,
   InventoryDashboard,
-} from './dashboards.js.js';
+} from "./dashboards";
 
 // @ts-ignore
 const DashboardRouter: React.FC = () => {
@@ -33,14 +30,14 @@ const DashboardRouter: React.FC = () => {
       return <AdminDashboard />;
     case "MANAGER":
       return <ManagerDashboard />;
-    case "USER":
-      return <UserDashboard />;
+    case "ACCOUNTANT":
+      return <AccountantDashboard />;
     case "AUDITOR":
       return <AuditorDashboard />;
     case "INVENTORY_MANAGER":
       return <InventoryDashboard />;
     default:
-      return <UserDashboard />;
+      return <ManagerDashboard />;
   }
 };
 

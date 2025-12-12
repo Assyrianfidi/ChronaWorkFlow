@@ -283,15 +283,15 @@ describe("Chart Components", () => {
 
       render(
         <ChartContainer config={configWithoutIcon}>
-// @ts-ignore
-// @ts-ignore
+          {/* @ts-ignore */}
+          {/* @ts-ignore */}
           <ChartLegendContent payload={mockPayload as any} />
         </ChartContainer>,
       );
 
       const indicator = document.querySelector(
         '[style*="background-color"]',
-// @ts-ignore
+        // @ts-ignore
       ) as HTMLElement;
       expect(indicator).toBeInTheDocument();
       expect(indicator.style.backgroundColor).toBe("rgb(255, 0, 0)");

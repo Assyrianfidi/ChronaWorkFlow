@@ -33,12 +33,42 @@ model User {
   inventoryItems     InventoryItem[]        @relation("CreatedBy")
   reports            ReconciliationReport[]
   refreshTokens      RefreshToken[]
+  userFeatures        UserFeature[]
   currentCompany     Company?               @relation("UserCurrentCompany", fields: [currentCompanyId], references: [id])
 
   @@index([role])
   @@index([isActive])
   @@index([currentCompanyId])
   @@map("users")
+}
+
+model UserFeature {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  featureName String
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, featureName])
+  @@index([userId])
+  @@index([featureName])
+  @@map("user_features")
+}
+
+model RoleFeature {
+  id          Int      @id @default(autoincrement())
+  role        Role
+  featureName String
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([role, featureName])
+  @@index([role])
+  @@index([featureName])
+  @@map("role_features")
 }
 
 model RefreshToken {

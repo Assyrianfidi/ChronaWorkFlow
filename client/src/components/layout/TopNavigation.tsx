@@ -234,7 +234,7 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
                       className="w-full text-secondary"
                       onClick={() => setShowNotifications(false)}
                     >
-// @ts-ignore
+                      {/* @ts-ignore */}
                       Mark all as read
                     </EnterpriseButton>
                   </div>

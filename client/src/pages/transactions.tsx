@@ -375,11 +375,11 @@ export default function Transactions() {
                         <TableCell>
                           <Badge
                             variant={
-// @ts-ignore
+                              // @ts-ignore
                               typeColors[txn.type as keyof typeof typeColors]
                             }
                           >
-// @ts-ignore
+                            {/* @ts-ignore */}
                             {typeLabels[txn.type as keyof typeof typeLabels]}
                           </Badge>
                         </TableCell>

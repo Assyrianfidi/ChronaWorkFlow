@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { authRoutes } from "./routes/auth.routes.simple.js";
 import { StatusCodes } from "http-status-codes";
+import adminFeaturesRouter from "./routes/admin.features.simple";
 
 // Create Express app
 const app = express();
@@ -39,6 +40,7 @@ app.get("/api/health", (req: Request, res: Response) => {
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminFeaturesRouter);
 
 // Simple mock data routes for demo
 app.get("/api/invoices", async (req: Request, res: Response) => {

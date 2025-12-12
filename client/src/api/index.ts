@@ -9,7 +9,10 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 // API base URL from environment
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "import.meta.env.VITE_API_URL/api/v1";
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api/v1`
+    : "http://localhost:3001/api/v1");
 
 // Create axios instance with default config
 const api: AxiosInstance = axios.create({
@@ -23,7 +26,7 @@ const api: AxiosInstance = axios.create({
 // Request interceptor to add JWT token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accubooks_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -42,22 +45,21 @@ api.interceptors.response.use(
   async (error) => {
     // Handle 401 Unauthorized - token expired
     if (error.response?.status === 401) {
-      const refreshToken = localStorage.getItem("refreshToken");
+      const refreshToken = localStorage.getItem("accubooks_token");
       if (refreshToken) {
         try {
           const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
             refreshToken,
           });
           const { accessToken } = response.data.data;
-          localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("accubooks_token", accessToken);
 
           // Retry the original request with new token
           error.config.headers.Authorization = `Bearer ${accessToken}`;
           return api.request(error.config);
         } catch (refreshError) {
           // Refresh failed, clear tokens and redirect to login
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("accubooks_token");
           window.location.href = "/login";
           return Promise.reject(refreshError);
         }
@@ -80,12 +82,13 @@ export interface ApiResponse<T = any> {
 // Auth API
 export const authApi = {
   login: (email: string, password: string) =>
-    api.post<
-      ApiResponse<{ accessToken: string; refreshToken: string; user: any }>
-    >("/auth/login", {
-      email,
-      password,
-    }),
+    api.post<ApiResponse<{ user: any; accessToken: string; expiresIn: number }>>(
+      "/auth/login",
+      {
+        email,
+        password,
+      },
+    ),
 
   register: (userData: {
     email: string;

@@ -50,6 +50,9 @@ const AuditLogsPage = lazy(() => import("../pages/AuditLogsPage"));
 const NotificationsPage = lazy(() => import("../pages/NotificationsPage"));
 // @ts-ignore
 // @ts-ignore
+const FeatureManagementPage = lazy(() => import("../pages/FeatureManagementPage"));
+// @ts-ignore
+// @ts-ignore
 const Unauthorized = lazy(() => import("../pages/Unauthorized"));
 
 const router = createBrowserRouter([
@@ -123,7 +126,7 @@ const router = createBrowserRouter([
   {
     path: "/invoices",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER", "AUDITOR"]}>
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
         <MainLayout>
           <SuspenseWrapper>
             <InvoicesPage />
@@ -135,7 +138,7 @@ const router = createBrowserRouter([
   {
     path: "/customers",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER"]}>
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT"]}>
         <MainLayout>
           <SuspenseWrapper>
             <CustomersPage />
@@ -147,7 +150,7 @@ const router = createBrowserRouter([
   {
     path: "/transactions",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "USER", "AUDITOR"]}>
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
         <MainLayout>
           <SuspenseWrapper>
             <TransactionsPage />
@@ -187,6 +190,18 @@ const router = createBrowserRouter([
         <MainLayout>
           <SuspenseWrapper>
             <AdminSettingsPage />
+          </SuspenseWrapper>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/admin/features",
+    element: (
+      <PrivateRoute requiredRole="ADMIN">
+        <MainLayout>
+          <SuspenseWrapper>
+            <FeatureManagementPage />
           </SuspenseWrapper>
         </MainLayout>
       </PrivateRoute>

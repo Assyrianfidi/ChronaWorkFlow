@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-// @ts-ignore
-import * as React from "react";
+import React, { useState, useCallback } from 'react';
 // @ts-ignore
 import { cn } from '../../lib/utils.js.js';
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react";
@@ -41,14 +39,69 @@ export const useToast = () => {
   return context;
 };
 
+// Toast helpers (hook-based, hook-safe)
+export const useToastActions = () => {
+  const { addToast } = useToast();
+
+  const success = useCallback(
+    (
+      title: string,
+      description?: string,
+      options?: Partial<
+        Omit<ToastProps, "id" | "type" | "title" | "description">
+      >,
+    ) => addToast({ type: "success", title, description, ...options }),
+    [addToast],
+  );
+
+  const error = useCallback(
+    (
+      title: string,
+      description?: string,
+      options?: Partial<
+        Omit<ToastProps, "id" | "type" | "title" | "description">
+      >,
+    ) => addToast({ type: "error", title, description, ...options }),
+    [addToast],
+  );
+
+  const warning = useCallback(
+    (
+      title: string,
+      description?: string,
+      options?: Partial<
+        Omit<ToastProps, "id" | "type" | "title" | "description">
+      >,
+    ) => addToast({ type: "warning", title, description, ...options }),
+    [addToast],
+  );
+
+  const info = useCallback(
+    (
+      title: string,
+      description?: string,
+      options?: Partial<
+        Omit<ToastProps, "id" | "type" | "title" | "description">
+      >,
+    ) => addToast({ type: "info", title, description, ...options }),
+    [addToast],
+  );
+
+  return { success, error, warning, info };
+};
+
 // Toast Provider
 // @ts-ignore
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [toasts, setToasts] = React.useState<ToastProps[]>([]);
+  const [toasts, setToasts] = useState<ToastProps[]>([]);
 
-  const addToast = React.useCallback((toast: Omit<ToastProps, "id">) => {
+  const removeToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  }, []);
+
+  const addToast = useCallback((toast: Omit<ToastProps, "id">) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newToast: ToastProps = { ...toast, id };
 
@@ -60,13 +113,9 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
         removeToast(id);
       }, toast.duration || 5000);
     }
-  }, []);
+  }, [removeToast]);
 
-  const removeToast = React.useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  }, []);
-
-  const clearAll = React.useCallback(() => {
+  const clearAll = useCallback(() => {
     setToasts([]);
   }, []);
 
@@ -105,8 +154,8 @@ const Toast: React.FC<ToastProps> = ({
   action,
   onDismiss,
 }) => {
-  const [isVisible, setIsVisible] = React.useState(false);
-  const [isLeaving, setIsLeaving] = React.useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
 
   React.useEffect(() => {
     // Enter animation
@@ -212,50 +261,6 @@ const Toast: React.FC<ToastProps> = ({
       </button>
     </div>
   );
-};
-
-// Toast Hook for easy usage
-export const toast = {
-  success: (
-    title: string,
-    description?: string,
-    options?: Partial<
-      Omit<ToastProps, "id" | "type" | "title" | "description">
-    >,
-  ) => {
-    const { addToast } = useToast();
-    addToast({ type: "success", title, description, ...options });
-  },
-  error: (
-    title: string,
-    description?: string,
-    options?: Partial<
-      Omit<ToastProps, "id" | "type" | "title" | "description">
-    >,
-  ) => {
-    const { addToast } = useToast();
-    addToast({ type: "error", title, description, ...options });
-  },
-  warning: (
-    title: string,
-    description?: string,
-    options?: Partial<
-      Omit<ToastProps, "id" | "type" | "title" | "description">
-    >,
-  ) => {
-    const { addToast } = useToast();
-    addToast({ type: "warning", title, description, ...options });
-  },
-  info: (
-    title: string,
-    description?: string,
-    options?: Partial<
-      Omit<ToastProps, "id" | "type" | "title" | "description">
-    >,
-  ) => {
-    const { addToast } = useToast();
-    addToast({ type: "info", title, description, ...options });
-  },
 };
 
 // Toast Action Component

@@ -7,8 +7,8 @@ declare global {
 
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from '../contexts/AuthContext.js';
-import { FullPageLoading } from '../components/ui/full-page-loading.js';
+import { useAuth } from "../contexts/AuthContext";
+import { FullPageLoading } from "../components/ui/EnterpriseLoading";
 
 // @ts-ignore
 export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
@@ -16,17 +16,7 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  console.log(
-    "ProtectedRoute - isLoading:",
-    isLoading,
-    "isAuthenticated:",
-    isAuthenticated,
-    "user:",
-    !!user,
-  );
-
   if (isLoading) {
-    console.log("ProtectedRoute - showing loading");
     return <FullPageLoading />;
   }
 
@@ -44,13 +34,6 @@ export const PublicRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
-
-  console.log(
-    "PublicRoute - isLoading:",
-    isLoading,
-    "isAuthenticated:",
-    isAuthenticated,
-  );
 
   // Temporarily bypass loading check to test
   // if (isLoading) {

@@ -45,50 +45,46 @@ Object.defineProperty(window, "matchMedia", {
 // Simple test component
 // @ts-ignore
 const TestComponent: React.FC = () => {
-  try {
-    const {
-      currentMode,
-      availableModes,
-      setMode,
-      resetMode,
-      settings,
-      updateSettings,
-      detectSystemPreferences,
-      applySystemTheme,
-    } = useVisualMode();
+  const {
+    currentMode,
+    availableModes,
+    setMode,
+    resetMode,
+    settings,
+    updateSettings,
+    detectSystemPreferences,
+    applySystemTheme,
+  } = useVisualMode();
 
-    return (
-      <div>
-        <div data-testid="current-mode">{currentMode?.name || "none"}</div>
-        <div data-testid="available-modes-count">{availableModes.length}</div>
-        <div data-testid="bg-color">{settings.backgroundColor}</div>
-        <div data-testid="text-color">{settings.textColor}</div>
-        <button
-          data-testid="set-high-contrast"
-          onClick={() => setMode("high-contrast")}
-        >
-          Set High Contrast
-        </button>
-        <button data-testid="reset-mode" onClick={resetMode}>
-          Reset Mode
-        </button>
-        <button
-          data-testid="update-settings"
-          onClick={() => updateSettings({ fontSize: 1.5 })}
-        >
-          Update Settings
-        </button>
-        <button data-testid="detect-system" onClick={detectSystemPreferences}>
-          Detect System
-        </button>
-        <button data-testid="apply-theme" onClick={applySystemTheme}>
-          Apply Theme
-        </button>
-      </div>
-    );
-  } catch (error) {
-    return <div data-testid="error">{String(error)}</div>;
-  }
+  return (
+    <div>
+      <div data-testid="current-mode">{currentMode?.name || "none"}</div>
+      <div data-testid="available-modes-count">{availableModes.length}</div>
+      <div data-testid="bg-color">{settings.backgroundColor}</div>
+      <div data-testid="text-color">{settings.textColor}</div>
+      <button
+        data-testid="set-high-contrast"
+        onClick={() => setMode("high-contrast")}
+      >
+        Set High Contrast
+      </button>
+      <button data-testid="reset-mode" onClick={resetMode}>
+        Reset Mode
+      </button>
+      <button
+        data-testid="update-settings"
+        onClick={() => updateSettings({ fontSize: 1.5 })}
+      >
+        Update Settings
+      </button>
+      <button data-testid="detect-system" onClick={detectSystemPreferences}>
+        Detect System
+      </button>
+      <button data-testid="apply-theme" onClick={applySystemTheme}>
+        Apply Theme
+      </button>
+    </div>
+  );
 };
 
 describe("VisualModeEngine - Core Functionality", () => {

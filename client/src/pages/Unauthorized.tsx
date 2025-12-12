@@ -10,8 +10,7 @@ import React from 'react';
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { ShieldX, Home, ArrowLeft } from "lucide-react";
-// @ts-ignore
-import { EnterpriseButton } from '../components/ui/EnterpriseButton.js.js';
+import { EnterpriseButton } from "../components/ui/EnterpriseButton";
 
 // @ts-ignore
 const Unauthorized: React.FC = () => {

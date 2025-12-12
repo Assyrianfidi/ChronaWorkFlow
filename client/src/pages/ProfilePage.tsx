@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-// @ts-ignore
-import * as React from "react";
 import { useNavigate } from "react-router-dom";
 // @ts-ignore
 import { useAuth } from '../contexts/AuthContext.js.js';
@@ -129,12 +127,16 @@ const ProfilePage: React.FC = () => {
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case "admin":
+      case "ADMIN":
         return "bg-red-100 text-red-800";
-      case "accountant":
+      case "ACCOUNTANT":
         return "bg-blue-100 text-blue-800";
-      case "business_owner":
+      case "MANAGER":
         return "bg-green-100 text-green-800";
+      case "AUDITOR":
+        return "bg-purple-100 text-purple-800";
+      case "INVENTORY_MANAGER":
+        return "bg-amber-100 text-amber-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -142,12 +144,16 @@ const ProfilePage: React.FC = () => {
 
   const getRoleDisplayName = (role: string) => {
     switch (role) {
-      case "admin":
+      case "ADMIN":
         return "Administrator";
-      case "accountant":
+      case "ACCOUNTANT":
         return "Accountant";
-      case "business_owner":
-        return "Business Owner";
+      case "MANAGER":
+        return "Manager";
+      case "AUDITOR":
+        return "Auditor";
+      case "INVENTORY_MANAGER":
+        return "Inventory Manager";
       default:
         return "User";
     }

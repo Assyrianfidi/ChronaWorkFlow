@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -6,8 +5,6 @@ declare global {
 }
 
 import React, { useState } from 'react';
-// @ts-ignore
-import * as React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 // @ts-ignore
 import { cn } from '../../lib/utils.js.js';
@@ -33,6 +30,7 @@ import {
   Archive,
   Bell,
   HelpCircle,
+  Sliders,
 } from "lucide-react";
 
 interface SidebarItemProps {
@@ -131,14 +129,16 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
       if (window.innerWidth < 768) {
-        onToggle(); // Auto-close on mobile
+        if (isOpen) {
+          onToggle(); // Auto-close on mobile (only if currently open)
+        }
       }
     };
 
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
-  }, [onToggle]);
+  }, [isOpen, onToggle]);
 
   const getNavigationItems = () => {
     const baseItems = [
@@ -150,12 +150,13 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     ];
 
     const roleBasedItems: Record<string, SidebarItemProps[]> = {
-      admin: [
+      ADMIN: [
         { icon: Shield, label: "Admin", to: "/admin" },
+        { icon: Sliders, label: "Feature Management", to: "/admin/features" },
         { icon: Building, label: "Companies", to: "/companies" },
         { icon: Archive, label: "Audit Logs", to: "/audit" },
       ],
-      manager: [
+      MANAGER: [
         { icon: Users, label: "Team", to: "/team" },
         { icon: Calculator, label: "Payroll", to: "/payroll" },
         {
@@ -164,15 +165,18 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           to: "/reconciliation",
         },
       ],
-      accountant: [
+      ACCOUNTANT: [
         { icon: Calculator, label: "Accounting", to: "/accounting" },
         { icon: FileSpreadsheet, label: "Ledger", to: "/ledger" },
         { icon: TrendingUp, label: "Analytics", to: "/analytics" },
       ],
-      auditor: [
+      AUDITOR: [
         { icon: Shield, label: "Audit", to: "/audit" },
         { icon: FileText, label: "Compliance", to: "/compliance" },
         { icon: BarChart3, label: "Risk Analysis", to: "/risk" },
+      ],
+      INVENTORY_MANAGER: [
+        { icon: Archive, label: "Inventory", to: "/inventory" },
       ],
     };
 

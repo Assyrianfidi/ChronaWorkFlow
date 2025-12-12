@@ -21,8 +21,8 @@ export function AppLayout() {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-// @ts-ignore
-// @ts-ignore
+      {/* @ts-ignore */}
+      {/* @ts-ignore */}
       <Sidebar user={user as any} onLogout={logout} />
 
       {/* Main content */}
