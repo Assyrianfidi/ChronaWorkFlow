@@ -12,6 +12,7 @@ const SelectContext = React.createContext<SelectContextValue | null>(null);
 
 export interface SelectProps {
   value?: string;
+  defaultValue?: string;
   onValueChange?: (value: string) => void;
   children: React.ReactNode;
   className?: string;
@@ -52,19 +53,46 @@ function collectSelectParts(children: React.ReactNode): {
   return { placeholder, items };
 }
 
-export function Select({ value, onValueChange, children, className }: SelectProps) {
+export function Select({
+  value: controlledValue,
+  defaultValue,
+  onValueChange,
+  children,
+  className,
+}: SelectProps) {
   const parts = React.useMemo(() => collectSelectParts(children), [children]);
 
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(
+    defaultValue ?? "",
+  );
+
+  const value = controlledValue ?? uncontrolledValue;
+
+  const handleChange = React.useCallback(
+    (next: string) => {
+      onValueChange?.(next);
+      if (controlledValue === undefined) {
+        setUncontrolledValue(next);
+      }
+    },
+    [controlledValue, onValueChange],
+  );
+
   const ctxValue = React.useMemo<SelectContextValue>(
-    () => ({ value, onValueChange, placeholder: parts.placeholder, items: parts.items }),
-    [onValueChange, parts.items, parts.placeholder, value],
+    () => ({
+      value,
+      onValueChange: handleChange,
+      placeholder: parts.placeholder,
+      items: parts.items,
+    }),
+    [handleChange, parts.items, parts.placeholder, value],
   );
 
   return (
     <SelectContext.Provider value={ctxValue}>
       <select
         value={value ?? ""}
-        onChange={(e) => onValueChange?.(e.target.value)}
+        onChange={(e) => handleChange(e.target.value)}
         className={cn(
           "w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           className,
@@ -85,25 +113,29 @@ export function Select({ value, onValueChange, children, className }: SelectProp
   );
 }
 
-export function SelectTrigger({ children }: { children?: React.ReactNode }) {
+export function SelectTrigger({ children, className }: { children?: React.ReactNode; className?: string }) {
+  void className;
   return <>{children}</>;
 }
 SelectTrigger.displayName = "SelectTrigger";
 
-export function SelectValue({ placeholder }: { placeholder?: string }) {
+export function SelectValue({ placeholder, className }: { placeholder?: string; className?: string }) {
   const ctx = React.useContext(SelectContext);
   void ctx;
   void placeholder;
+  void className;
   return null;
 }
 SelectValue.displayName = "SelectValue";
 
-export function SelectContent({ children }: { children?: React.ReactNode }) {
+export function SelectContent({ children, className }: { children?: React.ReactNode; className?: string }) {
+  void className;
   return <>{children}</>;
 }
 SelectContent.displayName = "SelectContent";
 
-export function SelectItem({ children }: { value: string; disabled?: boolean; children?: React.ReactNode }) {
+export function SelectItem({ children, className }: { value: string; disabled?: boolean; children?: React.ReactNode; className?: string }) {
+  void className;
   return <>{children}</>;
 }
 SelectItem.displayName = "SelectItem";

@@ -1,32 +1,22 @@
-import React, { useState } from "react";
-import {
-  Card,
+import * as React from "react";
+import Card, {
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
-// @ts-ignore
-import { Label } from '../components/ui/label.js.js';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../components/ui/tabs.js.js';
-// @ts-ignore
-import { Switch } from '../components/ui/switch.js.js';
+} from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import Label from "../components/ui/Label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/Tabs";
+import { Switch } from "../components/ui/Switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select.js.js';
+} from "../components/ui/Select";
 import {
   Dialog,
   DialogContent,
@@ -34,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../components/ui/dialog.js.js';
+} from "../components/ui/Dialog";
 import {
   Building2,
   User,
@@ -51,18 +41,15 @@ import {
   useCreateCompany,
   useUpdateCompany,
   useUsers,
-} from '../hooks/use-api.js.js';
+} from "../hooks/use-api";
 import { format } from "date-fns";
-// @ts-ignore
-import { Skeleton } from '../components/ui/skeleton.js.js';
-// @ts-ignore
-import { useToast } from '../hooks/use-toast.js.js';
-// @ts-ignore
-import { useAuthStore } from '../store/auth-store.js.js';
+import { Skeleton } from "../components/ui/Skeleton";
+import { useToast } from "../hooks/use-toast";
+import { useAuthStore } from "../store/auth-store";
 
 export default function Settings() {
-  const [activeTab, setActiveTab] = useState("company");
-  const [companyForm, setCompanyForm] = useState({
+  const [activeTab, setActiveTab] = React.useState("company");
+  const [companyForm, setCompanyForm] = React.useState({
     name: "",
     email: "",
     phone: "",
@@ -71,17 +58,17 @@ export default function Settings() {
     currency: "USD",
     fiscalYearEnd: "12-31",
   });
-  const [profileForm, setProfileForm] = useState({
+  const [profileForm, setProfileForm] = React.useState({
     name: "",
     email: "",
     username: "",
   });
-  const [passwordForm, setPasswordForm] = useState({
+  const [passwordForm, setPasswordForm] = React.useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
-  const [notificationSettings, setNotificationSettings] = useState({
+  const [notificationSettings, setNotificationSettings] = React.useState({
     overdueInvoices: true,
     paymentReceived: true,
     lowBalance: false,

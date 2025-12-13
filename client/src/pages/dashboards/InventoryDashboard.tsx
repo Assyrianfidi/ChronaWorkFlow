@@ -1,13 +1,10 @@
-import React from 'react';
-// @ts-ignore
 import * as React from "react";
-// @ts-ignore
-import { useAuth } from '../../contexts/AuthContext.js.js';
+import { useAuth } from "../../contexts/AuthContext";
 import useSWR from "swr";
 import {
   DashboardMetricCard,
   InventoryStatus,
-} from '../../components/dashboard.js.js';
+} from "../../components/dashboard";
 import {
   Package,
   AlertTriangle,
@@ -16,10 +13,8 @@ import {
   Truck,
   Warehouse,
 } from "lucide-react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { DashboardShell } from '../../components/ui/layout/DashboardShell.js.js';
+import { cn } from "@/lib/utils";
+import { DashboardShell } from "../../components/ui/layout/DashboardShell";
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "elevated" | "outlined" | "glass";

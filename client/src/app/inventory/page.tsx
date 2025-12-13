@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import * as React from "react";
 import { useRouter } from "next/navigation";
 import {
   useInventoryItems,
@@ -11,28 +11,21 @@ import {
   useBulkUpdateInventoryItems,
   useExportInventory,
   type InventoryQueryOptions,
-} from '../hooks/use-inventory.js.js';
-// @ts-ignore
-import { useInventoryFilters } from '../hooks/useInventoryFilters.js.js';
-// @ts-ignore
-import { InventoryFilters } from '../components/inventory/InventoryFilters.js.js';
-// @ts-ignore
-import { InventoryItem, InventoryStatus } from '../types/inventory.js.js';
-// @ts-ignore
-import { getInventoryStatus } from '../lib/inventory-utils.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
+} from "@/hooks/use-inventory";
+import { useInventoryFilters } from "@/hooks/useInventoryFilters";
+import { InventoryFilters } from "@/components/inventory/InventoryFilters";
+import { InventoryItem, InventoryStatus } from "@/types/inventory";
+import { getInventoryStatus } from "@/lib/inventory-utils";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js.js';
-// @ts-ignore
-import { Badge } from '../components/ui/badge.js.js';
+} from "@/components/ui/Card";
+import Badge from "@/components/ui/Badge";
 import {
   Table,
   TableBody,
@@ -40,21 +33,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table.js.js';
+} from "@/components/ui/Table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu.js.js';
-// @ts-ignore
-import { Checkbox } from '../components/ui/checkbox.js.js';
-// @ts-ignore
-import { VirtualizedTable } from '../components/ui/virtualized-table/VirtualizedTable.js.js';
-// @ts-ignore
-import { Skeleton } from '../components/ui/skeleton.js.js';
-// @ts-ignore
-import { useToast } from '../components/ui/use-toast.js.js';
+} from "@/components/ui/DropdownMenu";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { VirtualizedTable } from "@/components/ui/virtualized-table/VirtualizedTable";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { useToast } from "@/hooks/use-toast";
 import {
   MoreHorizontal,
   Plus,
@@ -95,19 +84,17 @@ export default function InventoryPage() {
     handlePageChange,
     resetFilters,
   } = useInventoryFilters();
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
+  const [expandedRows, setExpandedRows] = React.useState<Set<string>>(new Set());
 
-  const [isExporting, setIsExporting] = useState(false);
-  const queryOptions = useMemo<InventoryQueryOptions>(() => {
+  const [isExporting, setIsExporting] = React.useState(false);
+  const queryOptions = React.useMemo<InventoryQueryOptions>(() => {
     const status = Array.isArray(filterOptions.status)
-// @ts-ignore
       ? (filterOptions.status as InventoryStatus[])[0]
       : filterOptions.status;
     return {
       search: filterOptions.searchTerm || "",
       categoryId: filterOptions.categoryId,
-// @ts-ignore
       status: status as "in_stock" | "low_stock" | "out_of_stock" | undefined,
       minQuantity: filterOptions.quantityRange?.min,
       maxQuantity: filterOptions.quantityRange?.max,
@@ -150,7 +137,7 @@ export default function InventoryPage() {
   const { mutate: exportData } = useExportInventory();
 
   // Wrap mutations with success/error handling
-  const handleCreateItem = useCallback(
+  const handleCreateItem = React.useCallback(
     (itemData: any) => {
       createItem(itemData, {
         onSuccess: () => {
@@ -170,10 +157,10 @@ export default function InventoryPage() {
         },
       });
     },
-    [createItem, refetchItems, refetchStats],
+    [createItem, refetchItems, refetchStats, toast],
   );
 
-  const handleUpdateItem = useCallback(
+  const handleUpdateItem = React.useCallback(
     ({ id, ...updates }: { id: string } & Partial<InventoryItem>) => {
       updateItem(
         { id, updates },
@@ -196,7 +183,7 @@ export default function InventoryPage() {
         },
       );
     },
-    [updateItem, refetchItems, refetchStats],
+    [updateItem, refetchItems, refetchStats, toast],
   );
 
   const handleDeleteItem = useCallback(

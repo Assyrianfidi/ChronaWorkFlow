@@ -1,8 +1,5 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
 interface AccuBooksLogoProps {
   className?: string;

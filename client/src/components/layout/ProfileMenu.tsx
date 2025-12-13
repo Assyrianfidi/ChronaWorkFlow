@@ -1,7 +1,6 @@
 import React from "react";
 import { User, Settings, CreditCard, LogOut } from "lucide-react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { cn } from "../../lib/utils";
 
 type ProfileMenuProps = {
   user?: { name?: string; email?: string; avatar?: string };

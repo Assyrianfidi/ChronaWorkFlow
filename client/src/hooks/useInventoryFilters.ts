@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useState, useCallback, useMemo } from "react";
+import * as React from "react";
 import { useDebounce } from "use-debounce";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -7,7 +6,7 @@ import {
   InventoryFilterOptions,
   QuantityRange,
   InventoryItem,
-} from '../types/inventory.js.js';
+} from "../types/inventory";
 
 type SortableField =
   | "name"
@@ -35,7 +34,7 @@ export function useInventoryFilters({
 
   // Initialize state from URL search params or props
   const getInitialState = useCallback(() => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams?.toString());
     const categoryParam = params.get("category");
 
     return {
@@ -44,7 +43,6 @@ export function useInventoryFilters({
         ? categoryParam[0]
         : categoryParam || initialFilters.categoryId || "",
       statusFilter:
-// @ts-ignore
         (params.get("status") as InventoryStatus) || initialFilters.status,
       quantityRange: {
         min: params.has("minQty")
@@ -55,12 +53,10 @@ export function useInventoryFilters({
           : initialFilters.quantityRange?.max,
       },
       sortBy:
-// @ts-ignore
         (params.get("sortBy") as keyof InventoryItem) ||
         initialFilters.sortBy ||
         "name",
       sortOrder:
-// @ts-ignore
         (params.get("sortOrder") as "asc" | "desc") ||
         initialFilters.sortOrder ||
         "asc",
@@ -74,31 +70,30 @@ export function useInventoryFilters({
   }, [searchParams, initialFilters]);
 
   // State management
-  const [searchTerm, setSearchTerm] = useState(getInitialState().searchTerm);
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+  const [searchTerm, setSearchTerm] = React.useState(getInitialState().searchTerm);
+  const [selectedCategory, setSelectedCategory] = React.useState<string | undefined>(
     getInitialState().selectedCategory || undefined,
   );
-  const [statusFilter, setStatusFilter] = useState<InventoryStatus | undefined>(
+  const [statusFilter, setStatusFilter] = React.useState<InventoryStatus | undefined>(
     getInitialState().statusFilter,
   );
-  const [quantityRange, setQuantityRange] = useState<QuantityRange>(
+  const [quantityRange, setQuantityRange] = React.useState<QuantityRange>(
     getInitialState().quantityRange || {},
   );
-  const [sortBy, setSortBy] = useState<SortableField>(
-// @ts-ignore
+  const [sortBy, setSortBy] = React.useState<SortableField>(
     (getInitialState().sortBy as SortableField) || "name",
   );
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
+  const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">(
     getInitialState().sortOrder,
   );
-  const [page, setPage] = useState(getInitialState().page);
-  const [pageSize, setPageSize] = useState(getInitialState().pageSize);
+  const [page, setPage] = React.useState(getInitialState().page);
+  const [pageSize, setPageSize] = React.useState(getInitialState().pageSize);
 
   // Debounced search term
   const [debouncedSearch] = useDebounce(searchTerm, debounceDelay);
 
   // Build filter options for API calls
-  const filterOptions = useMemo<InventoryFilterOptions>(
+  const filterOptions = React.useMemo<InventoryFilterOptions>(
     () => ({
       searchTerm: debouncedSearch,
       categoryId: selectedCategory || undefined,
@@ -122,7 +117,7 @@ export function useInventoryFilters({
   );
 
   // Update URL with current filters
-  const updateUrl = useCallback(
+  const updateUrl = React.useCallback(
     (newFilters: Partial<InventoryFilterOptions>) => {
       const params = new URLSearchParams();
 
@@ -155,7 +150,7 @@ export function useInventoryFilters({
   );
 
   // Handler for search input changes
-  const handleSearchChange = useCallback(
+  const handleSearchChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchTerm(e.target.value);
       setPage(1); // Reset to first page on new search
@@ -164,19 +159,19 @@ export function useInventoryFilters({
   );
 
   // Handler for category filter changes
-  const handleCategoryChange = useCallback((categoryId: string) => {
+  const handleCategoryChange = React.useCallback((categoryId: string) => {
     setSelectedCategory(categoryId || undefined);
     setPage(1);
   }, []);
 
   // Handler for status filter changes
-  const handleStatusChange = useCallback((status: InventoryStatus | "all") => {
+  const handleStatusChange = React.useCallback((status: InventoryStatus | "all") => {
     setStatusFilter(status === "all" ? undefined : status);
     setPage(1);
   }, []);
 
   // Handler for quantity range changes
-  const handleQuantityRangeChange = useCallback((range: QuantityRange) => {
+  const handleQuantityRangeChange = React.useCallback((range: QuantityRange) => {
     setQuantityRange((prev) => ({
       ...prev,
       ...range,
@@ -185,13 +180,13 @@ export function useInventoryFilters({
   }, []);
 
   // Handler for sort changes
-  const handleSortChange = useCallback((newSortBy: SortableField) => {
+  const handleSortChange = React.useCallback((newSortBy: SortableField) => {
     setSortBy(newSortBy);
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   }, []);
 
   // Handler for pagination
-  const handlePageChange = useCallback(
+  const handlePageChange = React.useCallback(
     (newPage: number, newPageSize: number) => {
       setPage(newPage);
       setPageSize(newPageSize);
@@ -200,7 +195,7 @@ export function useInventoryFilters({
   );
 
   // Reset all filters
-  const resetFilters = useCallback(() => {
+  const resetFilters = React.useCallback(() => {
     setSearchTerm("");
     setSelectedCategory(undefined);
     setStatusFilter(undefined);

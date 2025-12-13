@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-// @ts-ignore
-import { Sidebar } from './Sidebar.js.js';
+import { Sidebar } from "./Sidebar";
 
 interface DashboardShellProps {
   children: ReactNode;

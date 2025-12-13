@@ -1,27 +1,19 @@
-import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
-// @ts-ignore
-import { useAuth } from '../contexts/AuthContext.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import Logo from '../assets/AccubooksEnterprise_Logo16_.jpg.js.js';
-// @ts-ignore
-import { InputWithIcon } from '../components/ui/input-with-icon.js.js';
-// @ts-ignore
-import { Label } from '../components/ui/label.js.js';
+import { useAuth } from "../contexts/AuthContext";
+import Button from "../components/ui/Button";
+import Logo from "../assets/AccubooksEnterprise_Logo16_.jpg";
+import { InputWithIcon } from "../components/ui/InputWithIcon";
+import Label from "../components/ui/Label";
 import {
-  Card,
+  default as Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js.js';
-// @ts-ignore
-import { Alert, AlertDescription } from '../components/ui/alert.js.js';
+} from "../components/ui/Card";
+import { Alert, AlertDescription } from "../components/ui/Alert";
 import {
   Eye,
   EyeOff,

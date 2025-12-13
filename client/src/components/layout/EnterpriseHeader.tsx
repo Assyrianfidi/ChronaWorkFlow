@@ -1,17 +1,10 @@
-import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { useAuth } from '../../contexts/AuthContext.js.js';
+import { cn } from "../../lib/utils";
+import { useAuth } from "../../contexts/AuthContext";
 import { Bell, Search, HelpCircle, Menu } from "lucide-react";
-// @ts-ignore
-import ProfileMenu from './ProfileMenu.js.js';
-// @ts-ignore
-import MobileDrawer from './MobileDrawer.js.js';
-// @ts-ignore
-import LogoImg from '../../assets/AccubooksEnterprise_Logo16_.jpg.js.js';
+import ProfileMenu from "./ProfileMenu";
+import MobileDrawer from "./MobileDrawer";
+import LogoImg from "../../assets/AccubooksEnterprise_Logo16_.jpg";
 
 // existing UserMenu, NotificationItem, and NotificationCenter logic has been
 // replaced by a slimmer EnterpriseHeader shell that delegates profile/logout

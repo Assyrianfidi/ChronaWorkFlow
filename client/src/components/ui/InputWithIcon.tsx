@@ -1,10 +1,7 @@
-import React from 'react';
-// @ts-ignore
 import * as React from "react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { Input } from './input.js.js';
+
+import { cn } from "@/lib/utils";
+import Input from "./Input";
 
 interface InputWithIconProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

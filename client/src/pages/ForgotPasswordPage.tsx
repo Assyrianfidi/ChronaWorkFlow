@@ -1,23 +1,17 @@
-import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import { Link } from "react-router-dom";
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
-// @ts-ignore
-import { Label } from '../components/ui/label.js.js';
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import Label from "../components/ui/Label";
 import {
-  Card,
+  default as Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js.js';
-// @ts-ignore
-import { Alert, AlertDescription } from '../components/ui/alert.js.js';
+} from "../components/ui/Card";
+import { Alert, AlertDescription } from "../components/ui/Alert";
 import { Mail, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
 
 // @ts-ignore

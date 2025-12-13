@@ -5,18 +5,12 @@ declare global {
   }
 }
 
-import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import { Outlet } from "react-router-dom";
-// @ts-ignore
-import { EnterpriseSidebar } from './EnterpriseSidebar.js.js';
-// @ts-ignore
-import { EnterpriseHeader } from './EnterpriseHeader.js.js';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { useAuth } from '../../contexts/AuthContext.js.js';
+import { EnterpriseSidebar } from "./EnterpriseSidebar";
+import { EnterpriseHeader } from "./EnterpriseHeader";
+import { cn } from "../../lib/utils";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface MainLayoutProps {
   children: React.ReactNode;

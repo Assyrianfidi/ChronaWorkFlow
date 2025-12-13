@@ -1,20 +1,15 @@
-import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
-import { useState, useEffect } from "react";
-// @ts-ignore
-import { Switch } from '../components/ui/switch.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
+import { useEffect, useState } from "react";
+import { Switch } from "../components/ui/Switch";
+import Button from "../components/ui/Button";
 import {
-  Card,
+  default as Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js.js';
-// @ts-ignore
-import { Badge } from '../components/ui/badge.js.js';
+} from "../components/ui/Card";
+import Badge from "../components/ui/Badge";
 import {
   Table,
   TableBody,
@@ -22,16 +17,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table.js.js';
-// @ts-ignore
-import { DashboardShell } from '../components/ui/layout/DashboardShell.js.js';
+} from "../components/ui/Table";
+import { DashboardShell } from "../components/ui/layout/DashboardShell";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select.js.js';
+} from "../components/ui/Select";
 import {
   Bell,
   CheckCircle,

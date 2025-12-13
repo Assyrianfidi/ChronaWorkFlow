@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
-// @ts-ignore
-import { useTransactions } from '../contexts/TransactionsContext.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { DashboardShell } from '../components/ui/layout/DashboardShell.js.js';
+import { useTransactions } from "../contexts/TransactionsContext";
+import Button from "../components/ui/Button";
+import { DashboardShell } from "../components/ui/layout/DashboardShell";
 
 // @ts-ignore
 const TransactionsPage: React.FC = () => {

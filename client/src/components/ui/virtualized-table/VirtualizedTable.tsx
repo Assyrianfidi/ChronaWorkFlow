@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import * as React from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { cn } from '../lib/utils.js';
+import { cn } from "@/lib/utils";
 
 export interface VirtualizedTableProps<T> {
   items: T[];
@@ -11,7 +11,6 @@ export interface VirtualizedTableProps<T> {
   overscanCount?: number;
 }
 
-// @ts-ignore
 export function VirtualizedTable<T>({
   items,
   renderRow,
@@ -20,14 +19,14 @@ export function VirtualizedTable<T>({
   itemKey = (index) => index,
   overscanCount = 5,
 }: VirtualizedTableProps<T>) {
-  const parentRef = useRef<HTMLDivElement>(null);
+  const parentRef = React.useRef<HTMLDivElement>(null);
 
-  const rowHeights = useMemo(
+  const rowHeights = React.useMemo(
     () => items.map((_, index) => estimateRowHeight(index)),
     [items, estimateRowHeight],
   );
 
-  const getItemSize = useCallback(
+  const getItemSize = React.useCallback(
     (index: number) => rowHeights[index] || 50,
     [rowHeights],
   );
@@ -37,7 +36,7 @@ export function VirtualizedTable<T>({
     getScrollElement: () => parentRef.current,
     estimateSize: getItemSize,
     overscan: overscanCount,
-    getItemKey: useCallback(
+    getItemKey: React.useCallback(
       (index: number) => {
         return itemKey(index, items[index]);
       },

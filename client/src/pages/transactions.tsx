@@ -1,16 +1,8 @@
-import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '../components/ui/card.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
-// @ts-ignore
-import { Badge } from '../components/ui/badge.js.js';
+import * as React from "react";
+import Card, { CardContent, CardHeader, CardTitle } from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import Badge from "../components/ui/Badge";
 import { Plus, Search, Eye, Ban, Calendar, Filter } from "lucide-react";
 import {
   Table,
@@ -19,7 +11,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table.js.js';
+} from "../components/ui/Table";
 import {
   Dialog,
   DialogContent,
@@ -27,24 +19,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../components/ui/dialog.js.js';
+} from "../components/ui/Dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select.js.js';
+} from "../components/ui/Select";
 import {
   useTransactions,
   useAccounts,
   type Transaction,
   type Account,
-} from '../hooks/use-api.js.js';
-// @ts-ignore
-import { Skeleton } from '../components/ui/skeleton.js.js';
-// @ts-ignore
-import { DashboardShell } from '../components/ui/layout/DashboardShell.js.js';
+} from "../hooks/use-api";
+import { Skeleton } from "../components/ui/Skeleton";
+import { DashboardShell } from "../components/ui/layout/DashboardShell";
 import { format } from "date-fns";
 
 const typeLabels = {
@@ -62,11 +52,11 @@ const typeColors = {
 } as const;
 
 export default function Transactions() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
-  const [dateRange, setDateRange] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [typeFilter, setTypeFilter] = React.useState<string>("all");
+  const [dateRange, setDateRange] = React.useState<string>("all");
   const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
+    React.useState<Transaction | null>(null);
 
   const { data: transactions = [], isLoading: transactionsLoading } =
     useTransactions();

@@ -1,24 +1,18 @@
-import React, { useState } from 'react';
+import * as React from "react";
 import { useNavigate } from "react-router-dom";
-// @ts-ignore
-import { useAuth } from '../contexts/AuthContext.js.js';
-// @ts-ignore
-import { MainLayout } from '../components/layout/MainLayout.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
-// @ts-ignore
-import { Label } from '../components/ui/label.js.js';
+import { useAuth } from "../contexts/AuthContext";
+import { MainLayout } from "../components/layout/MainLayout";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import Label from "../components/ui/Label";
 import {
-  Card,
+  default as Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js.js';
-// @ts-ignore
-import { Alert, AlertDescription } from '../components/ui/alert.js.js';
+} from "../components/ui/Card";
+import { Alert, AlertDescription } from "../components/ui/Alert";
 import {
   User,
   Mail,

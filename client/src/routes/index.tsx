@@ -1,9 +1,10 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy } from "react";
-import { MainLayout } from '../components/layout/MainLayout.js';
-import PrivateRoute from './PrivateRoute.js';
-import RoleAllowed from './RoleAllowed.js';
-import { ProtectedRoute, PublicRoute, SuspenseWrapper } from './RouteGuards.js';
+import { MainLayout } from "../components/layout/MainLayout";
+import PrivateRoute from "./PrivateRoute";
+import RoleAllowed from "./RoleAllowed";
+import { ProtectedRoute, PublicRoute, SuspenseWrapper } from "./RouteGuards";
+import { FeatureRoute } from "./FeatureRoute";
 
 // Lazy load pages for better performance
 // @ts-ignore
@@ -127,11 +128,13 @@ const router = createBrowserRouter([
     path: "/invoices",
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
-        <MainLayout>
-          <SuspenseWrapper>
-            <InvoicesPage />
-          </SuspenseWrapper>
-        </MainLayout>
+        <FeatureRoute feature="INVOICING">
+          <MainLayout>
+            <SuspenseWrapper>
+              <InvoicesPage />
+            </SuspenseWrapper>
+          </MainLayout>
+        </FeatureRoute>
       </PrivateRoute>
     ),
   },
@@ -139,11 +142,13 @@ const router = createBrowserRouter([
     path: "/customers",
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT"]}>
-        <MainLayout>
-          <SuspenseWrapper>
-            <CustomersPage />
-          </SuspenseWrapper>
-        </MainLayout>
+        <FeatureRoute feature="CUSTOMERS">
+          <MainLayout>
+            <SuspenseWrapper>
+              <CustomersPage />
+            </SuspenseWrapper>
+          </MainLayout>
+        </FeatureRoute>
       </PrivateRoute>
     ),
   },
@@ -151,11 +156,13 @@ const router = createBrowserRouter([
     path: "/transactions",
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
-        <MainLayout>
-          <SuspenseWrapper>
-            <TransactionsPage />
-          </SuspenseWrapper>
-        </MainLayout>
+        <FeatureRoute feature="TRANSACTIONS">
+          <MainLayout>
+            <SuspenseWrapper>
+              <TransactionsPage />
+            </SuspenseWrapper>
+          </MainLayout>
+        </FeatureRoute>
       </PrivateRoute>
     ),
   },
@@ -163,11 +170,13 @@ const router = createBrowserRouter([
     path: "/reports",
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "AUDITOR"]}>
-        <MainLayout>
-          <SuspenseWrapper>
-            <ReportsPage />
-          </SuspenseWrapper>
-        </MainLayout>
+        <FeatureRoute feature="REPORTS">
+          <MainLayout>
+            <SuspenseWrapper>
+              <ReportsPage />
+            </SuspenseWrapper>
+          </MainLayout>
+        </FeatureRoute>
       </PrivateRoute>
     ),
   },

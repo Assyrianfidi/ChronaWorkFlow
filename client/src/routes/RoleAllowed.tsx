@@ -1,8 +1,8 @@
-import React from 'react';
+import * as React from "react";
 // @ts-ignore
-import { useAuth } from '../contexts/AuthContext.js.js';
+import { useAuth } from "../contexts/AuthContext";
 // @ts-ignore
-import Unauthorized from '../pages/Unauthorized.js.js';
+import Unauthorized from "../pages/Unauthorized";
 
 interface RoleAllowedProps {
   children: React.ReactNode;

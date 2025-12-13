@@ -9,7 +9,7 @@ type TabsContextValue = {
 const TabsContext = React.createContext<TabsContextValue | null>(null);
 
 export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
-  defaultValue: string;
+  defaultValue?: string;
   value?: string;
   onValueChange?: (value: string) => void;
 }
@@ -21,7 +21,9 @@ export function Tabs({
   className,
   ...props
 }: TabsProps) {
-  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue);
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(
+    defaultValue ?? controlledValue ?? "",
+  );
 
   const value = controlledValue ?? uncontrolledValue;
 

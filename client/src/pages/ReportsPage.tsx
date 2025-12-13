@@ -1,25 +1,21 @@
-import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
-  Card,
+  default as Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
+} from "../components/ui/Card";
+import Button from "../components/ui/Button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select.js.js';
-// @ts-ignore
-import { Badge } from '../components/ui/badge.js.js';
+} from "../components/ui/Select";
+import Badge from "../components/ui/Badge";
 import {
   Table,
   TableBody,
@@ -27,7 +23,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table.js.js';
+} from "../components/ui/Table";
 import {
   TrendingUp,
   TrendingDown,

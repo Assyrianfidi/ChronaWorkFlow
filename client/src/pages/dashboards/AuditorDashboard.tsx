@@ -1,11 +1,7 @@
-import React from 'react';
-// @ts-ignore
 import * as React from "react";
-// @ts-ignore
-import { useAuth } from '../../contexts/AuthContext.js.js';
+import { useAuth } from "../../contexts/AuthContext";
 import useSWR from "swr";
-// @ts-ignore
-import { DashboardMetricCard, ActivityFeed } from '../../components/dashboard.js.js';
+import { DashboardMetricCard, ActivityFeed } from "../../components/dashboard";
 import {
   Shield,
   FileText,
@@ -14,10 +10,8 @@ import {
   Eye,
   Download,
 } from "lucide-react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { DashboardShell } from '../../components/ui/layout/DashboardShell.js.js';
+import { cn } from "@/lib/utils";
+import { DashboardShell } from "../../components/ui/layout/DashboardShell";
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "elevated" | "outlined" | "glass";

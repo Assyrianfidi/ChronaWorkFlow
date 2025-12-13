@@ -1,11 +1,7 @@
-import React from 'react';
-// @ts-ignore
 import * as React from "react";
-// @ts-ignore
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { cn } from "@/lib/utils";
 
 const EnterpriseModal = DialogPrimitive.Root;
 

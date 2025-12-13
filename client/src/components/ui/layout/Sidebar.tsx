@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-// @ts-ignore
-import * as React from "react";
 import type { ReactNode } from "react";
 import {
   HomeIcon,
   ChartBarIcon,
   DocumentIcon,
   BellIcon,
+  LayoutDashboard,
+  FileText,
+  Users,
 } from "@heroicons/react/24/outline";
 
 interface SidebarProps {

@@ -1,6 +1,6 @@
 import React from "react";
 import { X, Search, Home, FileText, Users, Settings } from "lucide-react";
-import { cn } from '../../lib/utils.js';
+import { cn } from "../../lib/utils";
 
 type MobileDrawerProps = {
   open: boolean;

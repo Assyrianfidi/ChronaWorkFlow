@@ -1,14 +1,14 @@
-import React from 'react';
+import * as React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 // @ts-ignore
-import { AuthProvider } from '../contexts/AuthContext.js.js';
+import { AuthProvider } from "../contexts/AuthContext";
 // @ts-ignore
-import { AccountsProvider } from '../contexts/AccountsContext.js.js';
+import { AccountsProvider } from "../contexts/AccountsContext";
 // @ts-ignore
-import { TransactionsProvider } from '../contexts/TransactionsContext.js.js';
+import { TransactionsProvider } from "../contexts/TransactionsContext";
 // @ts-ignore
-import { ProtectedRoute } from '../components/ProtectedRoute.js.js';
+import { ProtectedRoute } from "../components/ProtectedRoute";
 
 // Lazy load pages for better performance
 // @ts-ignore
