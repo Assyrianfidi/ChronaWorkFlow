@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
 import { body, param, validationResult } from "express-validator";
 import { stripeService } from "../../services/billing/stripe.service";
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { prisma } from "../../utils/prisma";
 import { logger } from "../../utils/logger.js";
-
-const prisma = prisma;
 
 export class BillingController {
   // Get available plans
@@ -144,7 +142,9 @@ export class BillingController {
           status: subscription.status,
           planType: user.planType,
           cancelAtPeriodEnd: subscription.cancel_at_period_end,
-          currentPeriodEnd: subscription.current_period_end,
+          currentPeriodEnd:
+            (subscription as unknown as { current_period_end?: number })
+              .current_period_end,
           latestInvoice: subscription.latest_invoice,
         },
       });

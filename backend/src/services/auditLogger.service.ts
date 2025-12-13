@@ -1,12 +1,12 @@
 // @ts-ignore
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../utils/prisma";
 
 // Create a singleton instance for production
 let prismaInstance = null;
 
 function getPrismaInstance() {
   if (!prismaInstance) {
-    prismaInstance = PrismaClientSingleton.getInstance();
+    prismaInstance = prisma;
   }
   return prismaInstance;
 }
@@ -17,6 +17,8 @@ function getPrismaInstance() {
  */
 
 class AuditLoggerService {
+  private static _auditLogs: any[] = [];
+  private static _securityAlerts: any[] = [];
   /**
    * Set the Prisma client instance (for testing)
    * @param {PrismaClient} prisma - The Prisma client instance
@@ -78,7 +80,7 @@ class AuditLoggerService {
    * @param {Object} event - The data event details
    */
   static async logDataEvent(event) {
-    const logEntry = {
+    const logEntry: any = {
       timestamp: new Date(),
       eventType: "DATA",
       action: event.action, // CREATE, READ, UPDATE, DELETE, EXPORT
@@ -250,7 +252,16 @@ class AuditLoggerService {
    * @param {Object} filters - Filter criteria
    * @returns {Array} - Filtered audit logs
    */
-  static getAuditLogs(filters = {}) {
+  static getAuditLogs(
+    filters: {
+      eventType?: string;
+      userId?: string | number;
+      severity?: string;
+      startDate?: string | Date;
+      endDate?: string | Date;
+      limit?: number;
+    } = {},
+  ) {
     if (!this._auditLogs) {
       return [];
     }
@@ -279,7 +290,10 @@ class AuditLoggerService {
     }
 
     // Sort by timestamp descending
-    logs.sort((a, b: any) => new Date(b.timestamp) - new Date(a.timestamp));
+    logs.sort(
+      (a: any, b: any) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
 
     // Apply limit
     if (filters.limit) {
@@ -294,7 +308,14 @@ class AuditLoggerService {
    * @param {Object} filters - Filter criteria
    * @returns {Array} - Filtered security alerts
    */
-  static getSecurityAlerts(filters = {}) {
+  static getSecurityAlerts(
+    filters: {
+      alertType?: string;
+      severity?: string;
+      acknowledged?: boolean;
+      limit?: number;
+    } = {},
+  ) {
     if (!this._securityAlerts) {
       return [];
     }
@@ -315,7 +336,10 @@ class AuditLoggerService {
     }
 
     // Sort by timestamp descending
-    alerts.sort((a, b: any) => new Date(b.timestamp) - new Date(a.timestamp));
+    alerts.sort(
+      (a: any, b: any) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
 
     // Apply limit
     if (filters.limit) {
@@ -359,7 +383,7 @@ class AuditLoggerService {
    * @param {Object} period - Time period for statistics
    * @returns {Object} - Audit statistics
    */
-  static getAuditStatistics(period = { days: 7 }) {
+  static getAuditStatistics(period: { days: number } = { days: 7 }) {
     if (!this._auditLogs) {
       return {
         totalEvents: 0,
@@ -404,7 +428,17 @@ class AuditLoggerService {
    * @param {Object} filters - Export filters
    * @returns {Object} - Export data
    */
-  static exportAuditLogs(filters = {}) {
+  static exportAuditLogs(
+    filters: {
+      eventType?: string;
+      userId?: string | number;
+      severity?: string;
+      startDate?: string | Date;
+      endDate?: string | Date;
+      limit?: number;
+      period?: { days: number };
+    } = {},
+  ) {
     const logs = this.getAuditLogs(filters);
     const alerts = this.getSecurityAlerts(filters);
 

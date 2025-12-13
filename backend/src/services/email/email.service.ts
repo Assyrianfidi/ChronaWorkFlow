@@ -1,8 +1,7 @@
 import nodemailer from "nodemailer";
 import fs from "fs/promises";
 import path from "path";
-import { PrismaClientSingleton } from '../lib/prisma';
-const prisma = PrismaClientSingleton.getInstance();
+import { prisma } from "../../utils/prisma";
 import { pdfService } from "../invoicing/pdf.service";
 
 // Fixed self-reference
@@ -107,12 +106,7 @@ export class EmailService {
       const invoice = await prisma.invoice.findUnique({
         where: { id: invoiceId },
         include: {
-          customer: true,
-          lines: {
-            include: {
-              product: true,
-            },
-          },
+          client: true,
         },
       });
 
@@ -120,8 +114,8 @@ export class EmailService {
         throw new Error("Invoice not found");
       }
 
-      if (!invoice.customer.email) {
-        throw new Error("Customer email not found");
+      if (!invoice.client?.email) {
+        throw new Error("Client email not found");
       }
 
       // Generate PDF
@@ -132,7 +126,7 @@ export class EmailService {
 
       // Send email
       const result = await this.sendEmail({
-        to: invoice.customer.email,
+        to: invoice.client.email,
         subject: `Invoice ${invoice.invoiceNumber} from AccuBooks`,
         html: emailHtml,
         attachments: [
@@ -158,7 +152,7 @@ export class EmailService {
     const formatCurrency = (amount: number) => {
       return new Intl.NumberFormat("en-CA", {
         style: "currency",
-        currency: invoice.currency || "CAD",
+        currency: "CAD",
       }).format(amount / 100);
     };
 
@@ -245,7 +239,7 @@ export class EmailService {
 
     <div class="content">
         <h2>Invoice ${invoice.invoiceNumber}</h2>
-        <p>Dear ${invoice.customer.firstName || "Valued Customer"},</p>
+        <p>Dear ${invoice.client?.name || "Valued Customer"},</p>
         <p>Please find attached your invoice ${invoice.invoiceNumber} for your records.</p>
 
         <div class="invoice-details">
@@ -255,7 +249,7 @@ export class EmailService {
             </div>
             <div class="detail-row">
                 <span>Issue Date:</span>
-                <span>${formatDate(invoice.issueDate)}</span>
+                <span>${formatDate(invoice.date)}</span>
             </div>
             <div class="detail-row">
                 <span>Due Date:</span>
@@ -263,7 +257,7 @@ export class EmailService {
             </div>
             <div class="detail-row">
                 <span>Total Amount:</span>
-                <span>${formatCurrency(invoice.total)}</span>
+                <span>${formatCurrency(invoice.totalAmount?.toNumber ? invoice.totalAmount.toNumber() : Number(invoice.totalAmount))}</span>
             </div>
         </div>
 

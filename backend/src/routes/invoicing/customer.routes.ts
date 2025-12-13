@@ -1,12 +1,11 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 import { body, param, query, validationResult } from "express-validator";
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { prisma } from "../../utils/prisma";
 import { auth, authorizeRoles } from "../../middleware/auth";
 import { ROLES } from "../../constants/roles";
 
 const router = Router();
-const prisma = prisma;
 
 // Apply authentication to all routes
 router.use(auth);
@@ -65,16 +64,6 @@ router.get("/:id", async (req: Request, res: Response) => {
 
     const customer = await prisma.customer.findUnique({
       where: { id },
-      include: {
-        invoices: {
-          include: {
-            lines: true,
-            payments: true,
-          },
-          orderBy: { createdAt: "desc" },
-          take: 10,
-        },
-      },
     });
 
     if (!customer) {
@@ -216,7 +205,7 @@ router.delete(
 
       // Check if customer has invoices
       const invoiceCount = await prisma.invoice.count({
-        where: { customerId: id },
+        where: { clientId: id },
       });
 
       if (invoiceCount > 0) {

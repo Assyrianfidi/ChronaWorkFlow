@@ -3,7 +3,7 @@ import { CacheEngine } from "./cacheEngine.js";
 import { CircuitBreakerRegistry } from "./circuitBreaker.js";
 import { logger } from "./logger.js";
 import { DatabaseMonitor } from "./performanceMonitor.js";
-import { prisma } from "../server.js";
+import { prisma } from "./prisma";
 
 /**
  * Comprehensive health check system

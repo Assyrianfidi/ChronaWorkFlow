@@ -1,14 +1,12 @@
 // @ts-ignore
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { prisma } from "../utils/prisma";
 import { ApiError, ErrorCodes } from "../utils/errorHandler";
 import { ROLES } from "../constants/roles";
 import { logger } from "../utils/logger.js";
 import { config } from "../config/config";
 import { Role } from "@prisma/client";
-
-const prisma = prisma;
 
 // List of public paths that don't require authentication
 const PUBLIC_PATHS = [
@@ -109,11 +107,20 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+export const authenticate = auth;
+
 /**
  * Middleware to authorize based on user roles
  * @param allowedRoles - Array of roles that are allowed to access the route
  */
-export const authorizeRoles = (...allowedRoles: string[]) => {
+export const authorizeRoles = (
+  ...allowedRoles: Array<string | string[]>
+) => {
+  const normalizedRoles: string[] =
+    allowedRoles.length === 1 && Array.isArray(allowedRoles[0])
+      ? (allowedRoles[0] as string[])
+      : (allowedRoles as string[]);
+
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(
@@ -125,9 +132,10 @@ export const authorizeRoles = (...allowedRoles: string[]) => {
       );
     }
 
-    if (!allowedRoles.includes(req.user.role)) {
+    const userRole = req.user.role;
+    if (!normalizedRoles.includes(userRole)) {
       logger.warn(
-        `Unauthorized access attempt: User ${req.user.email} with role ${req.user.role} tried to access protected route`,
+        `Unauthorized access attempt: User ${req.user.email} tried to access protected route`,
       );
       return next(
         new ApiError(

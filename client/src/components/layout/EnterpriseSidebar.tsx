@@ -6,10 +6,9 @@ declare global {
 
 import React, { useState } from 'react';
 import { NavLink, useLocation } from "react-router-dom";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { useAuth } from '../../contexts/AuthContext.js.js';
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { FeatureGate } from "@/components/features/FeatureGate";
 import {
   LayoutDashboard,
   FileText,
@@ -181,7 +180,6 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     };
 
     const additionalItems =
-// @ts-ignore
       roleBasedItems[user?.role as keyof typeof roleBasedItems] || [];
 
     return [...baseItems, ...additionalItems];
@@ -243,16 +241,54 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
         <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
           {/* Main Navigation */}
           <SidebarSection title="Main" collapsed={!isOpen}>
-            {navigationItems.slice(0, 5).map((item) => (
+            <SidebarItem
+              key="/dashboard"
+              icon={LayoutDashboard}
+              label="Dashboard"
+              to="/dashboard"
+              collapsed={!isOpen}
+            />
+
+            <FeatureGate feature="INVOICING">
               <SidebarItem
-                key={item.to}
-                icon={item.icon}
-                label={item.label}
-                to={item.to}
-                badge={item.badge}
+                key="/invoices"
+                icon={FileText}
+                label="Invoices"
+                to="/invoices"
+                badge="12"
                 collapsed={!isOpen}
               />
-            ))}
+            </FeatureGate>
+
+            <FeatureGate feature="CUSTOMERS">
+              <SidebarItem
+                key="/customers"
+                icon={Users}
+                label="Customers"
+                to="/customers"
+                collapsed={!isOpen}
+              />
+            </FeatureGate>
+
+            <FeatureGate feature="TRANSACTIONS">
+              <SidebarItem
+                key="/transactions"
+                icon={CreditCard}
+                label="Transactions"
+                to="/transactions"
+                collapsed={!isOpen}
+              />
+            </FeatureGate>
+
+            <FeatureGate feature="REPORTS">
+              <SidebarItem
+                key="/reports"
+                icon={Receipt}
+                label="Reports"
+                to="/reports"
+                collapsed={!isOpen}
+              />
+            </FeatureGate>
           </SidebarSection>
 
           {/* Role-Based Navigation */}

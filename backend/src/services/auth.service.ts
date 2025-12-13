@@ -204,6 +204,12 @@ export class AuthService {
       updatedAt: new Date(),
       currentCompanyId: null,
       deletedAt: null,
+      cancelAtPeriodEnd: false,
+      lastPaymentAt: null,
+      planType: null,
+      stripeCustomerId: null,
+      subscriptionId: null,
+      subscriptionStatus: null,
     };
 
     const [accessTokenResult, refreshToken] = await Promise.all([

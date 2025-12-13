@@ -1,9 +1,5 @@
-import { PrismaClientSingleton } from '../lib/prisma';
-// @ts-ignore
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../utils/prisma";
 import { ROLES, ROLES_HIERARCHY } from "../constants/roles.js";
-
-const prisma = PrismaClientSingleton.getInstance();
 
 /**
  * Database Security Service
@@ -11,6 +7,8 @@ const prisma = PrismaClientSingleton.getInstance();
  */
 
 class DatabaseSecurityService {
+  private static unauthorizedAttempts: any[] = [];
+
   /**
    * Check if user has permission to access a resource
    * @param {Object} user - The authenticated user object
@@ -19,7 +17,7 @@ class DatabaseSecurityService {
    * @param {Object} resourceData - Additional resource data for ownership checks
    * @returns {boolean} - Whether access is allowed
    */
-  static hasPermission(user, resource, action, resourceData = {}) {
+  static hasPermission(user: any, resource: string, action: string, resourceData: any = {}) {
     if (!user || !user.role) {
       return false;
     }
@@ -108,13 +106,10 @@ class DatabaseSecurityService {
     console.warn("[DB_SECURITY] Unauthorized access attempt:", logEntry);
 
     // Store in memory for now (will be moved to database in Phase 6.4)
-    if (!this.getUnauthorizedAttempts()) {
-      this.unauthorizedAttempts = [];
-    }
-    this.getUnauthorizedAttempts().push(logEntry);
+    this.unauthorizedAttempts.push(logEntry);
 
     // Keep only last 1000 entries
-    if (this.getUnauthorizedAttempts().length > 1000) {
+    if (this.unauthorizedAttempts.length > 1000) {
       this.unauthorizedAttempts = this.unauthorizedAttempts.slice(-1000);
     }
   }
@@ -125,10 +120,7 @@ class DatabaseSecurityService {
    * @returns {Array} - Array of unauthorized access attempts
    */
   static getUnauthorizedAttempts(limit = 100) {
-    if (!this.getUnauthorizedAttempts()) {
-      return [];
-    }
-    return this.getUnauthorizedAttempts().slice(-limit);
+    return this.unauthorizedAttempts.slice(-limit);
   }
 
   /**

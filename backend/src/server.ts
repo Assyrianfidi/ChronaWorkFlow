@@ -3,12 +3,12 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { prisma } from "./utils/prisma";
 import { config } from "./config/config.js";
-import { authRoutes } from "./routes/auth.routes.js";
-import invoicingRoutes from "./routes/invoicing/index.js";
-import billingRoutes from "./routes/billing/billing.routes.js";
-import documentRoutes from "./routes/storage/document.routes.js";
+import { authRoutes } from "./routes/auth.routes";
+import invoicingRoutes from "./routes/invoicing/index";
+import billingRoutes from "./routes/billing/billing.routes";
+import documentRoutes from "./routes/storage/document.routes";
 import { StatusCodes } from "http-status-codes";
 import { CacheEngine } from "./utils/cacheEngine.js";
 import { PerformanceMonitor } from "./utils/performanceMonitor.js";
@@ -17,8 +17,6 @@ import { errorHandler } from "./utils/errorHandler.js";
 import { CircuitBreaker } from "./utils/circuitBreaker.js";
 import { logger } from "./utils/logger.js";
 import { HealthChecker, MetricsCollector } from "./utils/healthChecker.js";
-
-export const prisma = prisma;
 
 // Create Express app
 const app = express();

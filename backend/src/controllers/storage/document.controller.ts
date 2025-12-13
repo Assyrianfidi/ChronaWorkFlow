@@ -2,15 +2,22 @@ import { Request, Response } from "express";
 import { body, param, query, validationResult } from "express-validator";
 import { documentService } from "../../services/storage/document.service";
 import { logger } from "../../utils/logger.js";
+import { Role } from "@prisma/client";
 
 // Extend Request interface to include file
 interface AuthenticatedRequest extends Request {
   user: {
     id: number;
     email: string;
-    role: string;
+    role: Role;
+    isActive: boolean;
   };
-  file?: Express.Multer.File;
+  file?: {
+    buffer: Buffer;
+    originalname: string;
+    mimetype: string;
+    size: number;
+  };
 }
 
 export class DocumentController {

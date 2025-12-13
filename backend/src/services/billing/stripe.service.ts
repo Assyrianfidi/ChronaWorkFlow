@@ -1,9 +1,11 @@
 // @ts-ignore
 import Stripe from "stripe";
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { prisma } from "../../utils/prisma";
 import { logger } from "../../utils/logger.js";
 
-const prisma = prisma;
+type StripeInvoiceWithSubscription = Stripe.Invoice & {
+  subscription?: string | { id: string } | null;
+};
 
 export class StripeService {
   private stripe: Stripe;
@@ -14,7 +16,7 @@ export class StripeService {
     }
 
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2024-11-20.acacia",
+      apiVersion: "2025-10-29.clover",
     });
   }
 
@@ -253,29 +255,41 @@ export class StripeService {
   private async handleInvoicePaymentSucceeded(
     invoice: Stripe.Invoice,
   ): Promise<void> {
-    if (invoice.subscription) {
+    const invoiceWithSubscription = invoice as StripeInvoiceWithSubscription;
+    const subscriptionId =
+      typeof invoiceWithSubscription.subscription === "string"
+        ? invoiceWithSubscription.subscription
+        : invoiceWithSubscription.subscription?.id ?? null;
+
+    if (subscriptionId) {
       await prisma.user.updateMany({
-        where: { subscriptionId: invoice.subscription as string },
+        where: { subscriptionId },
         data: {
           subscriptionStatus: "active",
           lastPaymentAt: new Date(),
         },
       });
-      logger.info(`Payment succeeded for subscription ${invoice.subscription}`);
+      logger.info(`Payment succeeded for subscription ${subscriptionId}`);
     }
   }
 
   private async handleInvoicePaymentFailed(
     invoice: Stripe.Invoice,
   ): Promise<void> {
-    if (invoice.subscription) {
+    const invoiceWithSubscription = invoice as StripeInvoiceWithSubscription;
+    const subscriptionId =
+      typeof invoiceWithSubscription.subscription === "string"
+        ? invoiceWithSubscription.subscription
+        : invoiceWithSubscription.subscription?.id ?? null;
+
+    if (subscriptionId) {
       await prisma.user.updateMany({
-        where: { subscriptionId: invoice.subscription as string },
+        where: { subscriptionId },
         data: {
           subscriptionStatus: "past_due",
         },
       });
-      logger.warn(`Payment failed for subscription ${invoice.subscription}`);
+      logger.warn(`Payment failed for subscription ${subscriptionId}`);
     }
   }
 

@@ -1,10 +1,8 @@
 import puppeteer from "puppeteer";
-import { PrismaClientSingleton } from '../lib/prisma';
-const prisma = PrismaClientSingleton.getInstance();
+import { Prisma } from "@prisma/client";
+import { prisma } from "../../utils/prisma";
 import fs from "fs/promises";
 import path from "path";
-
-// Fixed self-reference
 
 export class PDFService {
   async generateInvoicePDF(invoiceId: string): Promise<Buffer> {
@@ -13,13 +11,12 @@ export class PDFService {
       const invoice = await prisma.invoice.findUnique({
         where: { id: invoiceId },
         include: {
-          customer: true,
-          lines: {
+          client: true,
+          items: {
             include: {
-              product: true,
+              account: true,
             },
           },
-          payments: true,
         },
       });
 
@@ -27,8 +24,13 @@ export class PDFService {
         throw new Error("Invoice not found");
       }
 
+      const payments = await prisma.payment.findMany({
+        where: { invoiceId },
+        orderBy: { paidAt: "desc" },
+      });
+
       // Generate HTML
-      const html = this.generateInvoiceHTML(invoice);
+      const html = this.generateInvoiceHTML(invoice, payments);
 
       // Launch Puppeteer
       const browser = await puppeteer.launch({
@@ -55,8 +57,7 @@ export class PDFService {
 
       await browser.close();
 
-      // @ts-ignore
-return Buffer.from(pdfBuffer);
+      return Buffer.from(pdfBuffer);
     } catch (error) {
       console.error("Error generating PDF:", error);
       throw error;
@@ -83,16 +84,25 @@ return Buffer.from(pdfBuffer);
     }
   }
 
-  private generateInvoiceHTML(invoice: any): string {
-    const customer = invoice.customer;
-    const lines = invoice.lines;
-    const payments = invoice.payments;
+  private generateInvoiceHTML(
+    invoice: Prisma.InvoiceGetPayload<{
+      include: {
+        client: true;
+        items: { include: { account: true } };
+      };
+    }>,
+    payments: Array<
+      Prisma.PaymentGetPayload<{ select: { amount: true; method: true; paidAt: true; transactionRef: true } }>
+    >,
+  ): string {
+    const client = invoice.client;
+    const items = invoice.items;
 
     // Format currency
     const formatCurrency = (amount: number) => {
       return new Intl.NumberFormat("en-CA", {
         style: "currency",
-        currency: invoice.currency || "CAD",
+        currency: "CAD",
       }).format(amount / 100);
     };
 
@@ -322,35 +332,24 @@ return Buffer.from(pdfBuffer);
 
         <div class="invoice-meta">
             <div><strong>Invoice #:</strong> ${invoice.invoiceNumber}</div>
-            <div><strong>Issue Date:</strong> ${formatDate(invoice.issueDate)}</div>
+            <div><strong>Issue Date:</strong> ${formatDate(invoice.date)}</div>
             <div><strong>Due Date:</strong> ${formatDate(invoice.dueDate)}</div>
-            <div><strong>Currency:</strong> ${invoice.currency}</div>
+            <div><strong>Currency:</strong> CAD</div>
         </div>
 
         <div class="addresses">
             <div class="address-box">
                 <h3>Bill To:</h3>
-                <p>${customer.companyName || ""}</p>
-                <p>${customer.firstName || ""} ${customer.lastName || ""}</p>
-                <p>${customer.email || ""}</p>
-                <p>${customer.phone || ""}</p>
-                ${
-                  customer.address
-                    ? `
-                <p>
-                    ${JSON.parse(customer.address)?.street || ""}<br>
-                    ${JSON.parse(customer.address)?.city || ""}, ${JSON.parse(customer.address)?.province || ""}<br>
-                    ${JSON.parse(customer.address)?.postalCode || ""}
-                </p>
-                `
-                    : ""
-                }
+                <p>${client?.name ?? ""}</p>
+                <p>${client?.email ?? ""}</p>
+                <p>${client?.phone ?? ""}</p>
+                <p>${client?.address ?? ""}</p>
             </div>
             <div class="address-box">
                 <h3>Payment Status:</h3>
-                <p><strong>Total Amount:</strong> ${formatCurrency(invoice.total)}</p>
-                <p><strong>Amount Paid:</strong> ${formatCurrency(payments.reduce((sum: number, p: any) => sum + p.amount, 0))}</p>
-                <p><strong>Balance Due:</strong> ${formatCurrency(invoice.total - payments.reduce((sum: number, p: any) => sum + p.amount, 0))}</p>
+                <p><strong>Total Amount:</strong> ${formatCurrency(invoice.totalAmount.toNumber())}</p>
+                <p><strong>Amount Paid:</strong> ${formatCurrency(payments.reduce((sum, p) => sum + p.amount, 0))}</p>
+                <p><strong>Balance Due:</strong> ${formatCurrency(invoice.totalAmount.toNumber() - payments.reduce((sum, p) => sum + p.amount, 0))}</p>
             </div>
         </div>
 
@@ -366,16 +365,14 @@ return Buffer.from(pdfBuffer);
                 </tr>
             </thead>
             <tbody>
-                ${lines
+                ${items
                   .map(
-                    (line: any) => `
+                    (item) => `
                 <tr>
-                    <td>${line.description}</td>
-                    <td>${line.qty}</td>
-                    <td>${formatCurrency(line.unitPrice)}</td>
-                    <td>${formatCurrency(line.lineSubtotal)}</td>
-                    <td>${formatCurrency(line.lineTax)}</td>
-                    <td class="text-right">${formatCurrency(line.lineTotal)}</td>
+                    <td>${item.description}</td>
+                    <td>${item.quantity.toString()}</td>
+                    <td>${formatCurrency(item.unitPrice.toNumber())}</td>
+                    <td class="text-right">${formatCurrency(item.totalAmount.toNumber())}</td>
                 </tr>
                 `,
                   )
@@ -385,17 +382,9 @@ return Buffer.from(pdfBuffer);
 
         <div class="totals">
             <div class="totals-box">
-                <div class="totals-row">
-                    <span>Subtotal:</span>
-                    <span>${formatCurrency(invoice.subtotal)}</span>
-                </div>
-                <div class="totals-row">
-                    <span>Tax Total:</span>
-                    <span>${formatCurrency(invoice.taxTotal)}</span>
-                </div>
                 <div class="totals-row grand-total">
                     <span>Total:</span>
-                    <span>${formatCurrency(invoice.total)}</span>
+                    <span>${formatCurrency(invoice.totalAmount.toNumber())}</span>
                 </div>
             </div>
         </div>
@@ -407,7 +396,7 @@ return Buffer.from(pdfBuffer);
             <h3>Payment History</h3>
             ${payments
               .map(
-                (payment: any) => `
+                (payment) => `
             <div class="payment-item">
                 <div>
                     <strong>${payment.method}</strong> - ${formatDate(payment.paidAt)}
@@ -418,17 +407,6 @@ return Buffer.from(pdfBuffer);
             `,
               )
               .join("")}
-        </div>
-        `
-            : ""
-        }
-
-        ${
-          invoice.notes
-            ? `
-        <div class="notes">
-            <h3>Notes</h3>
-            <p>${invoice.notes}</p>
         </div>
         `
             : ""

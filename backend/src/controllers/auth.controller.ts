@@ -112,7 +112,7 @@ export const login = async (
           StatusCodes.BAD_REQUEST,
           ErrorCodes.VALIDATION_ERROR,
           true,
-          error.errors,
+          error.issues,
         ),
       );
     }
@@ -161,7 +161,7 @@ export const register = async (
       name,
       email,
       password,
-      role,
+      role: role as any,
     });
 
     // Create refresh token using RefreshTokenService
@@ -207,7 +207,7 @@ export const register = async (
           StatusCodes.BAD_REQUEST,
           ErrorCodes.VALIDATION_ERROR,
           true,
-          error.errors,
+          error.issues,
         ),
       );
     }
@@ -362,7 +362,7 @@ export const changePassword = async (
         StatusCodes.BAD_REQUEST,
         ErrorCodes.VALIDATION_ERROR,
         true,
-        error.errors,
+        error.issues,
       );
     }
 

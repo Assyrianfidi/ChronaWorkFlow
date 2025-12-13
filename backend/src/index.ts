@@ -222,6 +222,7 @@ route("/api/v1/businesses", "./routes/businesses");
 route("/api/v1/clients", "./routes/clients");
 route("/api/v1/invoices", "./routes/invoices");
 route("/api/v1/payments", "./routes/payments");
+route("/api/v1/features", "./routes/feature.routes");
 
 // API Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));

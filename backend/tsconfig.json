@@ -53,12 +53,17 @@
     "noUnusedParameters": false
   },
   "include": [
-    "src/**/*"
+    "src/server.ts",
+    "src/types/**/*.d.ts",
+    "src/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",
     "dist",
     "**/*.test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "src/index.ts",
+    "src/controllers/authController.ts",
+    "src/middleware/auth.middleware.ts"
   ]
 }

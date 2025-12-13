@@ -1,5 +1,4 @@
-import { PrismaClientSingleton } from '../lib/prisma';
-const prisma = PrismaClientSingleton.getInstance();
+import { prisma } from "../../../utils/prisma";
 
 export async function generateInvoiceNumber(): Promise<string> {
   try {

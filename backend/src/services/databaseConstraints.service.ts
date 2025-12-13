@@ -1,12 +1,12 @@
 // @ts-ignore
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../utils/prisma";
 
 // Create a singleton instance for production
 let prismaInstance = null;
 
 function getPrismaInstance() {
   if (!prismaInstance) {
-    prismaInstance = PrismaClientSingleton.getInstance();
+    prismaInstance = prisma;
   }
   return prismaInstance;
 }

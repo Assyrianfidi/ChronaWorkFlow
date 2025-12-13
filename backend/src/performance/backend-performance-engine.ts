@@ -3,10 +3,11 @@
  * Sub-20ms API response optimization with advanced caching, query optimization, and performance monitoring
  */
 
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { prisma } from "../utils/prisma";
 import { logger } from "../utils/logger.js";
 import { EventBus } from "../events/event-bus.js";
 import { CacheManager } from "../cache/cache-manager.js";
+import { PrismaClient } from "@prisma/client";
 
 export interface PerformanceMetrics {
   requestId: string;

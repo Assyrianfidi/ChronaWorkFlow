@@ -21,18 +21,18 @@ export const validate = (schema: {
 
       // Validate query parameters
       if (schema.query) {
-        req.query = schema.query.parse(req.query);
+        req.query = schema.query.parse(req.query) as any;
       }
 
       // Validate route parameters
       if (schema.params) {
-        req.params = schema.params.parse(req.params);
+        req.params = schema.params.parse(req.params) as any;
       }
 
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const errorMessages = error.errors.map((err) => ({
+        const errorMessages = error.issues.map((err) => ({
           field: err.path.join("."),
           message: err.message,
         }));

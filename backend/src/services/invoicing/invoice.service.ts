@@ -1,34 +1,32 @@
-import { PrismaClient, InvoiceStatus, PaymentMethod } from "@prisma/client";
+import { InvoiceStatus } from "@prisma/client";
+import { prisma } from "../../utils/prisma";
 import { generateInvoiceNumber } from "./utils/invoice-number.util";
 
 // Fixed self-reference
 
 export interface CreateInvoiceData {
-  customerId: string;
-  issueDate?: Date;
+  companyId: string;
+  clientId?: string;
+  date?: Date;
   dueDate: Date;
-  currency?: string;
-  notes?: string;
-  lines: {
-    productId?: string;
+  items: {
+    accountId: string;
     description: string;
-    qty: number;
+    quantity: number;
     unitPrice: number;
   }[];
 }
 
 export interface UpdateInvoiceData {
-  customerId?: string;
-  issueDate?: Date;
+  clientId?: string | null;
+  date?: Date;
   dueDate?: Date;
-  currency?: string;
-  notes?: string;
   status?: InvoiceStatus;
-  lines?: {
+  items?: {
     id?: string;
-    productId?: string;
+    accountId: string;
     description: string;
-    qty: number;
+    quantity: number;
     unitPrice: number;
   }[];
 }
@@ -38,107 +36,36 @@ export class InvoiceService {
     try {
       const invoiceNumber = await generateInvoiceNumber();
 
-      // Get customer for tax calculation
-      const customer = await prisma.customer.findUnique({
-        where: { id: data.customerId },
-        include: { defaultTaxSettings: true },
+      const items = data.items.map((item) => {
+        const lineTotal = Math.round(item.quantity * item.unitPrice);
+        return {
+          accountId: item.accountId,
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          totalAmount: lineTotal,
+        };
       });
 
-      if (!customer) {
-        throw new Error("Customer not found");
-      }
-
-      // Get tax rules for customer's region
-      const taxRules = await prisma.taxRule.findMany({
-        where: {
-          OR: [
-            { regionCode: customer.country || "CA" },
-            {
-              regionCode: customer.province
-                ? `CA-${customer.province}`
-                : undefined,
-            },
-          ].filter(Boolean),
-        },
-      });
-
-      // Calculate line items and totals
-      const processedLines = await Promise.all(
-        data.lines.map(async (line) => {
-          let unitPrice = line.unitPrice;
-
-          // Get product price if productId provided
-          if (line.productId) {
-            const product = await prisma.product.findUnique({
-              where: { id: line.productId },
-            });
-            if (product) {
-              unitPrice = product.unitPrice;
-            }
-          }
-
-          const lineSubtotal = line.qty * unitPrice;
-          const lineTax = this.calculateLineTax(
-            lineSubtotal,
-            taxRules,
-            customer,
-          );
-          const lineTotal = lineSubtotal + lineTax;
-
-          return {
-            description: line.description,
-            qty: line.qty,
-            unitPrice,
-            lineSubtotal,
-            lineTax,
-            lineTotal,
-            productId: line.productId,
-          };
-        }),
-      );
-
-      const subtotal = processedLines.reduce(
-        (sum, line) => sum + line.lineSubtotal,
-        0,
-      );
-      const taxTotal = processedLines.reduce(
-        (sum, line) => sum + line.lineTax,
-        0,
-      );
-      const total = subtotal + taxTotal;
+      const totalAmount = items.reduce((sum, item) => sum + item.totalAmount, 0);
 
       // Create invoice with lines
       const invoice = await prisma.invoice.create({
         data: {
           invoiceNumber,
-          customerId: data.customerId,
-          issueDate: data.issueDate || new Date(),
+          companyId: data.companyId,
+          clientId: data.clientId ?? null,
+          date: data.date || new Date(),
           dueDate: data.dueDate,
-          currency: data.currency || "CAD",
-          subtotal,
-          taxTotal,
-          total,
-          notes: data.notes,
           status: InvoiceStatus.DRAFT,
-          lines: {
-            create: processedLines.map((line) => ({
-              productId: line.productId,
-              description: line.description,
-              qty: line.qty,
-              unitPrice: line.unitPrice,
-              lineSubtotal: line.lineSubtotal,
-              lineTax: line.lineTax,
-              lineTotal: line.lineTotal,
-            })),
+          totalAmount,
+          items: {
+            create: items,
           },
         },
         include: {
-          customer: true,
-          lines: {
-            include: {
-              product: true,
-            },
-          },
+          client: true,
+          items: true,
         },
       });
 
@@ -154,13 +81,8 @@ export class InvoiceService {
       const invoice = await prisma.invoice.findUnique({
         where: { id },
         include: {
-          customer: true,
-          lines: {
-            include: {
-              product: true,
-            },
-          },
-          payments: true,
+          client: true,
+          items: true,
         },
       });
 
@@ -179,126 +101,51 @@ export class InvoiceService {
     try {
       const existingInvoice = await prisma.invoice.findUnique({
         where: { id },
-        include: { lines: true },
+        include: { items: true },
       });
 
       if (!existingInvoice) {
         throw new Error("Invoice not found");
       }
 
-      if (
-        existingInvoice.status === InvoiceStatus.PAID ||
-        existingInvoice.status === /* InvoiceStatus.VOIDED */ "VOIDED"
-      ) {
-        throw new Error("Cannot update paid or voided invoices");
+      if (existingInvoice.status === InvoiceStatus.PAID) {
+        throw new Error("Cannot update paid invoices");
       }
-
-      // Get customer for tax calculation
-      const customer = await prisma.customer.findUnique({
-        where: { id: data.customerId || existingInvoice.customerId },
-      });
-
-      if (!customer) {
-        throw new Error("Customer not found");
-      }
-
-      // Get tax rules
-      const taxRules = await prisma.taxRule.findMany({
-        where: {
-          OR: [
-            { regionCode: customer.country || "CA" },
-            {
-              regionCode: customer.province
-                ? `CA-${customer.province}`
-                : undefined,
-            },
-          ].filter(Boolean),
-        },
-      });
 
       // Process lines if provided
-      let processedLines = [];
-      if (data.lines) {
-        processedLines = await Promise.all(
-          data.lines.map(async (line) => {
-            let unitPrice = line.unitPrice;
+      const items = data.items
+        ? data.items.map((item) => ({
+            accountId: item.accountId,
+            description: item.description,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            totalAmount: Math.round(item.quantity * item.unitPrice),
+          }))
+        : null;
 
-            if (line.productId) {
-              const product = await prisma.product.findUnique({
-                where: { id: line.productId },
-              });
-              if (product) {
-                unitPrice = product.unitPrice;
-              }
-            }
-
-            const lineSubtotal = line.qty * unitPrice;
-            const lineTax = this.calculateLineTax(
-              lineSubtotal,
-              taxRules,
-              customer,
-            );
-            const lineTotal = lineSubtotal + lineTax;
-
-            return {
-              id: line.id,
-              description: line.description,
-              qty: line.qty,
-              unitPrice,
-              lineSubtotal,
-              lineTax,
-              lineTotal,
-              productId: line.productId,
-            };
-          }),
-        );
-      }
-
-      const subtotal =
-        processedLines.length > 0
-          ? processedLines.reduce((sum, line) => sum + line.lineSubtotal, 0)
-          : existingInvoice.subtotal;
-      const taxTotal =
-        processedLines.length > 0
-          ? processedLines.reduce((sum, line) => sum + line.lineTax, 0)
-          : existingInvoice.taxTotal;
-      const total = subtotal + taxTotal;
+      const totalAmount = items
+        ? items.reduce((sum, item) => sum + item.totalAmount, 0)
+        : existingInvoice.totalAmount.toNumber();
 
       // Update invoice
       const updatedInvoice = await prisma.invoice.update({
         where: { id },
         data: {
-          customerId: data.customerId,
-          issueDate: data.issueDate,
+          clientId: data.clientId,
+          date: data.date,
           dueDate: data.dueDate,
-          currency: data.currency,
-          notes: data.notes,
           status: data.status,
-          subtotal,
-          taxTotal,
-          total,
-          lines: data.lines
+          totalAmount,
+          items: items
             ? {
                 deleteMany: {},
-                create: processedLines.map((line) => ({
-                  productId: line.productId,
-                  description: line.description,
-                  qty: line.qty,
-                  unitPrice: line.unitPrice,
-                  lineSubtotal: line.lineSubtotal,
-                  lineTax: line.lineTax,
-                  lineTotal: line.lineTotal,
-                })),
+                create: items,
               }
             : undefined,
         },
         include: {
-          customer: true,
-          lines: {
-            include: {
-              product: true,
-            },
-          },
+          client: true,
+          items: true,
         },
       });
 
@@ -311,7 +158,7 @@ export class InvoiceService {
 
   async listInvoices(filters: {
     status?: InvoiceStatus;
-    customerId?: string;
+    clientId?: string;
     dateFrom?: Date;
     dateTo?: Date;
     page?: number;
@@ -324,24 +171,19 @@ export class InvoiceService {
       const whereClause: any = {};
 
       if (filters.status) whereClause.status = filters.status;
-      if (filters.customerId) whereClause.customerId = filters.customerId;
+      if (filters.clientId) whereClause.clientId = filters.clientId;
       if (filters.dateFrom || filters.dateTo) {
-        whereClause.issueDate = {};
-        if (filters.dateFrom) whereClause.issueDate.gte = filters.dateFrom;
-        if (filters.dateTo) whereClause.issueDate.lte = filters.dateTo;
+        whereClause.date = {};
+        if (filters.dateFrom) whereClause.date.gte = filters.dateFrom;
+        if (filters.dateTo) whereClause.date.lte = filters.dateTo;
       }
 
       const [invoices, total] = await Promise.all([
         prisma.invoice.findMany({
           where: whereClause,
           include: {
-            customer: true,
-            lines: {
-              include: {
-                product: true,
-              },
-            },
-            payments: true,
+            client: true,
+            items: true,
           },
           orderBy: { createdAt: "desc" },
           skip,
@@ -378,7 +220,6 @@ export class InvoiceService {
           where: { id },
           data: {
             status: InvoiceStatus.SENT,
-            sentAt: new Date(),
           },
         });
 
@@ -390,38 +231,6 @@ export class InvoiceService {
       console.error("Error sending invoice:", error);
       throw error;
     }
-  }
-
-  private calculateLineTax(
-    lineSubtotal: number,
-    taxRules: any[],
-    customer: any,
-  ): number {
-    let totalTax = 0;
-
-    for (const rule of taxRules) {
-      if (customer.defaultTaxSettings) {
-        const settings = customer.defaultTaxSettings as any;
-
-        // Check if this tax applies to customer
-        if (
-          (rule.regionCode === "CA" && settings.gst) ||
-          (rule.regionCode === "CA-BC" && settings.pst) ||
-          (rule.regionCode === "CA-ON" && settings.hst) ||
-          (rule.regionCode === "CA-QC" && settings.qst)
-        ) {
-          if (rule.isCompound) {
-            // Compound tax is calculated on subtotal + previous taxes
-            totalTax += lineSubtotal * rule.rate;
-          } else {
-            // Simple tax is calculated on subtotal only
-            totalTax += lineSubtotal * rule.rate;
-          }
-        }
-      }
-    }
-
-    return Math.round(totalTax);
   }
 
   private async createAccountingEntries(invoice: any) {
@@ -437,8 +246,8 @@ export class InvoiceService {
             refType: "INVOICE",
             debitAccount: "1200", // Accounts Receivable
             creditAccount: "4000", // Revenue
-            amount: invoice.total,
-            description: `Invoice ${invoice.invoiceNumber} - ${invoice.customer.companyName || invoice.customer.firstName + " " + invoice.lastName}`,
+            amount: invoice.totalAmount?.toNumber ? invoice.totalAmount.toNumber() : Number(invoice.totalAmount),
+            description: `Invoice ${invoice.invoiceNumber}`,
           },
         ],
       });

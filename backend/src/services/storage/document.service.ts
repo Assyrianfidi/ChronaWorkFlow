@@ -1,7 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import { PrismaClientSingleton } from '../lib/prisma';
-const prisma = PrismaClientSingleton.getInstance();
+import { prisma } from "../../utils/prisma";
 import { logger } from "../../utils/logger.js";
 
 // Fixed self-reference

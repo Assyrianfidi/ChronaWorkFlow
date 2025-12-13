@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 import { query, validationResult } from "express-validator";
-import { PrismaClient, InvoiceStatus } from "@prisma/client";
+import { InvoiceStatus } from "@prisma/client";
+import { prisma } from "../../utils/prisma";
 import { auth, authorizeRoles } from "../../middleware/auth";
 import { ROLES } from "../../constants/roles";
 
 const router = Router();
-const prisma = prisma;
 
 // Apply authentication to all routes
 router.use(auth);
@@ -49,19 +49,31 @@ router.get(
       };
 
       if (customerId) {
-        whereClause.customerId = customerId;
+        whereClause.clientId = customerId;
       }
 
       const outstandingInvoices = await prisma.invoice.findMany({
         where: whereClause,
         include: {
-          customer: true,
-          payments: true,
+          client: true,
         },
         orderBy: {
           dueDate: "asc",
         },
       });
+
+      const payments = await prisma.payment.findMany({
+        where: {
+          invoiceId: { in: outstandingInvoices.map((i) => i.id) },
+        },
+        select: { invoiceId: true, amount: true },
+      });
+
+      const paidByInvoiceId = new Map<string, number>();
+      for (const p of payments) {
+        const amt = (p.amount as any)?.toNumber ? (p.amount as any).toNumber() : Number(p.amount);
+        paidByInvoiceId.set(p.invoiceId, (paidByInvoiceId.get(p.invoiceId) ?? 0) + amt);
+      }
 
       // Calculate aging buckets
       const agingBuckets = {
@@ -73,11 +85,11 @@ router.get(
       };
 
       for (const invoice of outstandingInvoices) {
-        const totalPaid = invoice.payments.reduce(
-          (sum, payment) => sum + payment.amount,
-          0,
-        );
-        const balanceDue = invoice.total - totalPaid;
+        const totalPaid = paidByInvoiceId.get(invoice.id) ?? 0;
+        const invoiceTotal = (invoice.totalAmount as any)?.toNumber
+          ? (invoice.totalAmount as any).toNumber()
+          : Number(invoice.totalAmount);
+        const balanceDue = invoiceTotal - totalPaid;
 
         if (balanceDue <= 0) continue;
 
@@ -90,13 +102,13 @@ router.get(
           id: invoice.id,
           invoiceNumber: invoice.invoiceNumber,
           customerName:
-            invoice.customer.companyName ||
-            `${invoice.customer.firstName} ${invoice.customer.lastName}`,
-          customerEmail: invoice.customer.email,
-          issueDate: invoice.issueDate,
+            invoice.client?.name ||
+            "Client",
+          customerEmail: invoice.client?.email,
+          issueDate: invoice.date,
           dueDate: invoice.dueDate,
           daysOverdue,
-          totalAmount: invoice.total,
+          totalAmount: invoiceTotal,
           amountPaid: totalPaid,
           balanceDue,
         };
@@ -198,61 +210,73 @@ router.get(
       const whereClause: any = {};
 
       if (dateFrom || dateTo) {
-        whereClause.issueDate = {};
-        if (dateFrom) whereClause.issueDate.gte = new Date(dateFrom as string);
-        if (dateTo) whereClause.issueDate.lte = new Date(dateTo as string);
+        whereClause.date = {};
+        if (dateFrom) whereClause.date.gte = new Date(dateFrom as string);
+        if (dateTo) whereClause.date.lte = new Date(dateTo as string);
       }
 
       if (customerId) {
-        whereClause.customerId = customerId;
+        whereClause.clientId = customerId;
       }
 
-      const [invoices, summary] = await Promise.all([
-        prisma.invoice.findMany({
-          where: whereClause,
-          include: {
-            customer: true,
-            payments: true,
-          },
-          orderBy: { issueDate: "desc" },
-        }),
-        prisma.invoice.groupBy({
-          by: ["status"],
-          where: whereClause,
-          _count: { id: true },
-          _sum: {
-            total: true,
-            subtotal: true,
-            taxTotal: true,
-          },
-        }),
-      ]);
+      const invoices = await prisma.invoice.findMany({
+        where: whereClause,
+        include: {
+          client: true,
+        },
+        orderBy: { createdAt: "desc" },
+      });
 
+      const payments = await prisma.payment.findMany({
+        where: {
+          invoiceId: { in: invoices.map((i) => i.id) },
+        },
+        select: { invoiceId: true, amount: true },
+      });
+
+      const paidByInvoiceId = new Map<string, number>();
+      for (const p of payments) {
+        const amt = (p.amount as any)?.toNumber ? (p.amount as any).toNumber() : Number(p.amount);
+        paidByInvoiceId.set(p.invoiceId, (paidByInvoiceId.get(p.invoiceId) ?? 0) + amt);
+      }
+
+      const summary = await prisma.invoice.groupBy({
+        by: ["status"],
+        where: whereClause,
+        _count: { id: true },
+        _sum: {
+          totalAmount: true,
+        },
+      });
       // Calculate totals
       const totalInvoices = invoices.length;
-      const totalRevenue = invoices.reduce((sum, inv) => sum + inv.total, 0);
-      const totalTax = invoices.reduce((sum, inv) => sum + inv.taxTotal, 0);
-      const totalPaid = invoices.reduce((sum, inv) => {
-        return (
-          sum + inv.payments.reduce((paySum, pay) => paySum + pay.amount, 0)
-        );
+      const totalRevenue = invoices.reduce((sum, inv) => {
+        const amt = (inv.totalAmount as any)?.toNumber ? (inv.totalAmount as any).toNumber() : Number(inv.totalAmount);
+        return sum + amt;
       }, 0);
+      const totalTax = 0;
+      const totalPaid = invoices.reduce(
+        (sum, inv) => sum + (paidByInvoiceId.get(inv.id) ?? 0),
+        0,
+      );
       const totalOutstanding = totalRevenue - totalPaid;
 
       // Top customers by revenue
       const customerRevenue = invoices.reduce((acc: any, invoice) => {
-        const customerKey = invoice.customerId;
+        const customerKey = invoice.clientId;
         if (!acc[customerKey]) {
           acc[customerKey] = {
-            customerId: invoice.customerId,
+            customerId: invoice.clientId,
             customerName:
-              invoice.customer.companyName ||
-              `${invoice.customer.firstName} ${invoice.customer.lastName}`,
+              invoice.client?.name || "Client",
             revenue: 0,
             invoiceCount: 0,
           };
         }
-        acc[customerKey].revenue += invoice.total;
+        const amt = (invoice.totalAmount as any)?.toNumber
+          ? (invoice.totalAmount as any).toNumber()
+          : Number(invoice.totalAmount);
+        acc[customerKey].revenue += amt;
         acc[customerKey].invoiceCount += 1;
         return acc;
       }, {});
@@ -278,8 +302,8 @@ router.get(
         statusBreakdown: summary.map((item) => ({
           status: item.status,
           count: item._count.id,
-          totalRevenue: item._sum.total || 0,
-          totalTax: item._sum.taxTotal || 0,
+          totalRevenue: item._sum.totalAmount || 0,
+          totalTax: 0,
         })),
         topCustomers,
       };
@@ -328,57 +352,28 @@ router.get(
       const whereClause: any = {};
 
       if (dateFrom || dateTo) {
-        whereClause.issueDate = {};
-        if (dateFrom) whereClause.issueDate.gte = new Date(dateFrom as string);
-        if (dateTo) whereClause.issueDate.lte = new Date(dateTo as string);
+        whereClause.date = {};
+        if (dateFrom) whereClause.date.gte = new Date(dateFrom as string);
+        if (dateTo) whereClause.date.lte = new Date(dateTo as string);
       }
 
       const invoices = await prisma.invoice.findMany({
         where: whereClause,
-        include: {
-          customer: true,
-        },
+        select: { totalAmount: true },
       });
 
-      // Group by customer region for tax analysis
-      const taxByRegion = invoices.reduce((acc: any, invoice) => {
-        const region = invoice.customer.province
-          ? `CA-${invoice.customer.province}`
-          : "CA";
-        if (!acc[region]) {
-          acc[region] = {
-            region,
-            totalRevenue: 0,
-            totalTax: 0,
-            invoiceCount: 0,
-            customers: new Set(),
-          };
-        }
-        acc[region].totalRevenue += invoice.subtotal;
-        acc[region].totalTax += invoice.taxTotal;
-        acc[region].invoiceCount += 1;
-        acc[region].customers.add(invoice.customerId);
-        return acc;
-      }, {});
+      const totalRevenue = invoices.reduce((sum, inv) => {
+        const amt = (inv.totalAmount as any)?.toNumber
+          ? (inv.totalAmount as any).toNumber()
+          : Number(inv.totalAmount);
+        return sum + amt;
+      }, 0);
 
-      const taxSummary = Object.values(taxByRegion).map((region: any) => ({
-        ...region,
-        customerCount: region.customers.size,
-        effectiveTaxRate:
-          region.totalRevenue > 0
-            ? (region.totalTax / region.totalRevenue) * 100
-            : 0,
-        customers: Array.from(region.customers),
-      }));
-
-      const totals = taxSummary.reduce(
-        (acc, region) => ({
-          totalRevenue: acc.totalRevenue + region.totalRevenue,
-          totalTax: acc.totalTax + region.totalTax,
-          totalInvoices: acc.totalInvoices + region.invoiceCount,
-        }),
-        { totalRevenue: 0, totalTax: 0, totalInvoices: 0 },
-      );
+      const totals = {
+        totalRevenue,
+        totalTax: 0,
+        totalInvoices: invoices.length,
+      };
 
       const report = {
         period: {
@@ -386,7 +381,7 @@ router.get(
           to: dateTo || null,
         },
         summary: totals,
-        taxByRegion: taxSummary.sort((a, b) => b.totalTax - a.totalTax),
+        taxByRegion: [],
       };
 
       res.json({

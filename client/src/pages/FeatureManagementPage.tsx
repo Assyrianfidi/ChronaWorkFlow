@@ -11,61 +11,93 @@ import Card, {
 import Input from "../components/ui/Input";
 import { FeatureToggle } from "../components/ui/FeatureToggle";
 import { useToast } from "../hooks/useToast";
-import { useAuth } from "../contexts/AuthContext";
+import { useInvalidateFeatures } from "@/lib/features";
 
-type FeatureKey =
-  | "DASHBOARD"
-  | "INVOICES"
-  | "REPORTS"
-  | "CUSTOMERS"
-  | "EXPORT_TOOLS"
-  | "TRANSACTIONS"
-  | "SETTINGS";
-
-type RoleKey = "ADMIN" | "MANAGER" | "USER" | "AUDITOR" | "INVENTORY_MANAGER";
+type RoleKey = "ADMIN" | "MANAGER" | "ACCOUNTANT" | "AUDITOR" | "INVENTORY_MANAGER";
+type FeatureKey = string;
 
 type FeatureCatalogItem = {
-  name: FeatureKey;
+  key: FeatureKey;
   label: string;
   description: string;
 };
 
-type UserItem = {
-  id: string;
-  name: string;
-  email: string;
-  role: RoleKey;
+type FeatureListItem = {
+  key: FeatureKey;
+  globalEnabled: boolean;
+  roleDefaults: Partial<Record<RoleKey, boolean>>;
+  userOverrides: Array<{ userId: number; enabled: boolean }>;
 };
 
-type Assignments = Record<string, Record<FeatureKey, boolean>>;
-
-type FeaturesResponse = {
+type FeatureListResponse = {
   success: boolean;
-  data: {
-    features: FeatureCatalogItem[];
-    users: UserItem[];
-    assignments: Assignments;
-  };
+  data: { features: FeatureListItem[] };
+  message?: string;
 };
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
+type UsersResponse = {
+  success: boolean;
+  data: { users: Array<{ id: number; name: string | null; email: string; role: RoleKey }> };
+  message?: string;
+};
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api/v1`
+    : "http://localhost:3001/api/v1");
+
+const FEATURE_CATALOG: FeatureCatalogItem[] = [
+  {
+    key: "INVOICING",
+    label: "Invoicing",
+    description: "Create, send, and manage invoices.",
+  },
+  {
+    key: "CUSTOMERS",
+    label: "Customers",
+    description: "Manage customer directory and details.",
+  },
+  {
+    key: "TRANSACTIONS",
+    label: "Transactions",
+    description: "View and manage accounting transactions.",
+  },
+  {
+    key: "REPORTS",
+    label: "Reports",
+    description: "View business reports and analytics.",
+  },
+  {
+    key: "INVENTORY",
+    label: "Inventory",
+    description: "Manage inventory items and stock levels.",
+  },
+  {
+    key: "AUDIT_LOG",
+    label: "Audit Logs",
+    description: "View audit trail and compliance logging.",
+  },
+];
 
 const FeatureManagementPage: React.FC = () => {
   const { toast } = useToast();
-  const auth = useAuth();
+  const invalidateFeatures = useInvalidateFeatures();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [features, setFeatures] = useState<FeatureCatalogItem[]>([]);
-  const [users, setUsers] = useState<UserItem[]>([]);
-  const [assignments, setAssignments] = useState<Assignments>({});
+  const [features, setFeatures] = useState<FeatureCatalogItem[]>(FEATURE_CATALOG);
+  const [featureState, setFeatureState] = useState<Record<string, FeatureListItem>>({});
+  const [users, setUsers] = useState<Array<{ id: number; name: string; email: string; role: RoleKey }>>(
+    [],
+  );
 
-  const [selectedUserId, setSelectedUserId] = useState<string>("1");
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [query, setQuery] = useState<string>("");
 
-  const selectedUser = useMemo(
-    () => users.find((u) => u.id === selectedUserId),
-    [users, selectedUserId],
-  );
+  const selectedUser = useMemo(() => {
+    if (selectedUserId == null) return undefined;
+    return users.find((u) => u.id === selectedUserId);
+  }, [users, selectedUserId]);
 
   const filteredFeatures = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -73,7 +105,7 @@ const FeatureManagementPage: React.FC = () => {
     return features.filter((f) => {
       return (
         f.label.toLowerCase().includes(q) ||
-        f.name.toLowerCase().includes(q) ||
+        f.key.toLowerCase().includes(q) ||
         f.description.toLowerCase().includes(q)
       );
     });
@@ -83,25 +115,49 @@ const FeatureManagementPage: React.FC = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("accubooks_token") || "";
-      const res = await fetch(`${API_BASE}/api/admin/features`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-User-Role": auth.user?.role || "",
-        },
-      });
 
-      const json = (await res.json()) as FeaturesResponse;
+      const [featuresRes, usersRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/features`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }),
+        fetch(`${API_BASE_URL}/features/users`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }),
+      ]);
 
-      if (!res.ok || !json.success) {
-        throw new Error(json as any);
+      const featuresJson = (await featuresRes.json()) as FeatureListResponse;
+      if (!featuresRes.ok || !featuresJson.success) {
+        throw new Error(featuresJson?.message || "Failed to load features");
       }
 
-      setFeatures(json.data.features);
-      setUsers(json.data.users);
-      setAssignments(json.data.assignments);
+      const usersJson = (await usersRes.json()) as UsersResponse;
+      if (!usersRes.ok || !usersJson.success) {
+        throw new Error(usersJson?.message || "Failed to load users");
+      }
 
-      if (json.data.users.length > 0) {
-        setSelectedUserId((prev) => prev || json.data.users[0].id);
+      const byKey: Record<string, FeatureListItem> = {};
+      for (const f of featuresJson.data.features) {
+        byKey[f.key] = f;
+      }
+
+      setFeatureState(byKey);
+      setUsers(
+        usersJson.data.users.map((u) => ({
+          id: u.id,
+          name: u.name || u.email,
+          email: u.email,
+          role: u.role,
+        })),
+      );
+
+      if (usersJson.data.users.length > 0) {
+        setSelectedUserId((prev) => prev ?? usersJson.data.users[0].id);
       }
     } catch (e: any) {
       toast({
@@ -119,61 +175,139 @@ const FeatureManagementPage: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const setFeatureEnabledOptimistic = async (featureName: FeatureKey, enabled: boolean) => {
-    if (!selectedUserId) return;
+  const setRoleDefaultOptimistic = async (
+    featureKey: FeatureKey,
+    role: RoleKey,
+    enabled: boolean,
+  ) => {
+    const prev = featureState[featureKey]?.roleDefaults?.[role];
 
-    const prevAssignments = assignments[selectedUserId] || ({} as Record<FeatureKey, boolean>);
-    const prevValue = prevAssignments[featureName];
+    setFeatureState((cur) => {
+      const existing = cur[featureKey] ?? {
+        key: featureKey,
+        globalEnabled: false,
+        roleDefaults: {},
+        userOverrides: [],
+      };
 
-    // optimistic update
-    setAssignments((cur) => ({
-      ...cur,
-      [selectedUserId]: {
-        ...((cur[selectedUserId] || {}) as Record<FeatureKey, boolean>),
-        [featureName]: enabled,
-      },
-    }));
+      return {
+        ...cur,
+        [featureKey]: {
+          ...existing,
+          roleDefaults: { ...existing.roleDefaults, [role]: enabled },
+        },
+      };
+    });
 
     try {
       const token = localStorage.getItem("accubooks_token") || "";
-      const res = await fetch(`${API_BASE}/api/admin/features/${selectedUserId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-          "X-User-Role": auth.user?.role || "",
+      const res = await fetch(
+        `${API_BASE_URL}/features/${encodeURIComponent(featureKey)}/assign/role/${role}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ enabled }),
         },
-        body: JSON.stringify({ overrides: { [featureName]: enabled } }),
-      });
+      );
 
       const json = await res.json();
       if (!res.ok || !json.success) {
         throw new Error(json?.message || "Update failed");
       }
 
-      toast({
-        title: "Feature updated",
-        description: `${selectedUser?.name || "User"}: ${featureName} is now ${enabled ? "ON" : "OFF"}.`,
-      });
+      invalidateFeatures();
     } catch (e: any) {
-      // revert
-      setAssignments((cur) => ({
-        ...cur,
-        [selectedUserId]: {
-          ...((cur[selectedUserId] || {}) as Record<FeatureKey, boolean>),
-          [featureName]: prevValue ?? true,
-        },
-      }));
+      setFeatureState((cur) => {
+        const existing = cur[featureKey];
+        if (!existing) return cur;
+        return {
+          ...cur,
+          [featureKey]: {
+            ...existing,
+            roleDefaults: { ...existing.roleDefaults, [role]: prev },
+          },
+        };
+      });
 
       toast({
-        title: "Failed to update feature",
+        title: "Failed to update role default",
         description: e?.message || "The change was reverted.",
         variant: "destructive",
       });
     }
   };
 
-  const currentAssignments = assignments[selectedUserId] || ({} as Record<FeatureKey, boolean>);
+  const setUserOverrideOptimistic = async (
+    featureKey: FeatureKey,
+    userId: number,
+    enabled: boolean,
+  ) => {
+    const prev = featureState[featureKey]?.userOverrides?.find((u) => u.userId === userId)
+      ?.enabled;
+
+    setFeatureState((cur) => {
+      const existing = cur[featureKey] ?? {
+        key: featureKey,
+        globalEnabled: false,
+        roleDefaults: {},
+        userOverrides: [],
+      };
+
+      const nextOverrides = existing.userOverrides.filter((u) => u.userId !== userId);
+      nextOverrides.push({ userId, enabled });
+
+      return {
+        ...cur,
+        [featureKey]: { ...existing, userOverrides: nextOverrides },
+      };
+    });
+
+    try {
+      const token = localStorage.getItem("accubooks_token") || "";
+      const res = await fetch(
+        `${API_BASE_URL}/features/${encodeURIComponent(featureKey)}/assign/user/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ enabled }),
+        },
+      );
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json?.message || "Update failed");
+      }
+
+      invalidateFeatures();
+    } catch (e: any) {
+      setFeatureState((cur) => {
+        const existing = cur[featureKey];
+        if (!existing) return cur;
+
+        const without = existing.userOverrides.filter((u) => u.userId !== userId);
+        if (prev !== undefined) {
+          without.push({ userId, enabled: prev });
+        }
+
+        return {
+          ...cur,
+          [featureKey]: { ...existing, userOverrides: without },
+        };
+      });
+
+      toast({
+        title: "Failed to update user override",
+        description: e?.message || "The change was reverted.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -196,8 +330,8 @@ const FeatureManagementPage: React.FC = () => {
                 User
               </label>
               <select
-                value={selectedUserId}
-                onChange={(e) => setSelectedUserId(e.target.value)}
+                value={selectedUserId ?? ""}
+                onChange={(e) => setSelectedUserId(parseInt(e.target.value, 10))}
                 className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 {users.map((u) => (
@@ -235,31 +369,103 @@ const FeatureManagementPage: React.FC = () => {
                 <tr className="border-b">
                   <th className="text-left font-medium py-3 pr-4">Name</th>
                   <th className="text-left font-medium py-3 pr-4">Description</th>
-                  <th className="text-right font-medium py-3">Enabled</th>
+                  <th className="text-center font-medium py-3">Global</th>
+                  <th className="text-center font-medium py-3">ADMIN</th>
+                  <th className="text-center font-medium py-3">MANAGER</th>
+                  <th className="text-center font-medium py-3">ACCOUNTANT</th>
+                  <th className="text-center font-medium py-3">AUDITOR</th>
+                  <th className="text-center font-medium py-3">INVENTORY_MANAGER</th>
+                  <th className="text-right font-medium py-3">User Override</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredFeatures.map((f) => {
-                  const enabled = currentAssignments[f.name] ?? true;
+                  const state = featureState[f.key];
+                  const roleDefaults = state?.roleDefaults || {};
+                  const globalEnabled = state?.globalEnabled ?? false;
+                  const userEnabled =
+                    selectedUserId == null
+                      ? false
+                      : state?.userOverrides?.find((u) => u.userId === selectedUserId)
+                          ?.enabled ?? false;
                   return (
-                    <tr key={f.name} className="border-b last:border-b-0">
+                    <tr key={f.key} className="border-b last:border-b-0">
                       <td className="py-3 pr-4 font-medium">{f.label}</td>
                       <td className="py-3 pr-4">
-                        <span className="text-gray-600" title={f.description}>
-                          {f.description}
-                        </span>
+                        <span className="text-gray-600" title={f.description}>{f.description}</span>
                       </td>
+                      <td className="py-3 text-center">
+                        <FeatureToggle checked={globalEnabled} disabled aria-label={`${f.label} global state`} />
+                      </td>
+
+                      <td className="py-3 text-center">
+                        <FeatureToggle
+                          checked={Boolean(roleDefaults.ADMIN)}
+                          onCheckedChange={(checked) =>
+                            void setRoleDefaultOptimistic(f.key, "ADMIN", Boolean(checked))
+                          }
+                          aria-label={`Toggle ${f.label} for ADMIN`}
+                        />
+                      </td>
+                      <td className="py-3 text-center">
+                        <FeatureToggle
+                          checked={Boolean(roleDefaults.MANAGER)}
+                          onCheckedChange={(checked) =>
+                            void setRoleDefaultOptimistic(f.key, "MANAGER", Boolean(checked))
+                          }
+                          aria-label={`Toggle ${f.label} for MANAGER`}
+                        />
+                      </td>
+                      <td className="py-3 text-center">
+                        <FeatureToggle
+                          checked={Boolean(roleDefaults.ACCOUNTANT)}
+                          onCheckedChange={(checked) =>
+                            void setRoleDefaultOptimistic(
+                              f.key,
+                              "ACCOUNTANT",
+                              Boolean(checked),
+                            )
+                          }
+                          aria-label={`Toggle ${f.label} for ACCOUNTANT`}
+                        />
+                      </td>
+                      <td className="py-3 text-center">
+                        <FeatureToggle
+                          checked={Boolean(roleDefaults.AUDITOR)}
+                          onCheckedChange={(checked) =>
+                            void setRoleDefaultOptimistic(f.key, "AUDITOR", Boolean(checked))
+                          }
+                          aria-label={`Toggle ${f.label} for AUDITOR`}
+                        />
+                      </td>
+                      <td className="py-3 text-center">
+                        <FeatureToggle
+                          checked={Boolean(roleDefaults.INVENTORY_MANAGER)}
+                          onCheckedChange={(checked) =>
+                            void setRoleDefaultOptimistic(
+                              f.key,
+                              "INVENTORY_MANAGER",
+                              Boolean(checked),
+                            )
+                          }
+                          aria-label={`Toggle ${f.label} for INVENTORY_MANAGER`}
+                        />
+                      </td>
+
                       <td className="py-3">
                         <div className="flex justify-end">
                           <FeatureToggle
-                            checked={enabled}
-                            onCheckedChange={(checked) =>
-                              setFeatureEnabledOptimistic(
-                                f.name,
+                            checked={userEnabled}
+                            disabled={selectedUserId == null}
+                            onCheckedChange={(checked) => {
+                              if (selectedUserId == null) return;
+                              void setUserOverrideOptimistic(
+                                f.key,
+                                selectedUserId,
                                 Boolean(checked),
-                              )
-                            }
-                            aria-label={`Toggle ${f.label}`}
+                              );
+                            }}
+                            aria-label={`Override ${f.label} for selected user`}
                           />
                         </div>
                       </td>
@@ -274,7 +480,7 @@ const FeatureManagementPage: React.FC = () => {
 
       <div className="text-sm text-gray-500">
         <div>
-          <strong>Backend:</strong> {API_BASE}/api/admin/features
+          <strong>Backend:</strong> {API_BASE_URL}/features
         </div>
         <div>
           <strong>Note:</strong> This page is visible only to users with role

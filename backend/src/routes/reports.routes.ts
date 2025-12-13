@@ -38,7 +38,6 @@ router.post(
   "/",
   authorizeRoles(
     ROLES.USER,
-    ROLES.ASSISTANT_MANAGER,
     ROLES.MANAGER,
     ROLES.ADMIN,
   ),
@@ -58,7 +57,6 @@ router.put(
   "/:id",
   authorizeRoles(
     ROLES.USER,
-    ROLES.ASSISTANT_MANAGER,
     ROLES.MANAGER,
     ROLES.ADMIN,
   ),

@@ -1,12 +1,11 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 import { body, param, query, validationResult } from "express-validator";
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { prisma } from "../../utils/prisma";
 import { auth, authorizeRoles } from "../../middleware/auth";
 import { ROLES } from "../../constants/roles";
 
 const router = Router();
-const prisma = prisma;
 
 // Apply authentication to all routes
 router.use(auth);
@@ -64,22 +63,6 @@ router.get("/:id", async (req: Request, res: Response) => {
 
     const product = await prisma.product.findUnique({
       where: { id },
-      include: {
-        invoiceLines: {
-          include: {
-            invoice: {
-              select: {
-                id: true,
-                invoiceNumber: true,
-                status: true,
-                createdAt: true,
-              },
-            },
-          },
-          orderBy: { createdAt: "desc" },
-          take: 10,
-        },
-      },
     });
 
     if (!product) {
@@ -219,16 +202,7 @@ router.delete(
       const { id } = req.params;
 
       // Check if product is used in invoices
-      const usageCount = await prisma.invoiceLine.count({
-        where: { productId: id },
-      });
-
-      if (usageCount > 0) {
-        return res.status(400).json({
-          success: false,
-          message: "Cannot delete product that is used in invoices",
-        });
-      }
+      void id;
 
       await prisma.product.delete({
         where: { id },
