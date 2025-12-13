@@ -97,3 +97,4 @@ public
 *storybook.log
 storybook-static
 *.js.js
+devops/logs/*.txt
