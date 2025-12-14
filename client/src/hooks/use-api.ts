@@ -6,8 +6,8 @@ import {
   UseQueryOptions,
   UseMutationOptions,
 } from "@tanstack/react-query";
-import { apiRequest } from './queryClient.js';
-import { getCurrentCompanyId } from '../lib/api.js';
+import { apiRequest } from "./queryClient.js";
+import { getCurrentCompanyId } from "../lib/api.js";
 
 export interface User {
   id: string;

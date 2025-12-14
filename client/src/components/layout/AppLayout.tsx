@@ -1,8 +1,8 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { useAuthStore } from '../store/auth-store.js';
+import { useAuthStore } from "../store/auth-store.js";
 import { useEffect } from "react";
-import { Button } from '../components/ui/button.js';
-import { Sidebar } from './Sidebar.js';
+import { Button } from "../components/ui/button.js";
+import { Sidebar } from "./Sidebar.js";
 
 export function AppLayout() {
   const { isAuthenticated, user, logout } = useAuthStore();

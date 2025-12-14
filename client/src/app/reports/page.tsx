@@ -1,14 +1,14 @@
-import React from 'react';
-"use client";
+import React from "react";
+("use client");
 
-import { MainLayout } from '../components/layout/MainLayout.js';
-import { EnterpriseButton } from '../components/ui/EnterpriseButton.js';
+import { MainLayout } from "../components/layout/MainLayout.js";
+import { EnterpriseButton } from "../components/ui/EnterpriseButton.js";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js';
+} from "../components/ui/card.js";
 import {
   TrendingUp,
   TrendingDown,

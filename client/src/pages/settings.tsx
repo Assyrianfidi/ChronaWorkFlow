@@ -8,7 +8,12 @@ import Card, {
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Label from "../components/ui/Label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/Tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/Tabs";
 import { Switch } from "../components/ui/Switch";
 import {
   Select,

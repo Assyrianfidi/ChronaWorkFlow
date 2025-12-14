@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -6,8 +5,8 @@ declare global {
 }
 
 import React, { useState, useEffect, useCallback } from "react";
-import { useAuthStore } from '@/../../store/auth-store';
-import { cn } from '@/../../lib/utils';
+import { useAuthStore } from "@/../../store/auth-store";
+import { cn } from "@/../../lib/utils";
 
 export interface UXMode {
   id: string;

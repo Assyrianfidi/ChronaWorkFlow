@@ -1,48 +1,48 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const SidebarNavigation: React.FC = () => {
   const { user } = useAuth();
 
   const navigationGroups = [
     {
-      title: 'Main',
+      title: "Main",
       items: [
-        { name: 'Dashboard', path: '/dashboard', icon: '📊' },
-        { name: 'Customers', path: '/customers', icon: '👥' },
-        { name: 'Invoices', path: '/invoices', icon: '📄' },
-        { name: 'Reports', path: '/reports', icon: '📈' },
-      ]
+        { name: "Dashboard", path: "/dashboard", icon: "📊" },
+        { name: "Customers", path: "/customers", icon: "👥" },
+        { name: "Invoices", path: "/invoices", icon: "📄" },
+        { name: "Reports", path: "/reports", icon: "📈" },
+      ],
     },
     {
-      title: 'Operations',
+      title: "Operations",
       items: [
-        { name: 'Inventory', path: '/inventory', icon: '📦' },
-        { name: 'Transactions', path: '/transactions', icon: '💳' },
-        { name: 'Payroll', path: '/payroll', icon: '💰' },
-        { name: 'Reconciliation', path: '/reconciliation', icon: '🔄' },
-        { name: 'Vendors', path: '/vendors', icon: '🏢' },
-      ]
+        { name: "Inventory", path: "/inventory", icon: "📦" },
+        { name: "Transactions", path: "/transactions", icon: "💳" },
+        { name: "Payroll", path: "/payroll", icon: "💰" },
+        { name: "Reconciliation", path: "/reconciliation", icon: "🔄" },
+        { name: "Vendors", path: "/vendors", icon: "🏢" },
+      ],
     },
     {
-      title: 'Account',
+      title: "Account",
       items: [
-        { name: 'Profile', path: '/profile', icon: '👤' },
-        { name: 'Settings', path: '/settings', icon: '⚙️' },
-      ]
-    }
+        { name: "Profile", path: "/profile", icon: "👤" },
+        { name: "Settings", path: "/settings", icon: "⚙️" },
+      ],
+    },
   ];
 
   return (
-    <nav 
+    <nav
       className="w-64 bg-white shadow-lg h-full border-r border-gray-200"
       role="navigation"
       aria-label="Sidebar navigation"
     >
       <div className="p-4">
         <h2 className="text-lg font-semibold text-gray-900 mb-6">AccuBooks</h2>
-        
+
         {navigationGroups.map((group, groupIndex) => (
           <div key={group.title} className="mb-6">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
@@ -56,8 +56,8 @@ const SidebarNavigation: React.FC = () => {
                     className={({ isActive }) =>
                       `flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                         isActive
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                          ? "bg-blue-100 text-blue-700"
+                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                       }`
                     }
                     aria-label={`Navigate to ${item.name}`}
@@ -72,9 +72,9 @@ const SidebarNavigation: React.FC = () => {
             </ul>
           </div>
         ))}
-        
+
         {/* Role-specific dashboards */}
-        {user?.role && user.role !== 'User' && (
+        {user?.role && user.role !== "User" && (
           <div className="mb-6">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
               Role Dashboards
@@ -86,13 +86,15 @@ const SidebarNavigation: React.FC = () => {
                   className={({ isActive }) =>
                     `flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                       isActive
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                     }`
                   }
                   aria-label="Navigate to CFO Dashboard"
                 >
-                  <span className="mr-3" role="img" aria-hidden="true">🎯</span>
+                  <span className="mr-3" role="img" aria-hidden="true">
+                    🎯
+                  </span>
                   CFO Dashboard
                 </NavLink>
               </li>
@@ -102,13 +104,15 @@ const SidebarNavigation: React.FC = () => {
                   className={({ isActive }) =>
                     `flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                       isActive
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                     }`
                   }
                   aria-label="Navigate to Controller Dashboard"
                 >
-                  <span className="mr-3" role="img" aria-hidden="true">🎯</span>
+                  <span className="mr-3" role="img" aria-hidden="true">
+                    🎯
+                  </span>
                   Controller Dashboard
                 </NavLink>
               </li>
@@ -118,13 +122,15 @@ const SidebarNavigation: React.FC = () => {
                   className={({ isActive }) =>
                     `flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                       isActive
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                     }`
                   }
                   aria-label="Navigate to Project Manager Dashboard"
                 >
-                  <span className="mr-3" role="img" aria-hidden="true">🎯</span>
+                  <span className="mr-3" role="img" aria-hidden="true">
+                    🎯
+                  </span>
                   Project Manager Dashboard
                 </NavLink>
               </li>
@@ -134,13 +140,15 @@ const SidebarNavigation: React.FC = () => {
                   className={({ isActive }) =>
                     `flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                       isActive
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        ? "bg-blue-100 text-blue-700"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                     }`
                   }
                   aria-label="Navigate to Accountant Dashboard"
                 >
-                  <span className="mr-3" role="img" aria-hidden="true">🎯</span>
+                  <span className="mr-3" role="img" aria-hidden="true">
+                    🎯
+                  </span>
                   Accountant Dashboard
                 </NavLink>
               </li>

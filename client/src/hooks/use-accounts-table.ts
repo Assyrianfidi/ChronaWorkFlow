@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import { useState, useCallback, useMemo } from "react";
-import { useAccounts } from './use-api';
-import type { Account, AccountWithChildren } from '@/components/types/accounts';
+import { useAccounts } from "./use-api";
+import type { Account, AccountWithChildren } from "@/components/types/accounts";
 
 interface UseAccountsTableProps {
   companyId?: string;

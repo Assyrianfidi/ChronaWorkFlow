@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * Enterprise UI Density Auto-Adaption System
  * Automatically adjusts component spacing, input density, typography, and info levels

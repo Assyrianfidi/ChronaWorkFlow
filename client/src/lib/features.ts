@@ -21,25 +21,34 @@ function getAuthHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export async function fetchResolvedFeatures(keys: FeatureKey[]): Promise<Record<string, boolean>> {
-  const normalizedKeys = Array.from(new Set(keys.map((k) => k.trim()).filter(Boolean))).sort();
+export async function fetchResolvedFeatures(
+  keys: FeatureKey[],
+): Promise<Record<string, boolean>> {
+  const normalizedKeys = Array.from(
+    new Set(keys.map((k) => k.trim()).filter(Boolean)),
+  ).sort();
 
   if (normalizedKeys.length === 0) {
     return {};
   }
 
   const params = new URLSearchParams({ keys: normalizedKeys.join(",") });
-  const res = await fetch(`${API_BASE_URL}/features/resolve?${params.toString()}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeader(),
+  const res = await fetch(
+    `${API_BASE_URL}/features/resolve?${params.toString()}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
     },
-  });
+  );
 
   const json = (await res.json()) as FeatureResolveResponse;
 
   if (!res.ok || !json.success) {
-    throw new Error(json?.message || `Failed to resolve features (${res.status})`);
+    throw new Error(
+      json?.message || `Failed to resolve features (${res.status})`,
+    );
   }
 
   return json.data.features || {};

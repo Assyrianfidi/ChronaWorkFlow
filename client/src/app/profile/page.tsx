@@ -1,5 +1,5 @@
-import { auth, authConfig } from '../lib/auth.js';
-import { prisma } from '../lib/prisma.js';
+import { auth, authConfig } from "../lib/auth.js";
+import { prisma } from "../lib/prisma.js";
 import { redirect } from "next/navigation";
 import { signOut } from "next-auth/react";
 

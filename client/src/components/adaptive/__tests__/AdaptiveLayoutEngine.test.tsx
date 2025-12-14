@@ -7,7 +7,7 @@ import {
   AdaptiveGrid,
   AdaptiveContainer,
   AdaptiveText,
-} from '../AdaptiveLayoutEngine.js';
+} from "../AdaptiveLayoutEngine.js";
 
 // Mock the useWindowSize hook
 vi.mock("../hooks/useWindowSize", () => ({

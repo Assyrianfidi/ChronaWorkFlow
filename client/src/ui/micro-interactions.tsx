@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -25,8 +24,8 @@ import {
   useTransform,
   useAnimation,
 } from "framer-motion";
-import { useSuperAccessibility } from '@/components/accessibility/super-accessibility';
-import { useGPUAcceleration } from '@/components/performance/gpu-acceleration';
+import { useSuperAccessibility } from "@/components/accessibility/super-accessibility";
+import { useGPUAcceleration } from "@/components/performance/gpu-acceleration";
 
 // Micro-Interaction Types
 export type MicroInteractionType =

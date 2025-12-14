@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { useAuthStore } from '@/components/store/auth-store';
+import { useAuthStore } from "@/components/store/auth-store";
 import { Loader2 } from "lucide-react";
 
 interface AuthenticatedLayoutProps {

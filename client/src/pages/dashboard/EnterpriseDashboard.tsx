@@ -5,9 +5,9 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAdaptiveUI } from '@/../../state/ui/UserExperienceMode';
-import { useAdvancedFeedback } from '@/../../hooks/useInteractiveFeedback';
-import { generateGlassmorphismCSS } from '@/../../design-system/glassmorphism';
+import { useAdaptiveUI } from "@/../../state/ui/UserExperienceMode";
+import { useAdvancedFeedback } from "@/../../hooks/useInteractiveFeedback";
+import { generateGlassmorphismCSS } from "@/../../design-system/glassmorphism";
 
 // Types
 interface KPIData {

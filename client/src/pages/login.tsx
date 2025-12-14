@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 import { useLocation } from "wouter";
-import { Button } from '@/components/components/ui/button';
+import { Button } from "@/components/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,18 +8,21 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/components/ui/card';
+} from "@/components/components/ui/card";
 import { Wallet } from "lucide-react";
-import { useToast } from '@/components/hooks/use-toast';
-import { useAuthStore } from '@/components/store/auth-store';
-import { loginSchema, type LoginFormData } from '@/components/lib/validations/schemas';
+import { useToast } from "@/components/hooks/use-toast";
+import { useAuthStore } from "@/components/store/auth-store";
+import {
+  loginSchema,
+  type LoginFormData,
+} from "@/components/lib/validations/schemas";
 import {
   useForm,
   type UseFormReturn,
   type SubmitHandler,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from '@/components/components/ui/input';
+import { Input } from "@/components/components/ui/input";
 import { type ReactElement } from "react";
 
 interface LoginFormProps {

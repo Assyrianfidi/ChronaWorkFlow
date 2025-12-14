@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -12,7 +11,7 @@ declare global {
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Icon, { IconPresets } from '@/../../design-system/icons/IconSystem';
+import Icon, { IconPresets } from "@/../../design-system/icons/IconSystem";
 
 export interface Notification {
   id: string;

@@ -1,17 +1,17 @@
-import React from 'react';
+import React from "react";
 import { useState } from "react";
-import { useEmployees, useCreateEmployee } from '../hooks/use-api.js';
-import { Button } from '../components/ui/button.js';
+import { useEmployees, useCreateEmployee } from "../hooks/use-api.js";
+import { Button } from "../components/ui/button.js";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js';
-import { Input } from '../components/ui/input.js';
-import { Label } from '../components/ui/label.js';
-import { Badge } from '../components/ui/badge.js';
+} from "../components/ui/card.js";
+import { Input } from "../components/ui/input.js";
+import { Label } from "../components/ui/label.js";
+import { Badge } from "../components/ui/badge.js";
 import { Plus, Search, Filter } from "lucide-react";
 
 interface Employee {

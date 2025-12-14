@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-"use client";
+import React, { useState } from "react";
+("use client");
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ import {
   useBulkUpdateInventoryItems,
   useExportInventory,
   type InventoryQueryOptions,
-} from '@/components/hooks/use-inventory';
+} from "@/components/hooks/use-inventory";
 type SortDirection = "asc" | "desc";
 import type {
   InventoryItem,
@@ -23,17 +23,17 @@ import type {
   InventoryFilterOptions,
   BulkUpdatePayload,
   ExportOptions,
-} from '@/components/types/inventory';
-import { Button } from '@/components/components/ui/button';
+} from "@/components/types/inventory";
+import { Button } from "@/components/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from '@/components/components/ui/card';
-import { Input } from '@/components/components/ui/input';
-import { Badge } from '@/components/components/ui/badge';
+} from "@/components/components/ui/card";
+import { Input } from "@/components/components/ui/input";
+import { Badge } from "@/components/components/ui/badge";
 import {
   Plus,
   Search,
@@ -51,7 +51,7 @@ import {
   FileSpreadsheet,
   FileType2,
 } from "lucide-react";
-import { InventoryTable } from '@/components/components/inventory/InventoryTable';
+import { InventoryTable } from "@/components/components/inventory/InventoryTable";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,11 +60,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuGroup,
-} from '@/components/components/ui/dropdown-menu';
-import { Checkbox } from '@/components/components/ui/checkbox';
-import { Label } from '@/components/components/ui/label';
-import { toast } from '@/components/components/ui/use-toast';
-import { DashboardShell } from '@/components/components/ui/layout/DashboardShell';
+} from "@/components/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/components/ui/checkbox";
+import { Label } from "@/components/components/ui/label";
+import { toast } from "@/components/components/ui/use-toast";
+import { DashboardShell } from "@/components/components/ui/layout/DashboardShell";
 
 // Utility functions for inventory calculations
 const getLowStockItems = (items: InventoryItem[]): InventoryItem[] =>

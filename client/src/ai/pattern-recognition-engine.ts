@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * AI Pattern Recognition Engine
  * Identifies user habits, frequently accessed features, common workflows, and efficiency bottlenecks

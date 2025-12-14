@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
-import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
+import { useUserExperienceMode } from "@/components/adaptive/UserExperienceMode";
+import { usePerformance } from "@/components/adaptive/UI-Performance-Engine";
 
 // Predictive Assistant types and interfaces
 export interface PredictionModel {

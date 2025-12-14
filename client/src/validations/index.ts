@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import * as z from "zod";
 
 // Common validation patterns
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -7,13 +7,13 @@ const zipCodeRegex = /^[\d\-\s]+$/;
 
 // Base schemas
 export const baseSchemas = {
-  email: z.string().email('Invalid email address'),
-  phone: z.string().regex(phoneRegex, 'Invalid phone number'),
-  zipCode: z.string().regex(zipCodeRegex, 'Invalid ZIP code'),
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  requiredString: z.string().min(1, 'This field is required'),
-  positiveNumber: z.number().min(0, 'Must be a positive number'),
-  percentage: z.number().min(0).max(100, 'Must be between 0 and 100'),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().regex(phoneRegex, "Invalid phone number"),
+  zipCode: z.string().regex(zipCodeRegex, "Invalid ZIP code"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  requiredString: z.string().min(1, "This field is required"),
+  positiveNumber: z.number().min(0, "Must be a positive number"),
+  percentage: z.number().min(0).max(100, "Must be between 0 and 100"),
 };
 
 // Customer validation schema
@@ -38,7 +38,7 @@ export const invoiceSchema = z.object({
   subtotal: baseSchemas.positiveNumber,
   taxRate: baseSchemas.percentage,
   total: baseSchemas.positiveNumber,
-  status: z.enum(['draft', 'sent', 'paid', 'overdue']),
+  status: z.enum(["draft", "sent", "paid", "overdue"]),
   notes: z.string().optional(),
 });
 
@@ -46,7 +46,7 @@ export const invoiceSchema = z.object({
 export const userSchema = z.object({
   name: baseSchemas.name,
   email: baseSchemas.email,
-  role: z.enum(['Admin', 'User', 'Manager', 'Accountant']),
+  role: z.enum(["Admin", "User", "Manager", "Accountant"]),
   department: z.string().optional(),
   phone: baseSchemas.phone.optional(),
 });
@@ -54,26 +54,30 @@ export const userSchema = z.object({
 // Authentication schemas
 export const signInSchema = z.object({
   email: baseSchemas.email,
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-export const signUpSchema = z.object({
-  name: baseSchemas.name,
-  email: baseSchemas.email,
-  password: z.string().min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+export const signUpSchema = z
+  .object({
+    name: baseSchemas.name,
+    email: baseSchemas.email,
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 // Report validation schema
 export const reportSchema = z.object({
   title: baseSchemas.requiredString,
-  type: z.enum(['financial', 'sales', 'inventory', 'payroll', 'custom']),
+  type: z.enum(["financial", "sales", "inventory", "payroll", "custom"]),
   startDate: baseSchemas.requiredString,
   endDate: baseSchemas.requiredString,
   parameters: z.record(z.any()).optional(),
@@ -86,9 +90,9 @@ export const settingsSchema = z.object({
   companyPhone: baseSchemas.phone.optional(),
   companyAddress: z.string().optional(),
   taxId: z.string().optional(),
-  currency: z.string().default('USD'),
-  dateFormat: z.string().default('MM/DD/YYYY'),
-  timezone: z.string().default('UTC'),
+  currency: z.string().default("USD"),
+  dateFormat: z.string().default("MM/DD/YYYY"),
+  timezone: z.string().default("UTC"),
 });
 
 // Product/Inventory validation schema
@@ -98,7 +102,7 @@ export const productSchema = z.object({
   description: z.string().optional(),
   price: baseSchemas.positiveNumber,
   cost: baseSchemas.positiveNumber,
-  quantity: z.number().min(0, 'Quantity must be non-negative'),
+  quantity: z.number().min(0, "Quantity must be non-negative"),
   category: z.string().optional(),
   supplier: z.string().optional(),
 });
@@ -106,7 +110,7 @@ export const productSchema = z.object({
 // Transaction validation schema
 export const transactionSchema = z.object({
   amount: baseSchemas.positiveNumber,
-  type: z.enum(['income', 'expense', 'transfer']),
+  type: z.enum(["income", "expense", "transfer"]),
   category: z.string(),
   description: z.string().optional(),
   date: baseSchemas.requiredString,

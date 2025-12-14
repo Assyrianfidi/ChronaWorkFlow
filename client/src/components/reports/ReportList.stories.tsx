@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
-import { ReportList } from './ReportList.js';
+import { ReportList } from "./ReportList.js";
 
-import { ReportStatus } from '../types/report.js';
+import { ReportStatus } from "../types/report.js";
 
 // Mock data for the reports
 const mockReports = [

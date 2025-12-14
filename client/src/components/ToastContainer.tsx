@@ -1,7 +1,7 @@
 import React from "react";
-import { useToast } from '../hooks/useToast.js';
-import { Toast, ToastProvider, ToastViewport } from './ui/toast.js';
-import { cn } from '../lib/utils.js';
+import { useToast } from "../hooks/useToast.js";
+import { Toast, ToastProvider, ToastViewport } from "./ui/toast.js";
+import { cn } from "../lib/utils.js";
 
 export const ToastContainer: React.FC = () => {
   const { toasts, dismiss } = useToast();

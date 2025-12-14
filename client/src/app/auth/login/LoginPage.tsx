@@ -1,5 +1,5 @@
-import React from 'react';
-"use client";
+import React from "react";
+("use client");
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -8,8 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { useAuthStore } from '../store/auth-store.js';
-import { cn } from '@/lib/utils';
+import { useAuthStore } from "../store/auth-store.js";
+import { cn } from "@/lib/utils";
 
 // Form validation schema
 const loginSchema = z.object({

@@ -1,5 +1,5 @@
 import { getSession, signOut } from "next-auth/react";
-import { useAuthStore } from '../store/auth-store.js';
+import { useAuthStore } from "../store/auth-store.js";
 import React from "react";
 
 /**

@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -6,9 +5,9 @@ declare global {
 }
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
-import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
-import { useNotifications } from '@/components/adaptive/NotificationSystem';
+import { useUserExperienceMode } from "@/components/adaptive/UserExperienceMode";
+import { usePerformance } from "@/components/adaptive/UI-Performance-Engine";
+import { useNotifications } from "@/components/adaptive/NotificationSystem";
 
 // Error Recovery types and interfaces
 export interface ErrorInfo {

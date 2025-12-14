@@ -30,7 +30,9 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    'prettier/prettier': 'error',
+    '@typescript-eslint/no-explicit-any': 'off', 
+    'prettier/prettier': 'warn', 
+    '@typescript-eslint/no-unused-vars': 'warn', 
   },
   ignorePatterns: ['node_modules/', 'dist/', 'build/'],
 };

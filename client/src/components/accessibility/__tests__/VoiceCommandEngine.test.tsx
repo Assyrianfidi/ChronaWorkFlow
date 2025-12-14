@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import {
   VoiceCommandEngine,
   VoiceControl,
   useVoiceCommands,
-} from '@/components/VoiceCommandEngine';
-import { AccessibilityProvider } from '@/components/AccessibilityContext';
+} from "@/components/VoiceCommandEngine";
+import { AccessibilityProvider } from "@/components/AccessibilityContext";
 
 // Mock speech recognition
 const mockSpeechRecognition = vi.fn();

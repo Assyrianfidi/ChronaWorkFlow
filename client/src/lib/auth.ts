@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
-import { UserRole } from '../types/next-auth.js';
+import { UserRole } from "../types/next-auth.js";
 
 const prisma = new PrismaClient();
 

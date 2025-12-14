@@ -17,10 +17,10 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { useSuperAccessibility } from '@/components/accessibility/super-accessibility';
-import { useThreatAdaptiveUI } from '@/components/security/threat-adaptive-ui';
-import { useSmartAutoLazy } from '@/components/performance/smart-auto-lazy';
-import { useGPUAcceleration } from '@/components/performance/gpu-acceleration';
+import { useSuperAccessibility } from "@/components/accessibility/super-accessibility";
+import { useThreatAdaptiveUI } from "@/components/security/threat-adaptive-ui";
+import { useSmartAutoLazy } from "@/components/performance/smart-auto-lazy";
+import { useGPUAcceleration } from "@/components/performance/gpu-acceleration";
 
 // Perfect Button Component
 interface PerfectButtonProps {

@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import React, { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
   children: ReactNode;
@@ -11,7 +11,19 @@ export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
 }
 
 const Form = React.forwardRef<HTMLFormElement, FormProps>(
-  ({ className, children, title, description, loading, error, success, ...props }, ref) => {
+  (
+    {
+      className,
+      children,
+      title,
+      description,
+      loading,
+      error,
+      success,
+      ...props
+    },
+    ref,
+  ) => {
     return (
       <div className="w-full max-w-md mx-auto">
         {title && (
@@ -22,27 +34,23 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(
             )}
           </div>
         )}
-        
+
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
-        
+
         {success && (
           <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
             <p className="text-sm text-green-600">{success}</p>
           </div>
         )}
-        
-        <form
-          ref={ref}
-          className={cn('space-y-4', className)}
-          {...props}
-        >
+
+        <form ref={ref} className={cn("space-y-4", className)} {...props}>
           {children}
         </form>
-        
+
         {loading && (
           <div className="mt-4 flex justify-center">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
@@ -50,10 +58,10 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
-Form.displayName = 'Form';
+Form.displayName = "Form";
 
 export interface FormFieldProps {
   label: string;
@@ -63,12 +71,12 @@ export interface FormFieldProps {
   children: ReactNode;
 }
 
-const FormField: React.FC<FormFieldProps> = ({ 
-  label, 
-  error, 
-  required = false, 
-  description, 
-  children 
+const FormField: React.FC<FormFieldProps> = ({
+  label,
+  error,
+  required = false,
+  description,
+  children,
 }) => {
   return (
     <div className="space-y-2">
@@ -76,13 +84,11 @@ const FormField: React.FC<FormFieldProps> = ({
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
-      
+
       {children}
-      
-      {description && (
-        <p className="text-xs text-gray-500">{description}</p>
-      )}
-      
+
+      {description && <p className="text-xs text-gray-500">{description}</p>}
+
       {error && (
         <p className="text-sm text-red-600" role="alert">
           {error}
@@ -98,11 +104,7 @@ export interface FormActionsProps {
 }
 
 const FormActions: React.FC<FormActionsProps> = ({ children, className }) => {
-  return (
-    <div className={cn('flex space-x-3 pt-4', className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("flex space-x-3 pt-4", className)}>{children}</div>;
 };
 
 export { FormField, FormActions };

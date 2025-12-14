@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * Role-Adaptive Intelligent UI System
  * Automatically adjusts interface based on user role, experience, and patterns

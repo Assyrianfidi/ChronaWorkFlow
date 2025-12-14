@@ -1,5 +1,5 @@
-import React from 'react';
-"use client";
+import React from "react";
+("use client");
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState, useEffect } from "react";
-import { useAuthStore } from '@/components/store/auth-store';
+import { useAuthStore } from "@/components/store/auth-store";
 
 const registerSchema = z
   .object({

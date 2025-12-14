@@ -1,16 +1,15 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React from 'react';
+import React from "react";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from '../store/auth-store.js';
-import { apiRequest } from '../lib/api.js';
-import { Button } from '../components/ui/button.js';
+import { useAuthStore } from "../store/auth-store.js";
+import { apiRequest } from "../lib/api.js";
+import { Button } from "../components/ui/button.js";
 import {
   Table,
   TableBody,
@@ -18,18 +17,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table.js';
+} from "../components/ui/table.js";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js';
+} from "../components/ui/card.js";
 import { Plus, Pencil, Trash2, Download } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from '../lib/utils.js';
-import { DashboardShell } from '../components/ui/layout/DashboardShell.js';
+import { cn } from "../lib/utils.js";
+import { DashboardShell } from "../components/ui/layout/DashboardShell.js";
 
 type Report = {
   id: number;

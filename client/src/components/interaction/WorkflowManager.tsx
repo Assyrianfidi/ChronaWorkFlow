@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -6,8 +5,8 @@ declare global {
 }
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
-import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
+import { useUserExperienceMode } from "@/components/adaptive/UserExperienceMode";
+import { usePerformance } from "@/components/adaptive/UI-Performance-Engine";
 
 // Workflow types and interfaces
 export interface WorkflowStep {

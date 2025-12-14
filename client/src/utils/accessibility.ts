@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React from 'react';
+import React from "react";
 /**
  * WCAG 2.1 AA Accessibility Utilities
  * Comprehensive accessibility helpers for React components

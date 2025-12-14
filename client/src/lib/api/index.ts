@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -11,7 +10,7 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from "axios";
-import { useAuthStore } from '../../store/auth-store.js';
+import { useAuthStore } from "../../store/auth-store.js";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "import.meta.env.VITE_APP_URL/api";

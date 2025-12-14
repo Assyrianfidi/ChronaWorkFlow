@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React from 'react';
+import React from "react";
 /**
  * Universal Onboarding Engine
  * Step-by-step onboarding with role-based flows, interactive tooltips, and feature discovery

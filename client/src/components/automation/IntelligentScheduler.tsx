@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useAutomation } from './AutomationEngine';
-import { useAnalytics } from '@/components/analytics/AnalyticsEngine';
+import { useAutomation } from "./AutomationEngine";
+import { useAnalytics } from "@/components/analytics/AnalyticsEngine";
 
 // Scheduler Types
 interface ScheduleTask {

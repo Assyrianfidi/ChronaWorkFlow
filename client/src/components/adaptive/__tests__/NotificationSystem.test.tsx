@@ -5,7 +5,7 @@ import {
   useNotifications,
   Toast,
   NotificationQueue,
-} from '@/components/NotificationSystem';
+} from "@/components/NotificationSystem";
 
 // Mock the UX mode hook
 jest.mock("../UserExperienceMode", () => ({

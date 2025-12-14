@@ -1,5 +1,9 @@
 import * as React from "react";
-import Card, { CardContent, CardHeader, CardTitle } from "../components/ui/Card";
+import Card, {
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Badge from "../components/ui/Badge";
@@ -365,7 +369,7 @@ export default function Transactions() {
                         <TableCell>
                           <Badge
                             variant={
-                                                            typeColors[txn.type as keyof typeof typeColors]
+                              typeColors[txn.type as keyof typeof typeColors]
                             }
                           >
                             {/* @ts-ignore */}

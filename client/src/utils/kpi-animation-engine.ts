@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * KPI Animation Engine
  * Advanced animation system for real-time KPI updates and transitions

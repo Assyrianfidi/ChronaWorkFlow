@@ -1,29 +1,33 @@
-import { z } from 'zod';
-import { schemas } from './index';
+import { z } from "zod";
+import { schemas } from "./index";
 
 // Validation utilities
 export const validateForm = <T extends z.ZodSchema>(
   schema: T,
-  data: unknown
-): { success: true; data: z.infer<T> } | { success: false; errors: z.ZodIssue[] } => {
+  data: unknown,
+):
+  | { success: true; data: z.infer<T> }
+  | { success: false; errors: z.ZodIssue[] } => {
   const result = schema.safeParse(data);
-  
+
   if (result.success) {
     return { success: true, data: result.data };
   }
-  
+
   return { success: false, errors: result.error.issues };
 };
 
 // Format validation errors for form display
-export const formatValidationErrors = (issues: z.ZodIssue[]): Record<string, string> => {
+export const formatValidationErrors = (
+  issues: z.ZodIssue[],
+): Record<string, string> => {
   const errors: Record<string, string> = {};
-  
+
   issues.forEach((issue) => {
-    const path = issue.path.join('.');
+    const path = issue.path.join(".");
     errors[path] = issue.message;
   });
-  
+
   return errors;
 };
 
@@ -31,55 +35,59 @@ export const formatValidationErrors = (issues: z.ZodIssue[]): Record<string, str
 export const validateField = <T extends z.ZodSchema>(
   schema: T,
   fieldName: keyof z.infer<T>,
-  value: unknown
+  value: unknown,
 ): string | null => {
   try {
     const fieldSchema = schema.shape[fieldName as string] as z.ZodTypeAny;
     const result = fieldSchema.safeParse(value);
-    
+
     if (result.success) {
       return null;
     }
-    
-    return result.error.issues[0]?.message || 'Invalid value';
+
+    return result.error.issues[0]?.message || "Invalid value";
   } catch {
-    return 'Invalid field';
+    return "Invalid field";
   }
 };
 
 // Async validation utilities
 export const validateEmailUnique = async (email: string): Promise<boolean> => {
   // Simulate API call to check email uniqueness
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return !email.includes('taken');
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return !email.includes("taken");
 };
 
-export const validateInvoiceNumberUnique = async (invoiceNumber: string): Promise<boolean> => {
+export const validateInvoiceNumberUnique = async (
+  invoiceNumber: string,
+): Promise<boolean> => {
   // Simulate API call to check invoice number uniqueness
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return !invoiceNumber.includes('existing');
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return !invoiceNumber.includes("existing");
 };
 
 // Custom validation rules
 export const customValidations = {
   passwordStrength: (password: string): boolean => {
-    return password.length >= 8 && 
-           /[A-Z]/.test(password) && 
-           /[a-z]/.test(password) && 
-           /[0-9]/.test(password);
+    return (
+      password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      /[0-9]/.test(password)
+    );
   },
-  
+
   futureDate: (date: string): boolean => {
     return new Date(date) > new Date();
   },
-  
+
   positiveAmount: (amount: number): boolean => {
     return amount > 0;
   },
-  
+
   validPhone: (phone: string): boolean => {
     const phoneRegex = /^[\d\s\-\(\)]+$/;
-    return phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 10;
+    return phoneRegex.test(phone) && phone.replace(/\D/g, "").length >= 10;
   },
 };
 
@@ -87,17 +95,17 @@ export const customValidations = {
 export const createFormResolver = <T extends z.ZodSchema>(schema: T) => {
   return (data: unknown) => {
     const result = schema.safeParse(data);
-    
+
     if (result.success) {
       return { values: result.data, errors: {} };
     }
-    
+
     const errors: Record<string, { message: string }> = {};
     result.error.issues.forEach((issue) => {
-      const path = issue.path.join('.');
+      const path = issue.path.join(".");
       errors[path] = { message: issue.message };
     });
-    
+
     return { values: {}, errors };
   };
 };

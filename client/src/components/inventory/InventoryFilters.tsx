@@ -1,18 +1,18 @@
 import React, { useMemo } from "react";
-import { Input } from '../components/ui/input.js';
-import { Button } from '../components/ui/button.js';
+import { Input } from "../components/ui/input.js";
+import { Button } from "../components/ui/button.js";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select.js';
-import { Slider } from '../components/ui/slider.js';
-import { Label } from '../components/ui/label.js';
+} from "../components/ui/select.js";
+import { Slider } from "../components/ui/slider.js";
+import { Label } from "../components/ui/label.js";
 import { X, Search, Filter } from "lucide-react";
-import { InventoryStatus } from '../types/inventory.js';
-import { useInventoryFilters } from '../hooks/useInventoryFilters.js';
+import { InventoryStatus } from "../types/inventory.js";
+import { useInventoryFilters } from "../hooks/useInventoryFilters.js";
 
 interface InventoryFiltersProps {
   categories: string[];

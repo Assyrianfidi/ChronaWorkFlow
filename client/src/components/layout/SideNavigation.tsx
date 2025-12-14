@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
 import {
   BarChart3,
@@ -23,7 +23,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { cn } from '@/../../lib/utils';
+import { cn } from "@/../../lib/utils";
 
 interface NavigationItem {
   id: string;

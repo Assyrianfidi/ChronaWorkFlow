@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 declare global {
   interface Window {
@@ -6,10 +6,8 @@ declare global {
   }
 }
 
-;
-;
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
-import { EnterpriseButton } from './EnterpriseButton';
+import { EnterpriseButton } from "./EnterpriseButton";
 
 interface ErrorFallbackProps {
   error?: Error;

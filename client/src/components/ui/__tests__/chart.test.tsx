@@ -6,8 +6,8 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-} from '../chart.js';
-import type { ChartConfig } from '../chart.js';
+} from "../chart.js";
+import type { ChartConfig } from "../chart.js";
 
 // Mock recharts components
 vi.mock("recharts", () => ({
@@ -290,7 +290,7 @@ describe("Chart Components", () => {
 
       const indicator = document.querySelector(
         '[style*="background-color"]',
-              ) as HTMLElement;
+      ) as HTMLElement;
       expect(indicator).toBeInTheDocument();
       expect(indicator.style.backgroundColor).toBe("rgb(255, 0, 0)");
     });

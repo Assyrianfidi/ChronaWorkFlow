@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -6,14 +5,14 @@ declare global {
 }
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { Button } from '../components/ui/button.js';
+import { Button } from "../components/ui/button.js";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js';
+} from "../components/ui/card.js";
 import { AlertTriangle } from "lucide-react";
 
 interface Props {
@@ -87,13 +86,14 @@ export class AuthErrorBoundary extends Component<Props, State> {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {process.env.NODE_ENV === import.meta.env.MODE && this.state.error && (
-                <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-3">
-                  <p className="text-sm text-red-800 dark:text-red-200 font-mono">
-                    {this.state.error.message}
-                  </p>
-                </div>
-              )}
+              {process.env.NODE_ENV === import.meta.env.MODE &&
+                this.state.error && (
+                  <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-3">
+                    <p className="text-sm text-red-800 dark:text-red-200 font-mono">
+                      {this.state.error.message}
+                    </p>
+                  </div>
+                )}
               <div className="flex flex-col gap-2">
                 <Button onClick={this.handleRetry} className="w-full">
                   Try Again

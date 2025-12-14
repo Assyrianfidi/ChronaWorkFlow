@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import ForgotPasswordPage from '../page.js';
-import { useAuthStore } from '../store/auth-store.js';
+import ForgotPasswordPage from "../page.js";
+import { useAuthStore } from "../store/auth-store.js";
 
 const mockRequestPasswordReset = vi.fn();
 

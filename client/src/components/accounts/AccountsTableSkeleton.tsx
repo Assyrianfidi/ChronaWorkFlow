@@ -1,5 +1,5 @@
 import React from "react";
-import { Skeleton } from '../components/ui/skeleton.js';
+import { Skeleton } from "../components/ui/skeleton.js";
 
 interface AccountsTableSkeletonProps {
   rowCount?: number;

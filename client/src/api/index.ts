@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -82,13 +81,12 @@ export interface ApiResponse<T = any> {
 // Auth API
 export const authApi = {
   login: (email: string, password: string) =>
-    api.post<ApiResponse<{ user: any; accessToken: string; expiresIn: number }>>(
-      "/auth/login",
-      {
-        email,
-        password,
-      },
-    ),
+    api.post<
+      ApiResponse<{ user: any; accessToken: string; expiresIn: number }>
+    >("/auth/login", {
+      email,
+      password,
+    }),
 
   register: (userData: {
     email: string;

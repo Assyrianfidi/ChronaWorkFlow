@@ -21,7 +21,9 @@ const ReportsPage = lazy(() => import("../pages/ReportsPage"));
 const AdminSettingsPage = lazy(() => import("../pages/AdminSettingsPage"));
 const AuditLogsPage = lazy(() => import("../pages/AuditLogsPage"));
 const NotificationsPage = lazy(() => import("../pages/NotificationsPage"));
-const FeatureManagementPage = lazy(() => import("../pages/FeatureManagementPage"));
+const FeatureManagementPage = lazy(
+  () => import("../pages/FeatureManagementPage"),
+);
 const Unauthorized = lazy(() => import("../pages/Unauthorized"));
 
 const router = createBrowserRouter([
@@ -95,7 +97,9 @@ const router = createBrowserRouter([
   {
     path: "/invoices",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
+      >
         <FeatureRoute feature="INVOICING">
           <MainLayout>
             <SuspenseWrapper>
@@ -123,7 +127,9 @@ const router = createBrowserRouter([
   {
     path: "/transactions",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
+      >
         <FeatureRoute feature="TRANSACTIONS">
           <MainLayout>
             <SuspenseWrapper>

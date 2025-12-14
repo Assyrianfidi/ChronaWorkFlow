@@ -1,5 +1,5 @@
 // This file is deprecated - use auth-store.ts instead
-export { useAuthStore } from './auth-store.js';
+export { useAuthStore } from "./auth-store.js";
 export type {
   User,
   LoginResponse,
@@ -8,4 +8,4 @@ export type {
   ResetPasswordInput,
   ChangePasswordInput,
   AuthState,
-} from './auth-store.js';
+} from "./auth-store.js";

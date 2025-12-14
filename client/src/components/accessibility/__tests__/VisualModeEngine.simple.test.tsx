@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { VisualModeEngine } from '../VisualModeEngine.js';
+import { VisualModeEngine } from "../VisualModeEngine.js";
 
 describe("VisualModeEngine - Basic Tests", () => {
   it("renders children correctly", () => {

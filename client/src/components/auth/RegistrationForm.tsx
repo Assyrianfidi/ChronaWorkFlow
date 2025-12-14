@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { type ReactElement } from "react";
 import {
   useForm,
@@ -6,14 +6,14 @@ import {
   type SubmitHandler,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from '@/components/components/ui/button';
-import { Input } from '@/components/components/ui/input';
-import { CardContent, CardFooter } from '@/components/components/ui/card';
+import { Button } from "@/components/components/ui/button";
+import { Input } from "@/components/components/ui/input";
+import { CardContent, CardFooter } from "@/components/components/ui/card";
 import {
   type RegisterFormData,
   registerSchema,
-} from '@/components/lib/validations/schemas';
-import { useToast } from '@/components/hooks/use-toast';
+} from "@/components/lib/validations/schemas";
+import { useToast } from "@/components/hooks/use-toast";
 
 interface RegistrationFormProps {
   onSubmit: (data: RegisterFormData) => Promise<void>;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
 import {
   BarChart3,
@@ -18,12 +18,15 @@ import {
   CustomersCard,
   InvoicesCard,
   TransactionsCard,
-} from './KPICard';
-import { EnterpriseDataTable, type Column } from '@/components/ui/EnterpriseDataTable';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/../../lib/utils';
+} from "./KPICard";
+import {
+  EnterpriseDataTable,
+  type Column,
+} from "@/components/ui/EnterpriseDataTable";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/../../lib/utils";
 
 interface EnterpriseDashboardProps {
   className?: string;
@@ -86,9 +89,7 @@ const EnterpriseDashboard = React.forwardRef<
     {
       accessorKey: "customer",
       header: "Customer",
-      cell: ({ row }) => (
-        <div>{row.getValue("customer")}</div>
-      ),
+      cell: ({ row }) => <div>{row.getValue("customer")}</div>,
     },
     {
       accessorKey: "amount",
@@ -122,9 +123,7 @@ const EnterpriseDashboard = React.forwardRef<
     {
       accessorKey: "date",
       header: "Date",
-      cell: ({ row }) => (
-        <div>{row.getValue("date")}</div>
-      ),
+      cell: ({ row }) => <div>{row.getValue("date")}</div>,
     },
   ];
 
@@ -301,27 +300,40 @@ const EnterpriseDashboard = React.forwardRef<
                   onRowClick={(row) => console.log("Transaction clicked:", row)}
                   renderToolbar={(state, table) => (
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" onClick={() => {
-                        // Export functionality
-                        const rows = table.getFilteredRowModel().rows;
-                        const csvContent = [
-                          ['Transaction #', 'Date', 'Description', 'Amount'].join(','),
-                          ...rows.map(row => [
-                            row.original.transactionNumber || '',
-                            row.original.date || '',
-                            row.original.description || '',
-                            row.original.totalAmount || ''
-                          ].join(','))
-                        ].join('\n');
-                        
-                        const blob = new Blob([csvContent], { type: 'text/csv' });
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'transactions.csv';
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                      }}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          // Export functionality
+                          const rows = table.getFilteredRowModel().rows;
+                          const csvContent = [
+                            [
+                              "Transaction #",
+                              "Date",
+                              "Description",
+                              "Amount",
+                            ].join(","),
+                            ...rows.map((row) =>
+                              [
+                                row.original.transactionNumber || "",
+                                row.original.date || "",
+                                row.original.description || "",
+                                row.original.totalAmount || "",
+                              ].join(","),
+                            ),
+                          ].join("\n");
+
+                          const blob = new Blob([csvContent], {
+                            type: "text/csv",
+                          });
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = "transactions.csv";
+                          a.click();
+                          window.URL.revokeObjectURL(url);
+                        }}
+                      >
                         Export
                       </Button>
                       <Button variant="outline" size="sm">

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-import { ReportForm } from './ReportForm.js';
-import type { ReportFormProps } from './types.js';
+import { ReportForm } from "./ReportForm.js";
+import type { ReportFormProps } from "./types.js";
 
 // Mock react-hook-form for Storybook
 const mockForm = {

@@ -13,7 +13,12 @@ import { FeatureToggle } from "../components/ui/FeatureToggle";
 import { useToast } from "../hooks/useToast";
 import { useInvalidateFeatures } from "@/lib/features";
 
-type RoleKey = "ADMIN" | "MANAGER" | "ACCOUNTANT" | "AUDITOR" | "INVENTORY_MANAGER";
+type RoleKey =
+  | "ADMIN"
+  | "MANAGER"
+  | "ACCOUNTANT"
+  | "AUDITOR"
+  | "INVENTORY_MANAGER";
 type FeatureKey = string;
 
 type FeatureCatalogItem = {
@@ -37,7 +42,14 @@ type FeatureListResponse = {
 
 type UsersResponse = {
   success: boolean;
-  data: { users: Array<{ id: number; name: string | null; email: string; role: RoleKey }> };
+  data: {
+    users: Array<{
+      id: number;
+      name: string | null;
+      email: string;
+      role: RoleKey;
+    }>;
+  };
   message?: string;
 };
 
@@ -85,11 +97,14 @@ const FeatureManagementPage: React.FC = () => {
   const invalidateFeatures = useInvalidateFeatures();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [features, setFeatures] = useState<FeatureCatalogItem[]>(FEATURE_CATALOG);
-  const [featureState, setFeatureState] = useState<Record<string, FeatureListItem>>({});
-  const [users, setUsers] = useState<Array<{ id: number; name: string; email: string; role: RoleKey }>>(
-    [],
-  );
+  const [features, setFeatures] =
+    useState<FeatureCatalogItem[]>(FEATURE_CATALOG);
+  const [featureState, setFeatureState] = useState<
+    Record<string, FeatureListItem>
+  >({});
+  const [users, setUsers] = useState<
+    Array<{ id: number; name: string; email: string; role: RoleKey }>
+  >([]);
 
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [query, setQuery] = useState<string>("");
@@ -245,8 +260,9 @@ const FeatureManagementPage: React.FC = () => {
     userId: number,
     enabled: boolean,
   ) => {
-    const prev = featureState[featureKey]?.userOverrides?.find((u) => u.userId === userId)
-      ?.enabled;
+    const prev = featureState[featureKey]?.userOverrides?.find(
+      (u) => u.userId === userId,
+    )?.enabled;
 
     setFeatureState((cur) => {
       const existing = cur[featureKey] ?? {
@@ -256,7 +272,9 @@ const FeatureManagementPage: React.FC = () => {
         userOverrides: [],
       };
 
-      const nextOverrides = existing.userOverrides.filter((u) => u.userId !== userId);
+      const nextOverrides = existing.userOverrides.filter(
+        (u) => u.userId !== userId,
+      );
       nextOverrides.push({ userId, enabled });
 
       return {
@@ -290,7 +308,9 @@ const FeatureManagementPage: React.FC = () => {
         const existing = cur[featureKey];
         if (!existing) return cur;
 
-        const without = existing.userOverrides.filter((u) => u.userId !== userId);
+        const without = existing.userOverrides.filter(
+          (u) => u.userId !== userId,
+        );
         if (prev !== undefined) {
           without.push({ userId, enabled: prev });
         }
@@ -321,7 +341,9 @@ const FeatureManagementPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>Target User</CardTitle>
-          <CardDescription>Select a user and toggle features ON/OFF.</CardDescription>
+          <CardDescription>
+            Select a user and toggle features ON/OFF.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -331,7 +353,9 @@ const FeatureManagementPage: React.FC = () => {
               </label>
               <select
                 value={selectedUserId ?? ""}
-                onChange={(e) => setSelectedUserId(parseInt(e.target.value, 10))}
+                onChange={(e) =>
+                  setSelectedUserId(parseInt(e.target.value, 10))
+                }
                 className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 {users.map((u) => (
@@ -368,13 +392,17 @@ const FeatureManagementPage: React.FC = () => {
               <thead>
                 <tr className="border-b">
                   <th className="text-left font-medium py-3 pr-4">Name</th>
-                  <th className="text-left font-medium py-3 pr-4">Description</th>
+                  <th className="text-left font-medium py-3 pr-4">
+                    Description
+                  </th>
                   <th className="text-center font-medium py-3">Global</th>
                   <th className="text-center font-medium py-3">ADMIN</th>
                   <th className="text-center font-medium py-3">MANAGER</th>
                   <th className="text-center font-medium py-3">ACCOUNTANT</th>
                   <th className="text-center font-medium py-3">AUDITOR</th>
-                  <th className="text-center font-medium py-3">INVENTORY_MANAGER</th>
+                  <th className="text-center font-medium py-3">
+                    INVENTORY_MANAGER
+                  </th>
                   <th className="text-right font-medium py-3">User Override</th>
                 </tr>
               </thead>
@@ -386,23 +414,34 @@ const FeatureManagementPage: React.FC = () => {
                   const userEnabled =
                     selectedUserId == null
                       ? false
-                      : state?.userOverrides?.find((u) => u.userId === selectedUserId)
-                          ?.enabled ?? false;
+                      : (state?.userOverrides?.find(
+                          (u) => u.userId === selectedUserId,
+                        )?.enabled ?? false);
                   return (
                     <tr key={f.key} className="border-b last:border-b-0">
                       <td className="py-3 pr-4 font-medium">{f.label}</td>
                       <td className="py-3 pr-4">
-                        <span className="text-gray-600" title={f.description}>{f.description}</span>
+                        <span className="text-gray-600" title={f.description}>
+                          {f.description}
+                        </span>
                       </td>
                       <td className="py-3 text-center">
-                        <FeatureToggle checked={globalEnabled} disabled aria-label={`${f.label} global state`} />
+                        <FeatureToggle
+                          checked={globalEnabled}
+                          disabled
+                          aria-label={`${f.label} global state`}
+                        />
                       </td>
 
                       <td className="py-3 text-center">
                         <FeatureToggle
                           checked={Boolean(roleDefaults.ADMIN)}
                           onCheckedChange={(checked) =>
-                            void setRoleDefaultOptimistic(f.key, "ADMIN", Boolean(checked))
+                            void setRoleDefaultOptimistic(
+                              f.key,
+                              "ADMIN",
+                              Boolean(checked),
+                            )
                           }
                           aria-label={`Toggle ${f.label} for ADMIN`}
                         />
@@ -411,7 +450,11 @@ const FeatureManagementPage: React.FC = () => {
                         <FeatureToggle
                           checked={Boolean(roleDefaults.MANAGER)}
                           onCheckedChange={(checked) =>
-                            void setRoleDefaultOptimistic(f.key, "MANAGER", Boolean(checked))
+                            void setRoleDefaultOptimistic(
+                              f.key,
+                              "MANAGER",
+                              Boolean(checked),
+                            )
                           }
                           aria-label={`Toggle ${f.label} for MANAGER`}
                         />
@@ -433,7 +476,11 @@ const FeatureManagementPage: React.FC = () => {
                         <FeatureToggle
                           checked={Boolean(roleDefaults.AUDITOR)}
                           onCheckedChange={(checked) =>
-                            void setRoleDefaultOptimistic(f.key, "AUDITOR", Boolean(checked))
+                            void setRoleDefaultOptimistic(
+                              f.key,
+                              "AUDITOR",
+                              Boolean(checked),
+                            )
                           }
                           aria-label={`Toggle ${f.label} for AUDITOR`}
                         />

@@ -8,7 +8,7 @@ import EnterpriseSecurity, {
   SecurityAlert,
   SecurityEvent,
   UserSession,
-} from '@/../../security/enterprise-security';
+} from "@/../../security/enterprise-security";
 
 interface SecurityDashboardProps {
   security: EnterpriseSecurity;

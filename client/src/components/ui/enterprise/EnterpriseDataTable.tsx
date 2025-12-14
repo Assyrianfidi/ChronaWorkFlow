@@ -1,6 +1,4 @@
-import React from 'react'
-;
-;
+import React from "react";
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -15,7 +13,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { cn } from '@/../../../lib/utils';
+import { cn } from "@/../../../lib/utils";
 
 export interface EnterpriseDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

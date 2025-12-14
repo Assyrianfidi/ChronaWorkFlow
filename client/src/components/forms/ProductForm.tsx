@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui';
-import { Input } from '@/components/ui';
-import Form, { FormField, FormActions } from './Form';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import Form, { FormField, FormActions } from "./Form";
 
 const productSchema = z.object({
-  name: z.string().min(1, 'Product name is required').min(2, 'Name must be at least 2 characters'),
-  sku: z.string().min(1, 'SKU is required'),
+  name: z
+    .string()
+    .min(1, "Product name is required")
+    .min(2, "Name must be at least 2 characters"),
+  sku: z.string().min(1, "SKU is required"),
   description: z.string().optional(),
-  price: z.number().min(0, 'Price must be positive'),
-  cost: z.number().min(0, 'Cost must be positive'),
-  quantity: z.number().min(0, 'Quantity must be non-negative'),
+  price: z.number().min(0, "Price must be positive"),
+  cost: z.number().min(0, "Cost must be positive"),
+  quantity: z.number().min(0, "Quantity must be non-negative"),
   category: z.string().optional(),
   supplier: z.string().optional(),
 });
@@ -35,7 +38,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   success,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -44,17 +47,17 @@ const ProductForm: React.FC<ProductFormProps> = ({
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: '',
-      sku: '',
-      description: '',
+      name: "",
+      sku: "",
+      description: "",
       price: 0,
       cost: 0,
       quantity: 0,
-      category: '',
-      supplier: '',
+      category: "",
+      supplier: "",
       ...initialData,
     },
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const handleFormSubmit = async (data: ProductFormData) => {
@@ -71,45 +74,34 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
   return (
     <Form
-      title={initialData ? 'Edit Product' : 'Add New Product'}
+      title={initialData ? "Edit Product" : "Add New Product"}
       description="Fill in the product information below"
       loading={loading || isSubmitting}
       error={error}
       success={success}
       onSubmit={handleSubmit(handleFormSubmit)}
     >
-      <FormField
-        label="Product Name"
-        error={errors.name?.message}
-        required
-      >
+      <FormField label="Product Name" error={errors.name?.message} required>
         <Input
-          {...register('name')}
+          {...register("name")}
           placeholder="Enter product name"
           aria-label="Product name"
-          aria-invalid={errors.name ? 'true' : 'false'}
+          aria-invalid={errors.name ? "true" : "false"}
         />
       </FormField>
 
-      <FormField
-        label="SKU"
-        error={errors.sku?.message}
-        required
-      >
+      <FormField label="SKU" error={errors.sku?.message} required>
         <Input
-          {...register('sku')}
+          {...register("sku")}
           placeholder="Enter product SKU"
           aria-label="Product SKU"
-          aria-invalid={errors.sku ? 'true' : 'false'}
+          aria-invalid={errors.sku ? "true" : "false"}
         />
       </FormField>
 
-      <FormField
-        label="Description"
-        error={errors.description?.message}
-      >
+      <FormField label="Description" error={errors.description?.message}>
         <textarea
-          {...register('description')}
+          {...register("description")}
           rows={3}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           placeholder="Product description (optional)"
@@ -118,69 +110,51 @@ const ProductForm: React.FC<ProductFormProps> = ({
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField
-          label="Price"
-          error={errors.price?.message}
-          required
-        >
+        <FormField label="Price" error={errors.price?.message} required>
           <Input
-            {...register('price', { valueAsNumber: true })}
+            {...register("price", { valueAsNumber: true })}
             type="number"
             step="0.01"
             placeholder="0.00"
             aria-label="Product price"
-            aria-invalid={errors.price ? 'true' : 'false'}
+            aria-invalid={errors.price ? "true" : "false"}
           />
         </FormField>
 
-        <FormField
-          label="Cost"
-          error={errors.cost?.message}
-          required
-        >
+        <FormField label="Cost" error={errors.cost?.message} required>
           <Input
-            {...register('cost', { valueAsNumber: true })}
+            {...register("cost", { valueAsNumber: true })}
             type="number"
             step="0.01"
             placeholder="0.00"
             aria-label="Product cost"
-            aria-invalid={errors.cost ? 'true' : 'false'}
+            aria-invalid={errors.cost ? "true" : "false"}
           />
         </FormField>
       </div>
 
-      <FormField
-        label="Quantity"
-        error={errors.quantity?.message}
-        required
-      >
+      <FormField label="Quantity" error={errors.quantity?.message} required>
         <Input
-          {...register('quantity', { valueAsNumber: true })}
+          {...register("quantity", { valueAsNumber: true })}
           type="number"
           placeholder="0"
           aria-label="Product quantity"
-          aria-invalid={errors.quantity ? 'true' : 'false'}
+          aria-invalid={errors.quantity ? "true" : "false"}
         />
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField
-          label="Category"
-          error={errors.category?.message}
-        >
+        <FormField label="Category" error={errors.category?.message}>
           <Input
-            {...register('category')}
+            {...register("category")}
             placeholder="Product category"
             aria-label="Product category"
           />
         </FormField>
 
-        <FormField
-          label="Supplier"
-          error={errors.supplier?.message}
-        >
+        <FormField label="Supplier" error={errors.supplier?.message}>
           <Input
-            {...register('supplier')}
+            {...register("supplier")}
             placeholder="Supplier name"
             aria-label="Product supplier"
           />
@@ -192,16 +166,15 @@ const ProductForm: React.FC<ProductFormProps> = ({
           type="submit"
           disabled={!isDirty || !isValid || isSubmitting}
           loading={isSubmitting}
-          aria-label={initialData ? 'Update product' : 'Add product'}
+          aria-label={initialData ? "Update product" : "Add product"}
         >
-          {isSubmitting 
-            ? 'Saving...' 
-            : initialData 
-              ? 'Update Product' 
-              : 'Add Product'
-          }
+          {isSubmitting
+            ? "Saving..."
+            : initialData
+              ? "Update Product"
+              : "Add Product"}
         </Button>
-        
+
         <Button
           type="button"
           variant="outline"

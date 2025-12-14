@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { useAnalytics } from './AnalyticsEngine';
-import { DataVisualization, VisualizationConfig } from './AnalyticsEngine';
+import { useAnalytics } from "./AnalyticsEngine";
+import { DataVisualization, VisualizationConfig } from "./AnalyticsEngine";
 
 interface ChartProps {
   data: any[];

@@ -1,18 +1,17 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React from 'react';
-import { render, screen, waitFor } from '@/components/utils/test-utils';
-import { ReportView } from '@/components/components/reports/ReportView';
-import { ReportFilters } from '@/components/components/reports/ReportFilters';
+import React from "react";
+import { render, screen, waitFor } from "@/components/utils/test-utils";
+import { ReportView } from "@/components/components/reports/ReportView";
+import { ReportFilters } from "@/components/components/reports/ReportFilters";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
-import { useReport } from '@/components/hooks/useReports';
+import { useReport } from "@/components/hooks/useReports";
 
 // Mock data
 const mockReports = [

@@ -1,6 +1,6 @@
-import React from 'react';
-import Layout from '@/components/Layout';
-import { useAuth } from '@/hooks/useAuth';
+import React from "react";
+import Layout from "@/components/Layout";
+import { useAuth } from "@/hooks/useAuth";
 
 const Profile: React.FC = () => {
   const { user } = useAuth();
@@ -14,7 +14,7 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </header>
-      
+
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="bg-white shadow rounded-lg">
@@ -29,18 +29,26 @@ const Profile: React.FC = () => {
                 <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
                   <div className="sm:col-span-1">
                     <dt className="text-sm font-medium text-gray-500">Name</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{user?.name || 'John Doe'}</dd>
+                    <dd className="mt-1 text-sm text-gray-900">
+                      {user?.name || "John Doe"}
+                    </dd>
                   </div>
                   <div className="sm:col-span-1">
                     <dt className="text-sm font-medium text-gray-500">Email</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{user?.email || 'john@example.com'}</dd>
+                    <dd className="mt-1 text-sm text-gray-900">
+                      {user?.email || "john@example.com"}
+                    </dd>
                   </div>
                   <div className="sm:col-span-1">
                     <dt className="text-sm font-medium text-gray-500">Role</dt>
-                    <dd className="mt-1 text-sm text-gray-900">{user?.role || 'User'}</dd>
+                    <dd className="mt-1 text-sm text-gray-900">
+                      {user?.role || "User"}
+                    </dd>
                   </div>
                   <div className="sm:col-span-1">
-                    <dt className="text-sm font-medium text-gray-500">Department</dt>
+                    <dt className="text-sm font-medium text-gray-500">
+                      Department
+                    </dt>
                     <dd className="mt-1 text-sm text-gray-900">Finance</dd>
                   </div>
                 </dl>

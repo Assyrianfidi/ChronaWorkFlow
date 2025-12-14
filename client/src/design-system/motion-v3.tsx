@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * Motion & Animations System V3
  * Parallax physics, quantum-curve motion paths, 144fps-capable engine

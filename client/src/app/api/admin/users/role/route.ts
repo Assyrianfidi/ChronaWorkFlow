@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from '../lib/auth.js';
-import { authConfig } from '../lib/auth.js';
-import { prisma } from '../lib/prisma.js';
+import { auth } from "../lib/auth.js";
+import { authConfig } from "../lib/auth.js";
+import { prisma } from "../lib/prisma.js";
 
 export async function POST(req: NextRequest) {
   try {

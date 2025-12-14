@@ -8,7 +8,11 @@ type FeatureGateProps = {
   fallback?: React.ReactNode;
 };
 
-export function FeatureGate({ feature, children, fallback = null }: FeatureGateProps) {
+export function FeatureGate({
+  feature,
+  children,
+  fallback = null,
+}: FeatureGateProps) {
   const { enabled, isLoading } = useIsFeatureEnabled(feature);
 
   if (isLoading) {

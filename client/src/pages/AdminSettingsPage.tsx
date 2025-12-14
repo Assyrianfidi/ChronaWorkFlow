@@ -111,7 +111,14 @@ const mockUsers: User[] = [
     status: "ACTIVE",
     lastLogin: "2024-12-09T16:45:00Z",
     createdAt: "2024-03-20T00:00:00Z",
-    permissions: ["dashboard", "profile", "invoices", "customers", "transactions", "reports"],
+    permissions: [
+      "dashboard",
+      "profile",
+      "invoices",
+      "customers",
+      "transactions",
+      "reports",
+    ],
   },
   {
     id: "4",
@@ -274,8 +281,7 @@ const AdminSettingsPage: React.FC = () => {
 
       setUsers([newUser, ...users]);
       setIsCreateUserDialogOpen(false);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleUpdateUserRole = async (
@@ -296,8 +302,7 @@ const AdminSettingsPage: React.FC = () => {
             : user,
         ),
       );
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleUpdateUserStatus = async (
@@ -312,8 +317,7 @@ const AdminSettingsPage: React.FC = () => {
           user.id === userId ? { ...user, status: newStatus } : user,
         ),
       );
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleDeleteUser = async (userId: string) => {
@@ -339,8 +343,7 @@ const AdminSettingsPage: React.FC = () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       setUsers(users.filter((user) => user.id !== userId));
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleUpdateSetting = async (settingId: string, newValue: any) => {
@@ -352,8 +355,7 @@ const AdminSettingsPage: React.FC = () => {
           setting.id === settingId ? { ...setting, value: newValue } : setting,
         ),
       );
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const getPermissionsForRole = (role: User["role"]): string[] => {
@@ -363,7 +365,14 @@ const AdminSettingsPage: React.FC = () => {
       case "MANAGER":
         return ["invoices", "customers", "reports", "dashboard"];
       case "ACCOUNTANT":
-        return ["dashboard", "profile", "invoices", "customers", "transactions", "reports"];
+        return [
+          "dashboard",
+          "profile",
+          "invoices",
+          "customers",
+          "transactions",
+          "reports",
+        ];
       case "AUDITOR":
         return ["reports", "audit_logs", "view"];
       case "INVENTORY_MANAGER":

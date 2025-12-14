@@ -6,8 +6,8 @@ import {
   useBusinessIntelligence,
   KPIDashboard,
   GoalsTracker,
-} from '@/components/BusinessIntelligence';
-import { AnalyticsEngine } from '@/components/AnalyticsEngine';
+} from "@/components/BusinessIntelligence";
+import { AnalyticsEngine } from "@/components/AnalyticsEngine";
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

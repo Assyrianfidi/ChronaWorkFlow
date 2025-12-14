@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * Omniflow Adaptive Flow Engine
  * Modular workflows that adjust based on user behavior and context

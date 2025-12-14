@@ -1,15 +1,14 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-"use client";
+("use client");
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { User, Account } from '../types/user.js';
+import { User, Account } from "../types/user.js";
 
 interface AdminDashboardClientProps {
   users: User[];

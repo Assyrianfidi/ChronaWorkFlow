@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 import { jsxDEV } from "react/jsx-dev-runtime";
 import { axe } from "jest-axe";
-import { ReportView } from '../../components/reports/ReportView.js';
+import { ReportView } from "../../components/reports/ReportView.js";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { renderWithProviders } from '../../test-utils.js';
+import { renderWithProviders } from "../../test-utils.js";
 
 const mockReport = {
   id: "1",

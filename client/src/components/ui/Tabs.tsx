@@ -66,11 +66,7 @@ export interface TabsTriggerProps
   value: string;
 }
 
-export function TabsTrigger({
-  className,
-  value,
-  ...props
-}: TabsTriggerProps) {
+export function TabsTrigger({ className, value, ...props }: TabsTriggerProps) {
   const ctx = React.useContext(TabsContext);
   if (!ctx) return null;
 
@@ -109,7 +105,10 @@ export function TabsContent({ className, value, ...props }: TabsContentProps) {
     <div
       role="tabpanel"
       data-state={active ? "active" : "inactive"}
-      className={cn("mt-2 ring-offset-background focus-visible:outline-none", className)}
+      className={cn(
+        "mt-2 ring-offset-background focus-visible:outline-none",
+        className,
+      )}
       {...props}
     />
   );

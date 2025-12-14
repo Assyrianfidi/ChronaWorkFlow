@@ -5,7 +5,7 @@ import {
   useAccessibility,
   AccessibilityControls,
   AccessibilityTest,
-} from '../AccessibilityModes.js';
+} from "../AccessibilityModes.js";
 import { describe, expect, it, vi } from "vitest";
 
 // Mock the UX mode context

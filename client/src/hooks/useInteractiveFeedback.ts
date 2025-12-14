@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * Interactive Feedback Hook
  * React hook for managing advanced micro-interactions and feedback
@@ -14,7 +13,7 @@ import React, { useState } from 'react';
 import { useEffect, useRef, useCallback } from "react";
 import InteractionEngine, {
   InteractionConfig,
-} from '@/components/utils/interaction-engine';
+} from "@/components/utils/interaction-engine";
 
 interface UseInteractiveFeedbackOptions {
   hapticFeedback?: boolean;

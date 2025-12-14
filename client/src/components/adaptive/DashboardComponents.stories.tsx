@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { InteractiveDashboard, DashboardBuilder } from './DashboardComponents.js';
-import type { DashboardWidget, DashboardLayout } from './DashboardComponents.js';
+import {
+  InteractiveDashboard,
+  DashboardBuilder,
+} from "./DashboardComponents.js";
+import type {
+  DashboardWidget,
+  DashboardLayout,
+} from "./DashboardComponents.js";
 
 // Mock data for dashboard widgets
 const mockWidgets: DashboardWidget[] = [

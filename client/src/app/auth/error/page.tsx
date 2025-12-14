@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert.js';
+import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.js";
 import { AlertCircle } from "lucide-react";
 
 export default function AuthErrorPage() {

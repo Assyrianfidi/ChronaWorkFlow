@@ -5,7 +5,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { transactionsApi } from '../api.js';
+import { transactionsApi } from "../api.js";
 
 // Types
 export interface TransactionLine {

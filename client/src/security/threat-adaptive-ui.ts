@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * Threat-Adaptive UI System
  * Real-time threat detection, adaptive security levels, dynamic UI adjustments, incident response

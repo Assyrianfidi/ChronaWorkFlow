@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -6,8 +5,8 @@ declare global {
 }
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useUserExperienceMode } from './UserExperienceMode';
-import { cn } from '@/components/lib/utils';
+import { useUserExperienceMode } from "./UserExperienceMode";
+import { cn } from "@/components/lib/utils";
 
 // Accessibility configuration types
 export interface AccessibilityConfig {

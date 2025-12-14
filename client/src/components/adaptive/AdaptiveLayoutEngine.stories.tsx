@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { AdaptiveLayoutEngine } from './AdaptiveLayoutEngine.js';
+import { AdaptiveLayoutEngine } from "./AdaptiveLayoutEngine.js";
 
 const meta: Meta<typeof AdaptiveLayoutEngine> = {
   title: "Adaptive/AdaptiveLayoutEngine",

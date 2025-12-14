@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -14,7 +13,7 @@ import {
   ErrorBoundary,
   withErrorBoundary,
   useAsyncError,
-} from '@/components/ErrorRecoveryUI';
+} from "@/components/ErrorRecoveryUI";
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

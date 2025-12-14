@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { AccountsTable } from './AccountsTable.js';
-import { AccountTableFilters } from './AccountTableFilters.js';
-import { VirtualizedAccountsTable } from './VirtualizedAccountsTable.js';
+import { AccountsTable } from "./AccountsTable.js";
+import { AccountTableFilters } from "./AccountTableFilters.js";
+import { VirtualizedAccountsTable } from "./VirtualizedAccountsTable.js";
 
 // Mock account data
 const mockAccounts = [

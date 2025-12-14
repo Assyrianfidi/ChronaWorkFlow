@@ -84,8 +84,12 @@ export default function InventoryPage() {
     handlePageChange,
     resetFilters,
   } = useInventoryFilters();
-  const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
-  const [expandedRows, setExpandedRows] = React.useState<Set<string>>(new Set());
+  const [selectedItems, setSelectedItems] = React.useState<Set<string>>(
+    new Set(),
+  );
+  const [expandedRows, setExpandedRows] = React.useState<Set<string>>(
+    new Set(),
+  );
 
   const [isExporting, setIsExporting] = React.useState(false);
   const queryOptions = React.useMemo<InventoryQueryOptions>(() => {

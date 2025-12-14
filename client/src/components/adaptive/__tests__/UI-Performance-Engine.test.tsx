@@ -6,7 +6,7 @@ import {
   LazyLoad,
   PerformanceMonitor,
   withPerformanceTracking,
-} from '../UI-Performance-Engine.js';
+} from "../UI-Performance-Engine.js";
 
 // Mock the adaptive layout hook
 jest.mock("../AdaptiveLayoutEngine", () => ({

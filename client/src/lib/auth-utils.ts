@@ -1,5 +1,5 @@
-import { authConfig } from './auth.js';
-import { auth } from './auth.js';
+import { authConfig } from "./auth.js";
+import { auth } from "./auth.js";
 import { redirect } from "next/navigation";
 
 export async function getServerSession() {

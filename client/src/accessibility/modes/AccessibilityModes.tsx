@@ -4,7 +4,9 @@
  */
 
 import React, { useState, useEffect } from "react";
-import AccessibilityEngine, { AccessibilityConfig } from '@/components/a11y-engine';
+import AccessibilityEngine, {
+  AccessibilityConfig,
+} from "@/components/a11y-engine";
 
 interface AccessibilityModesProps {
   engine: AccessibilityEngine;

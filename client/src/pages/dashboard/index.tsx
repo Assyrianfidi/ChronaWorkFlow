@@ -1,16 +1,16 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from '../store/auth-store.js';
-import { Button } from '../components/ui/button.js';
+import { useAuthStore } from "../store/auth-store.js";
+import { Button } from "../components/ui/button.js";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js';
-import { apiRequest } from '../lib/api.js';
+} from "../components/ui/card.js";
+import { apiRequest } from "../lib/api.js";
 import { useQuery } from "@tanstack/react-query";
-import { DashboardShell } from '../components/ui/layout/DashboardShell.js';
+import { DashboardShell } from "../components/ui/layout/DashboardShell.js";
 
 type Report = {
   id: number;

@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 import { useState } from "react";
-import { useAuthStore } from '@/components/store/auth-store';
-import { Button } from '@/components/components/ui/button';
-import { Input } from '@/components/components/ui/input';
-import { Label } from '@/components/components/ui/label';
+import { useAuthStore } from "@/components/store/auth-store";
+import { Button } from "@/components/components/ui/button";
+import { Input } from "@/components/components/ui/input";
+import { Label } from "@/components/components/ui/label";
 import {
   Card,
   CardContent,
@@ -11,8 +11,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/components/ui/card';
-import { Icons } from '@/components/components/icons';
+} from "@/components/components/ui/card";
+import { Icons } from "@/components/components/icons";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");

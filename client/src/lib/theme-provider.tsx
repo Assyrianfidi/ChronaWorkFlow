@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";

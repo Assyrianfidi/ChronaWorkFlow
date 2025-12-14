@@ -7,8 +7,8 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "vitest-axe";
-import { ReportForm } from '../ReportForm.js';
-import type { ReportFormValues } from '../types.js';
+import { ReportForm } from "../ReportForm.js";
+import type { ReportFormValues } from "../types.js";
 
 // Test files
 const TEST_FILE = new File(["test"], "test.pdf", { type: "application/pdf" });

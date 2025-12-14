@@ -1,7 +1,10 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import { EnterpriseAPIGateway, useAPIGateway } from '@/components/EnterpriseAPIGateway';
+import {
+  EnterpriseAPIGateway,
+  useAPIGateway,
+} from "@/components/EnterpriseAPIGateway";
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

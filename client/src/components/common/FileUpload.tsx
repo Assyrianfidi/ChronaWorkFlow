@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Button } from '@/components/components/ui/button';
+import { Button } from "@/components/components/ui/button";
 import { Upload, X, FileText, Loader2 } from "lucide-react";
-import { cn } from '@/components/lib/utils';
+import { cn } from "@/components/lib/utils";
 
 interface FileUploadProps {
   onFilesSelected: (files: File[]) => void;

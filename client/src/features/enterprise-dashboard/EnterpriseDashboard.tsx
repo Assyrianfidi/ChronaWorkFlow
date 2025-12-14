@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useUser } from '@/hooks/useUser';
-import { DashboardLayout } from './components/DashboardLayout';
-import { KpiGrid } from './components/KpiGrid';
-import { DrilldownViewer } from './components/DrilldownViewer';
-import { WorkflowInbox } from './workflows/WorkflowInbox';
-import { useDashboardConfig } from './hooks/useDashboardConfig';
-import { DashboardProvider } from './context/DashboardContext';
-import { PredictiveInsights } from './components/PredictiveInsights';
-import { EntitySelector } from './components/EntitySelector';
-import { useEntityContext } from './context/EntityContext';
+import { useUser } from "@/hooks/useUser";
+import { DashboardLayout } from "./components/DashboardLayout";
+import { KpiGrid } from "./components/KpiGrid";
+import { DrilldownViewer } from "./components/DrilldownViewer";
+import { WorkflowInbox } from "./workflows/WorkflowInbox";
+import { useDashboardConfig } from "./hooks/useDashboardConfig";
+import { DashboardProvider } from "./context/DashboardContext";
+import { PredictiveInsights } from "./components/PredictiveInsights";
+import { EntitySelector } from "./components/EntitySelector";
+import { useEntityContext } from "./context/EntityContext";
 
 type DashboardView = "overview" | "analytics" | "workflows" | "reports";
 

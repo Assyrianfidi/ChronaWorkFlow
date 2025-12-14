@@ -1,8 +1,6 @@
-import React from 'react'
-;
-;
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { cn } from '@/../../lib/utils';
+import { cn } from "@/../../lib/utils";
 import {
   LayoutDashboard,
   Receipt,
@@ -14,7 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { AccuBooksLogo } from '@/components/ui/AccuBooksLogo';
+import { AccuBooksLogo } from "@/components/ui/AccuBooksLogo";
 
 interface NavigationItem {
   title: string;

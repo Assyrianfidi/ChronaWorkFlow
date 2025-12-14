@@ -13,8 +13,8 @@ import {
   InventoryFilterOptions,
   BulkUpdatePayload,
   ExportOptions,
-} from '../types/inventory.js';
-import api from '../lib/api.js';
+} from "../types/inventory.js";
+import api from "../lib/api.js";
 
 const INVENTORY_QUERY_KEY = "inventory";
 const INVENTORY_STATS_QUERY_KEY = "inventory-stats";

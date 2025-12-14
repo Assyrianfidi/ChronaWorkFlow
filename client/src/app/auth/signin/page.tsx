@@ -1,16 +1,16 @@
-import React from 'react';
-"use client";
+import React from "react";
+("use client");
 
-import { Button } from '@/components/components/ui/button';
+import { Button } from "@/components/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/components/ui/card';
-import { Input } from '@/components/components/ui/input';
-import { Label } from '@/components/components/ui/label';
+} from "@/components/components/ui/card";
+import { Input } from "@/components/components/ui/input";
+import { Label } from "@/components/components/ui/label";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";

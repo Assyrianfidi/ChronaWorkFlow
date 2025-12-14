@@ -1,13 +1,13 @@
 import React from "react";
-import { Entity } from '../context/EntityContext.js';
+import { Entity } from "../context/EntityContext.js";
 import { ChevronDown, Building2, Users, Network } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface EntitySelectorProps {
   entities: Entity[];

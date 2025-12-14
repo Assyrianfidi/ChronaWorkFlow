@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useWindowSize } from '@/../../hooks/useWindowSize';
-import { useAuthStore } from '@/../../store/auth-store';
-import { cn } from '@/../../lib/utils';
+import { useWindowSize } from "@/../../hooks/useWindowSize";
+import { useAuthStore } from "@/../../store/auth-store";
+import { cn } from "@/../../lib/utils";
 
 interface AdaptiveLayoutConfig {
   breakpoints: {

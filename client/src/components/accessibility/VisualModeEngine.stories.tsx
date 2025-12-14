@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { VisualModeEngine } from './VisualModeEngine.js';
+import { VisualModeEngine } from "./VisualModeEngine.js";
 
 const meta: Meta<typeof VisualModeEngine> = {
   title: "Accessibility/VisualModeEngine",

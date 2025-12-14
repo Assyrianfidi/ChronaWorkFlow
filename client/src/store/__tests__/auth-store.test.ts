@@ -1,6 +1,6 @@
 import { act } from "@testing-library/react";
-import { useAuthStore } from '../auth-store.js';
-import api from '../lib/api.js';
+import { useAuthStore } from "../auth-store.js";
+import api from "../lib/api.js";
 
 // Mock the API
 vi.mock("../lib/api", () => {

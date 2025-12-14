@@ -5,7 +5,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { accountsApi } from '../api.js';
+import { accountsApi } from "../api.js";
 
 // Types
 export interface Account {

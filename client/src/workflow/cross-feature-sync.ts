@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * Cross-Feature Workflow Sync System
  * Connects billing, invoices, receipts, reports, and tax workflows with auto-sync

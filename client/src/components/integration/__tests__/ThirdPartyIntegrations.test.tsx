@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -11,7 +10,7 @@ import { vi } from "vitest";
 import {
   ThirdPartyIntegrations,
   useThirdPartyIntegrations,
-} from '@/components/ThirdPartyIntegrations';
+} from "@/components/ThirdPartyIntegrations";
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

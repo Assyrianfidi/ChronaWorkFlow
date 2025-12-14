@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * AI Data Insights Engine
  * Predictive KPIs, cash-flow forecasting, expense anomaly detection, intelligent auto-categorization

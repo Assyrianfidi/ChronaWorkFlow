@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { apiRequest } from '../lib/api.js';
+import { apiRequest } from "../lib/api.js";
 
 interface User {
   id: string;

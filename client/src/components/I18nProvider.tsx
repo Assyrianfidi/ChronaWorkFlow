@@ -1,7 +1,4 @@
-import React from 'react'
-;
-;
-
+import React from "react";
 interface I18nProviderProps {
   children: React.ReactNode;
   locale?: string;

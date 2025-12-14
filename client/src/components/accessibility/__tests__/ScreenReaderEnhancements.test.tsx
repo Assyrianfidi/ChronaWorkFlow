@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import {
   ScreenReaderEnhancements,
   ScreenReaderControls,
   useScreenReader,
-} from '@/components/ScreenReaderEnhancements';
+} from "@/components/ScreenReaderEnhancements";
 
 // Mock speech synthesis
 const mockSpeechSynthesis = {

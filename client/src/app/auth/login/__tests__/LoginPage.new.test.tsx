@@ -51,7 +51,7 @@ vi.mock("../store/auth-store", () => ({
 }));
 
 // Import the component after mocks are set up
-import LoginPage from '../page.js';
+import LoginPage from "../page.js";
 
 describe("LoginPage", () => {
   // Reset all mocks before each test

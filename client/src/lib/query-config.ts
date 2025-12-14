@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { QueryClient } from "@tanstack/react-query";
 
 // Production-optimized React Query configuration

@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -6,7 +5,7 @@ declare global {
 }
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useAccessibility } from './AccessibilityContext';
+import { useAccessibility } from "./AccessibilityContext";
 
 // Voice command interfaces
 interface VoiceCommand {

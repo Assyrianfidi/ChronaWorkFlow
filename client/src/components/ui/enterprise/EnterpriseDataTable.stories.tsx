@@ -8,9 +8,9 @@ import type {
   SortingState,
 } from "@tanstack/react-table";
 
-import { EnterpriseDataTable } from './EnterpriseDataTable';
-import { Input } from '@/../../input';
-import { Button } from '@/../../button';
+import { EnterpriseDataTable } from "./EnterpriseDataTable";
+import { Input } from "@/../../input";
+import { Button } from "@/../../button";
 
 interface User {
   id: string;

@@ -5,8 +5,8 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import { useAdaptiveLayout } from './AdaptiveLayoutEngine';
-import { useUserExperienceMode } from './UserExperienceMode';
+import { useAdaptiveLayout } from "./AdaptiveLayoutEngine";
+import { useUserExperienceMode } from "./UserExperienceMode";
 
 // Performance monitoring types
 interface PerformanceMetrics {

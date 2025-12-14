@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useAutomation } from './AutomationEngine';
-import { useAnalytics } from '@/components/analytics/AnalyticsEngine';
+import { useAutomation } from "./AutomationEngine";
+import { useAnalytics } from "@/components/analytics/AnalyticsEngine";
 
 // AI Assistant Types
 interface AIAssistantMessage {

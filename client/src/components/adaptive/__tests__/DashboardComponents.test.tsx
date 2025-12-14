@@ -4,7 +4,7 @@ import {
   InteractiveDashboard,
   DashboardBuilder,
   withPerformanceTracking,
-} from '../DashboardComponents.js';
+} from "../DashboardComponents.js";
 
 // Mock the adaptive layout hook
 jest.mock("../AdaptiveLayoutEngine", () => ({

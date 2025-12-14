@@ -23,7 +23,11 @@ function collectSelectParts(children: React.ReactNode): {
   items: Array<{ value: string; label: React.ReactNode; disabled?: boolean }>;
 } {
   let placeholder: string | undefined;
-  const items: Array<{ value: string; label: React.ReactNode; disabled?: boolean }> = [];
+  const items: Array<{
+    value: string;
+    label: React.ReactNode;
+    disabled?: boolean;
+  }> = [];
 
   const visit = (node: React.ReactNode) => {
     React.Children.forEach(node, (child) => {
@@ -113,13 +117,25 @@ export function Select({
   );
 }
 
-export function SelectTrigger({ children, className }: { children?: React.ReactNode; className?: string }) {
+export function SelectTrigger({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
   void className;
   return <>{children}</>;
 }
 SelectTrigger.displayName = "SelectTrigger";
 
-export function SelectValue({ placeholder, className }: { placeholder?: string; className?: string }) {
+export function SelectValue({
+  placeholder,
+  className,
+}: {
+  placeholder?: string;
+  className?: string;
+}) {
   const ctx = React.useContext(SelectContext);
   void ctx;
   void placeholder;
@@ -128,13 +144,27 @@ export function SelectValue({ placeholder, className }: { placeholder?: string; 
 }
 SelectValue.displayName = "SelectValue";
 
-export function SelectContent({ children, className }: { children?: React.ReactNode; className?: string }) {
+export function SelectContent({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
   void className;
   return <>{children}</>;
 }
 SelectContent.displayName = "SelectContent";
 
-export function SelectItem({ children, className }: { value: string; disabled?: boolean; children?: React.ReactNode; className?: string }) {
+export function SelectItem({
+  children,
+  className,
+}: {
+  value: string;
+  disabled?: boolean;
+  children?: React.ReactNode;
+  className?: string;
+}) {
   void className;
   return <>{children}</>;
 }

@@ -1,8 +1,8 @@
-import React from 'react';
-"use client";
+import React from "react";
+("use client");
 
 import { signIn } from "next-auth/react";
-import { Button } from '@/components/components/ui/button';
+import { Button } from "@/components/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,12 +10,12 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/components/ui/card';
-import { Input } from '@/components/components/ui/input';
-import { Label } from '@/components/components/ui/label';
+} from "@/components/components/ui/card";
+import { Input } from "@/components/components/ui/input";
+import { Label } from "@/components/components/ui/label";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Icons } from '@/components/components/icons';
+import { Icons } from "@/components/components/icons";
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);

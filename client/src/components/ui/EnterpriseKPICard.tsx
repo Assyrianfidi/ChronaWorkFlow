@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
 import {
   TrendingUp,
@@ -14,7 +14,7 @@ import {
   Activity,
   Zap,
 } from "lucide-react";
-import { cn } from '@/../../lib/utils';
+import { cn } from "@/../../lib/utils";
 
 interface EnterpriseKPICardProps {
   title: string;

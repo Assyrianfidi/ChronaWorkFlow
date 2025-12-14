@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * GPU Acceleration Engine
  * WebGL rendering, GPU-powered animations, hardware acceleration optimization, parallel processing

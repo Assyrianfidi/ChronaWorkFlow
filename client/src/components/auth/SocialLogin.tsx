@@ -1,5 +1,5 @@
-import { Button } from '../ui/button.js';
-import { Icons } from '../icons.js';
+import { Button } from "../ui/button.js";
+import { Icons } from "../icons.js";
 import { signIn } from "next-auth/react";
 
 export function SocialLogin() {

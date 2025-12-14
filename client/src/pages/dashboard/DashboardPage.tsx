@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '@/../../components/ui/card';
-import { apiRequest } from '@/../../lib/api';
+} from "@/../../components/ui/card";
+import { apiRequest } from "@/../../lib/api";
 import { Bar, Line, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -21,7 +21,7 @@ import {
   ChartData,
   ChartOptions,
 } from "chart.js";
-import { formatCurrency } from '@/../../lib/formatters';
+import { formatCurrency } from "@/../../lib/formatters";
 
 // Register ChartJS components
 ChartJS.register(

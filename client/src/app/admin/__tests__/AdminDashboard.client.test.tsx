@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import AdminDashboardClient from '../AdminDashboardClient.js';
-import { UserRole } from '../types/next-auth.js';
+import AdminDashboardClient from "../AdminDashboardClient.js";
+import { UserRole } from "../types/next-auth.js";
 
 // Mock next-auth/react
 vi.mock("next-auth/react");

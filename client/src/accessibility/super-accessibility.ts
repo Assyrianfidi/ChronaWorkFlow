@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * Super-Accessibility Mode
  * Voice-first interface, screen reader optimization, cognitive load reduction, motor impairment support

@@ -5,7 +5,7 @@ import {
   useUserExperienceMode,
   UXModeSelector,
   UXCustomSettings,
-} from '../UserExperienceMode.js';
+} from "../UserExperienceMode.js";
 
 // Mock the auth store
 jest.mock("../store/auth-store", () => ({

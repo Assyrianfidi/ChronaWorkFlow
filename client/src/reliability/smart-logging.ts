@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * Smart Logging System
  * Intelligent log filtering, anomaly detection, predictive issue identification, automated alerts

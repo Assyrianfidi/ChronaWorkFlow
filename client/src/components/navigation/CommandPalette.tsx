@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -18,7 +17,7 @@ import React, {
   useCallback,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAdvancedFeedback } from '@/../../hooks/useInteractiveFeedback';
+import { useAdvancedFeedback } from "@/../../hooks/useInteractiveFeedback";
 
 // Types
 export interface CommandItem {

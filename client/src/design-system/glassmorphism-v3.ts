@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React from 'react';
+import React from "react";
 /**
  * Next-Gen Glassmorphism V3.0
  * Multi-layered atmospheric depth with GPU-accelerated pipelines

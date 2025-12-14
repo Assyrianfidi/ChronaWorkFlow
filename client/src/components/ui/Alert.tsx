@@ -27,15 +27,16 @@ Alert.displayName = "Alert";
 export interface AlertDescriptionProps
   extends React.HTMLAttributes<HTMLParagraphElement> {}
 
-const AlertDescription = React.forwardRef<HTMLParagraphElement, AlertDescriptionProps>(
-  ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn("text-sm [&_p]:leading-relaxed", className)}
-      {...props}
-    />
-  ),
-);
+const AlertDescription = React.forwardRef<
+  HTMLParagraphElement,
+  AlertDescriptionProps
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("text-sm [&_p]:leading-relaxed", className)}
+    {...props}
+  />
+));
 
 AlertDescription.displayName = "AlertDescription";
 

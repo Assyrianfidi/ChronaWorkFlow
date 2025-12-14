@@ -11,8 +11,8 @@ import React, {
   useCallback,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAdaptiveUI } from '@/../../state/ui/UserExperienceMode';
-import { useAdvancedFeedback } from '@/../../hooks/useInteractiveFeedback';
+import { useAdaptiveUI } from "@/../../state/ui/UserExperienceMode";
+import { useAdvancedFeedback } from "@/../../hooks/useInteractiveFeedback";
 
 // Types
 export interface NavigationItem {

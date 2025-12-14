@@ -152,8 +152,7 @@ const Dashboard: React.FC = () => {
     ],
   };
 
-  const kpis =
-    roleBasedKPIs[user?.role || "ADMIN"] || roleBasedKPIs.ADMIN;
+  const kpis = roleBasedKPIs[user?.role || "ADMIN"] || roleBasedKPIs.ADMIN;
 
   const getQuickActions = () => {
     const baseActions = [

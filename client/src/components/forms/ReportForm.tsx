@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui';
-import { Input } from '@/components/ui';
-import Form, { FormField, FormActions } from './Form';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import Form, { FormField, FormActions } from "./Form";
 
 const reportSchema = z.object({
-  title: z.string().min(1, 'Title is required').min(3, 'Title must be at least 3 characters'),
-  type: z.enum(['financial', 'sales', 'inventory', 'payroll', 'custom']),
-  startDate: z.string().min(1, 'Start date is required'),
-  endDate: z.string().min(1, 'End date is required'),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .min(3, "Title must be at least 3 characters"),
+  type: z.enum(["financial", "sales", "inventory", "payroll", "custom"]),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
   parameters: z.record(z.any()).optional(),
 });
 
@@ -32,7 +35,7 @@ const ReportForm: React.FC<ReportFormProps> = ({
   success,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -43,14 +46,16 @@ const ReportForm: React.FC<ReportFormProps> = ({
   } = useForm<ReportFormData>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
-      title: '',
-      type: 'financial',
-      startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      endDate: new Date().toISOString().split('T')[0],
+      title: "",
+      type: "financial",
+      startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
       parameters: {},
       ...initialData,
     },
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const handleFormSubmit = async (data: ReportFormData) => {
@@ -67,36 +72,28 @@ const ReportForm: React.FC<ReportFormProps> = ({
 
   return (
     <Form
-      title={initialData ? 'Edit Report' : 'Generate New Report'}
+      title={initialData ? "Edit Report" : "Generate New Report"}
       description="Configure your report parameters below"
       loading={loading || isSubmitting}
       error={error}
       success={success}
       onSubmit={handleSubmit(handleFormSubmit)}
     >
-      <FormField
-        label="Report Title"
-        error={errors.title?.message}
-        required
-      >
+      <FormField label="Report Title" error={errors.title?.message} required>
         <Input
-          {...register('title')}
+          {...register("title")}
           placeholder="Enter report title"
           aria-label="Report title"
-          aria-invalid={errors.title ? 'true' : 'false'}
+          aria-invalid={errors.title ? "true" : "false"}
         />
       </FormField>
 
-      <FormField
-        label="Report Type"
-        error={errors.type?.message}
-        required
-      >
+      <FormField label="Report Type" error={errors.type?.message} required>
         <select
-          {...register('type')}
+          {...register("type")}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           aria-label="Report type"
-          aria-invalid={errors.type ? 'true' : 'false'}
+          aria-invalid={errors.type ? "true" : "false"}
         >
           <option value="financial">Financial Report</option>
           <option value="sales">Sales Report</option>
@@ -113,23 +110,19 @@ const ReportForm: React.FC<ReportFormProps> = ({
           required
         >
           <Input
-            {...register('startDate')}
+            {...register("startDate")}
             type="date"
             aria-label="Report start date"
-            aria-invalid={errors.startDate ? 'true' : 'false'}
+            aria-invalid={errors.startDate ? "true" : "false"}
           />
         </FormField>
 
-        <FormField
-          label="End Date"
-          error={errors.endDate?.message}
-          required
-        >
+        <FormField label="End Date" error={errors.endDate?.message} required>
           <Input
-            {...register('endDate')}
+            {...register("endDate")}
             type="date"
             aria-label="Report end date"
-            aria-invalid={errors.endDate ? 'true' : 'false'}
+            aria-invalid={errors.endDate ? "true" : "false"}
           />
         </FormField>
       </div>
@@ -140,7 +133,7 @@ const ReportForm: React.FC<ReportFormProps> = ({
         description="JSON format for additional report parameters"
       >
         <textarea
-          {...register('parameters')}
+          {...register("parameters")}
           rows={4}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           placeholder='{"key": "value"}'
@@ -153,16 +146,15 @@ const ReportForm: React.FC<ReportFormProps> = ({
           type="submit"
           disabled={!isDirty || !isValid || isSubmitting}
           loading={isSubmitting}
-          aria-label={initialData ? 'Update report' : 'Generate report'}
+          aria-label={initialData ? "Update report" : "Generate report"}
         >
-          {isSubmitting 
-            ? 'Generating...' 
-            : initialData 
-              ? 'Update Report' 
-              : 'Generate Report'
-          }
+          {isSubmitting
+            ? "Generating..."
+            : initialData
+              ? "Update Report"
+              : "Generate Report"}
         </Button>
-        
+
         <Button
           type="button"
           variant="outline"

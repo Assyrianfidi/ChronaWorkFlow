@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -6,7 +5,7 @@ declare global {
 }
 
 import type { Meta, StoryObj } from "@storybook/react";
-import { ScreenReaderEnhancements } from './ScreenReaderEnhancements.js';
+import { ScreenReaderEnhancements } from "./ScreenReaderEnhancements.js";
 
 const meta: Meta<typeof ScreenReaderEnhancements> = {
   title: "Accessibility/ScreenReaderEnhancements",

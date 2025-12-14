@@ -1,5 +1,5 @@
 import React from "react";
-import { DashboardShell } from '../../components/ui/layout/DashboardShell.js';
+import { DashboardShell } from "../../components/ui/layout/DashboardShell.js";
 
 const InventoryPage: React.FC = () => {
   return (

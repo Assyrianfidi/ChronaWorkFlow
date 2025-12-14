@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
-import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
-import { useAuthStore } from '@/../../store/auth-store';
+import { useUserExperienceMode } from "@/components/adaptive/UserExperienceMode";
+import { usePerformance } from "@/components/adaptive/UI-Performance-Engine";
+import { useAuthStore } from "@/../../store/auth-store";
 
 // GraphQL Types
 interface GraphQLSchema {

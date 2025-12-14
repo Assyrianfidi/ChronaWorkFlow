@@ -180,8 +180,7 @@ export const useAuth = create<AuthState>((set, get) => ({
 
   logout: async () => {
     try {
-    } catch (error) {
-    }
+    } catch (error) {}
 
     set({
       user: null,
@@ -229,7 +228,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const storedUser = localStorage.getItem("accubooks_user");
 
       if (token && storedUser) {
-                const parsed = JSON.parse(storedUser) as User;
+        const parsed = JSON.parse(storedUser) as User;
 
         const userWithPermissions: User = {
           ...parsed,

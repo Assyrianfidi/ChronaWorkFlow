@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui';
-import { Input } from '@/components/ui';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
 
 const SignUp: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle sign up logic
-    navigate('/dashboard');
+    navigate("/dashboard");
   };
 
   return (
@@ -23,17 +23,23 @@ const SignUp: React.FC = () => {
             Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link to="/auth/signin" className="font-medium text-blue-600 hover:text-blue-500">
+            Or{" "}
+            <Link
+              to="/auth/signin"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
               sign in to your existing account
             </Link>
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email-address"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <Input
@@ -48,9 +54,12 @@ const SignUp: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            
+
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <Input
@@ -65,9 +74,12 @@ const SignUp: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            
+
             <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="confirm-password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Confirm Password
               </label>
               <Input
@@ -92,12 +104,15 @@ const SignUp: React.FC = () => {
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               required
             />
-            <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-900">
-              I agree to the{' '}
+            <label
+              htmlFor="agree-terms"
+              className="ml-2 block text-sm text-gray-900"
+            >
+              I agree to the{" "}
               <a href="#" className="text-blue-600 hover:text-blue-500">
                 Terms of Service
-              </a>{' '}
-              and{' '}
+              </a>{" "}
+              and{" "}
               <a href="#" className="text-blue-600 hover:text-blue-500">
                 Privacy Policy
               </a>

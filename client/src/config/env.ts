@@ -1,6 +1,6 @@
 // Environment variable management and validation
 interface EnvConfig {
-  NODE_ENV: 'development' | 'production' | 'test';
+  NODE_ENV: "development" | "production" | "test";
   VITE_API_URL: string;
   VITE_API_VERSION: string;
   VITE_API_TIMEOUT: number;
@@ -21,58 +21,82 @@ interface EnvConfig {
   VITE_GOOGLE_ANALYTICS_ID?: string;
   VITE_MAX_FILE_SIZE: number;
   VITE_ALLOWED_FILE_TYPES: string[];
-  VITE_LOG_LEVEL: 'error' | 'warn' | 'info' | 'debug';
+  VITE_LOG_LEVEL: "error" | "warn" | "info" | "debug";
 }
 
 // Validate and parse environment variables
 export const validateEnv = (): EnvConfig => {
   const requiredVars = [
-    'NODE_ENV',
-    'VITE_API_URL',
-    'VITE_API_VERSION',
-    'VITE_JWT_SECRET'
+    "NODE_ENV",
+    "VITE_API_URL",
+    "VITE_API_VERSION",
+    "VITE_JWT_SECRET",
   ];
 
-  const missingVars = requiredVars.filter(varName => !import.meta.env[varName]);
-  
+  const missingVars = requiredVars.filter(
+    (varName) => !import.meta.env[varName],
+  );
+
   if (missingVars.length > 0) {
-    throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+    throw new Error(
+      `Missing required environment variables: ${missingVars.join(", ")}`,
+    );
   }
 
   // Validate API URL is HTTPS
   const apiUrl = import.meta.env.VITE_API_URL;
-  if (!apiUrl.startsWith('https://') && import.meta.env.NODE_ENV === 'production') {
-    throw new Error('API URL must use HTTPS in production');
+  if (
+    !apiUrl.startsWith("https://") &&
+    import.meta.env.NODE_ENV === "production"
+  ) {
+    throw new Error("API URL must use HTTPS in production");
   }
 
   // Parse and validate numeric values
-  const apiTimeout = parseInt(import.meta.env.VITE_API_TIMEOUT || '10000');
-  const sessionTimeout = parseInt(import.meta.env.VITE_SESSION_TIMEOUT || '3600000');
-  const rateLimitWindow = parseInt(import.meta.env.VITE_RATE_LIMIT_WINDOW || '900000');
-  const rateLimitMax = parseInt(import.meta.env.VITE_RATE_LIMIT_MAX || '100');
-  const maxFileSize = parseInt(import.meta.env.VITE_MAX_FILE_SIZE || '10485760');
+  const apiTimeout = parseInt(import.meta.env.VITE_API_TIMEOUT || "10000");
+  const sessionTimeout = parseInt(
+    import.meta.env.VITE_SESSION_TIMEOUT || "3600000",
+  );
+  const rateLimitWindow = parseInt(
+    import.meta.env.VITE_RATE_LIMIT_WINDOW || "900000",
+  );
+  const rateLimitMax = parseInt(import.meta.env.VITE_RATE_LIMIT_MAX || "100");
+  const maxFileSize = parseInt(
+    import.meta.env.VITE_MAX_FILE_SIZE || "10485760",
+  );
 
   // Parse boolean values
-  const enableCSRF = import.meta.env.VITE_ENABLE_CSRF === 'true';
-  const enableCSP = import.meta.env.VITE_ENABLE_CSP === 'true';
-  const corsCredentials = import.meta.env.VITE_CORS_CREDENTIALS === 'true';
-  const enableAnalytics = import.meta.env.VITE_ENABLE_ANALYTICS === 'true';
-  const enableErrorReporting = import.meta.env.VITE_ENABLE_ERROR_REPORTING === 'true';
-  const enablePerfMonitoring = import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING === 'true';
+  const enableCSRF = import.meta.env.VITE_ENABLE_CSRF === "true";
+  const enableCSP = import.meta.env.VITE_ENABLE_CSP === "true";
+  const corsCredentials = import.meta.env.VITE_CORS_CREDENTIALS === "true";
+  const enableAnalytics = import.meta.env.VITE_ENABLE_ANALYTICS === "true";
+  const enableErrorReporting =
+    import.meta.env.VITE_ENABLE_ERROR_REPORTING === "true";
+  const enablePerfMonitoring =
+    import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING === "true";
 
   // Parse array values
-  const allowedOrigins = (import.meta.env.VITE_ALLOWED_ORIGINS || '').split(',').map(origin => origin.trim()).filter(Boolean);
-  const allowedFileTypes = (import.meta.env.VITE_ALLOWED_FILE_TYPES || '').split(',').map(type => type.trim()).filter(Boolean);
+  const allowedOrigins = (import.meta.env.VITE_ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  const allowedFileTypes = (import.meta.env.VITE_ALLOWED_FILE_TYPES || "")
+    .split(",")
+    .map((type) => type.trim())
+    .filter(Boolean);
 
   // Validate log level
-  const logLevel = (import.meta.env.VITE_LOG_LEVEL || 'error') as EnvConfig['VITE_LOG_LEVEL'];
-  const validLogLevels = ['error', 'warn', 'info', 'debug'];
+  const logLevel = (import.meta.env.VITE_LOG_LEVEL ||
+    "error") as EnvConfig["VITE_LOG_LEVEL"];
+  const validLogLevels = ["error", "warn", "info", "debug"];
   if (!validLogLevels.includes(logLevel)) {
-    throw new Error(`Invalid log level: ${logLevel}. Must be one of: ${validLogLevels.join(', ')}`);
+    throw new Error(
+      `Invalid log level: ${logLevel}. Must be one of: ${validLogLevels.join(", ")}`,
+    );
   }
 
   return {
-    NODE_ENV: import.meta.env.NODE_ENV as EnvConfig['NODE_ENV'],
+    NODE_ENV: import.meta.env.NODE_ENV as EnvConfig["NODE_ENV"],
     VITE_API_URL: apiUrl,
     VITE_API_VERSION: import.meta.env.VITE_API_VERSION,
     VITE_API_TIMEOUT: apiTimeout,
@@ -80,8 +104,9 @@ export const validateEnv = (): EnvConfig => {
     VITE_ENABLE_CSP: enableCSP,
     VITE_SESSION_TIMEOUT: sessionTimeout,
     VITE_JWT_SECRET: import.meta.env.VITE_JWT_SECRET,
-    VITE_JWT_EXPIRES_IN: import.meta.env.VITE_JWT_EXPIRES_IN || '1h',
-    VITE_REFRESH_TOKEN_EXPIRES_IN: import.meta.env.VITE_REFRESH_TOKEN_EXPIRES_IN || '7d',
+    VITE_JWT_EXPIRES_IN: import.meta.env.VITE_JWT_EXPIRES_IN || "1h",
+    VITE_REFRESH_TOKEN_EXPIRES_IN:
+      import.meta.env.VITE_REFRESH_TOKEN_EXPIRES_IN || "7d",
     VITE_ALLOWED_ORIGINS: allowedOrigins,
     VITE_CORS_CREDENTIALS: corsCredentials,
     VITE_RATE_LIMIT_WINDOW: rateLimitWindow,
@@ -93,7 +118,7 @@ export const validateEnv = (): EnvConfig => {
     VITE_GOOGLE_ANALYTICS_ID: import.meta.env.VITE_GOOGLE_ANALYTICS_ID,
     VITE_MAX_FILE_SIZE: maxFileSize,
     VITE_ALLOWED_FILE_TYPES: allowedFileTypes,
-    VITE_LOG_LEVEL: logLevel
+    VITE_LOG_LEVEL: logLevel,
   };
 };
 
@@ -101,9 +126,9 @@ export const validateEnv = (): EnvConfig => {
 export const config = validateEnv();
 
 // Environment-specific configurations
-export const isDevelopment = config.NODE_ENV === 'development';
-export const isProduction = config.NODE_ENV === 'production';
-export const isTest = config.NODE_ENV === 'test';
+export const isDevelopment = config.NODE_ENV === "development";
+export const isProduction = config.NODE_ENV === "production";
+export const isTest = config.NODE_ENV === "test";
 
 // Security configuration
 export const securityConfig = {
@@ -116,34 +141,34 @@ export const securityConfig = {
   allowedOrigins: config.VITE_ALLOWED_ORIGINS,
   corsCredentials: config.VITE_CORS_CREDENTIALS,
   rateLimitWindow: config.VITE_RATE_LIMIT_WINDOW,
-  rateLimitMax: config.VITE_RATE_LIMIT_MAX
+  rateLimitMax: config.VITE_RATE_LIMIT_MAX,
 };
 
 // API configuration
 export const apiConfig = {
   baseUrl: config.VITE_API_URL,
   version: config.VITE_API_VERSION,
-  timeout: config.VITE_API_TIMEOUT
+  timeout: config.VITE_API_TIMEOUT,
 };
 
 // Feature flags
 export const features = {
   analytics: config.VITE_ENABLE_ANALYTICS,
   errorReporting: config.VITE_ENABLE_ERROR_REPORTING,
-  performanceMonitoring: config.VITE_ENABLE_PERFORMANCE_MONITORING
+  performanceMonitoring: config.VITE_ENABLE_PERFORMANCE_MONITORING,
 };
 
 // File upload configuration
 export const fileConfig = {
   maxSize: config.VITE_MAX_FILE_SIZE,
-  allowedTypes: config.VITE_ALLOWED_FILE_TYPES
+  allowedTypes: config.VITE_ALLOWED_FILE_TYPES,
 };
 
 // Logging configuration
 export const logConfig = {
   level: config.VITE_LOG_LEVEL,
   enableConsole: isDevelopment,
-  enableFile: isProduction
+  enableFile: isProduction,
 };
 
 export default {
@@ -155,5 +180,5 @@ export default {
   apiConfig,
   features,
   fileConfig,
-  logConfig
+  logConfig,
 };

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { useAnalytics } from './AnalyticsEngine';
-import { ReportFilter, AnalyticsReport } from './AnalyticsEngine';
+import { useAnalytics } from "./AnalyticsEngine";
+import { ReportFilter, AnalyticsReport } from "./AnalyticsEngine";
 
 interface ReportTemplate {
   id: string;

@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   UserExperienceModeProvider,
   useUserExperienceMode,
-} from './UserExperienceMode';
+} from "./UserExperienceMode";
 
 // Demo component to show user experience mode features
 const UXModeDemo: React.FC = () => {

@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React from 'react';
+import React from "react";
 import {
   useQuery,
   useMutation,
@@ -19,10 +18,14 @@ import {
   QueryFilters,
   keepPreviousData,
 } from "@tanstack/react-query";
-import { reportService } from '@/components/services/reportService';
-import { Report, ReportFormData, ReportListResponse } from '@/components/types/report';
-import { QueryParams } from '@/components/types/common';
-import { useToast } from '@/components/components/ui/use-toast';
+import { reportService } from "@/components/services/reportService";
+import {
+  Report,
+  ReportFormData,
+  ReportListResponse,
+} from "@/components/types/report";
+import { QueryParams } from "@/components/types/common";
+import { useToast } from "@/components/components/ui/use-toast";
 
 const REPORT_QUERY_KEYS = {
   all: ["reports"],

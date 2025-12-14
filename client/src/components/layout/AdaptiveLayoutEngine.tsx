@@ -7,7 +7,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import {
   UIAdaptationConfig,
   TaskType,
-} from '@/../../state/ui/UserExperienceMode';
+} from "@/../../state/ui/UserExperienceMode";
 
 interface AdaptiveLayoutProps {
   children: React.ReactNode;

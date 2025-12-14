@@ -1,15 +1,14 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React from 'react';
+import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { Button } from '../ui/button.js';
+import { Button } from "../ui/button.js";
 import {
   Table,
   TableBody,
@@ -17,26 +16,26 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table.js';
+} from "../ui/table.js";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from '../ui/card.js';
-import { Input } from '../ui/input.js';
+} from "../ui/card.js";
+import { Input } from "../ui/input.js";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select.js';
-import { useReports, useDeleteReport } from '../../hooks/useReports.js';
-import { useToast } from '../ui/use-toast.js';
+} from "../ui/select.js";
+import { useReports, useDeleteReport } from "../../hooks/useReports.js";
+import { useToast } from "../ui/use-toast.js";
 import { Loader2, Plus, Search, Trash2, Edit, FileText } from "lucide-react";
-import { Report, ReportStatus } from '../../types/report.js';
+import { Report, ReportStatus } from "../../types/report.js";
 
 type ReportWithMeta = {
   data: Report[];

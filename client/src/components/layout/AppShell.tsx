@@ -1,16 +1,15 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
 import { Outlet } from "react-router-dom";
-import { cn } from '@/../../lib/utils';
-import { PrimaryNavigation } from './PrimaryNavigation';
-import { TopBar } from './TopBar';
+import { cn } from "@/../../lib/utils";
+import { PrimaryNavigation } from "./PrimaryNavigation";
+import { TopBar } from "./TopBar";
 
 interface AppShellProps {
   className?: string;

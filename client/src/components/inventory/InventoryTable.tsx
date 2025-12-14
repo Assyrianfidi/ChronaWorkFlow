@@ -6,17 +6,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/components/ui/table';
-import { Badge } from '@/components/components/ui/badge';
-import { Button } from '@/components/components/ui/button';
-import { Checkbox } from '@/components/components/ui/checkbox';
+} from "@/components/components/ui/table";
+import { Badge } from "@/components/components/ui/badge";
+import { Button } from "@/components/components/ui/button";
+import { Checkbox } from "@/components/components/ui/checkbox";
 import {
   Package,
   ChevronDown,
   ChevronRight,
   MoreHorizontal,
 } from "lucide-react";
-import { InventoryItem, InventoryStatus } from '@/components/types/inventory';
+import { InventoryItem, InventoryStatus } from "@/components/types/inventory";
 
 interface InventoryTableProps {
   items: InventoryItem[];

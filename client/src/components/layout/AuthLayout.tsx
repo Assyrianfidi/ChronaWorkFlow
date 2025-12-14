@@ -1,9 +1,7 @@
-import React from 'react'
-;
-;
+import React from "react";
 import { Outlet } from "react-router-dom";
-import { cn } from '@/../../lib/utils';
-import { AccuBooksLogo } from '@/components/ui/AccuBooksLogo';
+import { cn } from "@/../../lib/utils";
+import { AccuBooksLogo } from "@/components/ui/AccuBooksLogo";
 
 interface AuthLayoutProps {
   className?: string;

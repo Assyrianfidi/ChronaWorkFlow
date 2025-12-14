@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAuth } from '@/../../contexts/AuthContext';
+import { useAuth } from "@/../../contexts/AuthContext";
 import {
   LayoutDashboard,
   FileText,
@@ -18,7 +18,7 @@ import {
   Briefcase,
   Shield,
 } from "lucide-react";
-import { cn } from '@/../../lib/utils';
+import { cn } from "@/../../lib/utils";
 
 interface SidebarProps {
   className?: string;

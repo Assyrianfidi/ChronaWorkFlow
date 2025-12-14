@@ -1,9 +1,12 @@
 import React from "react";
-import { TableRow, TableCell } from '../components/ui/table.js';
+import { TableRow, TableCell } from "../components/ui/table.js";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Badge } from '../components/ui/badge.js';
-import { getAccountTypeLabel, getAccountTypeVariant } from '../types/accounts.js';
-import type { AccountWithChildren } from '../types/accounts.js';
+import { Badge } from "../components/ui/badge.js";
+import {
+  getAccountTypeLabel,
+  getAccountTypeVariant,
+} from "../types/accounts.js";
+import type { AccountWithChildren } from "../types/accounts.js";
 
 interface AccountRowProps {
   account: AccountWithChildren;

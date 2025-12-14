@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import { useToast } from '../hooks/useToast.js';
+import { useToast } from "../hooks/useToast.js";
 
 export class AppError extends Error {
   constructor(

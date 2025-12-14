@@ -1,7 +1,7 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
-import { cn } from '../../lib/utils.js';
+import { cn } from "../../lib/utils.js";
 import { useEffect } from "react";
 
 type RichTextEditorProps = {

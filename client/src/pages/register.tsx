@@ -5,9 +5,9 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from '../components/ui/card.js';
-import { useAuthStore } from '../store/auth-store.js';
-import { RegistrationForm } from '../components/auth/RegistrationForm.js';
+} from "../components/ui/card.js";
+import { useAuthStore } from "../store/auth-store.js";
+import { RegistrationForm } from "../components/auth/RegistrationForm.js";
 import { Wallet } from "lucide-react";
 
 export default function Register() {

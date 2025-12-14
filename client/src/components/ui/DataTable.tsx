@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
 import {
   ChevronUp,
@@ -15,9 +14,9 @@ import {
   Download,
   MoreHorizontal,
 } from "lucide-react";
-import { Button } from './button';
-import { Input } from './input';
-import { cn } from '@/../../lib/utils';
+import { Button } from "./button";
+import { Input } from "./input";
+import { cn } from "@/../../lib/utils";
 
 interface Column<T> {
   key: keyof T;

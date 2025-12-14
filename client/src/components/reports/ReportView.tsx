@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -6,16 +5,16 @@ declare global {
 }
 
 import { useParams, useNavigate } from "react-router-dom";
-import { useReport } from '../../hooks/useReports.js';
-import { Button } from '../ui/button.js';
+import { useReport } from "../../hooks/useReports.js";
+import { Button } from "../ui/button.js";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from '../ui/card.js';
-import { Avatar } from '../ui/avatar.js';
+} from "../ui/card.js";
+import { Avatar } from "../ui/avatar.js";
 import {
   Table,
   TableBody,
@@ -23,19 +22,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table.js';
-import { Badge } from '../ui/badge.js';
-import { Skeleton } from '../ui/skeleton.js';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs.js';
-import { Progress } from '../ui/progress.js';
-import { Input } from '../ui/input.js';
+} from "../ui/table.js";
+import { Badge } from "../ui/badge.js";
+import { Skeleton } from "../ui/skeleton.js";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs.js";
+import { Progress } from "../ui/progress.js";
+import { Input } from "../ui/input.js";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select.js';
+} from "../ui/select.js";
 import {
   ArrowLeft,
   Download,
@@ -49,8 +48,8 @@ import {
   MoreHorizontal,
   Save,
 } from "lucide-react";
-import { useToast } from '../ui/use-toast.js';
-import { Report } from '../../types/report.js';
+import { useToast } from "../ui/use-toast.js";
+import { Report } from "../../types/report.js";
 import { format } from "date-fns";
 import React from "react"; // Added missing import
 

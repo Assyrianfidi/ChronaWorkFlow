@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useAccounts } from '@/components/contexts/AccountsContext';
-import { Button } from '@/components/components/ui/button';
-import { DashboardShell } from '@/components/components/ui/layout/DashboardShell';
+import { useAccounts } from "@/components/contexts/AccountsContext";
+import { Button } from "@/components/components/ui/button";
+import { DashboardShell } from "@/components/components/ui/layout/DashboardShell";
 
 const AccountsPage: React.FC = () => {
   const {

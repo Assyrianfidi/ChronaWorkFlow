@@ -1,16 +1,15 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
 import { Search, Bell, Settings, User, Menu, X, Moon, Sun } from "lucide-react";
-import { EnterpriseButton } from '@/components/ui/EnterpriseButton';
-import { EnterpriseInput } from '@/components/ui/EnterpriseInput';
-import { cn } from '@/../../lib/utils';
+import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
+import { EnterpriseInput } from "@/components/ui/EnterpriseInput";
+import { cn } from "@/../../lib/utils";
 
 interface TopNavigationProps {
   onSidebarToggle?: () => void;

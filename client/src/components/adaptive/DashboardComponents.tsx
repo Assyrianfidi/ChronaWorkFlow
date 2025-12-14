@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useAdaptiveLayout } from './AdaptiveLayoutEngine';
-import { useUserExperienceMode } from './UserExperienceMode';
-import { cn } from '@/../../lib/utils';
+import { useAdaptiveLayout } from "./AdaptiveLayoutEngine";
+import { useUserExperienceMode } from "./UserExperienceMode";
+import { cn } from "@/../../lib/utils";
 
 // Dashboard Widget Types
 export interface DashboardWidget {

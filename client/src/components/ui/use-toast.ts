@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
-import { Toast, ToastProps } from '@/components/components/ui/toast';
+import { Toast, ToastProps } from "@/components/components/ui/toast";
 
 const TOAST_LIMIT = 5;
 const TOAST_REMOVE_DELAY = 1000000;

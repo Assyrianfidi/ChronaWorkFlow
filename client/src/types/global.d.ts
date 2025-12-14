@@ -13,7 +13,7 @@ declare global {
     MutationObserver?: any;
     Chart?: any;
   }
-  
+
   namespace NodeJS {
     interface ProcessEnv {
       [key: string]: string | undefined;
@@ -21,88 +21,88 @@ declare global {
   }
 }
 
-declare module '*.module.css' {
+declare module "*.module.css" {
   const classes: { readonly [key: string]: string };
   export default classes;
 }
 
-declare module '*.module.scss' {
+declare module "*.module.scss" {
   const classes: { readonly [key: string]: string };
   export default classes;
 }
 
-declare module '*.css' {
+declare module "*.css" {
   const content: string;
   export default content;
 }
 
-declare module '*.scss' {
+declare module "*.scss" {
   const content: string;
   export default content;
 }
 
-declare module '*.svg' {
-  import React = require('react');
+declare module "*.svg" {
+  import React = require("react");
   export const ReactComponent: React.FC<React.SVGProps<SVGSVGElement>>;
   const src: string;
   export default src;
 }
 
-declare module '*.png' {
+declare module "*.png" {
   const src: string;
   export default src;
 }
 
-declare module '*.jpg' {
+declare module "*.jpg" {
   const src: string;
   export default src;
 }
 
-declare module '*.jpeg' {
+declare module "*.jpeg" {
   const src: string;
   export default src;
 }
 
-declare module '*.gif' {
+declare module "*.gif" {
   const src: string;
   export default src;
 }
 
-declare module '*.webp' {
+declare module "*.webp" {
   const src: string;
   export default src;
 }
 
-declare module '*.ico' {
+declare module "*.ico" {
   const src: string;
   export default src;
 }
 
-declare module '*.bmp' {
+declare module "*.bmp" {
   const src: string;
   export default src;
 }
 
-declare module '*.json' {
+declare module "*.json" {
   const value: any;
   export default value;
 }
 
-declare module 'react-chartjs-2' {
-  import React = require('react');
+declare module "react-chartjs-2" {
+  import React = require("react");
   export const Line: React.FC<any>;
   export const Bar: React.FC<any>;
   export const Pie: React.FC<any>;
   export const Doughnut: React.FC<any>;
 }
 
-declare module 'chart.js' {
+declare module "chart.js" {
   export const Chart: any;
   export const registerables: any[];
 }
 
-declare module 'recharts' {
-  import React = require('react');
+declare module "recharts" {
+  import React = require("react");
   export const LineChart: React.FC<any>;
   export const BarChart: React.FC<any>;
   export const PieChart: React.FC<any>;
@@ -113,26 +113,26 @@ declare module 'recharts' {
   export const Legend: React.FC<any>;
 }
 
-declare module '@tanstack/react-table' {
-  import React = require('react');
+declare module "@tanstack/react-table" {
+  import React = require("react");
   export function useTable<T>(options: any): any;
   export const Column: any;
   export const HeaderGroup: any;
 }
 
-declare module '@tanstack/react-virtual' {
-  import React = require('react');
+declare module "@tanstack/react-virtual" {
+  import React = require("react");
   export function useVirtualizer(options: any): any;
 }
 
-declare module 'framer-motion' {
-  import React = require('react');
+declare module "framer-motion" {
+  import React = require("react");
   export const motion: any;
   export const AnimatePresence: React.FC<any>;
 }
 
-declare module 'lucide-react' {
-  import React = require('react');
+declare module "lucide-react" {
+  import React = require("react");
   export const ChevronDown: React.FC<any>;
   export const ChevronUp: React.FC<any>;
   export const Plus: React.FC<any>;

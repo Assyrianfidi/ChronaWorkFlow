@@ -2,8 +2,8 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from '../store/auth-store.js';
-import LoginPage from '../page.js';
+import { useAuthStore } from "../store/auth-store.js";
+import LoginPage from "../page.js";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({

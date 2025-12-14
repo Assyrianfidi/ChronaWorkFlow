@@ -70,13 +70,15 @@ export function useInventoryFilters({
   }, [searchParams, initialFilters]);
 
   // State management
-  const [searchTerm, setSearchTerm] = React.useState(getInitialState().searchTerm);
-  const [selectedCategory, setSelectedCategory] = React.useState<string | undefined>(
-    getInitialState().selectedCategory || undefined,
+  const [searchTerm, setSearchTerm] = React.useState(
+    getInitialState().searchTerm,
   );
-  const [statusFilter, setStatusFilter] = React.useState<InventoryStatus | undefined>(
-    getInitialState().statusFilter,
-  );
+  const [selectedCategory, setSelectedCategory] = React.useState<
+    string | undefined
+  >(getInitialState().selectedCategory || undefined);
+  const [statusFilter, setStatusFilter] = React.useState<
+    InventoryStatus | undefined
+  >(getInitialState().statusFilter);
   const [quantityRange, setQuantityRange] = React.useState<QuantityRange>(
     getInitialState().quantityRange || {},
   );
@@ -165,19 +167,25 @@ export function useInventoryFilters({
   }, []);
 
   // Handler for status filter changes
-  const handleStatusChange = React.useCallback((status: InventoryStatus | "all") => {
-    setStatusFilter(status === "all" ? undefined : status);
-    setPage(1);
-  }, []);
+  const handleStatusChange = React.useCallback(
+    (status: InventoryStatus | "all") => {
+      setStatusFilter(status === "all" ? undefined : status);
+      setPage(1);
+    },
+    [],
+  );
 
   // Handler for quantity range changes
-  const handleQuantityRangeChange = React.useCallback((range: QuantityRange) => {
-    setQuantityRange((prev) => ({
-      ...prev,
-      ...range,
-    }));
-    setPage(1);
-  }, []);
+  const handleQuantityRangeChange = React.useCallback(
+    (range: QuantityRange) => {
+      setQuantityRange((prev) => ({
+        ...prev,
+        ...range,
+      }));
+      setPage(1);
+    },
+    [],
+  );
 
   // Handler for sort changes
   const handleSortChange = React.useCallback((newSortBy: SortableField) => {

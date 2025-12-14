@@ -1,8 +1,12 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar.js';
-import { Button } from '../components/ui/button.js';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../components/ui/avatar.js";
+import { Button } from "../components/ui/button.js";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu.js';
+} from "../components/ui/dropdown-menu.js";
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
 

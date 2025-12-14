@@ -1,11 +1,11 @@
-import React from 'react';
-"use client";
+import React from "react";
+("use client");
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useAuthStore } from '@/components/store/auth-store';
+import { useAuthStore } from "@/components/store/auth-store";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";

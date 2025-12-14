@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { AccessibilityProvider } from './AccessibilityContext';
+import { AccessibilityProvider } from "./AccessibilityContext";
 
 // Test component to demonstrate accessibility context usage
 const AccessibilityDemo: React.FC = () => {

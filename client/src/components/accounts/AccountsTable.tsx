@@ -7,14 +7,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table.js';
-import { Badge } from '../ui/badge.js';
-import { Skeleton } from '../ui/skeleton.js';
+} from "../ui/table.js";
+import { Badge } from "../ui/badge.js";
+import { Skeleton } from "../ui/skeleton.js";
 import type {
   AccountWithChildren,
   AccountRowProps,
   AccountsTableProps,
-} from '../types/accounts.js';
+} from "../types/accounts.js";
 
 export const AccountRow: React.FC<AccountRowProps> = ({
   account,

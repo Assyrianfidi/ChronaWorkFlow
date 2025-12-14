@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useAuthStore } from '@/../../store/auth-store';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/../../lib/utils';
+import { useAuthStore } from "@/../../store/auth-store";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/../../lib/utils";
 import {
   Menu,
   X,

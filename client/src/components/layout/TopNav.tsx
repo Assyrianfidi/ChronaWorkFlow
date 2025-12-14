@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell, Settings, LogOut, User, ChevronDown } from "lucide-react";
-import { cn } from '@/../../lib/utils';
-import { EnterpriseButton } from '@/components/ui/EnterpriseButton';
-import { useAuth } from '@/../../contexts/AuthContext';
+import { cn } from "@/../../lib/utils";
+import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
+import { useAuth } from "@/../../contexts/AuthContext";
 
 interface TopNavProps {
   className?: string;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
 import {
   BarChart3,
@@ -17,11 +17,14 @@ import {
   RevenueCard,
   ExpensesCard,
   PendingInvoicesCard,
-} from '@/components/ui/EnterpriseKPICard';
-import { EnterpriseDataTable, type Column } from '@/components/ui/EnterpriseDataTable';
-import { EnterpriseButton } from '@/components/ui/EnterpriseButton';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/../../lib/utils';
+} from "@/components/ui/EnterpriseKPICard";
+import {
+  EnterpriseDataTable,
+  type Column,
+} from "@/components/ui/EnterpriseDataTable";
+import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/../../lib/utils";
 
 interface EnterpriseDashboardNewProps {
   className?: string;

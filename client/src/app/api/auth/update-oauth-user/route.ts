@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { prisma } from '../lib/prisma.js';
+import { prisma } from "../lib/prisma.js";
 
 /**
  * API endpoint to update OAuth user information

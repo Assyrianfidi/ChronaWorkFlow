@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { useState, useEffect } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
-import { useAuthStore } from '@/../../store/auth-store';
-import { Button } from '@/../../components/ui/button';
-import { Input } from '@/../../components/ui/input';
-import { Label } from '@/../../components/ui/label';
+import { useAuthStore } from "@/../../store/auth-store";
+import { Button } from "@/../../components/ui/button";
+import { Input } from "@/../../components/ui/input";
+import { Label } from "@/../../components/ui/label";
 import {
   Card,
   CardContent,
@@ -12,8 +12,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/../../components/ui/card';
-import { Icons } from '@/../../components/icons';
+} from "@/../../components/ui/card";
+import { Icons } from "@/../../components/icons";
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();

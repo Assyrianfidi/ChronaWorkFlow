@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { cn } from '@/../../lib/utils';
+import React, { useState, useCallback } from "react";
+import { cn } from "@/../../lib/utils";
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react";
 
 // Toast Types
@@ -99,19 +99,22 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const addToast = useCallback((toast: Omit<ToastProps, "id">) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const newToast: ToastProps = { ...toast, id };
+  const addToast = useCallback(
+    (toast: Omit<ToastProps, "id">) => {
+      const id = Math.random().toString(36).substr(2, 9);
+      const newToast: ToastProps = { ...toast, id };
 
-    setToasts((prev) => [...prev, newToast]);
+      setToasts((prev) => [...prev, newToast]);
 
-    // Auto dismiss after duration
-    if (toast.duration !== 0) {
-      setTimeout(() => {
-        removeToast(id);
-      }, toast.duration || 5000);
-    }
-  }, [removeToast]);
+      // Auto dismiss after duration
+      if (toast.duration !== 0) {
+        setTimeout(() => {
+          removeToast(id);
+        }, toast.duration || 5000);
+      }
+    },
+    [removeToast],
+  );
 
   const clearAll = useCallback(() => {
     setToasts([]);
@@ -130,7 +133,7 @@ const ToastContainer: React.FC = () => {
   const { toasts } = useToast();
 
   return (
-    <div 
+    <div
       className="fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full"
       aria-live="polite"
       aria-atomic="true"

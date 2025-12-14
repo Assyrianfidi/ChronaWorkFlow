@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 
 declare global {
   interface Window {
@@ -6,8 +6,6 @@ declare global {
   }
 }
 
-;
-;
 import { Link } from "react-router-dom";
 import { ShieldX, Home, ArrowLeft } from "lucide-react";
 import { EnterpriseButton } from "../components/ui/EnterpriseButton";

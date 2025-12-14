@@ -1,7 +1,7 @@
-import React from 'react';
-import Navigation from '@/components/Navigation';
-import BreadcrumbNavigation from '@/components/BreadcrumbNavigation';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import React from "react";
+import Navigation from "@/components/Navigation";
+import BreadcrumbNavigation from "@/components/BreadcrumbNavigation";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,23 +10,23 @@ interface LayoutProps {
   showBreadcrumb?: boolean;
 }
 
-const Layout: React.FC<LayoutProps> = ({ 
-  children, 
-  title = 'AccuBooks', 
-  description = 'Financial Management System',
-  showBreadcrumb = true 
+const Layout: React.FC<LayoutProps> = ({
+  children,
+  title = "AccuBooks",
+  description = "Financial Management System",
+  showBreadcrumb = true,
 }) => {
   React.useEffect(() => {
     document.title = title;
-    
+
     // Update meta description
     let metaDescription = document.querySelector('meta[name="description"]');
     if (!metaDescription) {
-      metaDescription = document.createElement('meta');
-      metaDescription.setAttribute('name', 'description');
+      metaDescription = document.createElement("meta");
+      metaDescription.setAttribute("name", "description");
       document.head.appendChild(metaDescription);
     }
-    metaDescription.setAttribute('content', description);
+    metaDescription.setAttribute("content", description);
   }, [title, description]);
 
   return (

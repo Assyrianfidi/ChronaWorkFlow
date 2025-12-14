@@ -5,9 +5,9 @@ import {
   DataVisualizationComponent,
   DashboardLayout,
   BaseChart,
-} from '../DataVisualization.js';
-import { AnalyticsEngine } from '../AnalyticsEngine.js';
-import { DataVisualization } from '../AnalyticsEngine.js';
+} from "../DataVisualization.js";
+import { AnalyticsEngine } from "../AnalyticsEngine.js";
+import { DataVisualization } from "../AnalyticsEngine.js";
 
 // Mock canvas context
 const mockCanvasContext = {

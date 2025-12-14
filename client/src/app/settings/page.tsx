@@ -1,19 +1,19 @@
-import React from 'react';
-"use client";
+import React from "react";
+("use client");
 
-import { MainLayout } from '../components/layout/MainLayout.js';
+import { MainLayout } from "../components/layout/MainLayout.js";
 import {
   EnterpriseDataTable,
   type Column,
-} from '../components/ui/EnterpriseDataTable.js';
-import { EnterpriseButton } from '../components/ui/EnterpriseButton.js';
-import { EnterpriseInput } from '../components/ui/EnterpriseInput.js';
+} from "../components/ui/EnterpriseDataTable.js";
+import { EnterpriseButton } from "../components/ui/EnterpriseButton.js";
+import { EnterpriseInput } from "../components/ui/EnterpriseInput.js";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js';
+} from "../components/ui/card.js";
 import {
   Users,
   Plus,

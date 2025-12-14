@@ -1,8 +1,8 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { AccountsTable } from '../AccountsTable.js';
-import type { AccountWithChildren } from '../types/accounts.js';
+import { AccountsTable } from "../AccountsTable.js";
+import type { AccountWithChildren } from "../types/accounts.js";
 
 // Mock data for testing
 const mockAccounts: AccountWithChildren[] = [

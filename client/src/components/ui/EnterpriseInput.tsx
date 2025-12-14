@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import * as React from "react";
 import { Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
-import { cn } from '@/../../lib/utils';
+import { cn } from "@/../../lib/utils";
 
 export interface EnterpriseInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

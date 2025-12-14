@@ -5,7 +5,7 @@ import {
   PredictiveAssistant,
   usePredictiveAssistant,
   withBehaviorTracking,
-} from '@/components/PredictiveAssistant';
+} from "@/components/PredictiveAssistant";
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

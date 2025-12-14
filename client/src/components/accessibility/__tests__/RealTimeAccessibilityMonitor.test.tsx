@@ -1,18 +1,17 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React from 'react';
+import React from "react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import {
   RealTimeAccessibilityMonitor,
   AccessibilityMonitorDashboard,
   useAccessibilityMonitor,
-} from '@/components/RealTimeAccessibilityMonitor';
+} from "@/components/RealTimeAccessibilityMonitor";
 
 // Mock DOM methods for testing
 const mockElements = [

@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -7,7 +6,7 @@ declare global {
 
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import ErrorBoundary from '../components/ErrorBoundary.js';
+import ErrorBoundary from "../components/ErrorBoundary.js";
 
 // Mock console.error to avoid test output noise
 const originalError = console.error;

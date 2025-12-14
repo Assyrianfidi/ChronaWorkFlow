@@ -1,18 +1,17 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
-"use client";
+import React, { useState } from "react";
+("use client");
 
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useAuthStore } from '@/components/store/auth-store';
+import { useAuthStore } from "@/components/store/auth-store";
 import { Loader2, ShieldAlert } from "lucide-react";
-import { AuthErrorBoundary } from './AuthErrorBoundary';
+import { AuthErrorBoundary } from "./AuthErrorBoundary";
 
 interface AuthGuardProps {
   children: React.ReactNode;

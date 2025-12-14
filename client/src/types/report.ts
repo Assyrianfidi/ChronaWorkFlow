@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { reportFormSchema } from '../lib/validations/schemas.js';
+import { reportFormSchema } from "../lib/validations/schemas.js";
 
 // Base report type from the form schema
 export type ReportFormData = z.infer<typeof reportFormSchema>;

@@ -1,9 +1,9 @@
 // Comprehensive security utilities and components index
 
 // Security utilities
-export { 
-  sanitizeHTML, 
-  sanitizeInput, 
+export {
+  sanitizeHTML,
+  sanitizeInput,
   escapeHtml,
   generateCSRFToken,
   validateCSRFToken,
@@ -15,19 +15,16 @@ export {
   sanitizeFileName,
   securityHeaders,
   cspHeaders,
-  rateLimiter
-} from '@/security/utils';
+  rateLimiter,
+} from "@/security/utils";
 
 // Security configuration
-export { 
-  SECURITY_CONFIG,
-  getSecurityConfig 
-} from '@/config/security';
+export { SECURITY_CONFIG, getSecurityConfig } from "@/config/security";
 
-export { 
+export {
   ENHANCED_SECURITY_CONFIG,
-  getEnhancedSecurityConfig 
-} from '@/config/enhanced-security';
+  getEnhancedSecurityConfig,
+} from "@/config/enhanced-security";
 
 // Environment configuration
 export {
@@ -39,22 +36,19 @@ export {
   apiConfig,
   features,
   fileConfig,
-  logConfig
-} from '@/config/env';
+  logConfig,
+} from "@/config/env";
 
 // Secure logging
-export {
-  logger,
-  log
-} from '@/utils/logger';
+export { logger, log } from "@/utils/logger";
 
 // Secure API client
 export {
   apiClient,
   secureApi,
   rateLimitedApi,
-  requestQueue
-} from '@/api/secure-client';
+  requestQueue,
+} from "@/api/secure-client";
 
 // Security components
 export {
@@ -62,12 +56,10 @@ export {
   SecureInput,
   SecureForm,
   SecureLink,
-  SecureImage
-} from '@/components/security';
+  SecureImage,
+} from "@/components/security";
 
-export {
-  CookieConsent
-} from '@/components/security/CookieConsent';
+export { CookieConsent } from "@/components/security/CookieConsent";
 
 // Security middleware
 export {
@@ -77,33 +69,33 @@ export {
   inputValidationMiddleware,
   authMiddleware,
   corsMiddleware,
-  securityMiddleware
-} from '@/security/middleware';
+  securityMiddleware,
+} from "@/security/middleware";
 
 // Security types
-export type { EnvConfig } from '@/config/env';
-export type { LogEntry } from '@/utils/logger';
+export type { EnvConfig } from "@/config/env";
+export type { LogEntry } from "@/utils/logger";
 
 // Security constants
 export const SECURITY_HEADERS = {
-  'X-Frame-Options': 'DENY',
-  'X-Content-Type-Options': 'nosniff',
-  'X-XSS-Protection': '1; mode=block',
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+  "X-Frame-Options": "DENY",
+  "X-Content-Type-Options": "nosniff",
+  "X-XSS-Protection": "1; mode=block",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
 };
 
 export const CSP_DIRECTIVES = {
-  'default-src': ["'self'"],
-  'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-  'style-src': ["'self'", "'unsafe-inline'"],
-  'img-src': ["'self'", "data:", "https:"],
-  'font-src': ["'self'", "data:"],
-  'connect-src': ["'self'", "https://api.accubooks.com"],
-  'frame-ancestors': ["'none'"],
-  'base-uri': ["'self'"],
-  'form-action': ["'self'"]
+  "default-src": ["'self'"],
+  "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+  "style-src": ["'self'", "'unsafe-inline'"],
+  "img-src": ["'self'", "data:", "https:"],
+  "font-src": ["'self'", "data:"],
+  "connect-src": ["'self'", "https://api.accubooks.com"],
+  "frame-ancestors": ["'none'"],
+  "base-uri": ["'self'"],
+  "form-action": ["'self'"],
 };
 
 export default {
@@ -119,22 +111,22 @@ export default {
   maskCreditCard,
   isValidURL,
   sanitizeFileName,
-  
+
   // Configuration
   SECURITY_CONFIG,
   ENHANCED_SECURITY_CONFIG,
   config,
   securityConfig,
-  
+
   // Logging
   logger,
   log,
-  
+
   // API
   apiClient,
   secureApi,
   rateLimitedApi,
-  
+
   // Components
   SecureHTML,
   SecureInput,
@@ -142,11 +134,11 @@ export default {
   SecureLink,
   SecureImage,
   CookieConsent,
-  
+
   // Middleware
   securityMiddleware,
-  
+
   // Constants
   SECURITY_HEADERS,
-  CSP_DIRECTIVES
+  CSP_DIRECTIVES,
 };

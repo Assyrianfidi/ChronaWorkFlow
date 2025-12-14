@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";

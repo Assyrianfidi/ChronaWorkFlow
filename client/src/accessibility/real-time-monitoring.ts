@@ -1,11 +1,10 @@
-
 declare global {
   interface Window {
     [key: string]: any;
   }
 }
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 /**
  * Real-Time Accessibility Monitoring
  * Live WCAG compliance checking, user behavior analytics, adaptive improvements, issue detection

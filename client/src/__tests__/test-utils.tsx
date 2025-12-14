@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { vi } from "vitest";
 import { render as rtlRender } from "@testing-library/react";
 import type { RenderOptions } from "@testing-library/react";

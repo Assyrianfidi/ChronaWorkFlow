@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuthStore } from '@/../../store/auth-store';
-import { Button } from '@/../../components/ui/button';
-import { Input } from '@/../../components/ui/input';
-import { InputWithIcon } from '@/../../components/ui/input-with-icon';
-import { Label } from '@/../../components/ui/label';
+import { useAuthStore } from "@/../../store/auth-store";
+import { Button } from "@/../../components/ui/button";
+import { Input } from "@/../../components/ui/input";
+import { InputWithIcon } from "@/../../components/ui/input-with-icon";
+import { Label } from "@/../../components/ui/label";
 import {
   Card,
   CardContent,
@@ -12,10 +12,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/../../components/ui/card';
-import { Alert, AlertDescription } from '@/../../components/ui/alert';
+} from "@/../../components/ui/card";
+import { Alert, AlertDescription } from "@/../../components/ui/alert";
 import { Mail, Lock, Eye, EyeOff, Building2 } from "lucide-react";
-import Logo from '@/../../assets/AccubooksEnterprise_Logo16_.jpg';
+import Logo from "@/../../assets/AccubooksEnterprise_Logo16_.jpg";
 
 const tokens = require("../../design-system/tokens.json");
 

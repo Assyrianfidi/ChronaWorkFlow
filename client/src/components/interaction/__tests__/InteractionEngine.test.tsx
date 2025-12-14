@@ -7,7 +7,7 @@ import {
   withInteraction,
   GestureHandler,
   PhysicsAnimation,
-} from '../InteractionEngine.js';
+} from "../InteractionEngine.js";
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

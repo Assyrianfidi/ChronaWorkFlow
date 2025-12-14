@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useAnalytics } from './AnalyticsEngine';
-import { BusinessInsight } from './AnalyticsEngine';
+import { useAnalytics } from "./AnalyticsEngine";
+import { BusinessInsight } from "./AnalyticsEngine";
 
 // BI Types
 interface KPI {

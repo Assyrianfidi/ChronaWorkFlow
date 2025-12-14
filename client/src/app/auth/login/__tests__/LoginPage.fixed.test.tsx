@@ -46,7 +46,7 @@ vi.mock("../store/auth-store", () => ({
   useAuthStore: () => mockUseAuthStore(),
 }));
 
-import LoginPage from '../page.js';
+import LoginPage from "../page.js";
 
 let currentAuthState: LoginPageAuthState;
 const createAuthState = (

@@ -7,7 +7,7 @@ import React, { useState, useEffect } from "react";
 import PerformanceEngine, {
   PerformanceReport,
   PerformanceMetrics,
-} from '@/../../performance/performance-engine';
+} from "@/../../performance/performance-engine";
 
 interface PerformanceDashboardProps {
   engine: PerformanceEngine;

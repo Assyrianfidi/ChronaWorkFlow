@@ -1,7 +1,5 @@
-import React from 'react'
-;
-;
-import { useToast } from '@/components/hooks/use-toast';
+import React from "react";
+import { useToast } from "@/components/hooks/use-toast";
 
 interface ToastContextType {
   showToast: (

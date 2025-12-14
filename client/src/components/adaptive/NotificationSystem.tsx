@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -13,9 +12,9 @@ import React, {
   useRef,
 } from "react";
 import { createPortal } from "react-dom";
-import { useUserExperienceMode } from './UserExperienceMode';
-import { usePerformance } from './UI-Performance-Engine';
-import { cn } from '@/../../lib/utils';
+import { useUserExperienceMode } from "./UserExperienceMode";
+import { usePerformance } from "./UI-Performance-Engine";
+import { cn } from "@/../../lib/utils";
 
 // Notification types
 export type NotificationType =

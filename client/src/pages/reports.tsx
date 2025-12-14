@@ -1,4 +1,3 @@
-
 declare global {
   interface Window {
     [key: string]: any;
@@ -10,7 +9,7 @@ import {
   EnterpriseButton,
   EnterpriseKPICard,
   EnterpriseDataTable,
-} from '@/components/components/ui';
+} from "@/components/components/ui";
 import {
   Download,
   Calendar,
@@ -46,7 +45,7 @@ import {
   ComposedChart,
   Legend,
 } from "recharts";
-import { cn } from '@/components/lib/utils';
+import { cn } from "@/components/lib/utils";
 
 // Mock data for reports
 const profitLossData = [
