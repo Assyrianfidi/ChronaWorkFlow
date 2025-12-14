@@ -263,13 +263,28 @@ npm run build:worker
 
 # Run database migrations
 docker exec accubooks-app-1 npx drizzle-kit push
-```
 
-### Emergency Repair
-```bash
-# Automatic system repair and rebuild
-.\repair-build-accubooks.ps1
-```
+## Monorepo Conversion
+
+We have converted the project to a monorepo structure using Turborepo.
+
+## New Structure
+
+- `apps/client`: The React frontend
+- `apps/backend`: The Node.js backend
+- `packages/shared`: Shared code between client and backend
+
+## Development
+
+Run from the root:
+
+- `npm run build`: Build all apps and packages
+- `npm run lint`: Lint all
+- `npm run test`: Test all
+
+## Adding a new package
+
+Create a new directory under `packages` and run `npm init`.
 
 ## 🚀 Features
 
@@ -496,147 +511,6 @@ docker exec accubooks-app-1 npx drizzle-kit push
    ```
 
 4. **Or deploy manually**
-   ```bash
-   npm start
-   ```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-See `.env.example` for all required environment variables:
-
-```bash
-# Database
-DATABASE_URL=postgresql://user:password@host:port/database
-
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=
-
-# Authentication
-JWT_SECRET=your-secret-key
-SESSION_SECRET=your-session-secret
-
-# Third-party APIs
-STRIPE_SECRET_KEY=sk_live_...
-PLAID_CLIENT_ID=your-plaid-client-id
-PLAID_SECRET=your-plaid-secret
-
-# Application
-NODE_ENV=production
-PORT=5000
-```
-
-### Database Schema
-
-The database schema is managed with Drizzle ORM. To make changes:
-
-1. **Update schema files** in `shared/schema.ts`
-2. **Generate migrations** (if using Drizzle Kit)
-3. **Push to database**: `npm run db:push`
-
-## 🧪 Testing
-
-### Running Tests
-
-```bash
-# Run all tests
-npm test
-
-# Run with coverage
-npm run test:coverage
-
-# Run backend tests only
-npm run test:backend
-
-# Run frontend tests only
-npm run test
-
-# Run E2E tests
-npm run test:e2e
-```
-
-### Test Structure
-
-- **Unit Tests**: Individual component and function testing
-- **Integration Tests**: API endpoint and database interaction testing
-- **E2E Tests**: Full user journey testing with Cypress
-
-## 🚀 API Documentation
-
-### Accessing API Docs
-
-- **Swagger UI**: http://localhost:5000/api/docs
-- **OpenAPI Spec**: Available at `/api/docs/json`
-
-### Authentication
-
-All API endpoints require authentication via JWT token:
-
-```bash
-Authorization: Bearer <your-jwt-token>
-```
-
-## 🔐 Security
-
-### Features
-- **JWT Authentication**: Stateless token-based authentication
-- **Role-Based Access Control**: Granular permissions per user role
-- **Multi-Tenant Isolation**: Complete data separation between companies
-- **Input Validation**: Zod schema validation for all inputs
-- **Rate Limiting**: API rate limiting to prevent abuse
-- **CORS Protection**: Configurable CORS policies
-- **SSL/TLS**: HTTPS enforcement in production
-
-### Best Practices
-- All passwords are hashed with bcrypt
-- API keys and secrets are stored securely
-- Database queries use parameterized statements
-- File uploads are validated and scanned
-
-## 📊 Monitoring & Logging
-
-### Logging
-- **Structured Logging**: JSON-formatted logs with Winston
-- **Log Levels**: Configurable log levels (error, warn, info, debug)
-- **Log Rotation**: Automatic log file rotation
-- **Error Tracking**: Sentry integration for production errors
-
-### Health Checks
-- **Application Health**: `/health` endpoint
-- **Database Health**: Connection pool monitoring
-- **External Service Health**: Stripe, Plaid, Redis health checks
-
-## 🚢 Deployment
-
-### Docker Deployment
-
-1. **Build and deploy**
-   ```bash
-   docker-compose up -d
-   ```
-
-2. **Scale services**
-   ```bash
-   docker-compose up -d --scale app=3
-   ```
-
-3. **Update application**
-   ```bash
-   docker-compose build
-   docker-compose up -d
-   ```
-
-### Manual Deployment
-
-1. **Build application**
-   ```bash
-   npm run build
-   ```
-
-2. **Start production server**
    ```bash
    npm start
    ```
