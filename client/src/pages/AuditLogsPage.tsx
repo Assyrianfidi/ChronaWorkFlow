@@ -215,7 +215,6 @@ const actionConfig = {
   EXPORT: { icon: Download, color: "text-purple-600" },
 };
 
-// @ts-ignore
 const AuditLogsPage: React.FC = () => {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(mockAuditLogs);
   const [filteredLogs, setFilteredLogs] = useState<AuditLog[]>(mockAuditLogs);
@@ -473,11 +472,9 @@ const AuditLogsPage: React.FC = () => {
                   {filteredLogs.map((log) => {
                     const StatusIcon = statusConfig[log.status].icon;
                     const ActionIcon =
-// @ts-ignore
                       actionConfig[log.action as keyof typeof actionConfig]
                         ?.icon || Activity;
                     const actionColor =
-// @ts-ignore
                       actionConfig[log.action as keyof typeof actionConfig]
                         ?.color || "text-gray-600";
 

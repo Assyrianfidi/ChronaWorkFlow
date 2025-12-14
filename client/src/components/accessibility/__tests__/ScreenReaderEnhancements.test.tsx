@@ -5,7 +5,7 @@ import {
   ScreenReaderEnhancements,
   ScreenReaderControls,
   useScreenReader,
-} from '../ScreenReaderEnhancements.js.js';
+} from '@/components/ScreenReaderEnhancements';
 
 // Mock speech synthesis
 const mockSpeechSynthesis = {
@@ -50,7 +50,6 @@ Object.defineProperty(window, "SpeechSynthesisUtterance", {
 });
 
 // Test component
-// @ts-ignore
 const TestComponent: React.FC = () => {
   const { speak, isSpeaking, settings, updateSettings, announce } =
     useScreenReader();

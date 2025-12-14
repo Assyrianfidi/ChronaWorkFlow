@@ -25,10 +25,8 @@ import {
   useTransform,
   useAnimation,
 } from "framer-motion";
-// @ts-ignore
-import { useSuperAccessibility } from '../accessibility/super-accessibility.js.js';
-// @ts-ignore
-import { useGPUAcceleration } from '../performance/gpu-acceleration.js.js';
+import { useSuperAccessibility } from '@/components/accessibility/super-accessibility';
+import { useGPUAcceleration } from '@/components/performance/gpu-acceleration';
 
 // Micro-Interaction Types
 export type MicroInteractionType =
@@ -114,7 +112,6 @@ interface MicroInteractionProps {
   config?: Partial<AnimationConfig>;
 }
 
-// @ts-ignore
 export const MicroInteraction: React.FC<MicroInteractionProps> = ({
   children,
   type,
@@ -363,7 +360,6 @@ interface RippleEffectProps {
   className?: string;
 }
 
-// @ts-ignore
 export const RippleEffect: React.FC<RippleEffectProps> = ({
   children,
   color = "rgba(255, 255, 255, 0.5)",
@@ -452,7 +448,6 @@ interface MagneticButtonProps {
   onClick?: () => void;
 }
 
-// @ts-ignore
 export const MagneticButton: React.FC<MagneticButtonProps> = ({
   children,
   strength = 0.3,
@@ -535,7 +530,6 @@ interface ParallaxProps {
   className?: string;
 }
 
-// @ts-ignore
 export const Parallax: React.FC<ParallaxProps> = ({
   children,
   speed = 0.5,
@@ -582,7 +576,6 @@ interface StaggerAnimationProps {
   className?: string;
 }
 
-// @ts-ignore
 export const StaggerAnimation: React.FC<StaggerAnimationProps> = ({
   children,
   staggerDelay = 0.1,
@@ -650,7 +643,6 @@ interface MorphingShapeProps {
   className?: string;
 }
 
-// @ts-ignore
 export const MorphingShape: React.FC<MorphingShapeProps> = ({
   shapes,
   duration = 2,
@@ -700,7 +692,6 @@ interface FABProps {
   className?: string;
 }
 
-// @ts-ignore
 export const FloatingActionButton: React.FC<FABProps> = ({
   icon,
   label,
@@ -741,7 +732,6 @@ export const FloatingActionButton: React.FC<FABProps> = ({
       purple: "bg-purple-500 hover:bg-purple-600",
       yellow: "bg-yellow-500 hover:bg-yellow-600",
     };
-// @ts-ignore
     return colors[color as keyof typeof colors];
   }, [color]);
 
@@ -802,7 +792,6 @@ interface LoadingDotsProps {
   className?: string;
 }
 
-// @ts-ignore
 export const LoadingDots: React.FC<LoadingDotsProps> = ({
   size = 8,
   color = "blue",
@@ -818,7 +807,6 @@ export const LoadingDots: React.FC<LoadingDotsProps> = ({
       purple: "bg-purple-500",
       yellow: "bg-yellow-500",
     };
-// @ts-ignore
     return colors[color as keyof typeof colors];
   }, [color]);
 
@@ -857,7 +845,6 @@ interface ProgressRingProps {
   className?: string;
 }
 
-// @ts-ignore
 export const ProgressRing: React.FC<ProgressRingProps> = ({
   progress,
   size = 120,
@@ -876,7 +863,6 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
       purple: "#8B5CF6",
       yellow: "#F59E0B",
     };
-// @ts-ignore
     return colors[color as keyof typeof colors];
   }, [color]);
 
@@ -889,7 +875,6 @@ export const ProgressRing: React.FC<ProgressRingProps> = ({
       purple: "#EDE9FE",
       yellow: "#FEF3C7",
     };
-// @ts-ignore
     return colors[backgroundColor as keyof typeof colors];
   }, [backgroundColor]);
 
@@ -952,7 +937,6 @@ interface ParticleEffectProps {
   className?: string;
 }
 
-// @ts-ignore
 export const ParticleEffect: React.FC<ParticleEffectProps> = ({
   count = 20,
   size = 4,
@@ -980,7 +964,6 @@ export const ParticleEffect: React.FC<ParticleEffectProps> = ({
       purple: "bg-purple-500",
       yellow: "bg-yellow-500",
     };
-// @ts-ignore
     return colors[color as keyof typeof colors];
   }, [color]);
 
@@ -1045,7 +1028,6 @@ interface GestureIndicatorProps {
   className?: string;
 }
 
-// @ts-ignore
 export const GestureIndicator: React.FC<GestureIndicatorProps> = ({
   gesture,
   active = false,
@@ -1061,7 +1043,6 @@ export const GestureIndicator: React.FC<GestureIndicatorProps> = ({
       purple: "stroke-purple-500",
       yellow: "stroke-yellow-500",
     };
-// @ts-ignore
     return colors[color as keyof typeof colors];
   }, [color]);
 

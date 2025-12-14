@@ -58,8 +58,6 @@ describe("Phase C Integration Tests", () => {
   });
 
   it("renders InteractionEngine", async () => {
-// @ts-ignore
-// @ts-ignore
     const { InteractionEngine } = await import("../InteractionEngine.tsx");
 
     render(
@@ -72,8 +70,6 @@ describe("Phase C Integration Tests", () => {
   });
 
   it("renders WorkflowManager", async () => {
-// @ts-ignore
-// @ts-ignore
     const { WorkflowManager } = await import("../WorkflowManager.tsx");
 
     render(
@@ -86,8 +82,6 @@ describe("Phase C Integration Tests", () => {
   });
 
   it("renders PredictiveAssistant", async () => {
-// @ts-ignore
-// @ts-ignore
     const { PredictiveAssistant } = await import("../PredictiveAssistant.tsx");
 
     render(
@@ -100,8 +94,6 @@ describe("Phase C Integration Tests", () => {
   });
 
   it("renders ErrorRecoveryUI", async () => {
-// @ts-ignore
-// @ts-ignore
     const { ErrorRecoveryUI } = await import("../ErrorRecoveryUI.tsx");
 
     render(
@@ -114,17 +106,9 @@ describe("Phase C Integration Tests", () => {
   });
 
   it("renders all Phase C components together", async () => {
-// @ts-ignore
-// @ts-ignore
     const { InteractionEngine } = await import("../InteractionEngine.tsx");
-// @ts-ignore
-// @ts-ignore
     const { WorkflowManager } = await import("../WorkflowManager.tsx");
-// @ts-ignore
-// @ts-ignore
     const { PredictiveAssistant } = await import("../PredictiveAssistant.tsx");
-// @ts-ignore
-// @ts-ignore
     const { ErrorRecoveryUI } = await import("../ErrorRecoveryUI.tsx");
 
     render(

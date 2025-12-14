@@ -40,7 +40,6 @@ interface SidebarItemProps {
   collapsed?: boolean;
 }
 
-// @ts-ignore
 const SidebarItem: React.FC<SidebarItemProps> = ({
   icon: Icon,
   label,
@@ -91,7 +90,6 @@ interface SidebarSectionProps {
   collapsed?: boolean;
 }
 
-// @ts-ignore
 const SidebarSection: React.FC<SidebarSectionProps> = ({
   title,
   children,
@@ -115,7 +113,6 @@ interface EnterpriseSidebarProps {
   className?: string;
 }
 
-// @ts-ignore
 export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   isOpen,
   onToggle,

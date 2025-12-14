@@ -6,7 +6,6 @@ declare global {
 }
 
 import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import {
   ChevronUp,
@@ -16,12 +15,9 @@ import {
   Download,
   MoreHorizontal,
 } from "lucide-react";
-// @ts-ignore
-import { Button } from './button.js.js';
-// @ts-ignore
-import { Input } from './input.js.js';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { Button } from './button';
+import { Input } from './input';
+import { cn } from '@/../../lib/utils';
 
 interface Column<T> {
   key: keyof T;
@@ -54,7 +50,6 @@ interface FilterConfig {
   value: string;
 }
 
-// @ts-ignore
 function DataTable<T>({
   data,
   columns,
@@ -82,7 +77,6 @@ function DataTable<T>({
     ) {
       direction = "desc";
     }
-// @ts-ignore
     setSortConfig({ key: key as string, direction });
   };
 
@@ -106,7 +100,6 @@ function DataTable<T>({
     // Apply column filters
     filters.forEach((filter) => {
       filtered = filtered.filter((row) => {
-// @ts-ignore
         const value = row[filter.key as keyof T];
         return (
           value &&
@@ -118,9 +111,7 @@ function DataTable<T>({
     // Apply sorting
     if (sortConfig) {
       filtered.sort((a, b) => {
-// @ts-ignore
         const aValue = a[sortConfig.key as keyof T];
-// @ts-ignore
         const bValue = b[sortConfig.key as keyof T];
 
         if (aValue === null || aValue === undefined) return 1;
@@ -226,7 +217,6 @@ function DataTable<T>({
             {columns
               .filter((col) => col.filterable)
               .map((column) => (
-// @ts-ignore
                 <div key={column.key as string}>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     {column.title}
@@ -242,7 +232,6 @@ function DataTable<T>({
                       );
                       if (e.target.value) {
                         newFilters.push({
-// @ts-ignore
                           key: column.key as string,
                           value: e.target.value,
                         });
@@ -264,7 +253,6 @@ function DataTable<T>({
               <tr>
                 {columns.map((column) => (
                   <th
-// @ts-ignore
                     key={column.key as string}
                     className={cn(
                       "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
@@ -327,7 +315,6 @@ function DataTable<T>({
                   >
                     {columns.map((column) => (
                       <td
-// @ts-ignore
                         key={column.key as string}
                         className={cn(
                           "px-6 py-4 whitespace-nowrap text-sm text-gray-900",

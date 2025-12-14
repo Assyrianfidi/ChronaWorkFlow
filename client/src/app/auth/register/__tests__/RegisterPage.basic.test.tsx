@@ -11,8 +11,6 @@ vi.mock("next/navigation", () => ({
 describe("RegisterPage - Basic Tests", () => {
   beforeEach(() => {
     const mockPush = vi.fn();
-// @ts-ignore
-// @ts-ignore
     (useRouter as any).mockReturnValue({
       push: mockPush,
       replace: vi.fn(),
@@ -43,7 +41,6 @@ describe("RegisterPage - Basic Tests", () => {
   it("has required fields", () => {
     render(<RegisterPage />);
 
-// @ts-ignore
     // Check that all required fields are marked as required
     expect(screen.getByPlaceholderText("Full Name")).toHaveAttribute(
       "required",

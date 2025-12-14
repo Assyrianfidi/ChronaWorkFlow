@@ -1,8 +1,7 @@
 import React from 'react';
 import { useEffect, ReactNode } from "react";
 import { useRouter } from "next/router";
-// @ts-ignore
-import { useAuthStore } from '../store/auth.js.js';
+import { useAuthStore } from '@/components/store/auth';
 
 interface ProtectedRouteProps {
   children: ReactNode;

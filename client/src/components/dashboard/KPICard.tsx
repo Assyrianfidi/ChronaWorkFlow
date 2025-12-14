@@ -1,6 +1,6 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+import React from 'react'
+;
+;
 import {
   TrendingUp,
   TrendingDown,
@@ -9,10 +9,8 @@ import {
   FileText,
   CreditCard,
 } from "lucide-react";
-// @ts-ignore
-import { Card, CardContent } from '../ui/card.js.js';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/../../lib/utils';
 
 interface KPICardProps {
   title: string;

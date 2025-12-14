@@ -8,7 +8,6 @@ interface UseAutoSaveProps<T> {
   enabled?: boolean;
 }
 
-// @ts-ignore
 export function useAutoSave<T extends FieldValues>({
   onSave,
   delay = 2000,

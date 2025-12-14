@@ -5,12 +5,10 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from '../../components/ui/card.js.js';
-// @ts-ignore
-import { apiRequest } from '../../lib/api.js.js';
+} from '@/../../components/ui/card';
+import { apiRequest } from '@/../../lib/api';
 import { Bar, Line, Pie } from "react-chartjs-2";
 import {
-// @ts-ignore
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
@@ -23,8 +21,7 @@ import {
   ChartData,
   ChartOptions,
 } from "chart.js";
-// @ts-ignore
-import { formatCurrency } from '../../lib/formatters.js.js';
+import { formatCurrency } from '@/../../lib/formatters';
 
 // Register ChartJS components
 ChartJS.register(
@@ -319,7 +316,6 @@ const DashboardPage = () => {
   );
 };
 
-// @ts-ignore
 const KPICard: React.FC<KPICardProps> = ({
   title,
   value,

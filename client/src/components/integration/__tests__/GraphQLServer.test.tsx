@@ -1,8 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-// @ts-ignore
-import { GraphQLServer, useGraphQL } from '../GraphQLServer.js.js';
+import { GraphQLServer, useGraphQL } from '@/components/GraphQLServer';
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

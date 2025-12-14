@@ -23,7 +23,6 @@ interface MainLayoutProps {
   };
 }
 
-// @ts-ignore
 const MainLayout: React.FC<MainLayoutProps> = ({
   children,
   className,

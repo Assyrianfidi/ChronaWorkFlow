@@ -27,7 +27,6 @@ export function ThemeProvider({
   defaultTheme = "light",
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
-// @ts-ignore
     const stored = localStorage.getItem("accubooks-theme") as Theme;
     return stored || defaultTheme;
   });

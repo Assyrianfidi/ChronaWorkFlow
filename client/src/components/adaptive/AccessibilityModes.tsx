@@ -6,10 +6,8 @@ declare global {
 }
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-// @ts-ignore
-import { useUserExperienceMode } from './UserExperienceMode.js.js';
-// @ts-ignore
-import { cn } from '../lib/utils.js.js';
+import { useUserExperienceMode } from './UserExperienceMode';
+import { cn } from '@/components/lib/utils';
 
 // Accessibility configuration types
 export interface AccessibilityConfig {
@@ -162,7 +160,6 @@ export function AccessibilityProvider({
   useEffect(() => {
     if (currentMode.accessibility !== "standard") {
       updateConfig({
-// @ts-ignore
         mode: currentMode.accessibility as AccessibilityConfig["mode"],
       });
     }
@@ -522,7 +519,6 @@ export function AccessibilityControls() {
             value={config.mode}
             onChange={(e) =>
               updateConfig({
-// @ts-ignore
                 mode: e.target.value as AccessibilityConfig["mode"],
               })
             }
@@ -544,7 +540,6 @@ export function AccessibilityControls() {
             value={config.fontSize}
             onChange={(e) =>
               updateConfig({
-// @ts-ignore
                 fontSize: e.target.value as AccessibilityConfig["fontSize"],
               })
             }
@@ -566,7 +561,6 @@ export function AccessibilityControls() {
             value={config.lineHeight}
             onChange={(e) =>
               updateConfig({
-// @ts-ignore
                 lineHeight: e.target.value as AccessibilityConfig["lineHeight"],
               })
             }
@@ -588,7 +582,6 @@ export function AccessibilityControls() {
             onChange={(e) =>
               updateConfig({
                 letterSpacing: e.target
-// @ts-ignore
                   .value as AccessibilityConfig["letterSpacing"],
               })
             }
@@ -610,7 +603,6 @@ export function AccessibilityControls() {
             onChange={(e) =>
               updateConfig({
                 colorBlindType: e.target
-// @ts-ignore
                   .value as AccessibilityConfig["colorBlindType"],
               })
             }

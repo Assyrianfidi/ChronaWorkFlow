@@ -125,8 +125,6 @@ export default function InventoryPage() {
     isLoading: isLoadingStats,
     isError: statsError,
     refetch: refetchStats,
-// @ts-ignore
-// @ts-ignore
   } = useInventoryStats(filterOptions as any);
 
   // Mutation hooks with callbacks
@@ -257,7 +255,6 @@ export default function InventoryPage() {
 
   // Derived state
   const totalValue = useMemo(() => {
-// @ts-ignore
     return (inventoryResponse as InventoryItem[]).reduce(
       (sum, item) => sum + item.quantityOnHand * (item.unitCost || 0),
       0,
@@ -266,7 +263,6 @@ export default function InventoryPage() {
 
   const lowStockItems = useMemo(
     () =>
-// @ts-ignore
       (inventoryResponse as InventoryItem[]).filter(
         (item) =>
           item.quantityOnHand > 0 &&
@@ -277,7 +273,6 @@ export default function InventoryPage() {
 
   const outOfStockItems = useMemo(
     () =>
-// @ts-ignore
       (inventoryResponse as InventoryItem[]).filter(
         (item) => item.quantityOnHand <= 0,
       ),
@@ -289,7 +284,6 @@ export default function InventoryPage() {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       handleSearchChange({
         target: { value: e.target.value },
-// @ts-ignore
       } as React.ChangeEvent<HTMLInputElement>);
       handlePageChange(1, pageSize);
     },
@@ -298,8 +292,6 @@ export default function InventoryPage() {
 
   const handleSort = useCallback(
     (column: keyof InventoryItem) => {
-// @ts-ignore
-// @ts-ignore
       handleSortChange(column as any);
     },
     [handleSortChange],
@@ -322,7 +314,6 @@ export default function InventoryPage() {
       setSelectedItems((prev) => {
         if (isSelected) {
           return new Set(
-// @ts-ignore
             (inventoryResponse as InventoryItem[]).map((item) => item.id),
           );
         }
@@ -361,7 +352,6 @@ export default function InventoryPage() {
             ? [filterOptions.categoryId.toString()]
             : undefined,
           status: Array.isArray(filterOptions.status)
-// @ts-ignore
             ? (filterOptions.status as InventoryStatus[])[0]
             : filterOptions.status,
           minQuantity: filterOptions.quantityRange?.min,
@@ -402,7 +392,6 @@ export default function InventoryPage() {
       // Convert the status to the correct format if needed
       const formattedStatus = status
         .replace(/[- ]/g, "_")
-// @ts-ignore
         .toLowerCase() as InventoryStatus;
 
       handleBulkUpdate({
@@ -582,7 +571,6 @@ export default function InventoryPage() {
               value={statusFilter || ""}
               onChange={(e) =>
                 handleStatusChange(
-// @ts-ignore
                   (e.target.value || "all") as InventoryStatus | "all",
                 )
               }
@@ -605,7 +593,6 @@ export default function InventoryPage() {
             <select
               className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
               onChange={(e) => {
-// @ts-ignore
                 const inventoryStatus = e.target.value as InventoryStatus;
                 if (inventoryStatus) {
                   handleBulkUpdateStatus(inventoryStatus);
@@ -616,11 +603,8 @@ export default function InventoryPage() {
               <option value="" disabled>
                 Update Status
               </option>
-// @ts-ignore
               <option value="in_stock">Mark as In Stock</option>
-// @ts-ignore
               <option value="low_stock">Mark as Low Stock</option>
-// @ts-ignore
               <option value="out_of_stock">Mark as Out of Stock</option>
             </select>
             <Button
@@ -709,7 +693,6 @@ export default function InventoryPage() {
 
       {/* Inventory Table */}
       <VirtualizedTable
-// @ts-ignore
         items={inventoryResponse as InventoryItem[]}
         renderRow={renderRow}
         estimateRowHeight={() => 50}
@@ -717,17 +700,11 @@ export default function InventoryPage() {
       />
 
       {/* Pagination */}
-// @ts-ignore
-// @ts-ignore
       {((inventoryResponse as any)?.totalPages || 0) > 1 && (
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 border-t">
           <div className="text-sm text-muted-foreground">
             Showing {(page - 1) * pageSize + 1}-
-// @ts-ignore
-// @ts-ignore
             {Math.min(page * pageSize, (inventoryResponse as any)?.total || 0)}{" "}
-// @ts-ignore
-// @ts-ignore
             of {(inventoryResponse as any)?.total || 0} items
           </div>
           <div className="flex items-center space-x-2">
@@ -745,8 +722,6 @@ export default function InventoryPage() {
                   length: Math.min(
                     5,
                     Math.ceil(
-// @ts-ignore
-// @ts-ignore
                       ((inventoryResponse as any)?.total || 0) / pageSize,
                     ),
                   ),
@@ -755,8 +730,6 @@ export default function InventoryPage() {
                   // Calculate page number based on current page and total pages
                   let pageNum;
                   const totalPages = Math.ceil(
-// @ts-ignore
-// @ts-ignore
                     ((inventoryResponse as any)?.total || 0) / pageSize,
                   );
 
@@ -788,8 +761,6 @@ export default function InventoryPage() {
               size="sm"
               onClick={() => handlePageChangeWrapper(page + 1)}
               disabled={
-// @ts-ignore
-// @ts-ignore
                 page * pageSize >= ((inventoryResponse as any)?.total || 0)
               }
             >

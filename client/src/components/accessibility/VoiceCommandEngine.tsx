@@ -6,8 +6,7 @@ declare global {
 }
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-// @ts-ignore
-import { useAccessibility } from './AccessibilityContext.js.js';
+import { useAccessibility } from './AccessibilityContext';
 
 // Voice command interfaces
 interface VoiceCommand {
@@ -152,7 +151,6 @@ const BUILTIN_COMMANDS: VoiceCommand[] = [
 ];
 
 // Voice Command Engine Component
-// @ts-ignore
 export const VoiceCommandEngine: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -174,8 +172,6 @@ export const VoiceCommandEngine: React.FC<{ children: React.ReactNode }> = ({
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
-// @ts-ignore
-// @ts-ignore
       const SpeechRecognition = (window as any).webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
 
@@ -290,7 +286,6 @@ export const VoiceCommandEngine: React.FC<{ children: React.ReactNode }> = ({
           case "submit":
             const submitButton = document.querySelector(
               'button[type="submit"], input[type="submit"]',
-// @ts-ignore
             ) as HTMLButtonElement;
             if (submitButton) {
               submitButton.click();
@@ -300,7 +295,6 @@ export const VoiceCommandEngine: React.FC<{ children: React.ReactNode }> = ({
           case "cancel":
             const cancelButton = document.querySelector(
               'button[type="button"]',
-// @ts-ignore
             ) as HTMLButtonElement;
             if (
               cancelButton &&
@@ -335,7 +329,6 @@ export const VoiceCommandEngine: React.FC<{ children: React.ReactNode }> = ({
           case "search":
             const searchInput = document.querySelector(
               'input[type="search"], input[placeholder*="search" i]',
-// @ts-ignore
             ) as HTMLInputElement;
             if (searchInput) {
               searchInput.focus();
@@ -458,7 +451,6 @@ export const VoiceCommandEngine: React.FC<{ children: React.ReactNode }> = ({
   const triggerExport = () => {
     const exportButton = document.querySelector(
       'button[aria-label*="export" i], button:contains("Export")',
-// @ts-ignore
     ) as HTMLButtonElement;
     if (exportButton) {
       exportButton.click();
@@ -515,7 +507,6 @@ export const useVoiceCommands = (): VoiceCommandEngineContextType => {
 };
 
 // Voice Control Component
-// @ts-ignore
 export const VoiceControl: React.FC = () => {
   const { isListening, toggleListening, visualFeedback } = useVoiceCommands();
 

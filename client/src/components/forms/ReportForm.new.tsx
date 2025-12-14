@@ -1,30 +1,25 @@
 import React, { useState } from 'react';
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
-// @ts-ignore
-import { Label } from '../components/ui/label.js.js';
-// @ts-ignore
-import { Textarea } from '../components/ui/textarea.js.js';
+import { Button } from '@/components/components/ui/button';
+import { Input } from '@/components/components/ui/input';
+import { Label } from '@/components/components/ui/label';
+import { Textarea } from '@/components/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select.js.js';
-// @ts-ignore
-import { Checkbox } from '../components/ui/checkbox.js.js';
+} from '@/components/components/ui/select';
+import { Checkbox } from '@/components/components/ui/checkbox';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardFooter,
-} from '../components/ui/card.js.js';
+} from '@/components/components/ui/card';
 import {
   Loader2,
   Save,
@@ -35,25 +30,20 @@ import {
   Paperclip,
   Plus,
 } from "lucide-react";
-// @ts-ignore
-import { cn } from '../lib/utils.js.js';
+import { cn } from '@/components/lib/utils';
 import {
   ReportFormValues,
   reportFormSchema,
   defaultValues,
   ReportStatus,
-} from '../types/reportForm.js.js';
+} from '@/components/types/reportForm';
 import { useEffect, useState } from "react";
-// @ts-ignore
-import { useToast } from '../components/ui/use-toast.js.js';
-// @ts-ignore
-import { useAutoSave } from '../hooks/useAutoSave.js.js';
+import { useToast } from '@/components/components/ui/use-toast';
+import { useAutoSave } from '@/components/hooks/useAutoSave';
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-// @ts-ignore
-import { createReport, updateReport } from '../lib/api/reportService.js.js';
+import { createReport, updateReport } from '@/components/lib/api/reportService';
 import { useDropzone } from "react-dropzone";
-// @ts-ignore
-import { Badge } from '../components/ui/badge.js.js';
+import { Badge } from '@/components/components/ui/badge';
 
 interface ReportFormProps {
   /** Initial form values */
@@ -112,8 +102,6 @@ export const ReportForm = ({
     formState: { errors, isDirty, isSubmitting: isFormSubmitting },
     watch,
   } = useForm<ReportFormValues>({
-// @ts-ignore
-// @ts-ignore
     resolver: zodResolver(reportFormSchema) as any,
     defaultValues: { ...defaultValues, ...initialValues },
   });
@@ -123,11 +111,7 @@ export const ReportForm = ({
     onSave: async (data: any) => {
       if (isDirty && enableAutoSave) {
         try {
-// @ts-ignore
-// @ts-ignore
           if ((data as any).id) {
-// @ts-ignore
-// @ts-ignore
             await updateReport((data as any).id, data);
           } else {
             await createReport(data);
@@ -197,19 +181,13 @@ export const ReportForm = ({
 
   // Handle existing attachment removal
   const removeExistingAttachment = async (attachmentId: string) => {
-// @ts-ignore
-// @ts-ignore
     if (!(initialValues as any)?.id) return;
 
     try {
       setIsDeleting(attachmentId);
       // TODO: Implement deleteAttachment function
-// @ts-ignore
-// @ts-ignore
       // await deleteAttachment((initialValues as any).id, attachmentId);
       setExistingAttachments((prev) =>
-// @ts-ignore
-// @ts-ignore
         prev.filter((att) => (att as any).id !== attachmentId),
       );
       toast({
@@ -237,7 +215,6 @@ export const ReportForm = ({
         if (Array.isArray(value)) {
           value.forEach((item) => formData.append(key, item));
         } else if (value !== undefined && value !== null) {
-// @ts-ignore
           formData.append(key, value as string | Blob);
         }
       });
@@ -247,20 +224,15 @@ export const ReportForm = ({
       });
 
       // Call the provided onSubmit handler
-// @ts-ignore
       await onSubmit(formData as unknown as ReportFormValues);
 
       // Reset files after successful submission if this is a new report
-// @ts-ignore
-// @ts-ignore
       if (!(initialValues as any)?.id) {
         setFiles([]);
       }
 
       toast({
         title: "Success",
-// @ts-ignore
-// @ts-ignore
         description: (initialValues as any)?.id
           ? "Report updated successfully"
           : "Report created successfully",
@@ -599,7 +571,6 @@ export const ReportForm = ({
                       onClick={() => {
                         const input = document.querySelector(
                           'input[data-testid="tag-input"]',
-// @ts-ignore
                         ) as HTMLInputElement;
                         if (input) {
                           const value = input.value.trim();

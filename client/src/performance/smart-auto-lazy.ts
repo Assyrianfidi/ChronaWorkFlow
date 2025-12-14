@@ -624,8 +624,6 @@ export class SmartAutoLazyEngine {
 
     // Monitor network changes
     if ("connection" in navigator) {
-// @ts-ignore
-// @ts-ignore
       (navigator as any).connection.addEventListener(
         "change",
         this.handleNetworkChange.bind(this),
@@ -648,7 +646,6 @@ export class SmartAutoLazyEngine {
   }
 
   private handleMouseOver(event: MouseEvent): void {
-// @ts-ignore
     const target = event.target as HTMLElement;
     const link = target.closest("a");
 
@@ -664,13 +661,11 @@ export class SmartAutoLazyEngine {
   }
 
   private handleTouchStart(event: TouchEvent): void {
-// @ts-ignore
     const target = event.target as HTMLElement;
     this.behaviorAnalyzer.trackInteraction("touchstart", target);
   }
 
   private handleClick(event: MouseEvent): void {
-// @ts-ignore
     const target = event.target as HTMLElement;
     this.behaviorAnalyzer.trackInteraction("click", target);
   }
@@ -684,8 +679,6 @@ export class SmartAutoLazyEngine {
   }
 
   private handleNetworkChange(): void {
-// @ts-ignore
-// @ts-ignore
     const connection = (navigator as any).connection;
     const networkCondition = this.getNetworkCondition(connection);
 
@@ -706,7 +699,6 @@ export class SmartAutoLazyEngine {
 
   private handlePerformanceEntry(entry: PerformanceEntry): void {
     if (entry.entryType === "resource") {
-// @ts-ignore
       const resourceEntry = entry as PerformanceResourceTiming;
       this.processResourceTiming(resourceEntry);
     }
@@ -881,8 +873,6 @@ export class SmartAutoLazyEngine {
   }
 
   private calculateNetworkEfficiency(): number {
-// @ts-ignore
-// @ts-ignore
     const connection = (navigator as any).connection;
     if (!connection) return 80;
 
@@ -913,8 +903,6 @@ export class SmartAutoLazyEngine {
     let performance = 50;
 
     // Add points for device capabilities
-// @ts-ignore
-// @ts-ignore
     const memory = (performance as any).memory;
     if (memory) {
       const memoryGB = memory.jsHeapSizeLimit / (1024 * 1024 * 1024);
@@ -1063,8 +1051,6 @@ export class SmartAutoLazyEngine {
   ): "critical" | "important" | "normal" | "low" {
     const intent = element.getAttribute("data-user-intent");
     if (intent) {
-// @ts-ignore
-// @ts-ignore
       return intent as any;
     }
 
@@ -1162,7 +1148,6 @@ export class SmartAutoLazyEngine {
           break;
         case "css":
           element = document.createElement("link");
-// @ts-ignore
           (element as HTMLLinkElement).rel = "stylesheet";
           break;
         case "javascript":
@@ -1174,13 +1159,10 @@ export class SmartAutoLazyEngine {
 
       // Set source
       if (item.type === "image") {
-// @ts-ignore
         (element as HTMLImageElement).src = item.url;
       } else if (item.type === "css") {
-// @ts-ignore
         (element as HTMLLinkElement).href = item.url;
       } else if (item.type === "javascript") {
-// @ts-ignore
         (element as HTMLScriptElement).src = item.url;
       }
 
@@ -1346,7 +1328,6 @@ ${this.generateRecommendations(metrics, resourceMetrics)}
     };
 
     metrics.forEach((metric) => {
-// @ts-ignore
       const type = metric.type as keyof typeof breakdown;
       if (breakdown[type]) {
         breakdown[type].count++;

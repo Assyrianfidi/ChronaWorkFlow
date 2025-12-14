@@ -22,7 +22,6 @@ describe("AdminDashboardClient - Client Side", () => {
       id: "1",
       name: "Admin User",
       email: "admin@example.com",
-// @ts-ignore
       role: "ADMIN" as UserRole,
       emailVerified: new Date(),
       image: null,
@@ -34,7 +33,6 @@ describe("AdminDashboardClient - Client Side", () => {
       id: "2",
       name: "Regular User",
       email: "user@example.com",
-// @ts-ignore
       role: "USER" as UserRole,
       emailVerified: new Date(),
       image: null,
@@ -55,7 +53,6 @@ describe("AdminDashboardClient - Client Side", () => {
     vi.clearAllMocks();
 
     // Mock session
-// @ts-ignore
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
@@ -67,7 +64,6 @@ describe("AdminDashboardClient - Client Side", () => {
 
     // Mock router
     const pushMock = vi.fn();
-// @ts-ignore
     (useRouter as jest.Mock).mockReturnValue({
       push: pushMock,
     });
@@ -94,7 +90,6 @@ describe("AdminDashboardClient - Client Side", () => {
 
   it("redirects to unauthorized if user is not admin", () => {
     // Mock non-admin user
-// @ts-ignore
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
@@ -105,7 +100,6 @@ describe("AdminDashboardClient - Client Side", () => {
     });
 
     const pushMock = vi.fn();
-// @ts-ignore
     (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
 
     render(<AdminDashboardClient users={mockProps.users} />);

@@ -8,7 +8,6 @@ declare global {
 import { QueryClient } from "@tanstack/react-query";
 
 // API request utility function
-// @ts-ignore
 export async function apiRequest<T = any>(
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
   endpoint: string,
@@ -57,16 +56,13 @@ export async function apiRequest<T = any>(
 
   // Handle empty responses (e.g., for 204 No Content)
   if (response.status === 204) {
-// @ts-ignore
     return undefined as T;
   }
 
-// @ts-ignore
   // Try to parse the response as JSON, fall back to text if not JSON
   try {
     return await response.json();
   } catch (error) {
-// @ts-ignore
     return (await response.text()) as unknown as T;
   }
 }

@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { useState, useEffect } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
-// @ts-ignore
-import { useAuthStore } from '../../store/auth-store.js.js';
-// @ts-ignore
-import { Button } from '../../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../../components/ui/input.js.js';
-// @ts-ignore
-import { Label } from '../../components/ui/label.js.js';
+import { useAuthStore } from '@/../../store/auth-store';
+import { Button } from '@/../../components/ui/button';
+import { Input } from '@/../../components/ui/input';
+import { Label } from '@/../../components/ui/label';
 import {
   Card,
   CardContent,
@@ -16,9 +12,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../components/ui/card.js.js';
-// @ts-ignore
-import { Icons } from '../../components/icons.js.js';
+} from '@/../../components/ui/card';
+import { Icons } from '@/../../components/icons';
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
@@ -74,7 +69,6 @@ export default function ResetPasswordPage() {
         navigate("/login");
       }, 3000);
     } catch (err) {
-// @ts-ignore
       const error = err as Error;
       setError(
         error.message || "Failed to reset password. The link may have expired.",

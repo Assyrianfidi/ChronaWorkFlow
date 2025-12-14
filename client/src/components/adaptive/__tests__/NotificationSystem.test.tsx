@@ -5,7 +5,7 @@ import {
   useNotifications,
   Toast,
   NotificationQueue,
-} from '../NotificationSystem.js.js';
+} from '@/components/NotificationSystem';
 
 // Mock the UX mode hook
 jest.mock("../UserExperienceMode", () => ({
@@ -44,8 +44,6 @@ global.AudioContext = jest.fn(() => ({
   destination: {},
   currentTime: 0,
   close: jest.fn(),
-// @ts-ignore
-// @ts-ignore
 })) as any;
 
 // Mock createPortal
@@ -173,7 +171,6 @@ describe("useNotifications hook", () => {
         useNotifications();
         return <div>Success</div>;
       } catch (error) {
-// @ts-ignore
         return <div>Error: {(error as Error).message}</div>;
       }
     };
@@ -395,8 +392,6 @@ describe("NotificationQueue", () => {
       addNotification: jest.fn(),
     };
 
-// @ts-ignore
-// @ts-ignore
     const queue = new NotificationQueue(mockNotifications as any);
 
     queue.add({ type: "info", title: "Notification 1" });
@@ -420,8 +415,6 @@ describe("NotificationQueue", () => {
       addNotification: jest.fn(),
     };
 
-// @ts-ignore
-// @ts-ignore
     const queue = new NotificationQueue(mockNotifications as any);
 
     queue.add({ type: "info", title: "Notification 1" });

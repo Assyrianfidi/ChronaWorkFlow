@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
-// @ts-ignore
-import { useAnalytics } from './AnalyticsEngine.js.js';
-// @ts-ignore
-import { ReportFilter, AnalyticsReport } from './AnalyticsEngine.js.js';
+import { useAnalytics } from './AnalyticsEngine';
+import { ReportFilter, AnalyticsReport } from './AnalyticsEngine';
 
 interface ReportTemplate {
   id: string;
@@ -119,7 +117,6 @@ const REPORT_TEMPLATES: ReportTemplate[] = [
   },
 ];
 
-// @ts-ignore
 export const ReportBuilder: React.FC<ReportBuilderProps> = ({
   onReportGenerated,
   onCancel,
@@ -154,8 +151,6 @@ export const ReportBuilder: React.FC<ReportBuilderProps> = ({
     // Convert template filters to report filters
     const reportFilters: ReportFilter[] = template.filters.map((f) => ({
       field: f.field,
-// @ts-ignore
-// @ts-ignore
       operator: f.operator as any,
       value: f.value,
       label: f.label || f.field,
@@ -390,8 +385,6 @@ export const ReportBuilder: React.FC<ReportBuilderProps> = ({
         <label className="block text-sm font-medium mb-1">Report Type</label>
         <select
           value={reportType}
-// @ts-ignore
-// @ts-ignore
           onChange={(e) => setReportType(e.target.value as any)}
           className="w-full p-2 border rounded"
         >

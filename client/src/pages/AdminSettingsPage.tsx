@@ -207,7 +207,6 @@ const statusConfig = {
   },
 };
 
-// @ts-ignore
 const AdminSettingsPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [filteredUsers, setFilteredUsers] = useState<User[]>(mockUsers);
@@ -671,7 +670,6 @@ const AdminSettingsPage: React.FC = () => {
                     <div className="flex items-center gap-2">
                       {setting.type === "boolean" ? (
                         <Switch
-// @ts-ignore
                           checked={setting.value as boolean}
                           onCheckedChange={(checked) =>
                             handleUpdateSetting(setting.id, checked)
@@ -824,14 +822,12 @@ const AdminSettingsPage: React.FC = () => {
 };
 
 // Create User Form Component
-// @ts-ignore
 const CreateUserForm: React.FC<{ onSubmit: (data: any) => void }> = ({
   onSubmit,
 }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-// @ts-ignore
     role: "USER" as User["role"],
   });
 

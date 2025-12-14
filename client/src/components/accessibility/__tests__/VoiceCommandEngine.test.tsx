@@ -5,9 +5,8 @@ import {
   VoiceCommandEngine,
   VoiceControl,
   useVoiceCommands,
-} from '../VoiceCommandEngine.js.js';
-// @ts-ignore
-import { AccessibilityProvider } from '../AccessibilityContext.js.js';
+} from '@/components/VoiceCommandEngine';
+import { AccessibilityProvider } from '@/components/AccessibilityContext';
 
 // Mock speech recognition
 const mockSpeechRecognition = vi.fn();
@@ -43,7 +42,6 @@ Object.defineProperty(global, "Audio", {
 });
 
 // Test component
-// @ts-ignore
 const TestComponent: React.FC = () => {
   const { isListening, recognizedCommands, startListening, stopListening } =
     useVoiceCommands();

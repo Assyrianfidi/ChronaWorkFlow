@@ -15,7 +15,6 @@ declare global {
 if (typeof TextEncoder === "undefined") {
   const { TextEncoder, TextDecoder } = require("util");
   global.TextEncoder = TextEncoder;
-// @ts-ignore
   global.TextDecoder = TextDecoder as typeof global.TextDecoder;
 }
 
@@ -67,8 +66,6 @@ beforeAll(() => {
   window.IntersectionObserver = MockIntersectionObserver;
 
   // Mock ResizeObserver
-// @ts-ignore
-// @ts-ignore
   window.ResizeObserver = MockResizeObserver as any;
 
   // Mock window.scrollTo
@@ -128,7 +125,6 @@ vi.mock("react-dropzone", () => ({
 vi.mock("date-fns", async () => {
   const actual = await vi.importActual("date-fns");
   return {
-// @ts-ignore
     ...(actual as object),
     format: vi.fn().mockReturnValue("2023-01-01"),
   };
@@ -140,7 +136,6 @@ const mockFetch = vi.fn().mockImplementation(() =>
     ok: true,
     status: 200,
     json: async () => ({}),
-// @ts-ignore
   } as Response),
 );
 

@@ -101,7 +101,6 @@ export default function AccountsPage() {
         };
         return (
           <span
-// @ts-ignore
             className={`px-2 py-1 rounded-full text-xs font-medium ${typeColors[value as keyof typeof typeColors] || "bg-gray-100 text-gray-800"}`}
           >
             {value}
@@ -137,7 +136,6 @@ export default function AccountsPage() {
         };
         return (
           <span
-// @ts-ignore
             className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[value as keyof typeof statusColors]}`}
           >
             {value}

@@ -13,12 +13,9 @@ import React, {
   useRef,
 } from "react";
 import { createPortal } from "react-dom";
-// @ts-ignore
-import { useUserExperienceMode } from './UserExperienceMode.js.js';
-// @ts-ignore
-import { usePerformance } from './UI-Performance-Engine.js.js';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { useUserExperienceMode } from './UserExperienceMode';
+import { usePerformance } from './UI-Performance-Engine';
+import { cn } from '@/../../lib/utils';
 
 // Notification types
 export type NotificationType =
@@ -123,8 +120,6 @@ export function NotificationSystem({
       !audioContextRef.current
     ) {
       audioContextRef.current = new (window.AudioContext ||
-// @ts-ignore
-// @ts-ignore
         (window as any).webkitAudioContext)();
     }
 

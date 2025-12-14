@@ -15,7 +15,6 @@ import React from 'react';
 export const trapFocus = (element: HTMLElement) => {
   const focusableElements = element.querySelectorAll(
     'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-// @ts-ignore
   ) as NodeListOf<HTMLElement>;
 
   const firstElement = focusableElements[0];
@@ -161,7 +160,6 @@ export const createSkipLinks = (containerId: string) => {
     className: "skip-link",
     onClick: (e: React.MouseEvent) => {
       e.preventDefault();
-// @ts-ignore
       const target = document.querySelector(link.href) as HTMLElement;
       if (target && typeof target.focus === "function") {
         target.focus();
@@ -329,7 +327,6 @@ export const setupFocusVisible = () => {
   };
 
   const handleFocusVisible = (e: FocusEvent) => {
-// @ts-ignore
     const target = e.target as HTMLElement;
 
     if (hadKeyboardEvent) {
@@ -340,7 +337,6 @@ export const setupFocusVisible = () => {
   };
 
   const handleBlur = (e: FocusEvent) => {
-// @ts-ignore
     const target = e.target as HTMLElement;
     target.classList.remove("focus-visible");
   };

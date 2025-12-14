@@ -4,10 +4,8 @@ import React from 'react';
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// @ts-ignore
 import * as z from "zod";
-// @ts-ignore
-import { useAuthStore } from '../store/auth-store.js.js';
+import { useAuthStore } from '@/components/store/auth-store';
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
@@ -74,7 +72,6 @@ const ResetPasswordPage = () => {
       // Redirect to login with success state
       router.push("/auth/login?reset=success");
     } catch (err) {
-// @ts-ignore
       const error = err as Error;
       setError(error.message || "Failed to reset password. Please try again.");
     } finally {

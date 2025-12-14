@@ -387,16 +387,13 @@ export class AccessibilityEngine {
   private setupEventListeners(): void {
     // Focus management
     const handleFocusIn = (e: FocusEvent) => {
-// @ts-ignore
       this.currentFocusElement = e.target as Element;
       if (this.config.focusManagement.visibleFocus) {
-// @ts-ignore
         (e.target as HTMLElement).classList.add("a11y-focus-visible");
       }
     };
 
     const handleFocusOut = (e: FocusEvent) => {
-// @ts-ignore
       (e.target as HTMLElement).classList.remove("a11y-focus-visible");
     };
 
@@ -448,7 +445,6 @@ export class AccessibilityEngine {
       if (region.isActive) {
         this.removeFocusRegion(region.id);
         if (region.restoreElement) {
-// @ts-ignore
           (region.restoreElement as HTMLElement).focus();
         }
         e.preventDefault();
@@ -462,7 +458,6 @@ export class AccessibilityEngine {
       'main, [role="main"], .main-content',
     );
     if (mainContent) {
-// @ts-ignore
       (mainContent as HTMLElement).focus();
       this.announceToScreenReader("Skipped to main content");
     }
@@ -565,10 +560,8 @@ export class AccessibilityEngine {
         }
 
         this.landmarks.push({
-// @ts-ignore
           type: type as AccessibilityLandmark["type"],
           label: landmarkLabel,
-// @ts-ignore
           element: element as HTMLElement,
         });
       });
@@ -581,7 +574,6 @@ export class AccessibilityEngine {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType === Node.ELEMENT_NODE) {
-// @ts-ignore
             this.setupElementAccessibility(node as Element);
           }
         });
@@ -615,7 +607,6 @@ export class AccessibilityEngine {
       const tabs = tabList.querySelectorAll('[role="tab"]');
 
       tabList.addEventListener("keydown", (e) => {
-// @ts-ignore
         const currentTab = e.target as HTMLElement;
         const currentIndex = Array.from(tabs).indexOf(currentTab);
 
@@ -626,9 +617,7 @@ export class AccessibilityEngine {
           case "ArrowDown":
             e.preventDefault();
             newIndex = (currentIndex + 1) % tabs.length;
-// @ts-ignore
             (tabs[newIndex] as HTMLElement).focus();
-// @ts-ignore
             (tabs[newIndex] as HTMLElement).click();
             break;
 
@@ -636,25 +625,19 @@ export class AccessibilityEngine {
           case "ArrowUp":
             e.preventDefault();
             newIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
-// @ts-ignore
             (tabs[newIndex] as HTMLElement).focus();
-// @ts-ignore
             (tabs[newIndex] as HTMLElement).click();
             break;
 
           case "Home":
             e.preventDefault();
-// @ts-ignore
             (tabs[0] as HTMLElement).focus();
-// @ts-ignore
             (tabs[0] as HTMLElement).click();
             break;
 
           case "End":
             e.preventDefault();
-// @ts-ignore
             (tabs[tabs.length - 1] as HTMLElement).focus();
-// @ts-ignore
             (tabs[tabs.length - 1] as HTMLElement).click();
             break;
         }
@@ -669,7 +652,6 @@ export class AccessibilityEngine {
       const menuItems = menu.querySelectorAll('[role="menuitem"]');
 
       menu.addEventListener("keydown", (e) => {
-// @ts-ignore
         const currentItem = e.target as HTMLElement;
         const currentIndex = Array.from(menuItems).indexOf(currentItem);
 
@@ -677,7 +659,6 @@ export class AccessibilityEngine {
           case "ArrowDown":
             e.preventDefault();
             const nextIndex = (currentIndex + 1) % menuItems.length;
-// @ts-ignore
             (menuItems[nextIndex] as HTMLElement).focus();
             break;
 
@@ -685,19 +666,16 @@ export class AccessibilityEngine {
             e.preventDefault();
             const prevIndex =
               currentIndex === 0 ? menuItems.length - 1 : currentIndex - 1;
-// @ts-ignore
             (menuItems[prevIndex] as HTMLElement).focus();
             break;
 
           case "Home":
             e.preventDefault();
-// @ts-ignore
             (menuItems[0] as HTMLElement).focus();
             break;
 
           case "End":
             e.preventDefault();
-// @ts-ignore
             (menuItems[menuItems.length - 1] as HTMLElement).focus();
             break;
 
@@ -719,7 +697,6 @@ export class AccessibilityEngine {
       let currentCellIndex = 0;
 
       grid.addEventListener("keydown", (e) => {
-// @ts-ignore
         const currentCell = cells[currentCellIndex] as HTMLElement;
         const cols = grid.getAttribute("aria-colcount")
           ? parseInt(grid.getAttribute("aria-colcount")!)
@@ -729,14 +706,12 @@ export class AccessibilityEngine {
           case "ArrowRight":
             e.preventDefault();
             currentCellIndex = Math.min(currentCellIndex + 1, cells.length - 1);
-// @ts-ignore
             (cells[currentCellIndex] as HTMLElement).focus();
             break;
 
           case "ArrowLeft":
             e.preventDefault();
             currentCellIndex = Math.max(currentCellIndex - 1, 0);
-// @ts-ignore
             (cells[currentCellIndex] as HTMLElement).focus();
             break;
 
@@ -746,14 +721,12 @@ export class AccessibilityEngine {
               currentCellIndex + cols,
               cells.length - 1,
             );
-// @ts-ignore
             (cells[currentCellIndex] as HTMLElement).focus();
             break;
 
           case "ArrowUp":
             e.preventDefault();
             currentCellIndex = Math.max(currentCellIndex - cols, 0);
-// @ts-ignore
             (cells[currentCellIndex] as HTMLElement).focus();
             break;
         }
@@ -872,11 +845,9 @@ export class AccessibilityEngine {
 
     if (focusableElements.length === 0) return;
 
-// @ts-ignore
     const firstElement = focusableElements[0] as HTMLElement;
     const lastElement = focusableElements[
       focusableElements.length - 1
-// @ts-ignore
     ] as HTMLElement;
 
     const handleTabKey = (e: KeyboardEvent) => {

@@ -56,7 +56,6 @@ describe("AdminDashboard", () => {
     vi.clearAllMocks();
 
     // Mock session
-// @ts-ignore
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
@@ -68,7 +67,6 @@ describe("AdminDashboard", () => {
 
     // Mock router
     const pushMock = vi.fn();
-// @ts-ignore
     (useRouter as jest.Mock).mockReturnValue({
       push: pushMock,
     });
@@ -120,7 +118,6 @@ describe("AdminDashboard", () => {
 
   it("redirects to unauthorized if user is not admin", async () => {
     // Mock non-admin user
-// @ts-ignore
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
@@ -131,7 +128,6 @@ describe("AdminDashboard", () => {
     });
 
     const pushMock = vi.fn();
-// @ts-ignore
     (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
 
     render(<AdminDashboard />);

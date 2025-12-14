@@ -62,8 +62,6 @@ const setup = async (props = {}) => {
 
 beforeAll(() => {
   global.URL.createObjectURL = mockCreateObjectURL;
-// @ts-ignore
-// @ts-ignore
   global.ResizeObserver = ResizeObserverStub as any;
 
   Object.defineProperty(TEST_FILE, "size", { value: 1024 });
@@ -132,7 +130,6 @@ describe("ReportForm", () => {
       priority: "high" as const,
       dueDate: "2025-12-31",
       isPublic: true,
-// @ts-ignore
     } as ReportFormValues;
 
     render(<ReportForm {...defaultProps} initialValues={initialValues} />);
@@ -244,11 +241,7 @@ describe("ReportForm", () => {
         timeout: 1500,
       });
     } catch (err) {
-// @ts-ignore
-// @ts-ignore
       if ((global as any).__REPORTFORM_SUBMIT__) {
-// @ts-ignore
-// @ts-ignore
         await (global as any).__REPORTFORM_SUBMIT__({
           title: "Test Report",
           description: "This is a test report description",

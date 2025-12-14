@@ -7,53 +7,21 @@ import { ProtectedRoute, PublicRoute, SuspenseWrapper } from "./RouteGuards";
 import { FeatureRoute } from "./FeatureRoute";
 
 // Lazy load pages for better performance
-// @ts-ignore
-// @ts-ignore
 const DashboardRouter = lazy(() => import("../pages/DashboardRouter"));
-// @ts-ignore
-// @ts-ignore
 const LoginPage = lazy(() => import("../pages/LoginPage"));
-// @ts-ignore
-// @ts-ignore
 const RegisterPage = lazy(() => import("../pages/RegisterPage"));
-// @ts-ignore
-// @ts-ignore
 const ForgotPasswordPage = lazy(() => import("../pages/ForgotPasswordPage"));
-// @ts-ignore
-// @ts-ignore
 const ResetPasswordPage = lazy(() => import("../pages/ResetPasswordPage"));
-// @ts-ignore
-// @ts-ignore
 const ProfilePage = lazy(() => import("../pages/ProfilePage"));
-// @ts-ignore
-// @ts-ignore
 const InvoicesPage = lazy(() => import("../pages/InvoicesPage"));
-// @ts-ignore
-// @ts-ignore
 const CustomersPage = lazy(() => import("../pages/CustomersPage"));
-// @ts-ignore
-// @ts-ignore
 const TransactionsPage = lazy(() => import("../pages/TransactionsPage"));
-// @ts-ignore
-// @ts-ignore
 const InventoryPage = lazy(() => import("../pages/InventoryPage"));
-// @ts-ignore
-// @ts-ignore
 const ReportsPage = lazy(() => import("../pages/ReportsPage"));
-// @ts-ignore
-// @ts-ignore
 const AdminSettingsPage = lazy(() => import("../pages/AdminSettingsPage"));
-// @ts-ignore
-// @ts-ignore
 const AuditLogsPage = lazy(() => import("../pages/AuditLogsPage"));
-// @ts-ignore
-// @ts-ignore
 const NotificationsPage = lazy(() => import("../pages/NotificationsPage"));
-// @ts-ignore
-// @ts-ignore
 const FeatureManagementPage = lazy(() => import("../pages/FeatureManagementPage"));
-// @ts-ignore
-// @ts-ignore
 const Unauthorized = lazy(() => import("../pages/Unauthorized"));
 
 const router = createBrowserRouter([

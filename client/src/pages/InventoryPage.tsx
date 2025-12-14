@@ -266,7 +266,6 @@ const movementConfig = {
   },
 };
 
-// @ts-ignore
 const InventoryPage: React.FC = () => {
   const [inventoryItems, setInventoryItems] =
     useState<InventoryItem[]>(mockInventoryItems);
@@ -820,7 +819,6 @@ const InventoryPage: React.FC = () => {
 };
 
 // Create Inventory Form Component
-// @ts-ignore
 const CreateInventoryForm: React.FC<{ onSubmit: (data: any) => void }> = ({
   onSubmit,
 }) => {

@@ -372,8 +372,6 @@ describe("Audio Manager", () => {
         connect: vi.fn(),
       })),
       destination: {},
-// @ts-ignore
-// @ts-ignore
     })) as any;
 
     render(
@@ -387,8 +385,6 @@ describe("Audio Manager", () => {
 
   it("handles missing AudioContext gracefully", () => {
     // Remove AudioContext
-// @ts-ignore
-// @ts-ignore
     delete (global as any).AudioContext;
 
     expect(() => {
@@ -415,8 +411,6 @@ describe("Haptic Manager", () => {
 
   it("handles missing vibrate API gracefully", () => {
     // Remove vibrate API
-// @ts-ignore
-// @ts-ignore
     delete (navigator as any).vibrate;
 
     function TestComponent() {
@@ -619,7 +613,6 @@ describe("Canvas Rendering", () => {
       </InteractionEngine>,
     );
 
-// @ts-ignore
     const canvas = document.querySelector("canvas") as HTMLCanvasElement;
     expect(canvas.width).toBe(1024);
     expect(canvas.height).toBe(768);

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-// @ts-ignore
-import { useUserExperienceMode } from '../adaptive/UserExperienceMode.js.js';
-// @ts-ignore
-import { usePerformance } from '../adaptive/UI-Performance-Engine.js.js';
+import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
+import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
 
 // Predictive Assistant types and interfaces
 export interface PredictionModel {
@@ -838,7 +836,6 @@ class InsightGenerator {
         recommendations: [
           "Add to quick access",
           "Create bookmark",
-// @ts-ignore
           "Set as homepage",
         ],
         timestamp: Date.now(),
@@ -1259,7 +1256,6 @@ export function usePredictiveAssistant() {
 }
 
 // Behavior Tracker HOC
-// @ts-ignore
 export function withBehaviorTracking<P extends object>(
   Component: React.ComponentType<P>,
   options: {

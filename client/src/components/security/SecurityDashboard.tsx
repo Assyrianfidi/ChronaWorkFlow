@@ -8,14 +8,13 @@ import EnterpriseSecurity, {
   SecurityAlert,
   SecurityEvent,
   UserSession,
-} from '../../security/enterprise-security.js.js';
+} from '@/../../security/enterprise-security';
 
 interface SecurityDashboardProps {
   security: EnterpriseSecurity;
   className?: string;
 }
 
-// @ts-ignore
 const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
   security,
   className = "",
@@ -62,12 +61,10 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
 
     document.addEventListener(
       "security:event",
-// @ts-ignore
       handleSecurityEvent as EventListener,
     );
     document.addEventListener(
       "security:alert",
-// @ts-ignore
       handleSecurityAlert as EventListener,
     );
 
@@ -75,12 +72,10 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
       if (refreshInterval) clearInterval(refreshInterval);
       document.removeEventListener(
         "security:event",
-// @ts-ignore
         handleSecurityEvent as EventListener,
       );
       document.removeEventListener(
         "security:alert",
-// @ts-ignore
         handleSecurityAlert as EventListener,
       );
     };

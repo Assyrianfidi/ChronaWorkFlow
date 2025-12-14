@@ -1,13 +1,11 @@
-import React from 'react';
+import React from 'react'
+;
 "use client";
 
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
+;
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
 
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { cn } from '@/../../lib/utils';
 
 const HoverCard = HoverCardPrimitive.Root;
 

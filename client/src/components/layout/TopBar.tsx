@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { Search, Bell, User, LogOut, Building } from "lucide-react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { EnterpriseButton } from '../ui/EnterpriseButton.js.js';
+import { cn } from '@/../../lib/utils';
+import { EnterpriseButton } from '@/components/ui/EnterpriseButton';
 
 interface TopBarProps {
   className?: string;

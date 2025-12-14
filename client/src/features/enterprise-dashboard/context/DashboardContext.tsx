@@ -72,7 +72,6 @@ const mockKpis: Kpi[] = [
   },
 ];
 
-// @ts-ignore
 export const DashboardProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {

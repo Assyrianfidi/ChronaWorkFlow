@@ -7,14 +7,13 @@ import React, { useState, useEffect } from "react";
 import PerformanceEngine, {
   PerformanceReport,
   PerformanceMetrics,
-} from '../../performance/performance-engine.js.js';
+} from '@/../../performance/performance-engine';
 
 interface PerformanceDashboardProps {
   engine: PerformanceEngine;
   className?: string;
 }
 
-// @ts-ignore
 const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   engine,
   className = "",

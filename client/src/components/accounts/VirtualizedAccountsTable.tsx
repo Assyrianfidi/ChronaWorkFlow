@@ -50,7 +50,6 @@ const flattenAccounts = (
   return result;
 };
 
-// @ts-ignore
 export const VirtualizedAccountsTable: React.FC<VirtualizedAccountsTableProps> =
   memo(({ accounts, searchQuery, expandedIds, onToggleExpand }) => {
     const parentRef = useRef<HTMLDivElement>(null);

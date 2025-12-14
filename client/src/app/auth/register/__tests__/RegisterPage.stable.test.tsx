@@ -18,8 +18,6 @@ const mockUseAuthStore = vi.fn();
 
 // Mock the router
 const mockPush = vi.fn();
-// @ts-ignore
-// @ts-ignore
 (useRouter as any).mockReturnValue({
   push: mockPush,
 });
@@ -45,8 +43,6 @@ describe("RegisterPage - Stable Tests", () => {
     });
 
     // Mock the auth store
-// @ts-ignore
-// @ts-ignore
     vi.mocked(useAuthStore).mockImplementation(mockUseAuthStore as any);
   });
 
@@ -185,7 +181,6 @@ describe("RegisterPage - Stable Tests", () => {
       // Register should not be called
       expect(mockRegister).not.toHaveBeenCalled();
 
-// @ts-ignore
       // Required fields should be marked as required
       const nameInput = screen.getByLabelText("Full Name", {
         selector: "input",

@@ -6,21 +6,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table.js.js';
-// @ts-ignore
-import { Badge } from '../components/ui/badge.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Checkbox } from '../components/ui/checkbox.js.js';
+} from '@/components/components/ui/table';
+import { Badge } from '@/components/components/ui/badge';
+import { Button } from '@/components/components/ui/button';
+import { Checkbox } from '@/components/components/ui/checkbox';
 import {
   Package,
   ChevronDown,
   ChevronRight,
   MoreHorizontal,
 } from "lucide-react";
-// @ts-ignore
-import { InventoryItem, InventoryStatus } from '../types/inventory.js.js';
+import { InventoryItem, InventoryStatus } from '@/components/types/inventory';
 
 interface InventoryTableProps {
   items: InventoryItem[];
@@ -137,7 +133,6 @@ export function InventoryTable({
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={(checked) =>
-// @ts-ignore
                           onSelectItem?.(item.id, checked as boolean)
                         }
                         aria-label={`Select ${item.name}`}

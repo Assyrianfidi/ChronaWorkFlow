@@ -20,7 +20,6 @@ import {
   Edit,
   Trash2,
   Shield,
-// @ts-ignore
   Settings as SettingsIcon,
   Moon,
   Sun,

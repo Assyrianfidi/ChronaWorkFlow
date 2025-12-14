@@ -6,18 +6,14 @@ import {
   type SubmitHandler,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
-// @ts-ignore
-import { CardContent, CardFooter } from '../components/ui/card.js.js';
+import { Button } from '@/components/components/ui/button';
+import { Input } from '@/components/components/ui/input';
+import { CardContent, CardFooter } from '@/components/components/ui/card';
 import {
   type RegisterFormData,
   registerSchema,
-} from '../lib/validations/schemas.js.js';
-// @ts-ignore
-import { useToast } from '../hooks/use-toast.js.js';
+} from '@/components/lib/validations/schemas';
+import { useToast } from '@/components/hooks/use-toast';
 
 interface RegistrationFormProps {
   onSubmit: (data: RegisterFormData) => Promise<void>;

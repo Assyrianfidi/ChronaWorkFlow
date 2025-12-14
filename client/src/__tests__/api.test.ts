@@ -50,8 +50,6 @@ describe("API Tests", () => {
         },
       };
 
-// @ts-ignore
-// @ts-ignore
       (authApi.login as any).mockResolvedValue(mockResponse);
 
       const result = await authApi.login("test@example.com", "password");
@@ -73,8 +71,6 @@ describe("API Tests", () => {
         },
       };
 
-// @ts-ignore
-// @ts-ignore
       (authApi.register as any).mockResolvedValue(mockResponse);
 
       const result = await authApi.register({
@@ -95,8 +91,6 @@ describe("API Tests", () => {
 
     it("should handle login failure", async () => {
       const mockError = new Error("Login failed");
-// @ts-ignore
-// @ts-ignore
       (authApi.login as any).mockRejectedValue(mockError);
 
       await expect(
@@ -114,8 +108,6 @@ describe("API Tests", () => {
         },
       };
 
-// @ts-ignore
-// @ts-ignore
       (accountsApi.list as any).mockResolvedValue(mockResponse);
 
       const result = await accountsApi.list("company-1");
@@ -132,8 +124,6 @@ describe("API Tests", () => {
         },
       };
 
-// @ts-ignore
-// @ts-ignore
       (accountsApi.create as any).mockResolvedValue(mockResponse);
 
       const result = await accountsApi.create({
@@ -164,8 +154,6 @@ describe("API Tests", () => {
         },
       };
 
-// @ts-ignore
-// @ts-ignore
       (transactionsApi.list as any).mockResolvedValue(mockResponse);
 
       const result = await transactionsApi.list("company-1");
@@ -182,8 +170,6 @@ describe("API Tests", () => {
         },
       };
 
-// @ts-ignore
-// @ts-ignore
       (transactionsApi.create as any).mockResolvedValue(mockResponse);
 
       const result = await transactionsApi.create({

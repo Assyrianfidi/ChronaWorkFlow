@@ -31,7 +31,6 @@ import {
   Shield,
 } from "lucide-react";
 
-// @ts-ignore
 const Dashboard: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = React.useState(true);
@@ -207,7 +206,6 @@ const Dashboard: React.FC = () => {
 
     return [
       ...baseActions,
-// @ts-ignore
       ...(roleBasedActions[user?.role as keyof typeof roleBasedActions] || []),
     ];
   };

@@ -140,7 +140,6 @@ export class AIPatternRecognitionEngine {
   }
 
   private handleClick(event: MouseEvent): void {
-// @ts-ignore
     const target = event.target as HTMLElement;
     const elementId = this.getElementIdentifier(target);
 
@@ -195,7 +194,6 @@ export class AIPatternRecognitionEngine {
   }
 
   private handleFormSubmit(event: Event): void {
-// @ts-ignore
     const form = event.target as HTMLFormElement;
     const formId = form.id || form.className || "unknown-form";
 

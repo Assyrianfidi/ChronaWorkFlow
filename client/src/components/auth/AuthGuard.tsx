@@ -10,11 +10,9 @@ import React, { useState } from 'react';
 
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-// @ts-ignore
-import { useAuthStore } from '../store/auth-store.js.js';
+import { useAuthStore } from '@/components/store/auth-store';
 import { Loader2, ShieldAlert } from "lucide-react";
-// @ts-ignore
-import { AuthErrorBoundary } from './AuthErrorBoundary.js.js';
+import { AuthErrorBoundary } from './AuthErrorBoundary';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -163,7 +161,6 @@ export function AuthGuard({
 /**
  * Higher Order Component for protecting routes with AuthGuard
  */
-// @ts-ignore
 export function withAuthGuard<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   options?: Omit<AuthGuardProps, "children">,

@@ -164,30 +164,21 @@ export class PerformanceEngine {
 
           switch (entry.entryType) {
             case "paint":
-// @ts-ignore
               this.handlePaintEntry(entry as PerformancePaintTiming);
               break;
             case "largest-contentful-paint":
-// @ts-ignore
-// @ts-ignore
               this.handleLargestContentfulPaint(entry as any);
               break;
             case "first-input":
-// @ts-ignore
-// @ts-ignore
               this.handleFirstInput(entry as any);
               break;
             case "layout-shift":
-// @ts-ignore
-// @ts-ignore
               this.handleLayoutShift(entry as any);
               break;
             case "navigation":
-// @ts-ignore
               this.handleNavigationEntry(entry as PerformanceNavigationTiming);
               break;
             case "resource":
-// @ts-ignore
               this.handleResourceEntry(entry as PerformanceResourceTiming);
               break;
           }
@@ -246,13 +237,11 @@ export class PerformanceEngine {
         const response = await originalFetch(...args);
         const end = performance.now();
 
-// @ts-ignore
         this.logApiPerformance(args[0] as string, end - start, response.status);
 
         return response;
       } catch (error) {
         const end = performance.now();
-// @ts-ignore
         this.logApiPerformance(args[0] as string, end - start, 0);
         throw error;
       }
@@ -280,8 +269,6 @@ export class PerformanceEngine {
     // Monitor memory usage if available
     if ("memory" in performance) {
       setInterval(() => {
-// @ts-ignore
-// @ts-ignore
         const memory = (performance as any).memory;
         this.logMemoryUsage(memory);
       }, 5000);
@@ -336,7 +323,6 @@ export class PerformanceEngine {
     const now = performance.now();
     const navigation = performance.getEntriesByType(
       "navigation",
-// @ts-ignore
     )[0] as PerformanceNavigationTiming;
 
     // Core Web Vitals
@@ -347,13 +333,9 @@ export class PerformanceEngine {
 
     const lcpEntry = performance
       .getEntriesByType("largest-contentful-paint")
-// @ts-ignore
-// @ts-ignore
       .pop() as any;
     const largestContentfulPaint = lcpEntry ? lcpEntry.startTime : 0;
 
-// @ts-ignore
-// @ts-ignore
     const fidEntry = performance.getEntriesByType("first-input").pop() as any;
     const firstInputDelay = fidEntry
       ? fidEntry.processingStart - fidEntry.startTime
@@ -372,8 +354,6 @@ export class PerformanceEngine {
     const renderTime = firstContentfulPaint;
     const apiResponseTime = this.calculateAverageApiResponseTime();
     const bundleSize = this.calculateBundleSize();
-// @ts-ignore
-// @ts-ignore
     const memoryUsage = (performance as any).memory?.usedJSHeapSize || 0;
 
     // Time to Interactive (simplified calculation)
@@ -451,8 +431,6 @@ export class PerformanceEngine {
         ?.startTime || 0;
     const lcp = performance
       .getEntriesByType("largest-contentful-paint")
-// @ts-ignore
-// @ts-ignore
       .pop() as any;
     const lcpTime = lcp ? lcp.startTime : 0;
 
@@ -479,8 +457,6 @@ export class PerformanceEngine {
 
   private calculateResponsiveness(): number {
     // Calculate responsiveness based on FID and interaction latency
-// @ts-ignore
-// @ts-ignore
     const fidEntry = performance.getEntriesByType("first-input").pop() as any;
     const fid = fidEntry ? fidEntry.processingStart - fidEntry.startTime : 0;
 
@@ -578,7 +554,6 @@ export class PerformanceEngine {
     };
 
     return Object.entries(weights).reduce((score, [metric, weight]) => {
-// @ts-ignore
       return score + scores[metric as keyof typeof scores] * weight;
     }, 0);
   }
@@ -724,14 +699,12 @@ export class PerformanceEngine {
     const violations: PerformanceViolation[] = [];
 
     Object.entries(this.config.thresholds).forEach(([metric, threshold]) => {
-// @ts-ignore
       const value = metrics[metric as keyof PerformanceMetrics];
 
       if (value > threshold) {
         const severity = value > threshold * 2 ? "critical" : "warning";
 
         violations.push({
-// @ts-ignore
           metric: metric as keyof PerformanceMetrics,
           threshold,
           actual: value,
@@ -780,18 +753,14 @@ export class PerformanceEngine {
 
     const sum = this.metrics.reduce((acc, metrics) => {
       Object.keys(metrics).forEach((key) => {
-// @ts-ignore
         acc[key as keyof PerformanceMetrics] +=
-// @ts-ignore
           metrics[key as keyof PerformanceMetrics];
       });
       return acc;
-// @ts-ignore
     }, {} as PerformanceMetrics);
 
     const count = this.metrics.length;
     Object.keys(sum).forEach((key) => {
-// @ts-ignore
       sum[key as keyof PerformanceMetrics] /= count;
     });
 
@@ -819,7 +788,6 @@ export class PerformanceEngine {
     const imageObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-// @ts-ignore
           const img = entry.target as HTMLImageElement;
           img.src = img.dataset.src!;
           img.removeAttribute("data-src");

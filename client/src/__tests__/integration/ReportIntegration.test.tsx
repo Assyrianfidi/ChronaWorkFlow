@@ -6,17 +6,13 @@ declare global {
 }
 
 import React from 'react';
-// @ts-ignore
-import { render, screen, waitFor } from '../utils/test-utils.js.js';
-// @ts-ignore
-import { ReportView } from '../components/reports/ReportView.js.js';
-// @ts-ignore
-import { ReportFilters } from '../components/reports/ReportFilters.js.js';
+import { render, screen, waitFor } from '@/components/utils/test-utils';
+import { ReportView } from '@/components/components/reports/ReportView';
+import { ReportFilters } from '@/components/components/reports/ReportFilters';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
-// @ts-ignore
-import { useReport } from '../hooks/useReports.js.js';
+import { useReport } from '@/components/hooks/useReports';
 
 // Mock data
 const mockReports = [

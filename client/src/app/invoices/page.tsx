@@ -180,7 +180,6 @@ export default function InvoicesPage() {
         };
         return (
           <span
-// @ts-ignore
             className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[value as keyof typeof statusColors]}`}
           >
             {value}

@@ -5,15 +5,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
-// @ts-ignore
-import { Label } from '../components/ui/label.js.js';
-// @ts-ignore
-import { Badge } from '../components/ui/badge.js.js';
+} from '@/components/components/ui/card';
+import { Button } from '@/components/components/ui/button';
+import { Input } from '@/components/components/ui/input';
+import { Label } from '@/components/components/ui/label';
+import { Badge } from '@/components/components/ui/badge';
 import {
   Upload,
   Check,
@@ -31,14 +27,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../components/ui/table.js.js';
+} from '@/components/components/ui/table';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select.js.js';
+} from '@/components/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -46,7 +42,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../components/ui/dialog.js.js';
+} from '@/components/components/ui/dialog';
 import {
   useBankTransactions,
   useAccounts,
@@ -54,11 +50,9 @@ import {
   type BankTransaction,
   type Account,
   type Transaction,
-} from '../hooks/use-api.js.js';
-// @ts-ignore
-import { Skeleton } from '../components/ui/skeleton.js.js';
-// @ts-ignore
-import { DashboardShell } from '../components/ui/layout/DashboardShell.js.js';
+} from '@/components/hooks/use-api';
+import { Skeleton } from '@/components/components/ui/skeleton';
+import { DashboardShell } from '@/components/components/ui/layout/DashboardShell';
 import { format } from "date-fns";
 
 export default function Reconciliation() {

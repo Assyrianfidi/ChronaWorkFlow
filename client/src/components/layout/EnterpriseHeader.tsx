@@ -24,7 +24,6 @@ interface EnterpriseHeaderProps {
   sidebarOpen: boolean;
 }
 
-// @ts-ignore
 export const EnterpriseHeader: React.FC<EnterpriseHeaderProps> = ({
   user,
   onSidebarToggle,

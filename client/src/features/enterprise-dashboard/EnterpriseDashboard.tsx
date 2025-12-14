@@ -1,27 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from '@/hooks/useUser';
-// @ts-ignore
-import { DashboardLayout } from './components/DashboardLayout.js.js';
-// @ts-ignore
-import { KpiGrid } from './components/KpiGrid.js.js';
-// @ts-ignore
-import { DrilldownViewer } from './components/DrilldownViewer.js.js';
-// @ts-ignore
-import { WorkflowInbox } from './workflows/WorkflowInbox.js.js';
-// @ts-ignore
-import { useDashboardConfig } from './hooks/useDashboardConfig.js.js';
-// @ts-ignore
-import { DashboardProvider } from './context/DashboardContext.js.js';
-// @ts-ignore
-import { PredictiveInsights } from './components/PredictiveInsights.js.js';
-// @ts-ignore
-import { EntitySelector } from './components/EntitySelector.js.js';
-// @ts-ignore
-import { useEntityContext } from './context/EntityContext.js.js';
+import { DashboardLayout } from './components/DashboardLayout';
+import { KpiGrid } from './components/KpiGrid';
+import { DrilldownViewer } from './components/DrilldownViewer';
+import { WorkflowInbox } from './workflows/WorkflowInbox';
+import { useDashboardConfig } from './hooks/useDashboardConfig';
+import { DashboardProvider } from './context/DashboardContext';
+import { PredictiveInsights } from './components/PredictiveInsights';
+import { EntitySelector } from './components/EntitySelector';
+import { useEntityContext } from './context/EntityContext';
 
 type DashboardView = "overview" | "analytics" | "workflows" | "reports";
 
-// @ts-ignore
 export const EnterpriseDashboard: React.FC = () => {
   const { user } = useUser();
   const { currentEntity, setCurrentEntity, availableEntities } =
@@ -59,7 +49,6 @@ export const EnterpriseDashboard: React.FC = () => {
                   (view) => (
                     <button
                       key={view}
-// @ts-ignore
                       onClick={() => setActiveView(view as DashboardView)}
                       className={`px-3 py-1 rounded-md ${
                         activeView === view

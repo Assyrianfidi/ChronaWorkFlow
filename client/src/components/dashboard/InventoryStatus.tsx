@@ -1,6 +1,6 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+import React from 'react'
+;
+;
 import { Package, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 
 interface InventoryItem {
@@ -19,7 +19,6 @@ interface InventoryStatusProps {
   isLoading?: boolean;
 }
 
-// @ts-ignore
 const InventoryStatus: React.FC<InventoryStatusProps> = ({
   items,
   isLoading = false,

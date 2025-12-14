@@ -6,7 +6,7 @@ import {
   useAnalytics,
   AnalyticsProvider,
   withAnalytics,
-} from '../AnalyticsEngine.js.js';
+} from '@/components/AnalyticsEngine';
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

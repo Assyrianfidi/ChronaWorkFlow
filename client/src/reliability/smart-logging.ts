@@ -560,7 +560,6 @@ export class SmartLoggingEngine {
       window.addEventListener("load", () => {
         const perfData = performance.getEntriesByType(
           "navigation",
-// @ts-ignore
         )[0] as PerformanceNavigationTiming;
 
         this.log("info", "Performance metrics collected", "performance", {
@@ -720,8 +719,6 @@ export class SmartLoggingEngine {
   }
 
   private extractMetadata(): LogEntry["metadata"] {
-// @ts-ignore
-// @ts-ignore
     const connection = (navigator as any).connection;
 
     return {
@@ -745,15 +742,9 @@ export class SmartLoggingEngine {
   }
 
   private getMemoryUsage(): number {
-// @ts-ignore
-// @ts-ignore
     if ((performance as any).memory) {
       return (
-// @ts-ignore
-// @ts-ignore
         (performance as any).memory.usedJSHeapSize /
-// @ts-ignore
-// @ts-ignore
         (performance as any).memory.jsHeapSizeLimit
       );
     }
@@ -1373,8 +1364,6 @@ class AlertManager {
   }
 
   private getAlertFieldValue(alert: Alert, field: string): any {
-// @ts-ignore
-// @ts-ignore
     return (alert as any)[field];
   }
 
@@ -1581,7 +1570,6 @@ class StorageManager {
       if (key && key.startsWith("smart-log-")) {
         const value = localStorage.getItem(key);
         if (value) {
-// @ts-ignore
           const log = JSON.parse(value) as LogEntry;
           logs.push(log);
         }

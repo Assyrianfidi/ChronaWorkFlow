@@ -1,6 +1,6 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+import React from 'react'
+;
+;
 import { IconType } from "react-icons";
 import {
   FiAlertCircle,
@@ -151,7 +151,6 @@ export const Icons = {
   xCircle: FiXCircle,
   zap: FiZap,
 
-// @ts-ignore
   // Add more custom icons as needed
 } as const;
 

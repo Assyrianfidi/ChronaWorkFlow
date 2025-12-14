@@ -133,7 +133,6 @@ const statusConfig = {
   PENDING: { color: "bg-yellow-100 text-yellow-800", label: "Pending" },
 };
 
-// @ts-ignore
 const CustomersPage: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
   const [filteredCustomers, setFilteredCustomers] =
@@ -505,7 +504,6 @@ const CustomersPage: React.FC = () => {
 };
 
 // Create Customer Form Component
-// @ts-ignore
 const CreateCustomerForm: React.FC<{ onSubmit: (data: any) => void }> = ({
   onSubmit,
 }) => {

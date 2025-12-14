@@ -8,7 +8,6 @@ interface LoadingSpinnerProps {
   className?: string;
 }
 
-// @ts-ignore
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = "md",
   color = "primary",
@@ -61,7 +60,6 @@ interface PulseLoaderProps {
   className?: string;
 }
 
-// @ts-ignore
 export const PulseLoader: React.FC<PulseLoaderProps> = ({
   size = "md",
   color = "primary",
@@ -112,7 +110,6 @@ interface DotsLoaderProps {
   className?: string;
 }
 
-// @ts-ignore
 export const DotsLoader: React.FC<DotsLoaderProps> = ({
   size = "md",
   color = "primary",
@@ -173,7 +170,6 @@ interface SkeletonProps {
   animation?: "pulse" | "wave" | "none";
 }
 
-// @ts-ignore
 export const Skeleton: React.FC<SkeletonProps> = ({
   className,
   variant = "default",
@@ -233,7 +229,6 @@ interface CardSkeletonProps {
   className?: string;
 }
 
-// @ts-ignore
 export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   showHeader = true,
   showAvatar = false,
@@ -283,7 +278,6 @@ interface TableSkeletonProps {
   className?: string;
 }
 
-// @ts-ignore
 export const TableSkeleton: React.FC<TableSkeletonProps> = ({
   rows = 5,
   columns = 4,
@@ -333,7 +327,6 @@ interface ListSkeletonProps {
   className?: string;
 }
 
-// @ts-ignore
 export const ListSkeleton: React.FC<ListSkeletonProps> = ({
   items = 5,
   showAvatar = true,
@@ -362,7 +355,6 @@ interface ChartSkeletonProps {
   className?: string;
 }
 
-// @ts-ignore
 export const ChartSkeleton: React.FC<ChartSkeletonProps> = ({
   height = 300,
   showLegend = true,
@@ -411,7 +403,6 @@ interface FullPageLoadingProps {
   variant?: "spinner" | "dots" | "pulse";
 }
 
-// @ts-ignore
 export const FullPageLoading: React.FC<FullPageLoadingProps> = ({
   message = "Loading...",
   showLogo = true,
@@ -446,7 +437,6 @@ interface LoadingOverlayProps {
   children: React.ReactNode;
 }
 
-// @ts-ignore
 export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
   isLoading,
   message = "Loading...",

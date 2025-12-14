@@ -310,15 +310,12 @@ export const beginnerFlow: OnboardingFlow = {
           // Check if form has been filled out
           const amountField = document.querySelector(
             "#transaction-amount",
-// @ts-ignore
           ) as HTMLInputElement;
           const categoryField = document.querySelector(
             "#transaction-category",
-// @ts-ignore
           ) as HTMLSelectElement;
           const descriptionField = document.querySelector(
             "#transaction-description",
-// @ts-ignore
           ) as HTMLInputElement;
 
           return !!(

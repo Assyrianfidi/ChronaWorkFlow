@@ -12,7 +12,6 @@ type FormSubmitHandler<T> = (
   reset?: () => void,
 ) => Promise<{ success: boolean; message: string }>;
 
-// @ts-ignore
 export async function handleFormSubmit<T>(
   data: T,
   submitFn: FormSubmitHandler<T>,
@@ -59,7 +58,6 @@ export async function handleFormSubmit<T>(
   }
 }
 
-// @ts-ignore
 export function formatFormErrors(errors: Record<string, any>): FormError[] {
   return Object.entries(errors).map(([key, value]) => ({
     field: key,

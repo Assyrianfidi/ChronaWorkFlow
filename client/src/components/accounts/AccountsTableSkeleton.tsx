@@ -6,7 +6,6 @@ interface AccountsTableSkeletonProps {
   showHeader?: boolean;
 }
 
-// @ts-ignore
 export const AccountsTableSkeleton: React.FC<AccountsTableSkeletonProps> = ({
   rowCount = 10,
   showHeader = true,

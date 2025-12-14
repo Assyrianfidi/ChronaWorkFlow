@@ -1,8 +1,7 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
-import { cn } from '../lib/utils.js.js';
+import React from 'react'
+;
+;
+import { cn } from '@/components/lib/utils';
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

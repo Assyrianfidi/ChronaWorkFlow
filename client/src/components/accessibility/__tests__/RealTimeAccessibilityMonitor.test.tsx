@@ -12,7 +12,7 @@ import {
   RealTimeAccessibilityMonitor,
   AccessibilityMonitorDashboard,
   useAccessibilityMonitor,
-} from '../RealTimeAccessibilityMonitor.js.js';
+} from '@/components/RealTimeAccessibilityMonitor';
 
 // Mock DOM methods for testing
 const mockElements = [
@@ -108,12 +108,9 @@ class MockMutationObserver {
   disconnect = vi.fn();
 }
 
-// @ts-ignore
-// @ts-ignore
 global.MutationObserver = MockMutationObserver as any;
 
 // Test component
-// @ts-ignore
 const TestComponent: React.FC = () => {
   const {
     isMonitoring,
@@ -365,8 +362,6 @@ describe("RealTimeAccessibilityMonitor Rules", () => {
 
   it("detects poor color contrast", () => {
     // Mock poor contrast
-// @ts-ignore
-// @ts-ignore
     (window.getComputedStyle as any).mockReturnValue({
       color: "#cccccc",
       backgroundColor: "#eeeeee",
@@ -391,8 +386,6 @@ describe("RealTimeAccessibilityMonitor Rules", () => {
 
   it("detects missing focus indicators", () => {
     // Mock missing focus styles
-// @ts-ignore
-// @ts-ignore
     (window.getComputedStyle as any).mockReturnValue({
       color: "#000000",
       backgroundColor: "#ffffff",

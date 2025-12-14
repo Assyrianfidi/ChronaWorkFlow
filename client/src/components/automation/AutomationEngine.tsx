@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-// @ts-ignore
-import { useUserExperienceMode } from '../adaptive/UserExperienceMode.js.js';
-// @ts-ignore
-import { usePerformance } from '../adaptive/UI-Performance-Engine.js.js';
-// @ts-ignore
-import { useAuthStore } from '../../store/auth-store.js.js';
+import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
+import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
+import { useAuthStore } from '@/../../store/auth-store';
 
 // Automation Types
 interface AutomationRule {
@@ -704,7 +701,6 @@ class AIAutomationEngine {
 }
 
 // Main Automation Engine Component
-// @ts-ignore
 export const AutomationEngine: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {

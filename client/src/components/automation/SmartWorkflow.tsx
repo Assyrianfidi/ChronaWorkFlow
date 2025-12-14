@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-// @ts-ignore
-import { useAutomation } from './AutomationEngine.js.js';
+import { useAutomation } from './AutomationEngine';
 
 // Workflow Types
 interface WorkflowStep {
@@ -98,7 +97,6 @@ interface WorkflowTemplate {
 }
 
 // Smart Workflow Component
-// @ts-ignore
 export const SmartWorkflow: React.FC<{
   workflow?: WorkflowDefinition;
   onWorkflowChange?: (workflow: WorkflowDefinition) => void;
@@ -394,8 +392,6 @@ export const SmartWorkflow: React.FC<{
         id: Math.random().toString(36),
         name: template.name,
         description: template.description,
-// @ts-ignore
-// @ts-ignore
         category: template.category as any,
         version: "1.0.0",
         steps: template.steps.map((step, index) => ({
@@ -429,16 +425,11 @@ export const SmartWorkflow: React.FC<{
       };
 
       try {
-// @ts-ignore
-// @ts-ignore
         const maybePromise = onWorkflowChange(newWorkflow as any);
 
         // Support both sync and async handlers. If the handler returns a Promise and it
         // rejects, keep the template library open so the user can correct the issue.
-// @ts-ignore
-// @ts-ignore
         if (typeof (maybePromise as any)?.then === "function") {
-// @ts-ignore
           (maybePromise as Promise<unknown>)
             .then(() => {
               setShowTemplateLibrary(false);
@@ -600,8 +591,6 @@ export const SmartWorkflow: React.FC<{
             <select
               value={step.type}
               onChange={(e) =>
-// @ts-ignore
-// @ts-ignore
                 handleStepUpdate(selectedStep, { type: e.target.value as any })
               }
               className="w-full p-2 border rounded"

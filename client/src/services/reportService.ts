@@ -75,7 +75,6 @@ export const reportService = {
   },
 
   /**
-// @ts-ignore
    * Export report as PDF
    */
   async exportReport(id: string, format: "pdf" | "csv" = "pdf"): Promise<Blob> {

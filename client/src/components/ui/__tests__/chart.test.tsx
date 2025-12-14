@@ -17,7 +17,6 @@ vi.mock("recharts", () => ({
   Tooltip: ({ content, active, payload, label }: any) => (
     <div data-testid="chart-tooltip">
       {content
-// @ts-ignore
         ? React.cloneElement(content as React.ReactElement, {
             active,
             payload,
@@ -291,8 +290,7 @@ describe("Chart Components", () => {
 
       const indicator = document.querySelector(
         '[style*="background-color"]',
-        // @ts-ignore
-      ) as HTMLElement;
+              ) as HTMLElement;
       expect(indicator).toBeInTheDocument();
       expect(indicator.style.backgroundColor).toBe("rgb(255, 0, 0)");
     });

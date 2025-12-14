@@ -62,7 +62,6 @@ export default function PayrollPage() {
     } as const;
 
     return (
-// @ts-ignore
       <Badge variant={variants[status as keyof typeof variants] || "secondary"}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>

@@ -525,8 +525,6 @@ export class GPUAccelerationEngine {
 
     // Monitor battery level if available
     if ("getBattery" in navigator) {
-// @ts-ignore
-// @ts-ignore
       (navigator as any).getBattery().then((battery: any) => {
         battery.addEventListener("levelchange", () => {
           this.handleBatteryChange(battery.level);
@@ -540,8 +538,6 @@ export class GPUAccelerationEngine {
 
     // Monitor thermal state if available
     if ("thermal" in navigator) {
-// @ts-ignore
-// @ts-ignore
       (navigator as any).thermal.addEventListener(
         "temperaturechange",
         (event: any) => {

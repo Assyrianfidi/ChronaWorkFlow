@@ -24,7 +24,6 @@ interface FormData {
   role: "ADMIN" | "MANAGER" | "ACCOUNTANT" | "AUDITOR" | "INVENTORY_MANAGER";
 }
 
-// @ts-ignore
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = React.useState<FormData>({
     name: "",

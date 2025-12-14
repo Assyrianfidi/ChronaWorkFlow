@@ -1,6 +1,6 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+import React from 'react'
+;
+;
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -15,8 +15,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-// @ts-ignore
-import { cn } from '../../../lib/utils.js.js';
+import { cn } from '@/../../../lib/utils';
 
 export interface EnterpriseDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -46,21 +45,15 @@ export interface EnterpriseDataTableProps<TData, TValue> {
   onRowClick?: (row: TData) => void;
 }
 
-// @ts-ignore
 function getDefaultRowId<TData>(row: TData, index: number): string {
   // Fallback rowId resolver: prefer an existing `id` field, otherwise index-based.
   // This is purely structural (no domain logic) and can be overridden via props.
-// @ts-ignore
-// @ts-ignore
   if (row && typeof (row as any).id === "string") {
-// @ts-ignore
-// @ts-ignore
     return (row as any).id as string;
   }
   return String(index);
 }
 
-// @ts-ignore
 function EnterpriseDataTableInner<TData, TValue>(
   props: EnterpriseDataTableProps<TData, TValue>,
   ref: React.ForwardedRef<HTMLDivElement>,
@@ -189,7 +182,6 @@ function EnterpriseDataTableInner<TData, TValue>(
 
 export const EnterpriseDataTable = React.forwardRef(
   EnterpriseDataTableInner,
-// @ts-ignore
 ) as <TData, TValue>(
   props: EnterpriseDataTableProps<TData, TValue> & {
     ref?: React.Ref<HTMLDivElement>;

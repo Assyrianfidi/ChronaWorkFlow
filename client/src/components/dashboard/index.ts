@@ -11,11 +11,7 @@ export {
 } from './LoadingSkeleton.js';
 
 // Role-based dashboard components - renamed to avoid conflicts
-// @ts-ignore
 export { default as DashboardMetricCard } from './MetricCard.js';
-// @ts-ignore
 export { default as QuickActions } from './QuickActions.js';
-// @ts-ignore
 export { default as ActivityFeed } from './ActivityFeed.js';
-// @ts-ignore
 export { default as InventoryStatus } from './InventoryStatus.js';

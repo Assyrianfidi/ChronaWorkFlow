@@ -179,7 +179,6 @@ export default function TransactionsPage() {
           <div className="flex items-center gap-2">
             <Tag className="h-4 w-4 text-gray-400" />
             <span
-// @ts-ignore
               className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[value as keyof typeof categoryColors] || "bg-gray-100 text-gray-800"}`}
             >
               {value}
@@ -201,7 +200,6 @@ export default function TransactionsPage() {
         };
         return (
           <span
-// @ts-ignore
             className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[value as keyof typeof statusColors]}`}
           >
             {value}
@@ -302,7 +300,6 @@ export default function TransactionsPage() {
                   onClick={handleBulkReconcile}
                   disabled={selectedTransactions.size === 0}
                 >
-// @ts-ignore
                   Mark as Reconciled
                 </EnterpriseButton>
                 <EnterpriseButton

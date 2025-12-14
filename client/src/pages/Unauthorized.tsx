@@ -1,3 +1,4 @@
+import React from 'react'
 
 declare global {
   interface Window {
@@ -5,14 +6,12 @@ declare global {
   }
 }
 
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+;
+;
 import { Link } from "react-router-dom";
 import { ShieldX, Home, ArrowLeft } from "lucide-react";
 import { EnterpriseButton } from "../components/ui/EnterpriseButton";
 
-// @ts-ignore
 const Unauthorized: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">

@@ -1,8 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-// @ts-ignore
-import { AutomationEngine, useAutomation } from '../AutomationEngine.js.js';
+import { AutomationEngine, useAutomation } from '@/components/AutomationEngine';
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

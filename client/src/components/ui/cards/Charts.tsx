@@ -1,6 +1,6 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+import React from 'react'
+;
+;
 import {
   ResponsiveContainer,
   LineChart,

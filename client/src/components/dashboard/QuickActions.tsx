@@ -1,6 +1,6 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+import React from 'react'
+;
+;
 import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -14,7 +14,6 @@ interface QuickActionsProps {
   actions: QuickAction[];
 }
 
-// @ts-ignore
 const QuickActions: React.FC<QuickActionsProps> = ({ actions }) => {
   return (
     <div className="space-y-2">

@@ -14,7 +14,7 @@ import {
   ErrorBoundary,
   withErrorBoundary,
   useAsyncError,
-} from '../ErrorRecoveryUI.js.js';
+} from '@/components/ErrorRecoveryUI';
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

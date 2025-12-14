@@ -19,7 +19,6 @@ interface EntityContextType {
 
 const EntityContext = createContext<EntityContextType | undefined>(undefined);
 
-// @ts-ignore
 export const EntityProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {

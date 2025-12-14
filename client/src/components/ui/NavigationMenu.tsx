@@ -1,13 +1,11 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
+import React from 'react'
+;
+;
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { cva } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
 
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { cn } from '@/../../lib/utils';
 
 const NavigationMenu = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Root>,

@@ -5,10 +5,8 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-// @ts-ignore
-import { useAdaptiveLayout } from './AdaptiveLayoutEngine.js.js';
-// @ts-ignore
-import { useUserExperienceMode } from './UserExperienceMode.js.js';
+import { useAdaptiveLayout } from './AdaptiveLayoutEngine';
+import { useUserExperienceMode } from './UserExperienceMode';
 
 // Performance monitoring types
 interface PerformanceMetrics {
@@ -108,8 +106,6 @@ export function UIPerformanceEngine({
   // Memory monitoring
   const measureMemoryUsage = useCallback(() => {
     if ("memory" in performance) {
-// @ts-ignore
-// @ts-ignore
       const memory = (performance as any).memory;
       const memoryUsage = memory.usedJSHeapSize;
       setMetrics((prev) => ({ ...prev, memoryUsage }));
@@ -455,7 +451,6 @@ export function PerformanceMonitor() {
 }
 
 // Performance Optimized Component HOC
-// @ts-ignore
 export function withPerformanceTracking<P extends object>(
   Component: React.ComponentType<P>,
   componentName: string,

@@ -413,7 +413,6 @@ export class InteractionEngine {
       bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
       elastic: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
     };
-// @ts-ignore
     return easingMap[type as keyof typeof easingMap] || "ease-out";
   }
 
@@ -686,8 +685,6 @@ class SoundEngine {
   private initializeAudio(): void {
     try {
       this.audioContext = new (window.AudioContext ||
-// @ts-ignore
-// @ts-ignore
         (window as any).webkitAudioContext)();
     } catch (error) {
       console.warn("Web Audio API not supported");

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-// @ts-ignore
-import { useAutomation } from './AutomationEngine.js.js';
-// @ts-ignore
-import { useAnalytics } from '../analytics/AnalyticsEngine.js.js';
+import { useAutomation } from './AutomationEngine';
+import { useAnalytics } from '@/components/analytics/AnalyticsEngine';
 
 // AI Assistant Types
 interface AIAssistantMessage {
@@ -552,7 +550,6 @@ class AIAssistantEngine {
 
     words.forEach((word) => {
       if (word.length > 3 && !existingPatterns.includes(word)) {
-// @ts-ignore
         // Consider adding as a new pattern
         // In production, this would require more sophisticated analysis
       }
@@ -671,7 +668,6 @@ class AIAssistantEngine {
 }
 
 // Main AI Assistant Component
-// @ts-ignore
 export const AIPoweredAssistant: React.FC<{
   onAction?: (action: AIAction) => void;
   className?: string;

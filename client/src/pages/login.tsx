@@ -1,7 +1,6 @@
 import React from 'react';
 import { useLocation } from "wouter";
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
+import { Button } from '@/components/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,22 +8,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../components/ui/card.js.js';
+} from '@/components/components/ui/card';
 import { Wallet } from "lucide-react";
-// @ts-ignore
-import { useToast } from '../hooks/use-toast.js.js';
-// @ts-ignore
-import { useAuthStore } from '../store/auth-store.js.js';
-// @ts-ignore
-import { loginSchema, type LoginFormData } from '../lib/validations/schemas.js.js';
+import { useToast } from '@/components/hooks/use-toast';
+import { useAuthStore } from '@/components/store/auth-store';
+import { loginSchema, type LoginFormData } from '@/components/lib/validations/schemas';
 import {
   useForm,
   type UseFormReturn,
   type SubmitHandler,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
+import { Input } from '@/components/components/ui/input';
 import { type ReactElement } from "react";
 
 interface LoginFormProps {

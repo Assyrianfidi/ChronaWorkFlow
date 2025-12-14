@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-// @ts-ignore
-import { useAdaptiveLayout } from './AdaptiveLayoutEngine.js.js';
-// @ts-ignore
-import { useUserExperienceMode } from './UserExperienceMode.js.js';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { useAdaptiveLayout } from './AdaptiveLayoutEngine';
+import { useUserExperienceMode } from './UserExperienceMode';
+import { cn } from '@/../../lib/utils';
 
 // Dashboard Widget Types
 export interface DashboardWidget {
@@ -249,7 +246,6 @@ function DashboardWidgetComponent({
           <select
             value={widget.size}
             onChange={(e) =>
-// @ts-ignore
               onResize(e.target.value as DashboardWidget["size"])
             }
             className="text-xs p-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"

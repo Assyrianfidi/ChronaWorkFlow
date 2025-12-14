@@ -2,8 +2,7 @@ import React from 'react';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-// @ts-ignore
-import { SessionProvider } from '../components/providers/SessionProvider.js.js';
+import { SessionProvider } from '@/components/components/providers/SessionProvider';
 
 const inter = Inter({ subsets: ["latin"] });
 

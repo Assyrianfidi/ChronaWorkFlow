@@ -1,8 +1,7 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
-import { useToast } from '../hooks/use-toast.js.js';
+import React from 'react'
+;
+;
+import { useToast } from '@/components/hooks/use-toast';
 
 interface ToastContextType {
   showToast: (
@@ -32,7 +31,6 @@ interface ToastProviderProps {
   children: React.ReactNode;
 }
 
-// @ts-ignore
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const { toast } = useToast();
 

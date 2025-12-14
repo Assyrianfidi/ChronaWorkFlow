@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import { NavLink, useLocation } from "react-router-dom";
-// @ts-ignore
-import { useAuth } from '../../contexts/AuthContext.js.js';
+import { useAuth } from '@/../../contexts/AuthContext';
 import {
   LayoutDashboard,
   FileText,
@@ -20,8 +18,7 @@ import {
   Briefcase,
   Shield,
 } from "lucide-react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { cn } from '@/../../lib/utils';
 
 interface SidebarProps {
   className?: string;
@@ -158,7 +155,6 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
-// @ts-ignore
 const Sidebar: React.FC<SidebarProps> = ({
   className,
   isOpen = true,
@@ -171,8 +167,6 @@ const Sidebar: React.FC<SidebarProps> = ({
   const filteredNavigationItems = React.useMemo(() => {
     return navigationItems.filter((item) => {
       if (!item.roles || item.roles.length === 0) return true;
-// @ts-ignore
-// @ts-ignore
       return hasRole(item.roles as any);
     });
   }, [user, hasRole]);

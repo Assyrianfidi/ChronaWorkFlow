@@ -1,6 +1,5 @@
 import React from 'react';
 import { vi } from "vitest";
-// @ts-ignore
 import { render as rtlRender } from "@testing-library/react";
 import type { RenderOptions } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -84,7 +83,6 @@ const renderWithProviders = (
 ) => {
   const queryClient = createTestQueryClient();
 
-// @ts-ignore
   const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
@@ -110,7 +108,6 @@ export const renderWithRouter = (
 ) => {
   const queryClient = createTestQueryClient();
 
-// @ts-ignore
   const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
@@ -133,7 +130,6 @@ const customRender = (
 ) => {
   const queryClient = createTestQueryClient();
 
-// @ts-ignore
   const Wrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
     return (
       <QueryClientProvider client={queryClient}>
@@ -173,6 +169,5 @@ export const resetMockNavigate = () => {
 
 // Export everything
 export * from "@testing-library/react";
-// @ts-ignore
 export { customRender as render, renderWithProviders };
 export { createTestQueryClient };

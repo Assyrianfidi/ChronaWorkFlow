@@ -1,3 +1,4 @@
+import React from 'react'
 
 declare global {
   interface Window {
@@ -5,19 +6,16 @@ declare global {
   }
 }
 
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+;
+;
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
-// @ts-ignore
-import { EnterpriseButton } from './EnterpriseButton.js.js';
+import { EnterpriseButton } from './EnterpriseButton';
 
 interface ErrorFallbackProps {
   error?: Error;
   resetError?: () => void;
 }
 
-// @ts-ignore
 const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">

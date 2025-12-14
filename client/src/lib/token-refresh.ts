@@ -31,8 +31,6 @@ export const refreshSession = async (): Promise<boolean> => {
 
     // Update the auth store with the refreshed session
     const { setUser, setSession } = useAuthStore.getState();
-// @ts-ignore
-// @ts-ignore
     setUser(session.user as any);
     setSession(session);
 

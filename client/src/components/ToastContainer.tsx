@@ -3,7 +3,6 @@ import { useToast } from '../hooks/useToast.js';
 import { Toast, ToastProvider, ToastViewport } from './ui/toast.js';
 import { cn } from '../lib/utils.js';
 
-// @ts-ignore
 export const ToastContainer: React.FC = () => {
   const { toasts, dismiss } = useToast();
 

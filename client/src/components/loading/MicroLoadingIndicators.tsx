@@ -26,7 +26,6 @@ export interface MicroLoadingProps {
   centered?: boolean;
 }
 
-// @ts-ignore
 const MicroLoadingIndicators: React.FC<MicroLoadingProps> = ({
   type = "spinner",
   size = "md",
@@ -578,7 +577,6 @@ export interface LoadingButtonProps {
   loadingColor?: string;
 }
 
-// @ts-ignore
 export const LoadingButton: React.FC<LoadingButtonProps> = ({
   loading = false,
   children,
@@ -641,7 +639,6 @@ export interface CardSkeletonProps {
   className?: string;
 }
 
-// @ts-ignore
 export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   lines = 3,
   showAvatar = true,
@@ -677,7 +674,6 @@ export interface TableSkeletonProps {
   className?: string;
 }
 
-// @ts-ignore
 export const TableSkeleton: React.FC<TableSkeletonProps> = ({
   rows = 5,
   columns = 4,

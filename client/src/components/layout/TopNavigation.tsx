@@ -6,15 +6,11 @@ declare global {
 }
 
 import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import { Search, Bell, Settings, User, Menu, X, Moon, Sun } from "lucide-react";
-// @ts-ignore
-import { EnterpriseButton } from '../ui/EnterpriseButton.js.js';
-// @ts-ignore
-import { EnterpriseInput } from '../ui/EnterpriseInput.js.js';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { EnterpriseButton } from '@/components/ui/EnterpriseButton';
+import { EnterpriseInput } from '@/components/ui/EnterpriseInput';
+import { cn } from '@/../../lib/utils';
 
 interface TopNavigationProps {
   onSidebarToggle?: () => void;

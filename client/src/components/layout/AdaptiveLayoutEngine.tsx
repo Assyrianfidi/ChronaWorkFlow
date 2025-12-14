@@ -7,7 +7,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import {
   UIAdaptationConfig,
   TaskType,
-} from '../../state/ui/UserExperienceMode.js.js';
+} from '@/../../state/ui/UserExperienceMode';
 
 interface AdaptiveLayoutProps {
   children: React.ReactNode;
@@ -27,7 +27,6 @@ interface LayoutSection {
   flex?: string;
 }
 
-// @ts-ignore
 export const AdaptiveLayoutEngine: React.FC<AdaptiveLayoutProps> = ({
   children,
   config,
@@ -183,7 +182,6 @@ interface AdaptiveSectionProps {
   className?: string;
 }
 
-// @ts-ignore
 export const AdaptiveSection: React.FC<AdaptiveSectionProps> = ({
   id,
   children,
@@ -269,7 +267,6 @@ interface AdaptivePanelProps {
   className?: string;
 }
 
-// @ts-ignore
 export const AdaptivePanel: React.FC<AdaptivePanelProps> = ({
   position,
   children,
@@ -319,7 +316,6 @@ interface AdaptiveGridProps {
   className?: string;
 }
 
-// @ts-ignore
 export const AdaptiveGrid: React.FC<AdaptiveGridProps> = ({
   columns = "auto",
   gap = "1rem",
@@ -359,7 +355,6 @@ interface AdaptiveContainerProps {
   className?: string;
 }
 
-// @ts-ignore
 export const AdaptiveContainer: React.FC<AdaptiveContainerProps> = ({
   children,
   maxWidth = "xl",

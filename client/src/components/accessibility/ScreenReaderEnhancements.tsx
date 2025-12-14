@@ -67,7 +67,6 @@ const DEFAULT_SETTINGS: ScreenReaderSettings = {
 };
 
 // Screen Reader Enhancements Component
-// @ts-ignore
 export const ScreenReaderEnhancements: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
@@ -265,7 +264,6 @@ export const ScreenReaderEnhancements: React.FC<{
           message = `Focused on ${label}`;
           break;
         case "change":
-// @ts-ignore
           const value = (element as HTMLInputElement).value || "";
           message = `${label} changed to ${value}`;
           break;
@@ -315,7 +313,6 @@ export const ScreenReaderEnhancements: React.FC<{
   const trapFocus = useCallback((element: HTMLElement) => {
     const focusableElements = element.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-// @ts-ignore
     ) as NodeListOf<HTMLElement>;
 
     const firstElement = focusableElements[0];
@@ -467,7 +464,6 @@ export const useScreenReader = (): ScreenReaderContextType => {
 };
 
 // Screen Reader Control Panel
-// @ts-ignore
 export const ScreenReaderControls: React.FC = () => {
   const { settings, updateSettings, isSpeaking, stopSpeaking } =
     useScreenReader();
@@ -557,8 +553,6 @@ export const ScreenReaderControls: React.FC = () => {
           <select
             value={settings.punctuation}
             onChange={(e) =>
-// @ts-ignore
-// @ts-ignore
               updateSettings({ punctuation: e.target.value as any })
             }
             className="w-full p-2 border border-gray-300 rounded-md"
@@ -577,8 +571,6 @@ export const ScreenReaderControls: React.FC = () => {
           <select
             value={settings.verbosity}
             onChange={(e) =>
-// @ts-ignore
-// @ts-ignore
               updateSettings({ verbosity: e.target.value as any })
             }
             className="w-full p-2 border border-gray-300 rounded-md"

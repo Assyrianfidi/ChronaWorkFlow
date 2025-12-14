@@ -59,7 +59,6 @@ export const getQueryFn: <T>(options: {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-// @ts-ignore
     const res = await fetch(queryKey.join("/") as string, {
       headers,
       credentials: "include",

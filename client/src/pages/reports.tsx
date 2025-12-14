@@ -10,7 +10,7 @@ import {
   EnterpriseButton,
   EnterpriseKPICard,
   EnterpriseDataTable,
-} from '../components/ui.js.js';
+} from '@/components/components/ui';
 import {
   Download,
   Calendar,
@@ -26,7 +26,6 @@ import {
   Printer,
   Mail,
   FileSpreadsheet,
-// @ts-ignore
   FileText as FileIcon,
 } from "lucide-react";
 import {
@@ -39,7 +38,6 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-// @ts-ignore
   PieChart as RechartsPieChart,
   Pie,
   Cell,
@@ -48,8 +46,7 @@ import {
   ComposedChart,
   Legend,
 } from "recharts";
-// @ts-ignore
-import { cn } from '../lib/utils.js.js';
+import { cn } from '@/components/lib/utils';
 
 // Mock data for reports
 const profitLossData = [
@@ -172,7 +169,6 @@ export default function Reports() {
   };
 
   const exportReport = (format: string) => {
-// @ts-ignore
     console.log(`Exporting ${selectedReport} as ${format}`);
   };
 

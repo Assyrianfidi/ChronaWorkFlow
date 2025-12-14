@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import {
   BarChart3,
@@ -18,15 +17,11 @@ import {
   RevenueCard,
   ExpensesCard,
   PendingInvoicesCard,
-} from '../ui/EnterpriseKPICard.js.js';
-// @ts-ignore
-import { EnterpriseDataTable, type Column } from '../ui/EnterpriseDataTable.js.js';
-// @ts-ignore
-import { EnterpriseButton } from '../ui/EnterpriseButton.js.js';
-// @ts-ignore
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card.js.js';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+} from '@/components/ui/EnterpriseKPICard';
+import { EnterpriseDataTable, type Column } from '@/components/ui/EnterpriseDataTable';
+import { EnterpriseButton } from '@/components/ui/EnterpriseButton';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/../../lib/utils';
 
 interface EnterpriseDashboardNewProps {
   className?: string;
@@ -124,7 +119,6 @@ const EnterpriseDashboardNew = React.forwardRef<
           <span
             className={cn(
               "px-2 py-1 rounded-full text-xs font-medium",
-// @ts-ignore
               typeColors[value as keyof typeof typeColors] ||
                 "bg-gray-100 text-gray-800",
             )}
@@ -166,7 +160,6 @@ const EnterpriseDashboardNew = React.forwardRef<
           <span
             className={cn(
               "px-2 py-1 rounded-full text-xs font-medium",
-// @ts-ignore
               statusColors[value as keyof typeof statusColors] ||
                 "bg-gray-100 text-gray-800",
             )}

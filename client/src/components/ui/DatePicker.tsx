@@ -1,20 +1,16 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+import React from 'react'
+;
+;
 import { format } from "date-fns";
-// @ts-ignore
 import { Calendar as CalendarIcon } from "lucide-react";
-// @ts-ignore
-import { cn } from '../lib/utils.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Calendar } from '../components/ui/calendar.js.js';
+import { cn } from '@/components/lib/utils';
+import { Button } from '@/components/components/ui/button';
+import { Calendar } from '@/components/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '../components/ui/popover.js.js';
+} from '@/components/components/ui/popover';
 
 export interface DatePickerProps {
   value?: Date;

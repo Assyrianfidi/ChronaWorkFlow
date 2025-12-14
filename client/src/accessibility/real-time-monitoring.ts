@@ -563,7 +563,6 @@ export class RealTimeAccessibilityMonitor {
   private handleInteraction(event: MouseEvent): void {
     if (!this.currentSession) return;
 
-// @ts-ignore
     const target = event.target as HTMLElement;
     const behaviorData: UserBehaviorData = {
       ...this.currentSession,
@@ -582,7 +581,6 @@ export class RealTimeAccessibilityMonitor {
   private handleKeyboardInteraction(event: KeyboardEvent): void {
     if (!this.currentSession) return;
 
-// @ts-ignore
     const target = event.target as HTMLElement;
     const behaviorData: UserBehaviorData = {
       ...this.currentSession,
@@ -755,7 +753,6 @@ export class RealTimeAccessibilityMonitor {
     // Handle form submission
     const form = document.getElementById(
       "accessibility-issue-form",
-// @ts-ignore
     ) as HTMLFormElement;
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -778,11 +775,9 @@ export class RealTimeAccessibilityMonitor {
     document.addEventListener("click", (e) => {
       if (selectingElement) {
         e.preventDefault();
-// @ts-ignore
         const target = e.target as HTMLElement;
         const elementInput = document.getElementById(
           "issue-element",
-// @ts-ignore
         ) as HTMLInputElement;
         elementInput.value = this.getElementSelector(target);
         selectingElement = false;
@@ -794,7 +789,6 @@ export class RealTimeAccessibilityMonitor {
   private submitUserReportedIssue(): void {
     const form = document.getElementById(
       "accessibility-issue-form",
-// @ts-ignore
     ) as HTMLFormElement;
     const formData = new FormData(form);
 
@@ -802,13 +796,9 @@ export class RealTimeAccessibilityMonitor {
       id: this.generateIssueId(),
       timestamp: new Date(),
       type: "user_reported",
-// @ts-ignore
-// @ts-ignore
       severity: formData.get("issue-severity") as any,
       title: `User reported: ${formData.get("issue-type")}`,
-// @ts-ignore
       description: formData.get("issue-description") as string,
-// @ts-ignore
       selector: formData.get("issue-element") as string,
       userImpact: "medium",
       businessImpact: "medium",
@@ -847,7 +837,6 @@ export class RealTimeAccessibilityMonitor {
 
     elements.forEach((element) => {
       this.config.wcagCompliance.customCriteria.forEach((criterion) => {
-// @ts-ignore
         const result = criterion.testFunction(element as HTMLElement);
         violations.push(...result.violations);
       });
@@ -912,7 +901,6 @@ export class RealTimeAccessibilityMonitor {
       if (criterion && criterion.fixFunction) {
         criterion.fixFunction(violation.element);
 
-// @ts-ignore
         // Update issue as auto-fixed
         const issue = this.issues.find(
           (i) => i.selector === this.getElementSelector(violation.element),
@@ -977,11 +965,8 @@ export class RealTimeAccessibilityMonitor {
 
     // Apply changes
     adaptation.changes.forEach((change: any) => {
-// @ts-ignore
       const element = document.querySelector(change.element) as HTMLElement;
       if (element) {
-// @ts-ignore
-// @ts-ignore
         (element.style as any)[change.property] = change.newValue;
       }
     });
@@ -1396,7 +1381,6 @@ export class RealTimeAccessibilityMonitor {
 
     elements.forEach((element) => {
       this.config.wcagCompliance.customCriteria.forEach((criterion) => {
-// @ts-ignore
         const result = criterion.testFunction(element as HTMLElement);
         violations.push(...result.violations);
       });

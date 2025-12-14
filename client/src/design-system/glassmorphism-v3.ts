@@ -391,7 +391,6 @@ export class GlassmorphismV3Engine {
       u_opacity: this.config.layers.foreground.opacity,
     };
 
-// @ts-ignore
     // Render to canvas and apply as background
     this.applyCanvasToElement(element);
   }
@@ -417,8 +416,6 @@ export class GlassmorphismV3Engine {
     this.renderGPUAccelerated(document.body, performance.now());
 
     const renderTime = performance.now() - startTime;
-// @ts-ignore
-// @ts-ignore
     const memoryUsage = (performance as any).memory?.usedJSHeapSize || 0;
 
     return {
@@ -443,7 +440,6 @@ export class GlassmorphismV3Engine {
 }
 
 // React hook for Glassmorphism V3
-// @ts-ignore
 export function useGlassmorphismV3(config?: Partial<GlassmorphismV3Config>) {
   const engine = GlassmorphismV3Engine.getInstance();
 
@@ -459,7 +455,6 @@ export function useGlassmorphismV3(config?: Partial<GlassmorphismV3Config>) {
 
       // Inject CSS into document
       const styleId = "glassmorphism-v3-styles";
-// @ts-ignore
       let styleElement = document.getElementById(styleId) as HTMLStyleElement;
 
       if (!styleElement) {

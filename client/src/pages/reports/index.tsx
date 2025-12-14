@@ -82,7 +82,6 @@ export default function ReportsPage() {
 
     return (
       <span
-// @ts-ignore
         className={`px-2 py-1 text-xs font-medium rounded-full ${statusMap[status as keyof typeof statusMap]}`}
       >
         {status.charAt(0).toUpperCase() + status.slice(1)}

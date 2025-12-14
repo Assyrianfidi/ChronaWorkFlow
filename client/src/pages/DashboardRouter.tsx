@@ -8,7 +8,6 @@ import {
   InventoryDashboard,
 } from "./dashboards";
 
-// @ts-ignore
 const DashboardRouter: React.FC = () => {
   const { user } = useAuth();
 

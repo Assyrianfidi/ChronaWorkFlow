@@ -43,7 +43,6 @@ const getChartData = (kpiId: string) => {
   return data;
 };
 
-// @ts-ignore
 export const DrilldownViewer: React.FC<DrilldownViewerProps> = ({
   kpiId,
   onBack,

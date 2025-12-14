@@ -2,35 +2,26 @@ import React from 'react';
 import { type ReactElement } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Form } from '../components/ui/form.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
-// @ts-ignore
-import { Label } from '../components/ui/label.js.js';
-// @ts-ignore
-import { CardContent, CardFooter } from '../components/ui/card.js.js';
-// @ts-ignore
-import { Calendar } from '../components/ui/calendar.js.js';
+import { Button } from '@/components/components/ui/button';
+import { Form } from '@/components/components/ui/form';
+import { Input } from '@/components/components/ui/input';
+import { Label } from '@/components/components/ui/label';
+import { CardContent, CardFooter } from '@/components/components/ui/card';
+import { Calendar } from '@/components/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '../components/ui/popover.js.js';
-// @ts-ignore
+} from '@/components/components/ui/popover';
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-// @ts-ignore
-import { cn } from '../lib/utils.js.js';
+import { cn } from '@/components/lib/utils';
 import {
   reportFormSchema,
   type ReportFormInput,
   type ReportFormData,
-} from '../lib/validations/schemas.js.js';
-// @ts-ignore
-import { Textarea } from '../components/ui/textarea.js.js';
+} from '@/components/lib/validations/schemas';
+import { Textarea } from '@/components/components/ui/textarea';
 
 interface ReportFormProps {
   onSubmit: (data: ReportFormData) => void;
@@ -64,7 +55,6 @@ export function ReportForm({
       amount: initialData?.amount || 0,
       description: initialData?.description || "",
       date: initialData?.date
-// @ts-ignore
         ? new Date(initialData.date as string | number)
         : new Date(),
       category: initialData?.category || "",
@@ -83,7 +73,6 @@ export function ReportForm({
   const selectedDate = watch("date");
 
   const onFormSubmit: SubmitHandler<ReportFormInput> = (data) => {
-// @ts-ignore
     onSubmit(data as ReportFormData);
   };
 

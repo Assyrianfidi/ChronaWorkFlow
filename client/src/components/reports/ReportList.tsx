@@ -94,9 +94,7 @@ export function ReportList() {
     );
   }
 
-// @ts-ignore
   const reports = (data as ReportWithMeta)?.data || [];
-// @ts-ignore
   const total = (data as ReportWithMeta)?.meta?.total || 0;
 
   return (

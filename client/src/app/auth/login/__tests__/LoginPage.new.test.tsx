@@ -24,14 +24,10 @@ const mockLogin = vi.fn().mockResolvedValue({});
 
 // Create a mock store with reactive values
 let mockAuthState = {
-// @ts-ignore
-// @ts-ignore
   user: null as any,
-// @ts-ignore
   token: null as string | null,
   isAuthenticated: false,
   isLoading: false,
-// @ts-ignore
   error: null as string | null,
   login: mockLogin,
   register: vi.fn(),

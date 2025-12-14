@@ -10,7 +10,6 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { FullPageLoading } from "../components/ui/EnterpriseLoading";
 
-// @ts-ignore
 export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -29,7 +28,6 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-// @ts-ignore
 export const PublicRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -48,7 +46,6 @@ export const PublicRoute: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-// @ts-ignore
 export const SuspenseWrapper: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => (

@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import { useEffect, useRef, useCallback } from "react";
 import InteractionEngine, {
   InteractionConfig,
-} from '../utils/interaction-engine.js.js';
+} from '@/components/utils/interaction-engine';
 
 interface UseInteractiveFeedbackOptions {
   hapticFeedback?: boolean;

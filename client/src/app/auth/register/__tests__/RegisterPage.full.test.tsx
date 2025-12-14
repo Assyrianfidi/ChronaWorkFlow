@@ -37,7 +37,6 @@ describe("RegisterPage", () => {
       },
     );
 
-// @ts-ignore
     (useRouter as jest.Mock).mockReturnValue({
       push: mockRouterPush,
     });
@@ -128,7 +127,6 @@ describe("RegisterPage", () => {
       const confirmPasswordInput =
         screen.getByPlaceholderText("Confirm Password");
 
-// @ts-ignore
       // Check that required fields are marked as required
       // Note: We're checking the required attribute directly since the form might not be set up for HTML5 validation
       expect(nameInput).toHaveAttribute("required");

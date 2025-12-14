@@ -308,7 +308,6 @@ export class DashboardService {
         format: "pdf",
       });
       // Convert response to blob for download
-// @ts-ignore
       return new Blob([response.data as BlobPart], { type: "application/pdf" });
     } catch (error) {
       handleApiError(error);

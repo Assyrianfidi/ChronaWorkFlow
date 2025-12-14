@@ -11,7 +11,6 @@ import {
   useMutation,
   useQueryClient,
   UseQueryOptions,
-// @ts-ignore
   useQueryClient as useReactQueryClient,
   UseMutationOptions,
   UseMutationResult,
@@ -20,14 +19,10 @@ import {
   QueryFilters,
   keepPreviousData,
 } from "@tanstack/react-query";
-// @ts-ignore
-import { reportService } from '../services/reportService.js.js';
-// @ts-ignore
-import { Report, ReportFormData, ReportListResponse } from '../types/report.js.js';
-// @ts-ignore
-import { QueryParams } from '../types/common.js.js';
-// @ts-ignore
-import { useToast } from '../components/ui/use-toast.js.js';
+import { reportService } from '@/components/services/reportService';
+import { Report, ReportFormData, ReportListResponse } from '@/components/types/report';
+import { QueryParams } from '@/components/types/common';
+import { useToast } from '@/components/components/ui/use-toast';
 
 const REPORT_QUERY_KEYS = {
   all: ["reports"],
@@ -81,7 +76,6 @@ export const useCreateReport = (): UseMutationResult<
       // Invalidate and refetch the reports list
       queryClient.invalidateQueries({
         queryKey: REPORT_QUERY_KEYS.lists(),
-// @ts-ignore
       } as InvalidateQueryFilters);
       toast({
         title: "Success",
@@ -119,7 +113,6 @@ export const useUpdateReport = (): UseMutationResult<
       // Invalidate the reports list
       queryClient.invalidateQueries({
         queryKey: REPORT_QUERY_KEYS.lists(),
-// @ts-ignore
       } as InvalidateQueryFilters);
 
       toast({
@@ -148,13 +141,11 @@ export const useDeleteReport = (): UseMutationResult<void, Error, string> => {
       // Remove the report from the cache
       queryClient.removeQueries({
         queryKey: REPORT_QUERY_KEYS.detail(id),
-// @ts-ignore
       } as QueryFilters);
 
       // Invalidate the reports list
       queryClient.invalidateQueries({
         queryKey: REPORT_QUERY_KEYS.lists(),
-// @ts-ignore
       } as InvalidateQueryFilters);
 
       toast({
@@ -194,7 +185,6 @@ export const useExportReport = (): UseMutationResult<
 
       toast({
         title: "Success",
-// @ts-ignore
         description: `Report exported as ${format.toUpperCase()} successfully`,
       });
     },

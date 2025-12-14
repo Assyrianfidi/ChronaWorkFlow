@@ -1,5 +1,4 @@
 import {
-// @ts-ignore
   renderWithProviders as render,
   screen,
   waitFor,
@@ -73,7 +72,6 @@ describe("ReportFilters", () => {
     const fromButton = screen.getByText("From");
     await user.click(fromButton);
 
-// @ts-ignore
     // Select a date (using the 15th of the current month as an example)
     const dateToSelect = screen.getByText("15");
     await user.click(dateToSelect);

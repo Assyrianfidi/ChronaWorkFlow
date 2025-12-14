@@ -13,8 +13,6 @@ describe("ResetPasswordPage - Basic Tests", () => {
   it("renders invalid link state when no token is present", () => {
     const mockPush = vi.fn();
     const mockGet = vi.fn().mockReturnValue(null);
-// @ts-ignore
-// @ts-ignore
     (useRouter as any).mockReturnValue({
       push: mockPush,
       replace: vi.fn(),
@@ -23,8 +21,6 @@ describe("ResetPasswordPage - Basic Tests", () => {
       refresh: vi.fn(),
       prefetch: vi.fn(),
     });
-// @ts-ignore
-// @ts-ignore
     (useSearchParams as any).mockReturnValue({
       get: mockGet,
       getAll: vi.fn(),

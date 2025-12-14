@@ -117,7 +117,6 @@ const TransactionsContext = createContext<{
 } | null>(null);
 
 // Provider
-// @ts-ignore
 export const TransactionsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {

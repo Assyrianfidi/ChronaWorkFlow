@@ -1,8 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-// @ts-ignore
-import { useAnalytics } from './AnalyticsEngine.js.js';
-// @ts-ignore
-import { DataVisualization, VisualizationConfig } from './AnalyticsEngine.js.js';
+import { useAnalytics } from './AnalyticsEngine';
+import { DataVisualization, VisualizationConfig } from './AnalyticsEngine';
 
 interface ChartProps {
   data: any[];
@@ -15,7 +13,6 @@ interface ChartProps {
 }
 
 // Base Chart Component
-// @ts-ignore
 const BaseChart: React.FC<ChartProps> = ({
   data,
   config,
@@ -453,7 +450,6 @@ function findClosestPoint(
 }
 
 // Main Data Visualization Component
-// @ts-ignore
 export const DataVisualizationComponent: React.FC<{
   visualization: DataVisualization;
   onUpdate?: (viz: DataVisualization) => void;
@@ -580,7 +576,6 @@ export const DataVisualizationComponent: React.FC<{
 };
 
 // Dashboard Layout Component
-// @ts-ignore
 export const DashboardLayout: React.FC<{
   dashboard: any;
   onVisualizationUpdate?: (viz: DataVisualization) => void;

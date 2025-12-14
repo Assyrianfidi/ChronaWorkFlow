@@ -5,11 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// @ts-ignore
 import * as z from "zod";
 import { useState, useEffect } from "react";
-// @ts-ignore
-import { useAuthStore } from '../store/auth-store.js.js';
+import { useAuthStore } from '@/components/store/auth-store';
 
 const registerSchema = z
   .object({

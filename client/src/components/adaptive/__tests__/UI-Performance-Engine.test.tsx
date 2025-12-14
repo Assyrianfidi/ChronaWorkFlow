@@ -60,8 +60,6 @@ describe("UIPerformanceEngine", () => {
           memory: {
             usedJSHeapSize: 150000000, // 150MB - high memory
           },
-// @ts-ignore
-// @ts-ignore
         }) as any,
     );
 
@@ -115,8 +113,6 @@ describe("LazyLoad", () => {
       observe: mockObserve,
       unobserve: mockUnobserve,
       disconnect: mockDisconnect,
-// @ts-ignore
-// @ts-ignore
     })) as any;
 
     render(
@@ -239,7 +235,6 @@ describe("usePerformance hook", () => {
         usePerformance();
         return <div>Success</div>;
       } catch (error) {
-// @ts-ignore
         return <div>Error: {(error as Error).message}</div>;
       }
     };

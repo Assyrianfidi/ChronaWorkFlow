@@ -88,6 +88,5 @@ export const defaultValues: ReportFormValues = {
 
 // Type guard for ReportStatus
 export const isReportStatus = (status: string): status is ReportStatus => {
-// @ts-ignore
   return REPORT_STATUSES.includes(status as ReportStatus);
 };

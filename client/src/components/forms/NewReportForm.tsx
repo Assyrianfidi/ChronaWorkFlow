@@ -62,8 +62,6 @@ export const ReportForm = ({
     reset,
     formState: { errors },
   } = useForm<ReportFormValues>({
-// @ts-ignore
-// @ts-ignore
     resolver: zodResolver(reportFormSchema) as any,
     defaultValues: { ...defaultValues, ...initialValues },
   });

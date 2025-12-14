@@ -48,7 +48,6 @@ describe("ReportView Accessibility", () => {
     const buttons = screen.getAllByRole("button");
     expect(buttons[0]).toHaveFocus();
 
-// @ts-ignore
     // Add more keyboard navigation tests as needed
   });
 });

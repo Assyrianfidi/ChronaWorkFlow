@@ -181,10 +181,7 @@ export type Category = z.infer<typeof categorySchema>;
 export type SupplierFormInput = z.infer<typeof supplierFormSchema>;
 export type Supplier = z.infer<typeof supplierSchema>;
 export type {
-// @ts-ignore
   ReportFormInputInternal as ReportFormInput,
-// @ts-ignore
   ReportFormDataInternal as ReportFormData,
-// @ts-ignore
   ReportInternal as Report,
 };

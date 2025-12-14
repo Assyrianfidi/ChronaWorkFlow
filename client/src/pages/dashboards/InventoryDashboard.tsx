@@ -63,7 +63,6 @@ interface StockAlert {
   lastUpdated: string;
 }
 
-// @ts-ignore
 const InventoryDashboard: React.FC = () => {
   const { user } = useAuth();
 

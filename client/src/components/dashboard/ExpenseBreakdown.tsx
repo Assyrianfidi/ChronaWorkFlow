@@ -8,7 +8,6 @@ import {
   Tooltip,
 } from "recharts";
 import { CreditCard, TrendingUp } from "lucide-react";
-// @ts-ignore
 import { cn } from "@/lib/utils";
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {

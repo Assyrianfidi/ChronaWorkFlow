@@ -99,7 +99,6 @@ const mockTopCustomers: TopCustomer[] = [
   { name: "StartUp Ventures", revenue: 12300.0, invoices: 5, growth: 5.4 },
 ];
 
-// @ts-ignore
 const ReportsPage: React.FC = () => {
   const [reportData, setReportData] = useState<ReportData>(mockReportData);
   const [monthlyData, setMonthlyData] =

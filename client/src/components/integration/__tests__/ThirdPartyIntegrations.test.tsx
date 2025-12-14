@@ -11,7 +11,7 @@ import { vi } from "vitest";
 import {
   ThirdPartyIntegrations,
   useThirdPartyIntegrations,
-} from '../ThirdPartyIntegrations.js.js';
+} from '@/components/ThirdPartyIntegrations';
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({
@@ -110,7 +110,6 @@ describe("ThirdPartyIntegrations", () => {
           });
           setConnected(true);
         } catch (error) {
-// @ts-ignore
           setConnected(true); // Still mark as connected to complete test
         }
       };
@@ -438,7 +437,6 @@ describe("ThirdPartyIntegrations", () => {
             setRegistered(true);
           }
         } catch (error) {
-// @ts-ignore
           setRegistered(true); // Still mark as registered to complete test
         }
       };
@@ -828,7 +826,6 @@ describe("ThirdPartyIntegrations Features", () => {
           });
           setConnected(true);
         } catch (error) {
-// @ts-ignore
           setConnected(true); // Still mark as connected to complete test
         }
       };

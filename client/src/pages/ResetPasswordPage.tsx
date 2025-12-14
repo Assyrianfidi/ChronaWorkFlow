@@ -21,7 +21,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-// @ts-ignore
 const ResetPasswordPage: React.FC = () => {
   const [formData, setFormData] = React.useState({
     password: "",

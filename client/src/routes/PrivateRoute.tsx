@@ -7,7 +7,6 @@ interface PrivateRouteProps {
   requiredRole?: string | string[];
 }
 
-// @ts-ignore
 const PrivateRoute: React.FC<PrivateRouteProps> = ({
   children,
   requiredRole,

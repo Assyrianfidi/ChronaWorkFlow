@@ -858,7 +858,6 @@ export class ThreatAdaptiveUIEngine {
         const duration = Date.now() - startTime;
 
         // Analyze request for threats
-// @ts-ignore
         await this.analyzeRequest(args[0] as Request, response, duration);
 
         return response;
@@ -866,7 +865,6 @@ export class ThreatAdaptiveUIEngine {
         const duration = Date.now() - startTime;
 
         // Analyze failed request
-// @ts-ignore
         await this.analyzeRequest(args[0] as Request, null, duration);
 
         throw error;
@@ -1013,7 +1011,6 @@ export class ThreatAdaptiveUIEngine {
     // Analyze DOM changes for security threats
     mutations.forEach((mutation) => {
       if (mutation.type === "attributes") {
-// @ts-ignore
         const element = mutation.target as Element;
 
         // Check for suspicious attribute changes
@@ -1047,7 +1044,6 @@ export class ThreatAdaptiveUIEngine {
         // Check for suspicious new elements
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType === Node.ELEMENT_NODE) {
-// @ts-ignore
             const element = node as Element;
 
             if (element.tagName === "SCRIPT") {
@@ -1258,11 +1254,7 @@ export class ThreatAdaptiveUIEngine {
     const event: SecurityEvent = {
       id: this.generateEventId(),
       timestamp: new Date(),
-// @ts-ignore
-// @ts-ignore
       type: type as any,
-// @ts-ignore
-// @ts-ignore
       severity: severity as any,
       description,
       details,
@@ -1559,7 +1551,6 @@ export class ThreatAdaptiveUIEngine {
       this.createSecurityEvent(
         "false_positive",
         "low",
-// @ts-ignore
         `Threat marked as false positive: ${threatId}`,
         {
           threatId,

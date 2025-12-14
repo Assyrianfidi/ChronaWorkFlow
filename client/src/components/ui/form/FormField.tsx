@@ -25,7 +25,6 @@ export function FormField({
   } = useFormContext();
 
   const error = getNestedError(errors, name);
-// @ts-ignore
   const errorMessage = error?.message as string | undefined;
 
   return (

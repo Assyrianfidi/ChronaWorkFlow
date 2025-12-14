@@ -259,7 +259,6 @@ export const AdvancedFeatures: Story = {
             <li>"Navigate to accounts and show balance"</li>
             <li>"Open calculator and add 5 plus 3"</li>
             <li>"Search for transactions last month"</li>
-// @ts-ignore
             <li>"Generate report and save as PDF"</li>
           </ul>
         </div>

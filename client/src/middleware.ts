@@ -40,9 +40,7 @@ export async function middleware(request: NextRequest) {
 
   // Add user role to request headers for server components
   const requestHeaders = new Headers(request.headers);
-// @ts-ignore
   requestHeaders.set("x-user-role", token.role as string);
-// @ts-ignore
   requestHeaders.set("x-user-id", token.sub as string);
 
   return NextResponse.next({

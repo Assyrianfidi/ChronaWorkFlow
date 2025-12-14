@@ -22,7 +22,6 @@ interface DashboardProviderProps {
   initialRole: DashboardRole;
 }
 
-// @ts-ignore
 export const DashboardProvider: React.FC<DashboardProviderProps> = ({
   children,
   initialRole,

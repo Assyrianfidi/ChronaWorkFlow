@@ -14,13 +14,11 @@ const fetcher = async (key: string) => {
   const [service, method, ...params] = key.split(":");
   const serviceInstance = dashboardService;
 
-// @ts-ignore
   if (!serviceInstance[method as keyof typeof dashboardService]) {
     throw new Error(`Method ${method} not found on service`);
   }
 
-  // @ts-ignore - Dynamic method call
-// @ts-ignore
+   - Dynamic method call
   return await serviceInstance[method as keyof typeof dashboardService](
     ...params,
   );
@@ -231,7 +229,6 @@ export function useHealthCheck() {
 }
 
 // Utility hook for real-time updates
-// @ts-ignore
 export function useRealTimeData<T>(
   key: string,
   fetcher: () => Promise<T>,
@@ -253,7 +250,6 @@ export function useRealTimeData<T>(
 }
 
 // Hook for optimistic updates
-// @ts-ignore
 export function useOptimisticMutation<T, P = any>(
   mutationFn: (params: P) => Promise<T>,
   swrKey: string,

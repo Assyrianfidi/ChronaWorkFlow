@@ -3,7 +3,6 @@ import { useTransactions } from "../contexts/TransactionsContext";
 import Button from "../components/ui/Button";
 import { DashboardShell } from "../components/ui/layout/DashboardShell";
 
-// @ts-ignore
 const TransactionsPage: React.FC = () => {
   const { state, fetchTransactions, createTransaction, clearError } =
     useTransactions();
@@ -200,8 +199,6 @@ const TransactionsPage: React.FC = () => {
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-// @ts-ignore
-// @ts-ignore
                               type: e.target.value as any,
                             })
                           }

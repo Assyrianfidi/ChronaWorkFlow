@@ -134,14 +134,12 @@ describe("Inventory Utils", () => {
       expect(status).toBe("in_stock");
     });
 
-// @ts-ignore
     it("treats undefined reorder point as 0", () => {
       const itemWithoutReorderPoint = mockInventoryItems[3];
       const status = getInventoryStatus(itemWithoutReorderPoint);
       expect(status).toBe("in_stock"); // quantityOnHand (1) > 0
     });
 
-// @ts-ignore
     it("handles negative quantities as out of stock", () => {
       const negativeQuantityItem: InventoryItem = {
         ...mockInventoryItems[0],
@@ -210,7 +208,6 @@ describe("Inventory Utils", () => {
       expect(lowStockItems).toHaveLength(0);
     });
 
-// @ts-ignore
     it("treats undefined reorder point as 0", () => {
       const itemsWithoutReorderPoint: InventoryItem[] = [
         {

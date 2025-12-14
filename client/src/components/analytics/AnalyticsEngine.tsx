@@ -5,12 +5,9 @@ import React, {
   useRef,
   useMemo,
 } from "react";
-// @ts-ignore
-import { useUserExperienceMode } from '../adaptive/UserExperienceMode.js.js';
-// @ts-ignore
-import { usePerformance } from '../adaptive/UI-Performance-Engine.js.js';
-// @ts-ignore
-import { useAuthStore } from '../../store/auth-store.js.js';
+import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
+import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
+import { useAuthStore } from '@/../../store/auth-store';
 
 // Analytics Types
 interface AnalyticsMetric {
@@ -253,7 +250,6 @@ class AnalyticsDataProcessor {
 }
 
 // Main Analytics Engine Component
-// @ts-ignore
 export const AnalyticsEngine: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -389,8 +385,6 @@ export const AnalyticsEngine: React.FC<{ children: React.ReactNode }> = ({
       const report: AnalyticsReport = {
         id: Math.random().toString(36),
         name: `${type.charAt(0).toUpperCase() + type.slice(1)} Report`,
-// @ts-ignore
-// @ts-ignore
         type: type as any,
         metrics: (await processorRef.current?.processMetrics()) || [],
         generatedAt: Date.now(),

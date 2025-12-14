@@ -49,26 +49,16 @@ describe("Basic Interaction Tests", () => {
 
   it("renders basic interaction component", async () => {
     // Import dynamically to avoid JSX issues
-// @ts-ignore
-// @ts-ignore
     const { InteractionEngine } = await import("../InteractionEngine.tsx");
-// @ts-ignore
-// @ts-ignore
     const { UserExperienceModeProvider } = await import(
       "../../adaptive/UserExperienceMode.tsx"
     );
-// @ts-ignore
-// @ts-ignore
     const { UIPerformanceEngine } = await import(
       "../../adaptive/UI-Performance-Engine.tsx"
     );
-// @ts-ignore
-// @ts-ignore
     const { AccessibilityProvider } = await import(
       "../../adaptive/AccessibilityModes"
     );
-// @ts-ignore
-// @ts-ignore
     const { AdaptiveLayoutEngine } = await import(
       "../../adaptive/AdaptiveLayoutEngine.tsx"
     );

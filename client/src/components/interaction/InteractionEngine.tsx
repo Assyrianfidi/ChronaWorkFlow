@@ -6,12 +6,9 @@ declare global {
 }
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-// @ts-ignore
-import { useUserExperienceMode } from '../adaptive/UserExperienceMode.js.js';
-// @ts-ignore
-import { usePerformance } from '../adaptive/UI-Performance-Engine.js.js';
-// @ts-ignore
-import { useAccessibility } from '../adaptive/AccessibilityModes.js.js';
+import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
+import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
+import { useAccessibility } from '@/components/adaptive/AccessibilityModes';
 
 // Interaction types and interfaces
 export interface InteractionConfig {
@@ -239,8 +236,6 @@ class AudioManager {
   constructor() {
     if (typeof window !== "undefined" && "AudioContext" in window) {
       this.context = new (window.AudioContext ||
-// @ts-ignore
-// @ts-ignore
         (window as any).webkitAudioContext)();
     }
   }
@@ -777,7 +772,6 @@ export function InteractionEngine({ children }: { children: React.ReactNode }) {
     },
     interactions,
     clearInteractions,
-// @ts-ignore
   } as InteractionContextType;
 
   return (
@@ -852,7 +846,6 @@ export function useInteractionEngine() {
 }
 
 // Interactive Component HOC
-// @ts-ignore
 export function withInteraction<P extends object>(
   Component: React.ComponentType<P>,
   options: {
@@ -885,7 +878,6 @@ export function withInteraction<P extends object>(
       [triggerHaptic, playSound, addParticle, options],
     );
 
-// @ts-ignore
     return <Component {...(props as P)} onClick={handleClick} />;
   };
 }

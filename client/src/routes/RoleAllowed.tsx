@@ -1,7 +1,5 @@
 import * as React from "react";
-// @ts-ignore
 import { useAuth } from "../contexts/AuthContext";
-// @ts-ignore
 import Unauthorized from "../pages/Unauthorized";
 
 interface RoleAllowedProps {
@@ -10,7 +8,6 @@ interface RoleAllowedProps {
   fallback?: React.ReactNode;
 }
 
-// @ts-ignore
 const RoleAllowed: React.FC<RoleAllowedProps> = ({
   children,
   roles,

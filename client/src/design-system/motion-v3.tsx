@@ -428,8 +428,6 @@ class PerformanceMonitor {
       averageFPS = (recentFrames.length - 1) / (totalTime / 1000);
     }
 
-// @ts-ignore
-// @ts-ignore
     const memoryUsage = (performance as any).memory?.usedJSHeapSize || 0;
 
     return {
@@ -442,7 +440,6 @@ class PerformanceMonitor {
 }
 
 // React hooks for Motion V3
-// @ts-ignore
 export function useMotionV3(config?: Partial<MotionV3Config>) {
   const engine = MotionV3Engine.getInstance();
   const motionValue = useMotionValue(0);
@@ -479,8 +476,6 @@ export function useMotionV3(config?: Partial<MotionV3Config>) {
         ],
         {
           duration: path.duration,
-// @ts-ignore
-// @ts-ignore
           easing: path.easing as any,
           fill: "forwards",
         },
@@ -524,7 +519,6 @@ export function useMotionV3(config?: Partial<MotionV3Config>) {
 }
 
 // Motion components
-// @ts-ignore
 export const MotionContainer: React.FC<{
   children: React.ReactNode;
   config?: Partial<MotionV3Config>;
@@ -562,7 +556,6 @@ export const MotionContainer: React.FC<{
   return <motion.div className={className}>{children}</motion.div>;
 };
 
-// @ts-ignore
 export const QuantumPathMotion: React.FC<{
   children: React.ReactNode;
   path: QuantumPath;

@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-// @ts-ignore
-import { useAuthStore } from '../../store/auth-store.js.js';
-// @ts-ignore
-import { Button } from '../ui/button.js.js';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { useAuthStore } from '@/../../store/auth-store';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/../../lib/utils';
 import {
   Menu,
   X,

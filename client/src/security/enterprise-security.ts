@@ -356,38 +356,30 @@ export class EnterpriseSecurity {
 
     document.addEventListener(
       "security:failed-login",
-// @ts-ignore
       handleFailedLogin as EventListener,
     );
     document.addEventListener(
       "security:successful-login",
-// @ts-ignore
       handleSuccessfulLogin as EventListener,
     );
     document.addEventListener(
       "security:permission-denied",
-// @ts-ignore
       handlePermissionDenied as EventListener,
     );
     document.addEventListener(
       "security:data-access",
-// @ts-ignore
       handleDataAccess as EventListener,
     );
 
-// @ts-ignore
     this.eventListeners.set("failed-login", handleFailedLogin as EventListener);
     this.eventListeners.set(
       "successful-login",
-// @ts-ignore
       handleSuccessfulLogin as EventListener,
     );
     this.eventListeners.set(
       "permission-denied",
-// @ts-ignore
       handlePermissionDenied as EventListener,
     );
-// @ts-ignore
     this.eventListeners.set("data-access", handleDataAccess as EventListener);
   }
 

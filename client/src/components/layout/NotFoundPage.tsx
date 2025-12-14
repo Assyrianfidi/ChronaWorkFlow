@@ -1,3 +1,4 @@
+import React from 'react'
 
 declare global {
   interface Window {
@@ -5,17 +6,13 @@ declare global {
   }
 }
 
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+;
+;
 import { Link } from "react-router-dom";
 import { Home, Search, ArrowLeft } from "lucide-react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { AccuBooksLogo } from '../ui/AccuBooksLogo.js.js';
-// @ts-ignore
-import { EnterpriseButton } from '../ui/EnterpriseButton.js.js';
+import { cn } from '@/../../lib/utils';
+import { AccuBooksLogo } from '@/components/ui/AccuBooksLogo';
+import { EnterpriseButton } from '@/components/ui/EnterpriseButton';
 
 interface NotFoundPageProps {
   className?: string;

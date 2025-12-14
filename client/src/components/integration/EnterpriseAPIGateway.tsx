@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-// @ts-ignore
-import { useUserExperienceMode } from '../adaptive/UserExperienceMode.js.js';
-// @ts-ignore
-import { usePerformance } from '../adaptive/UI-Performance-Engine.js.js';
-// @ts-ignore
-import { useAuthStore } from '../../store/auth-store.js.js';
+import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
+import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
+import { useAuthStore } from '@/../../store/auth-store';
 
 // API Gateway Types
 interface APIEndpoint {
@@ -929,7 +926,6 @@ class APIGatewayEngine {
 }
 
 // Main API Gateway Component
-// @ts-ignore
 export const EnterpriseAPIGateway: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {

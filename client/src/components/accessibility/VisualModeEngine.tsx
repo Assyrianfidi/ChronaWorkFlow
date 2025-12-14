@@ -291,7 +291,6 @@ const BUILTIN_MODES: VisualMode[] = [
 ];
 
 // Visual Mode Engine Component
-// @ts-ignore
 export const VisualModeEngine: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -376,7 +375,6 @@ export const VisualModeEngine: React.FC<{ children: React.ReactNode }> = ({
   const applyGlobalStyles = useCallback((settings: VisualModeSettings) => {
     try {
       const styleId = "visual-mode-styles";
-// @ts-ignore
       let styleElement = document.getElementById(styleId) as HTMLStyleElement;
 
       if (!styleElement) {
@@ -711,7 +709,6 @@ export const VisualModeEngine: React.FC<{ children: React.ReactNode }> = ({
       isInitialized.current = true;
     } catch (error) {
       console.warn("Failed to initialize visual mode engine:", error);
-// @ts-ignore
       isInitialized.current = true; // Still mark as initialized to prevent retry loops
     }
 
@@ -757,7 +754,6 @@ export const useVisualMode = (): VisualModeContextType => {
 };
 
 // Visual Mode Selector Component
-// @ts-ignore
 export const VisualModeSelector: React.FC = () => {
   const { currentMode, availableModes, setMode } = useVisualMode();
 

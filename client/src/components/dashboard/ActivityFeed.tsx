@@ -1,3 +1,4 @@
+import React from 'react'
 
 declare global {
   interface Window {
@@ -5,9 +6,8 @@ declare global {
   }
 }
 
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+;
+;
 import {
   Activity,
   User,
@@ -40,7 +40,6 @@ interface ActivityFeedProps {
   error?: Error;
 }
 
-// @ts-ignore
 const ActivityFeed: React.FC<ActivityFeedProps> = ({
   activities,
   isLoading = false,

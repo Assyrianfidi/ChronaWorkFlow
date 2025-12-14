@@ -28,7 +28,6 @@ const getEntityIcon = (type: Entity["type"]) => {
   }
 };
 
-// @ts-ignore
 export const EntitySelector: React.FC<EntitySelectorProps> = ({
   entities,
   selectedEntity,

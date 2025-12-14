@@ -827,8 +827,6 @@ export class CrossFeatureWorkflowSync {
     // Check for scheduled syncs and trigger them
     this.syncScheduler.checkScheduledSyncs(
       (featureId: string, triggerType: string, data: any) => {
-// @ts-ignore
-// @ts-ignore
         this.triggerSync(featureId, triggerType as any, data);
       },
     );

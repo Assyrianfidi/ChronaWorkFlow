@@ -23,7 +23,6 @@ import {
   Save,
 } from "lucide-react";
 
-// @ts-ignore
 const ProfilePage: React.FC = () => {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();

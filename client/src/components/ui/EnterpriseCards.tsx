@@ -1,8 +1,7 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import React from 'react'
+;
+;
+import { cn } from '@/../../lib/utils';
 import { cva, type VariantProps } from "class-variance-authority";
 
 const cardVariants = cva(
@@ -124,7 +123,6 @@ interface KPICardProps {
   loading?: boolean;
 }
 
-// @ts-ignore
 export const KPICard: React.FC<KPICardProps> = ({
   title,
   value,
@@ -256,7 +254,6 @@ interface MetricCardProps {
   size?: "sm" | "default" | "lg";
 }
 
-// @ts-ignore
 export const MetricCard: React.FC<MetricCardProps> = ({
   title,
   metrics,
@@ -301,7 +298,6 @@ interface StatusCardProps {
   }>;
 }
 
-// @ts-ignore
 export const StatusCard: React.FC<StatusCardProps> = ({
   status,
   title,

@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { cn } from '@/../../lib/utils';
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react";
 
 // Toast Types
@@ -91,7 +90,6 @@ export const useToastActions = () => {
 };
 
 // Toast Provider
-// @ts-ignore
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -128,7 +126,6 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 // Toast Container
-// @ts-ignore
 const ToastContainer: React.FC = () => {
   const { toasts } = useToast();
 
@@ -146,7 +143,6 @@ const ToastContainer: React.FC = () => {
 };
 
 // Individual Toast Component
-// @ts-ignore
 const Toast: React.FC<ToastProps> = ({
   type,
   title,
@@ -270,7 +266,6 @@ interface ToastActionProps {
   variant?: "default" | "destructive";
 }
 
-// @ts-ignore
 export const ToastAction: React.FC<ToastActionProps> = ({
   children,
   onClick,
@@ -293,7 +288,6 @@ export const ToastAction: React.FC<ToastActionProps> = ({
 };
 
 // Toast Close Component
-// @ts-ignore
 export const ToastClose: React.FC<{ onClick: () => void }> = ({ onClick }) => {
   return (
     <button
@@ -306,7 +300,6 @@ export const ToastClose: React.FC<{ onClick: () => void }> = ({ onClick }) => {
 };
 
 // Toast Title Component
-// @ts-ignore
 export const ToastTitle: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -314,7 +307,6 @@ export const ToastTitle: React.FC<{ children: React.ReactNode }> = ({
 };
 
 // Toast Description Component
-// @ts-ignore
 export const ToastDescription: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {

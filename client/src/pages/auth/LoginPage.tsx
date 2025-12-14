@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-// @ts-ignore
-import { useAuthStore } from '../../store/auth-store.js.js';
-// @ts-ignore
-import { Button } from '../../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../../components/ui/input.js.js';
-// @ts-ignore
-import { InputWithIcon } from '../../components/ui/input-with-icon.js.js';
-// @ts-ignore
-import { Label } from '../../components/ui/label.js.js';
+import { useAuthStore } from '@/../../store/auth-store';
+import { Button } from '@/../../components/ui/button';
+import { Input } from '@/../../components/ui/input';
+import { InputWithIcon } from '@/../../components/ui/input-with-icon';
+import { Label } from '@/../../components/ui/label';
 import {
   Card,
   CardContent,
@@ -17,12 +12,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../components/ui/card.js.js';
-// @ts-ignore
-import { Alert, AlertDescription } from '../../components/ui/alert.js.js';
+} from '@/../../components/ui/card';
+import { Alert, AlertDescription } from '@/../../components/ui/alert';
 import { Mail, Lock, Eye, EyeOff, Building2 } from "lucide-react";
-// @ts-ignore
-import Logo from '../../assets/AccubooksEnterprise_Logo16_.jpg.js.js';
+import Logo from '@/../../assets/AccubooksEnterprise_Logo16_.jpg';
 
 const tokens = require("../../design-system/tokens.json");
 
@@ -40,7 +33,6 @@ export default function LoginPage() {
   // Load variant from localStorage and save changes
   useEffect(() => {
     const savedVariant =
-// @ts-ignore
       (localStorage.getItem("accubooks:login-variant") as "A" | "B" | "C") ||
       "A";
     setVariant(savedVariant);

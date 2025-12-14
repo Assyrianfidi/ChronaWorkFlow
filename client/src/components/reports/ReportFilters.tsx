@@ -2,27 +2,23 @@ import React, { useState } from 'react';
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { format, subMonths, formatISO, parseISO } from "date-fns";
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
+import { Button } from '@/components/components/ui/button';
+import { Input } from '@/components/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../components/ui/select.js.js';
+} from '@/components/components/ui/select';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '../components/ui/popover.js.js';
-// @ts-ignore
-import { Calendar } from '../components/ui/calendar.js.js';
+} from '@/components/components/ui/popover';
+import { Calendar } from '@/components/components/ui/calendar';
 import { CalendarIcon, Filter, X } from "lucide-react";
-// @ts-ignore
-import { cn } from '../lib/utils.js.js';
+import { cn } from '@/components/lib/utils';
 
 interface ReportFiltersProps {
   onFilterChange?: (filters: ReportFilters) => void;
@@ -51,7 +47,6 @@ export function ReportFilters({
       format(subMonths(new Date(), 1), "yyyy-MM-dd"),
     endDate: searchParams.get("endDate") || format(new Date(), "yyyy-MM-dd"),
     sortBy: searchParams.get("sortBy") || "createdAt",
-// @ts-ignore
     sortOrder: (searchParams.get("sortOrder") as "asc" | "desc") || "desc",
   });
 
@@ -205,7 +200,6 @@ export function ReportFilters({
               setFilters((prev) => ({
                 ...prev,
                 sortBy,
-// @ts-ignore
                 sortOrder: sortOrder as "asc" | "desc",
               }));
             }}

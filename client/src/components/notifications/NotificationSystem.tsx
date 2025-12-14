@@ -12,8 +12,7 @@ declare global {
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-// @ts-ignore
-import Icon, { IconPresets } from '../../design-system/icons/IconSystem.js.js';
+import Icon, { IconPresets } from '@/../../design-system/icons/IconSystem';
 
 export interface Notification {
   id: string;
@@ -54,7 +53,6 @@ export interface NotificationSystemProps {
   customStyles?: React.CSSProperties;
 }
 
-// @ts-ignore
 const NotificationSystem: React.FC<NotificationSystemProps> = ({
   position = "top-right",
   maxNotifications = 5,

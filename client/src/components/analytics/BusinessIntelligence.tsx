@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-// @ts-ignore
-import { useAnalytics } from './AnalyticsEngine.js.js';
-// @ts-ignore
-import { BusinessInsight } from './AnalyticsEngine.js.js';
+import { useAnalytics } from './AnalyticsEngine';
+import { BusinessInsight } from './AnalyticsEngine';
 
 // BI Types
 interface KPI {
@@ -321,7 +319,6 @@ class BIEngine {
 }
 
 // Main BI Component
-// @ts-ignore
 export const BusinessIntelligence: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -600,8 +597,6 @@ export const BusinessIntelligence: React.FC<{ children: React.ReactNode }> = ({
       const forecastModel: ForecastModel = {
         id: Math.random().toString(36),
         name: `${type.charAt(0).toUpperCase() + type.slice(1)} Forecast`,
-// @ts-ignore
-// @ts-ignore
         type: type as any,
         methodology: "linear",
         accuracy: model.r2,
@@ -725,7 +720,6 @@ export const useBusinessIntelligence = (): BIContextType => {
 };
 
 // KPI Dashboard Component
-// @ts-ignore
 export const KPIDashboard: React.FC = () => {
   const { kpis, updateKPI } = useBusinessIntelligence();
 
@@ -790,7 +784,6 @@ export const KPIDashboard: React.FC = () => {
 };
 
 // Goals Tracker Component
-// @ts-ignore
 export const GoalsTracker: React.FC = () => {
   const { goals, updateGoalProgress } = useBusinessIntelligence();
 

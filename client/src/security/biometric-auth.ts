@@ -1037,7 +1037,6 @@ export class BiometricAuthenticationEngine {
         acc[session.userId] = (acc[session.userId] || 0) + 1;
         return acc;
       },
-// @ts-ignore
       {} as Record<string, number>,
     );
 
@@ -1143,11 +1142,7 @@ export class BiometricAuthenticationEngine {
     const event: SecurityEvent = {
       id: this.generateEventId(),
       timestamp: new Date(),
-// @ts-ignore
-// @ts-ignore
       type: type as any,
-// @ts-ignore
-// @ts-ignore
       severity: severity as any,
       description,
       details,
@@ -1169,7 +1164,6 @@ export class BiometricAuthenticationEngine {
   }
 
   private determineRequiredFactors(riskAssessment: RiskAssessment): string[] {
-// @ts-ignore
     const factors = ["fingerprint"]; // Always require fingerprint as base
 
     if (riskAssessment.riskScore > 50) {

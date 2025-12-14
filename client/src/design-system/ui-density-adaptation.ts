@@ -174,8 +174,6 @@ export class UIDensityAdaptationEngine {
     // Performance detection based on hardware
     let performance: AdaptationFactors["device"]["performance"];
     const cores = navigator.hardwareConcurrency || 4;
-// @ts-ignore
-// @ts-ignore
     const memory = (navigator as any).deviceMemory || 4;
 
     if (cores >= 8 && memory >= 8) {
@@ -237,8 +235,6 @@ export class UIDensityAdaptationEngine {
   }
 
   private detectPerformance(): AdaptationFactors["performance"] {
-// @ts-ignore
-// @ts-ignore
     const connection = (navigator as any).connection;
     const networkSpeed = connection
       ? connection.effectiveType === "4g"
@@ -248,15 +244,11 @@ export class UIDensityAdaptationEngine {
           : "slow"
       : "medium";
 
-// @ts-ignore
-// @ts-ignore
     const batteryLevel = (navigator as any).battery?.level || 1;
 
     return {
       targetFPS: 60,
       memoryLimit:
-// @ts-ignore
-// @ts-ignore
         (navigator as any).deviceMemory * 1024 * 1024 * 1024 ||
         4 * 1024 * 1024 * 1024,
       networkSpeed,
@@ -614,11 +606,7 @@ export class UIDensityAdaptationEngine {
     });
 
     // Listen for network changes
-// @ts-ignore
-// @ts-ignore
     if ((navigator as any).connection) {
-// @ts-ignore
-// @ts-ignore
       (navigator as any).connection.addEventListener(
         "change",
         handlePerformanceChange,

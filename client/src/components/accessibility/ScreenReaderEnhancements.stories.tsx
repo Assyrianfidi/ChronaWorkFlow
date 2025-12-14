@@ -122,7 +122,6 @@ export const FormWithLabels: Story = {
                 required
               />
               <div id="name-help" style={{ fontSize: "0.8rem", color: "#666" }}>
-// @ts-ignore
                 Enter your full name as it appears on official documents
               </div>
             </div>

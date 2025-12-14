@@ -1,9 +1,7 @@
 import React from 'react';
 import { useState, useCallback, useMemo } from "react";
-// @ts-ignore
-import { useAccounts } from './use-api.js.js';
-// @ts-ignore
-import type { Account, AccountWithChildren } from '../types/accounts.js.js';
+import { useAccounts } from './use-api';
+import type { Account, AccountWithChildren } from '@/components/types/accounts';
 
 interface UseAccountsTableProps {
   companyId?: string;
@@ -64,7 +62,6 @@ export function useAccountsTable({
         }));
     };
 
-// @ts-ignore
     return sortAccounts(rootAccounts) as AccountWithChildren[];
   }, []);
 
@@ -140,7 +137,6 @@ export function useAccountsTable({
 
           return null;
         })
-// @ts-ignore
         .filter(Boolean) as AccountWithChildren[];
     };
 

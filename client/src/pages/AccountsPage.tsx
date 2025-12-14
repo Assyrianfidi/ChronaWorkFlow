@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
-// @ts-ignore
-import { useAccounts } from '../contexts/AccountsContext.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
-// @ts-ignore
-import { DashboardShell } from '../components/ui/layout/DashboardShell.js.js';
+import { useAccounts } from '@/components/contexts/AccountsContext';
+import { Button } from '@/components/components/ui/button';
+import { DashboardShell } from '@/components/components/ui/layout/DashboardShell';
 
-// @ts-ignore
 const AccountsPage: React.FC = () => {
   const {
     state,
@@ -153,8 +149,6 @@ const AccountsPage: React.FC = () => {
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-// @ts-ignore
-// @ts-ignore
                             type: e.target.value as any,
                           })
                         }

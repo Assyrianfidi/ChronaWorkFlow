@@ -43,7 +43,6 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 // Simple test component
-// @ts-ignore
 const TestComponent: React.FC = () => {
   const {
     currentMode,
@@ -285,8 +284,6 @@ describe("VisualModeEngine - Error Handling", () => {
 
   it("handles missing localStorage gracefully", () => {
     const originalLocalStorage = window.localStorage;
-// @ts-ignore
-// @ts-ignore
     delete (window as any).localStorage;
 
     render(
@@ -296,8 +293,6 @@ describe("VisualModeEngine - Error Handling", () => {
     );
 
     expect(screen.getByTestId("current-mode")).toBeInTheDocument();
-// @ts-ignore
-// @ts-ignore
     (window as any).localStorage = originalLocalStorage;
   });
 

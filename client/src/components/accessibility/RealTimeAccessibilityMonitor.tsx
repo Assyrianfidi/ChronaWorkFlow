@@ -211,9 +211,7 @@ const ACCESSIBILITY_RULES: AccessibilityRule[] = [
       return styles.outline !== "none" || styles.boxShadow !== "none";
     },
     fix: (element) => {
-// @ts-ignore
       (element as HTMLElement).style.outline = "2px solid #0066cc";
-// @ts-ignore
       (element as HTMLElement).style.outlineOffset = "2px";
     },
   },
@@ -322,7 +320,6 @@ const getLuminance = (color: string): number => {
 };
 
 // Real-time Accessibility Monitor Component
-// @ts-ignore
 export const RealTimeAccessibilityMonitor: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
@@ -673,7 +670,6 @@ export const useAccessibilityMonitor = (): AccessibilityMonitorContextType => {
 };
 
 // Accessibility Monitor Dashboard
-// @ts-ignore
 export const AccessibilityMonitorDashboard: React.FC = () => {
   const {
     isMonitoring,

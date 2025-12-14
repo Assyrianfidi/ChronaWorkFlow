@@ -32,7 +32,6 @@ export const createReport = async (data: ReportFormValues) => {
   Object.entries(data).forEach(([key, value]) => {
     if (key === "attachments") {
       // Handle file uploads
-// @ts-ignore
       (value as File[]).forEach((file) => {
         formData.append("attachments", file);
       });
@@ -43,7 +42,6 @@ export const createReport = async (data: ReportFormValues) => {
       });
     } else if (value !== undefined && value !== null) {
       // Handle all other fields
-// @ts-ignore
       formData.append(key, value as string | Blob);
     }
   });
@@ -75,7 +73,6 @@ export const updateReport = async (
   Object.entries(data).forEach(([key, value]) => {
     if (key === "attachments") {
       // Handle file uploads
-// @ts-ignore
       (value as File[]).forEach((file) => {
         formData.append("attachments", file);
       });
@@ -86,7 +83,6 @@ export const updateReport = async (
       });
     } else if (value !== undefined && value !== null) {
       // Handle all other fields
-// @ts-ignore
       formData.append(key, value as string | Blob);
     }
   });

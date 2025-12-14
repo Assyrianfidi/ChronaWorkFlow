@@ -2,8 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Mock axios with proper default export
 vi.mock("axios", async (importOriginal) => {
-// @ts-ignore
-// @ts-ignore
   const actual = await importOriginal<typeof import("axios")>();
   return {
     ...actual,

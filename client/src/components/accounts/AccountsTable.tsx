@@ -16,7 +16,6 @@ import type {
   AccountsTableProps,
 } from '../types/accounts.js';
 
-// @ts-ignore
 export const AccountRow: React.FC<AccountRowProps> = ({
   account,
   level,
@@ -101,7 +100,6 @@ export const AccountRow: React.FC<AccountRowProps> = ({
   );
 };
 
-// @ts-ignore
 export const AccountsTable: React.FC<AccountsTableProps> = ({
   accounts,
   searchQuery,
@@ -140,7 +138,6 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
             }
           : null;
       })
-// @ts-ignore
       .filter(Boolean) as AccountWithChildren[];
   };
 

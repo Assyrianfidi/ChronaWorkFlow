@@ -191,7 +191,6 @@ const categoryConfig = {
   REPORT: { label: "Report", icon: Info },
 };
 
-// @ts-ignore
 const NotificationsPage: React.FC = () => {
   const [notifications, setNotifications] =
     useState<Notification[]>(mockNotifications);
@@ -257,7 +256,6 @@ const NotificationsPage: React.FC = () => {
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
-// @ts-ignore
       console.log("🔔 Marking notification as read:", notificationId);
       await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -268,27 +266,22 @@ const NotificationsPage: React.FC = () => {
             : notification,
         ),
       );
-// @ts-ignore
       console.log("✅ Notification marked as read");
     } catch (error) {
-// @ts-ignore
       console.error("Failed to mark notification as read:", error);
     }
   };
 
   const handleMarkAllAsRead = async () => {
     try {
-// @ts-ignore
       console.log("🔔 Marking all notifications as read");
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       setNotifications(
         notifications.map((notification) => ({ ...notification, read: true })),
       );
-// @ts-ignore
       console.log("✅ All notifications marked as read");
     } catch (error) {
-// @ts-ignore
       console.error("Failed to mark all notifications as read:", error);
     }
   };

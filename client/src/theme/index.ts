@@ -10,7 +10,6 @@ const ThemeContext = createContext<ThemeContextType>({
   toggleTheme: () => {},
 });
 
-// @ts-ignore
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {

@@ -1,6 +1,6 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
+import React from 'react'
+;
+;
 
 interface I18nProviderProps {
   children: React.ReactNode;
@@ -13,7 +13,6 @@ interface I18nProviderProps {
  * In a real implementation, this would provide internationalization context
  * using libraries like react-intl, i18next, or similar.
  */
-// @ts-ignore
 export const I18nProvider: React.FC<I18nProviderProps> = ({
   children,
   locale = "en",

@@ -231,7 +231,6 @@ describe("useAdaptiveLayout hook", () => {
         useAdaptiveLayout();
         return <div>Success</div>;
       } catch (error) {
-// @ts-ignore
         return <div>Error: {(error as Error).message}</div>;
       }
     };

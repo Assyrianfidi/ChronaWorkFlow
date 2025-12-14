@@ -17,7 +17,6 @@ interface KpiGridProps {
   onKpiClick: (kpiId: string) => void;
 }
 
-// @ts-ignore
 export const KpiGrid: React.FC<KpiGridProps> = ({ kpis, onKpiClick }) => {
   const formatValue = (kpi: Kpi) => {
     if (kpi.format === "currency") {

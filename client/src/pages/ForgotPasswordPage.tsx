@@ -14,7 +14,6 @@ import {
 import { Alert, AlertDescription } from "../components/ui/Alert";
 import { Mail, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
 
-// @ts-ignore
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);

@@ -92,7 +92,6 @@ class OfflineService {
         return null;
       }
 
-// @ts-ignore
       return cache.data as T;
     } catch (error) {
       console.error("Failed to retrieve cached data:", error);

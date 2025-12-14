@@ -45,8 +45,6 @@ describe("ResetPasswordPage", () => {
     });
 
     // Mock useRouter
-// @ts-ignore
-// @ts-ignore
     (useRouter as any).mockReturnValue({
       push: mockPush,
       replace: vi.fn(),
@@ -54,15 +52,11 @@ describe("ResetPasswordPage", () => {
     });
 
     // Mock useSearchParams
-// @ts-ignore
-// @ts-ignore
     (useSearchParams as any).mockReturnValue({
       get: (key: string) => (key === "token" ? "test-token" : null),
     });
 
     // Mock usePathname
-// @ts-ignore
-// @ts-ignore
     (usePathname as any).mockReturnValue("/auth/reset-password");
   });
 
@@ -82,8 +76,6 @@ describe("ResetPasswordPage", () => {
   });
 
   it("shows error when token is missing", () => {
-// @ts-ignore
-// @ts-ignore
     (useSearchParams as any).mockReturnValue({
       get: () => null,
     });

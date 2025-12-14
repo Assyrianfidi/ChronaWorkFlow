@@ -4,8 +4,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-// @ts-ignore
-import AccessibilityEngine, { AccessibilityConfig } from '../a11y-engine.js.js';
+import AccessibilityEngine, { AccessibilityConfig } from '@/components/a11y-engine';
 
 interface AccessibilityModesProps {
   engine: AccessibilityEngine;
@@ -13,7 +12,6 @@ interface AccessibilityModesProps {
   className?: string;
 }
 
-// @ts-ignore
 const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
   engine,
   onConfigChange,
@@ -233,8 +231,6 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <select
                     value={config.visual.colorBlindness.type}
                     onChange={(e) =>
-// @ts-ignore
-// @ts-ignore
                       setColorBlindnessFilter(e.target.value as any)
                     }
                     className="setting-select"
@@ -276,8 +272,6 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
                   <strong>Reading Level</strong>
                   <select
                     value={config.cognitive.readingLevel}
-// @ts-ignore
-// @ts-ignore
                     onChange={(e) => setReadingLevel(e.target.value as any)}
                     className="setting-select"
                   >

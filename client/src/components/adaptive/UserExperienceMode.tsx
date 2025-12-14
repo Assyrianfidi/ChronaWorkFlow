@@ -6,10 +6,8 @@ declare global {
 }
 
 import React, { useState, useEffect, useCallback } from "react";
-// @ts-ignore
-import { useAuthStore } from '../../store/auth-store.js.js';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { useAuthStore } from '@/../../store/auth-store';
+import { cn } from '@/../../lib/utils';
 
 export interface UXMode {
   id: string;
@@ -341,7 +339,6 @@ export function UXCustomSettings() {
           <select
             value={customSettings.theme || "auto"}
             onChange={(e) =>
-// @ts-ignore
               updateCustomSettings({ theme: e.target.value as UXMode["theme"] })
             }
             className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -361,7 +358,6 @@ export function UXCustomSettings() {
             value={customSettings.density || "comfortable"}
             onChange={(e) =>
               updateCustomSettings({
-// @ts-ignore
                 density: e.target.value as UXMode["density"],
               })
             }
@@ -382,7 +378,6 @@ export function UXCustomSettings() {
             value={customSettings.animations || "normal"}
             onChange={(e) =>
               updateCustomSettings({
-// @ts-ignore
                 animations: e.target.value as UXMode["animations"],
               })
             }
@@ -403,7 +398,6 @@ export function UXCustomSettings() {
             value={customSettings.accessibility || "standard"}
             onChange={(e) =>
               updateCustomSettings({
-// @ts-ignore
                 accessibility: e.target.value as UXMode["accessibility"],
               })
             }

@@ -25,7 +25,6 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-// @ts-ignore
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = React.useState({
     email: "",

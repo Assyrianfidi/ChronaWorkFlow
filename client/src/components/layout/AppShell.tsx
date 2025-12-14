@@ -6,15 +6,11 @@ declare global {
 }
 
 import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import { Outlet } from "react-router-dom";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { PrimaryNavigation } from './PrimaryNavigation.js.js';
-// @ts-ignore
-import { TopBar } from './TopBar.js.js';
+import { cn } from '@/../../lib/utils';
+import { PrimaryNavigation } from './PrimaryNavigation';
+import { TopBar } from './TopBar';
 
 interface AppShellProps {
   className?: string;

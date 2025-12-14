@@ -11,10 +11,8 @@ import React, {
   useCallback,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-// @ts-ignore
-import { useAdaptiveUI } from '../../state/ui/UserExperienceMode.js.js';
-// @ts-ignore
-import { useAdvancedFeedback } from '../../hooks/useInteractiveFeedback.js.js';
+import { useAdaptiveUI } from '@/../../state/ui/UserExperienceMode';
+import { useAdvancedFeedback } from '@/../../hooks/useInteractiveFeedback';
 
 // Types
 export interface NavigationItem {
@@ -264,7 +262,6 @@ class FavoritesManager {
 }
 
 // Main Component
-// @ts-ignore
 const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   items,
   config,

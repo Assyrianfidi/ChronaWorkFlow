@@ -139,7 +139,6 @@ const statusConfig = {
   },
 };
 
-// @ts-ignore
 const InvoicesPage: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices);
   const [filteredInvoices, setFilteredInvoices] =
@@ -476,7 +475,6 @@ const InvoicesPage: React.FC = () => {
 };
 
 // Create Invoice Form Component
-// @ts-ignore
 const CreateInvoiceForm: React.FC<{ onSubmit: (data: any) => void }> = ({
   onSubmit,
 }) => {

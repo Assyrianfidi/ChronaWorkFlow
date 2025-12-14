@@ -5,12 +5,9 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-// @ts-ignore
-import { useAdaptiveUI } from '../../state/ui/UserExperienceMode.js.js';
-// @ts-ignore
-import { useAdvancedFeedback } from '../../hooks/useInteractiveFeedback.js.js';
-// @ts-ignore
-import { generateGlassmorphismCSS } from '../../design-system/glassmorphism.js.js';
+import { useAdaptiveUI } from '@/../../state/ui/UserExperienceMode';
+import { useAdvancedFeedback } from '@/../../hooks/useInteractiveFeedback';
+import { generateGlassmorphismCSS } from '@/../../design-system/glassmorphism';
 
 // Types
 interface KPIData {
@@ -243,7 +240,6 @@ interface AnimatedKPICardProps {
   config: any;
 }
 
-// @ts-ignore
 const AnimatedKPICard: React.FC<AnimatedKPICardProps> = ({ data, config }) => {
   const [animatedValue, setAnimatedValue] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -408,7 +404,6 @@ interface HeatmapProps {
   title: string;
 }
 
-// @ts-ignore
 const ActivityHeatmap: React.FC<HeatmapProps> = ({ data, title }) => {
   const maxValue = Math.max(...data.map((d) => d.value));
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -489,7 +484,6 @@ interface AnomalyDetectionProps {
   anomalies: AnomalyData[];
 }
 
-// @ts-ignore
 const AnomalyDetectionPanel: React.FC<AnomalyDetectionProps> = ({
   anomalies,
 }) => {
@@ -571,7 +565,6 @@ interface PredictiveInsightsProps {
   insights: PredictiveInsight[];
 }
 
-// @ts-ignore
 const PredictiveInsightsPanel: React.FC<PredictiveInsightsProps> = ({
   insights,
 }) => {
@@ -662,7 +655,6 @@ const PredictiveInsightsPanel: React.FC<PredictiveInsightsProps> = ({
 };
 
 // Main Dashboard Component
-// @ts-ignore
 const EnterpriseDashboard: React.FC = () => {
   const [profile] = useState({
     userId: "user-123",

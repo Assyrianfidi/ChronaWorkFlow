@@ -1,7 +1,6 @@
-import React from 'react';
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
+import React from 'react'
+;
+;
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
 import {
@@ -12,10 +11,8 @@ import {
   FormProvider,
   useFormContext,
 } from "react-hook-form";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { Label } from './label.js.js';
+import { cn } from '@/../../lib/utils';
+import { Label } from './label';
 
 const Form = FormProvider;
 
@@ -27,7 +24,6 @@ type FormFieldContextValue<
 };
 
 const FormFieldContext = React.createContext<FormFieldContextValue>(
-// @ts-ignore
   {} as FormFieldContextValue,
 );
 
@@ -72,7 +68,6 @@ type FormItemContextValue = {
 };
 
 const FormItemContext = React.createContext<FormItemContextValue>(
-// @ts-ignore
   {} as FormItemContextValue,
 );
 

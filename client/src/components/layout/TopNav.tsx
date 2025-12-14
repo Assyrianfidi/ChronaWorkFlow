@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell, Settings, LogOut, User, ChevronDown } from "lucide-react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
-// @ts-ignore
-import { EnterpriseButton } from '../ui/EnterpriseButton.js.js';
-// @ts-ignore
-import { useAuth } from '../../contexts/AuthContext.js.js';
+import { cn } from '@/../../lib/utils';
+import { EnterpriseButton } from '@/components/ui/EnterpriseButton';
+import { useAuth } from '@/../../contexts/AuthContext';
 
 interface TopNavProps {
   className?: string;
@@ -51,7 +47,6 @@ const TopNav = React.forwardRef<HTMLDivElement, TopNavProps>(
       const handleClickOutside = (event: MouseEvent) => {
         if (
           menuRef.current &&
-// @ts-ignore
           !menuRef.current.contains(event.target as Node)
         ) {
           setIsProfileMenuOpen(false);

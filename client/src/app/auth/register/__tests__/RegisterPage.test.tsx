@@ -91,7 +91,6 @@ describe("RegisterPage", () => {
   });
 
   it("submits the form with valid data", async () => {
-// @ts-ignore
     // Skip this test for now as we're having issues with the form submission test
     // We'll need to investigate the form implementation to write a proper test
     expect(true).toBe(true);
@@ -205,19 +204,15 @@ describe("RegisterPage", () => {
     // Use more specific selectors to avoid matching multiple elements
     const nameInput = screen.getByPlaceholderText(
       "Full Name",
-// @ts-ignore
     ) as HTMLInputElement;
     const emailInput = screen.getByPlaceholderText(
       "Email address",
-// @ts-ignore
     ) as HTMLInputElement;
     const passwordInput = screen.getByPlaceholderText(
       "Password",
-// @ts-ignore
     ) as HTMLInputElement;
     const confirmPasswordInput = screen.getByPlaceholderText(
       "Confirm Password",
-// @ts-ignore
     ) as HTMLInputElement;
     const termsCheckbox = screen.getByRole("checkbox", { name: /terms/i });
 
@@ -233,14 +228,12 @@ describe("RegisterPage", () => {
   });
 
   it("validates email format", () => {
-// @ts-ignore
     // Skip this test as we're having issues with the form validation test
     // We'll need to investigate the form implementation to write a proper test
     expect(true).toBe(true);
   });
 
   it("validates form submission with mismatched passwords", () => {
-// @ts-ignore
     // Skip this test as we're having issues with the form validation test
     // We'll need to investigate the form implementation to write a proper test
     expect(true).toBe(true);

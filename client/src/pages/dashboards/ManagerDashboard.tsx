@@ -63,7 +63,6 @@ interface TeamActivity {
   priority: "high" | "medium" | "low";
 }
 
-// @ts-ignore
 const ManagerDashboard: React.FC = () => {
   const { user } = useAuth();
 
@@ -112,7 +111,6 @@ const ManagerDashboard: React.FC = () => {
       change: `${kpis?.revenueGrowth || 0}%`,
       changeType: (kpis?.revenueGrowth && kpis.revenueGrowth > 0
         ? "increase"
-// @ts-ignore
         : "decrease") as "increase" | "decrease",
       icon: DollarSign,
       color: "text-muted-foreground",

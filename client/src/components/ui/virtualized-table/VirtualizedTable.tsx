@@ -79,5 +79,4 @@ export function VirtualizedTable<T>({
   );
 }
 
-// @ts-ignore
 export default React.memo(VirtualizedTable) as typeof VirtualizedTable;

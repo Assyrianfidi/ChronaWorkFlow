@@ -1,7 +1,6 @@
 import React from "react";
 import { DashboardShell } from '../../components/ui/layout/DashboardShell.js';
 
-// @ts-ignore
 const InventoryPage: React.FC = () => {
   return (
     <DashboardShell>

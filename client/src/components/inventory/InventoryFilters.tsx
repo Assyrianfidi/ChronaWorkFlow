@@ -120,7 +120,6 @@ export function InventoryFilters({
           <Select
             value={statusFilter || "all"}
             onValueChange={(value) =>
-// @ts-ignore
               handleStatusChange(value as InventoryStatus | "all")
             }
           >
@@ -168,8 +167,6 @@ export function InventoryFilters({
             value={`${sortBy}:${sortOrder}`}
             onValueChange={(value) => {
               const [sortBy, sortOrder] = value.split(":");
-// @ts-ignore
-// @ts-ignore
               handleSortChange(sortBy as any);
             }}
           >

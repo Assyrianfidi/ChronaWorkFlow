@@ -62,7 +62,6 @@ const mockReport = {
 };
 
 describe("ReportView", () => {
-// @ts-ignore
   const mockUseReport = useReport as vi.Mock;
 
   beforeEach(() => {

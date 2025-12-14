@@ -522,7 +522,6 @@ export class SuperAccessibilityEngine {
     // Monitor screen reader usage
     let screenReaderUsageCount = 0;
     document.addEventListener("focus", (e) => {
-// @ts-ignore
       const element = e.target as HTMLElement;
       if (element.getAttribute("aria-live") || element.getAttribute("role")) {
         screenReaderUsageCount++;
@@ -1034,11 +1033,7 @@ class VoiceInterfaceManager {
   private initializeSpeechRecognition(): void {
     if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
       const SpeechRecognition =
-// @ts-ignore
-// @ts-ignore
         (window as any).SpeechRecognition ||
-// @ts-ignore
-// @ts-ignore
         (window as any).webkitSpeechRecognition;
       this.recognition = new SpeechRecognition();
 
@@ -1121,7 +1116,6 @@ class VoiceInterfaceManager {
               transcript,
               command.action.parameters.text,
             );
-// @ts-ignore
             const element = document.activeElement as HTMLInputElement;
             if (element) {
               element.value = text;
@@ -1314,7 +1308,6 @@ class ScreenReaderOptimizer {
     );
 
     interactiveElements.forEach((element) => {
-// @ts-ignore
       const htmlElement = element as HTMLElement;
 
       // Add custom label if available

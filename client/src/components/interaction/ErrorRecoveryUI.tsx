@@ -6,12 +6,9 @@ declare global {
 }
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-// @ts-ignore
-import { useUserExperienceMode } from '../adaptive/UserExperienceMode.js.js';
-// @ts-ignore
-import { usePerformance } from '../adaptive/UI-Performance-Engine.js.js';
-// @ts-ignore
-import { useNotifications } from '../adaptive/NotificationSystem.js.js';
+import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
+import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
+import { useNotifications } from '@/components/adaptive/NotificationSystem';
 
 // Error Recovery types and interfaces
 export interface ErrorInfo {
@@ -496,11 +493,8 @@ class ErrorRecoveryManager {
   getErrorStats(): ErrorStats {
     const stats: ErrorStats = {
       total: this.errors.length,
-// @ts-ignore
       byType: {} as Record<ErrorInfo["type"], number>,
-// @ts-ignore
       bySeverity: {} as Record<ErrorInfo["severity"], number>,
-// @ts-ignore
       byComponent: {} as Record<string, number>,
       recoveryRate: 0,
       averageRecoveryTime: 0,
@@ -823,11 +817,8 @@ export function ErrorRecoveryUI({ children }: { children: React.ReactNode }) {
     }
     return {
       total: 0,
-// @ts-ignore
       byType: {} as Record<ErrorInfo["type"], number>,
-// @ts-ignore
       bySeverity: {} as Record<ErrorInfo["severity"], number>,
-// @ts-ignore
       byComponent: {} as Record<string, number>,
       recoveryRate: 0,
       averageRecoveryTime: 0,
@@ -1077,7 +1068,6 @@ export function useErrorRecovery() {
 }
 
 // Error Boundary HOC
-// @ts-ignore
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
   options: {

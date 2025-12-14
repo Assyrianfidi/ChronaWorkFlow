@@ -4,7 +4,6 @@ import {
   useForm,
   useFormContext,
   FieldValues,
-// @ts-ignore
   SubmitHandler as RHFSubmitHandler,
   UseFormReturn,
   DefaultValues,
@@ -25,7 +24,6 @@ type FormProps<T extends FieldValues> = {
   id?: string;
 };
 
-// @ts-ignore
 export function Form<T extends FieldValues>({
   children,
   schema,
@@ -39,13 +37,10 @@ export function Form<T extends FieldValues>({
   };
 
   if (schema) {
-// @ts-ignore
-// @ts-ignore
     formOptions.resolver = zodResolver(schema as any) as any;
   }
 
   if (defaultValues) {
-// @ts-ignore
     formOptions.defaultValues = defaultValues as DefaultValues<T>;
   }
 
@@ -123,7 +118,6 @@ export function FormError({ name, id, className }: FormErrorProps) {
     formState: { errors },
   } = useFormContext();
 
-// @ts-ignore
   const error = getNestedError(errors as Record<string, any>, name);
 
   if (!error?.message) return null;

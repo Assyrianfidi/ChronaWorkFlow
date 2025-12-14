@@ -3,7 +3,7 @@ import {
   EnterpriseButton,
   EnterpriseDataTable,
   EnterpriseKPICard,
-} from '../components/ui.js.js';
+} from '@/components/components/ui';
 import {
   Plus,
   Search,
@@ -19,14 +19,10 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
-// @ts-ignore
-import { useAccounts } from '../hooks/use-api.js.js';
-// @ts-ignore
-import { cn } from '../lib/utils.js.js';
-// @ts-ignore
-import { DashboardShell } from '../components/ui/layout/DashboardShell.js.js';
-// @ts-ignore
-import type { Account, AccountType } from '../types/accounts.js.js';
+import { useAccounts } from '@/components/hooks/use-api';
+import { cn } from '@/components/lib/utils';
+import { DashboardShell } from '@/components/components/ui/layout/DashboardShell';
+import type { Account, AccountType } from '@/components/types/accounts';
 
 // Mock data for demonstration
 const mockAccounts: Account[] = [

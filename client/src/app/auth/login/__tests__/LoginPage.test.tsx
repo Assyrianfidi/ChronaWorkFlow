@@ -43,16 +43,12 @@ describe("LoginPage", () => {
     vi.clearAllMocks();
 
     // Mock router
-// @ts-ignore
-// @ts-ignore
     (useRouter as any).mockImplementation(() => ({
       push: mockPush,
       replace: mockReplace,
     }));
 
     // Default auth store implementation
-// @ts-ignore
-// @ts-ignore
     (useAuthStore as any).mockImplementation(
       (selector?: (state: any) => any) => {
         const state = {
@@ -141,8 +137,6 @@ describe("LoginPage", () => {
 
   it("redirects to dashboard if already authenticated", () => {
     // Mock authenticated state
-// @ts-ignore
-// @ts-ignore
     (useAuthStore as any).mockImplementation(
       (selector?: (state: any) => any) => {
         const state = {

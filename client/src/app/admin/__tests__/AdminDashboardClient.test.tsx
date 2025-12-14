@@ -89,7 +89,6 @@ describe("AdminDashboardClient", () => {
     vi.clearAllMocks();
 
     // Mock session
-// @ts-ignore
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
@@ -101,7 +100,6 @@ describe("AdminDashboardClient", () => {
 
     // Mock router
     const pushMock = vi.fn();
-// @ts-ignore
     (useRouter as jest.Mock).mockReturnValue({
       push: pushMock,
     });
@@ -134,7 +132,6 @@ describe("AdminDashboardClient", () => {
   });
 
   it("shows loading state while session is loading", () => {
-// @ts-ignore
     (useSession as jest.Mock).mockReturnValue({
       data: null,
       status: "loading",
@@ -146,7 +143,6 @@ describe("AdminDashboardClient", () => {
 
   it("redirects to unauthorized if user is not admin", () => {
     // Mock non-admin user
-// @ts-ignore
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
@@ -157,7 +153,6 @@ describe("AdminDashboardClient", () => {
     });
 
     const pushMock = vi.fn();
-// @ts-ignore
     (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
 
     render(<AdminDashboardClient users={mockUsers} />);
@@ -175,11 +170,7 @@ describe("AdminDashboardClient", () => {
     const originalLocation = window.location;
 
     // Mock window.location.reload
-// @ts-ignore
-// @ts-ignore
     delete (window as any).location;
-// @ts-ignore
-// @ts-ignore
     (window as any).location = {
       ...originalLocation,
       reload: vi.fn(),
@@ -208,8 +199,6 @@ describe("AdminDashboardClient", () => {
     expect(window.location.reload).toHaveBeenCalled();
 
     // Restore the original window.location
-// @ts-ignore
-// @ts-ignore
     (window as any).location = originalLocation;
 
     // Clean up mocks

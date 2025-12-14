@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-// @ts-ignore
-import { useUserExperienceMode } from '../adaptive/UserExperienceMode.js.js';
-// @ts-ignore
-import { usePerformance } from '../adaptive/UI-Performance-Engine.js.js';
-// @ts-ignore
-import { useAuthStore } from '../../store/auth-store.js.js';
+import { useUserExperienceMode } from '@/components/adaptive/UserExperienceMode';
+import { usePerformance } from '@/components/adaptive/UI-Performance-Engine';
+import { useAuthStore } from '@/../../store/auth-store';
 
 // GraphQL Types
 interface GraphQLSchema {
@@ -429,7 +426,6 @@ class GraphQLEngine {
         {
           name: "deprecated",
           description:
-// @ts-ignore
             "Marks an element of a GraphQL schema as no longer supported",
           locations: ["FIELD_DEFINITION", "ENUM_VALUE"],
           args: [
@@ -905,7 +901,6 @@ class SubscriptionManager {
 }
 
 // Main GraphQL Server Component
-// @ts-ignore
 export const GraphQLServer: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {

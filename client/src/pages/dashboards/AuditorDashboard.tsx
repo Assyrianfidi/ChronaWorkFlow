@@ -60,7 +60,6 @@ interface ComplianceMetrics {
   criticalAlerts: number;
 }
 
-// @ts-ignore
 const AuditorDashboard: React.FC = () => {
   const { user } = useAuth();
 

@@ -125,7 +125,6 @@ const AccountsContext = createContext<{
 } | null>(null);
 
 // Provider
-// @ts-ignore
 export const AccountsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {

@@ -220,7 +220,6 @@ export const useAuth = create<AuthState>((set, get) => ({
   },
 }));
 
-// @ts-ignore
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -230,8 +229,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const storedUser = localStorage.getItem("accubooks_user");
 
       if (token && storedUser) {
-        // @ts-ignore
-        const parsed = JSON.parse(storedUser) as User;
+                const parsed = JSON.parse(storedUser) as User;
 
         const userWithPermissions: User = {
           ...parsed,
@@ -261,7 +259,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.removeItem("accubooks_user");
       useAuth.setState({ isLoading: false });
     } finally {
-// @ts-ignore
       // Safety guard: never leave isLoading stuck as true
       useAuth.setState({ isLoading: false });
       console.log("[AuthProvider] init final state", useAuth.getState());

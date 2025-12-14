@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import { useState, useEffect } from "react";
-// @ts-ignore
-import { useAuthStore } from '../../store/auth-store.js.js';
-// @ts-ignore
-import { Button } from '../../components/ui/button.js.js';
-// @ts-ignore
-import { Input } from '../../components/ui/input.js.js';
-// @ts-ignore
-import { Label } from '../../components/ui/label.js.js';
+import { useAuthStore } from '@/../../store/auth-store';
+import { Button } from '@/../../components/ui/button';
+import { Input } from '@/../../components/ui/input';
+import { Label } from '@/../../components/ui/label';
 import {
   Card,
   CardContent,
@@ -15,13 +11,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../components/ui/card.js.js';
-// @ts-ignore
-import { Icons } from '../../components/icons.js.js';
-// @ts-ignore
-import { useToast } from '../../components/ui/use-toast.js.js';
-// @ts-ignore
-import { DashboardShell } from '../../components/ui/layout/DashboardShell.js.js';
+} from '@/../../components/ui/card';
+import { Icons } from '@/../../components/icons';
+import { useToast } from '@/../../components/ui/use-toast';
+import { DashboardShell } from '@/../../components/ui/layout/DashboardShell';
 
 export default function ProfilePage() {
   const { user, updateProfile, changePassword } = useAuthStore();

@@ -3,10 +3,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import {
   UserExperienceModeProvider,
   useUserExperienceMode,
-} from './UserExperienceMode.js.js';
+} from './UserExperienceMode';
 
 // Demo component to show user experience mode features
-// @ts-ignore
 const UXModeDemo: React.FC = () => {
   const { preferences, updatePreferences, resetPreferences } =
     useUserExperienceMode();
@@ -186,8 +185,6 @@ const UXModeDemo: React.FC = () => {
               <select
                 value={preferences.dataQuality}
                 onChange={(e) =>
-// @ts-ignore
-// @ts-ignore
                   updatePreferences({ dataQuality: e.target.value as any })
                 }
                 style={{ marginLeft: "0.5rem" }}
@@ -204,8 +201,6 @@ const UXModeDemo: React.FC = () => {
               <select
                 value={preferences.autoRefresh}
                 onChange={(e) =>
-// @ts-ignore
-// @ts-ignore
                   updatePreferences({ autoRefresh: e.target.value as any })
                 }
                 style={{ marginLeft: "0.5rem" }}

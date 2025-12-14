@@ -57,7 +57,6 @@ interface UserStats {
   lastLogin: string;
 }
 
-// @ts-ignore
 const UserDashboard: React.FC = () => {
   const { user } = useAuth();
 

@@ -14,7 +14,6 @@ interface AccountRowProps {
   matchesSearch: boolean;
 }
 
-// @ts-ignore
 export const AccountRow: React.FC<AccountRowProps> = ({
   account,
   level,

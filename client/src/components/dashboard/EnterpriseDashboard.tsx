@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import {
   BarChart3,
@@ -19,17 +18,12 @@ import {
   CustomersCard,
   InvoicesCard,
   TransactionsCard,
-} from './KPICard.js.js';
-// @ts-ignore
-import { EnterpriseDataTable, type Column } from '../ui/EnterpriseDataTable.js.js';
-// @ts-ignore
-import { Button } from '../ui/button.js.js';
-// @ts-ignore
-import { Input } from '../ui/input.js.js';
-// @ts-ignore
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card.js.js';
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+} from './KPICard';
+import { EnterpriseDataTable, type Column } from '@/components/ui/EnterpriseDataTable';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/../../lib/utils';
 
 interface EnterpriseDashboardProps {
   className?: string;

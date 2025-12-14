@@ -63,7 +63,6 @@ interface ActivityItem {
   user?: string;
 }
 
-// @ts-ignore
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
 
@@ -125,7 +124,6 @@ const AdminDashboard: React.FC = () => {
       change: `${summary?.monthlyGrowth || 0}%`,
       changeType: (summary?.monthlyGrowth && summary.monthlyGrowth > 0
         ? "increase"
-// @ts-ignore
         : "decrease") as "increase" | "decrease",
       icon: DollarSign,
       color: "text-muted-foreground",

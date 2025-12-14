@@ -103,7 +103,6 @@ describe("LoginPage", () => {
 
   // Helper to update mock auth state
   const updateMockAuthState = (updates: Partial<MockUseAuthStore>) => {
-// @ts-ignore
     mockAuthState = { ...mockAuthState, ...updates } as MockUseAuthStore;
     mockUseAuthStore.mockImplementation((selector?: (state: any) => any) => {
       const state = { ...mockAuthState };
@@ -119,7 +118,6 @@ describe("LoginPage", () => {
     mockLogin.mockReset().mockResolvedValue(undefined);
 
     // Initialize default mock auth state
-// @ts-ignore
     mockAuthState = defaultAuthState as MockUseAuthStore;
 
     // Set up default mock implementation using mockAuthState

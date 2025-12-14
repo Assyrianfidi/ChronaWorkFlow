@@ -1,8 +1,7 @@
 import React from 'react';
 import { useState, useRef, KeyboardEvent, useEffect } from "react";
 import { X, Plus } from "lucide-react";
-// @ts-ignore
-import { cn } from '../lib/utils.js.js';
+import { cn } from '@/components/lib/utils';
 
 interface TagInputProps {
   tags: string[];

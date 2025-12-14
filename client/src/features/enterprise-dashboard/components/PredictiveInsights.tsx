@@ -18,7 +18,6 @@ interface Insight {
   actions?: Array<{ label: string; onClick: () => void }>;
 }
 
-// @ts-ignore
 export const PredictiveInsights: React.FC = () => {
   const insights: Insight[] = [
     {

@@ -18,8 +18,7 @@ import React, {
   useCallback,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-// @ts-ignore
-import { useAdvancedFeedback } from '../../hooks/useInteractiveFeedback.js.js';
+import { useAdvancedFeedback } from '@/../../hooks/useInteractiveFeedback';
 
 // Types
 export interface CommandItem {
@@ -229,7 +228,6 @@ class CommandShortcutManager {
 }
 
 // Main Component
-// @ts-ignore
 const CommandPalette: React.FC<CommandPaletteProps> = ({
   isOpen,
   onClose,
@@ -420,7 +418,6 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
     if (listRef.current) {
       const selectedItem = listRef.current.children[
         selectedIndex
-// @ts-ignore
       ] as HTMLElement;
       if (selectedItem) {
         selectedItem.scrollIntoView({ block: "nearest" });
@@ -796,7 +793,6 @@ interface CommandItemComponentProps {
   searchEngine: CommandSearchEngine;
 }
 
-// @ts-ignore
 const CommandItemComponent: React.FC<CommandItemComponentProps> = ({
   item,
   index,

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-// @ts-ignore
-import { useAutomation } from './AutomationEngine.js.js';
-// @ts-ignore
-import { useAnalytics } from '../analytics/AnalyticsEngine.js.js';
+import { useAutomation } from './AutomationEngine';
+import { useAnalytics } from '@/components/analytics/AnalyticsEngine';
 
 // Scheduler Types
 interface ScheduleTask {
@@ -722,7 +720,6 @@ class ScheduleLearningEngine {
 }
 
 // Main Intelligent Scheduler Component
-// @ts-ignore
 export const IntelligentScheduler: React.FC<{
   onTaskUpdate?: (task: ScheduleTask) => void;
 }> = ({ onTaskUpdate }) => {

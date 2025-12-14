@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 import { Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
-// @ts-ignore
-import { cn } from '../../lib/utils.js.js';
+import { cn } from '@/../../lib/utils';
 
 export interface EnterpriseInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -78,7 +76,6 @@ const EnterpriseInput = React.forwardRef<
 
     const passwordStrength =
       type === "password" && value
-// @ts-ignore
         ? calculatePasswordStrength(value as string)
         : null;
 

@@ -463,7 +463,6 @@ export class ErrorImmunityEngine {
 
   private extractComponentId(event: ErrorEvent): string | undefined {
     // Try to extract component ID from error event
-// @ts-ignore
     const target = event.target as HTMLElement;
     if (target && target.id) {
       return target.id;
@@ -484,8 +483,6 @@ export class ErrorImmunityEngine {
     if (!navigator.onLine) return "offline";
 
     // Check connection speed if available
-// @ts-ignore
-// @ts-ignore
     const connection = (navigator as any).connection;
     if (
       (connection && connection.effectiveType === "slow-2g") ||
@@ -498,15 +495,9 @@ export class ErrorImmunityEngine {
   }
 
   private getMemoryUsage(): number {
-// @ts-ignore
-// @ts-ignore
     if ((performance as any).memory) {
       return (
-// @ts-ignore
-// @ts-ignore
         (performance as any).memory.usedJSHeapSize /
-// @ts-ignore
-// @ts-ignore
         (performance as any).memory.jsHeapSizeLimit
       );
     }
@@ -979,7 +970,6 @@ export class ErrorImmunityEngine {
 
     components.forEach((element) => {
       const componentId = element.id || `component-${Date.now()}`;
-// @ts-ignore
       this.createComponentSnapshot(componentId, element as HTMLElement);
     });
   }

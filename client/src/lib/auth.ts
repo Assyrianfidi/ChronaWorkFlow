@@ -9,8 +9,6 @@ const prisma = new PrismaClient();
 
 // Auth configuration
 export const authConfig: NextAuthConfig = {
-// @ts-ignore
-// @ts-ignore
   adapter: PrismaAdapter(prisma) as any,
   providers: [
     GoogleProvider({
@@ -34,7 +32,6 @@ export const authConfig: NextAuthConfig = {
     async session({ session, token }: any) {
       if (session?.user) {
         session.user.id = token.sub || "";
-// @ts-ignore
         session.user.role = (token.role || "USER") as UserRole;
         session.user.currentCompanyId = token.currentCompanyId || null;
       }
@@ -102,6 +99,4 @@ export const authConfig: NextAuthConfig = {
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
 
 // For backward compatibility
-// @ts-ignore
-// @ts-ignore
 export default NextAuth(authConfig as any);

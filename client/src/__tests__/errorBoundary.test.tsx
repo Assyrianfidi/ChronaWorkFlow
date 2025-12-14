@@ -108,11 +108,7 @@ describe("ErrorBoundary", () => {
     const mockReload = vi.fn();
     const originalLocation = window.location;
 
-// @ts-ignore
-// @ts-ignore
     delete (window as any).location;
-// @ts-ignore
-// @ts-ignore
     (window as any).location = {
       ...originalLocation,
       reload: mockReload,

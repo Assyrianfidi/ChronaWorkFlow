@@ -1,30 +1,16 @@
 import * as React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
-// @ts-ignore
 import { AuthProvider } from "../contexts/AuthContext";
-// @ts-ignore
 import { AccountsProvider } from "../contexts/AccountsContext";
-// @ts-ignore
 import { TransactionsProvider } from "../contexts/TransactionsContext";
-// @ts-ignore
 import { ProtectedRoute } from "../components/ProtectedRoute";
 
 // Lazy load pages for better performance
-// @ts-ignore
-// @ts-ignore
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
-// @ts-ignore
-// @ts-ignore
 const LoginPage = lazy(() => import("../pages/LoginPage"));
-// @ts-ignore
-// @ts-ignore
 const RegisterPage = lazy(() => import("../pages/RegisterPage"));
-// @ts-ignore
-// @ts-ignore
 const AccountsPage = lazy(() => import("../pages/AccountsPage"));
-// @ts-ignore
-// @ts-ignore
 const TransactionsPage = lazy(() => import("../pages/TransactionsPage"));
 
 // Loading component

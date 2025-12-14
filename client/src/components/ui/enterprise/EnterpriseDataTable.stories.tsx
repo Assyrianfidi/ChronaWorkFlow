@@ -8,12 +8,9 @@ import type {
   SortingState,
 } from "@tanstack/react-table";
 
-// @ts-ignore
-import { EnterpriseDataTable } from './EnterpriseDataTable.js.js';
-// @ts-ignore
-import { Input } from '../../input.js.js';
-// @ts-ignore
-import { Button } from '../../button.js.js';
+import { EnterpriseDataTable } from './EnterpriseDataTable';
+import { Input } from '@/../../input';
+import { Button } from '@/../../button';
 
 interface User {
   id: string;
@@ -68,13 +65,10 @@ export const FiltersAndSorting: Story = {
           state={{ sorting, columnFilters, globalFilter }}
           onStateChange={(next) => {
             if (next.sorting !== undefined)
-// @ts-ignore
               setSorting(next.sorting as SortingState);
             if (next.columnFilters !== undefined)
-// @ts-ignore
               setColumnFilters(next.columnFilters as ColumnFiltersState);
             if (next.globalFilter !== undefined)
-// @ts-ignore
               setGlobalFilter(next.globalFilter as string);
           }}
           renderToolbar={({}, table) => (
@@ -381,7 +375,6 @@ export const FullFeatureDemo: Story = {
           state={{ rowSelection }}
           onStateChange={(next) => {
             if (next.rowSelection) {
-// @ts-ignore
               setRowSelection(next.rowSelection as RowSelectionState);
             }
           }}

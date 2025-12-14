@@ -6,7 +6,6 @@ declare global {
 }
 
 import React, { useState } from 'react';
-// @ts-ignore
 import * as React from "react";
 
 const MOBILE_BREAKPOINT = 768;

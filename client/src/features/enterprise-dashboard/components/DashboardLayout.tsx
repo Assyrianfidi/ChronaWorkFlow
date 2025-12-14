@@ -6,7 +6,6 @@ interface DashboardLayoutProps {
   main: ReactNode;
 }
 
-// @ts-ignore
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   header,
   sidebar,

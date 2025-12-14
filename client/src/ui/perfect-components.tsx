@@ -17,14 +17,10 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-// @ts-ignore
-import { useSuperAccessibility } from '../accessibility/super-accessibility.js.js';
-// @ts-ignore
-import { useThreatAdaptiveUI } from '../security/threat-adaptive-ui.js.js';
-// @ts-ignore
-import { useSmartAutoLazy } from '../performance/smart-auto-lazy.js.js';
-// @ts-ignore
-import { useGPUAcceleration } from '../performance/gpu-acceleration.js.js';
+import { useSuperAccessibility } from '@/components/accessibility/super-accessibility';
+import { useThreatAdaptiveUI } from '@/components/security/threat-adaptive-ui';
+import { useSmartAutoLazy } from '@/components/performance/smart-auto-lazy';
+import { useGPUAcceleration } from '@/components/performance/gpu-acceleration';
 
 // Perfect Button Component
 interface PerfectButtonProps {
@@ -55,7 +51,6 @@ interface PerfectButtonProps {
   };
 }
 
-// @ts-ignore
 export const PerfectButton: React.FC<PerfectButtonProps> = ({
   children,
   variant = "primary",
@@ -260,7 +255,6 @@ interface PerfectCardProps {
   };
 }
 
-// @ts-ignore
 export const PerfectCard: React.FC<PerfectCardProps> = ({
   children,
   variant = "default",
@@ -385,7 +379,6 @@ interface PerfectInputProps {
   };
 }
 
-// @ts-ignore
 export const PerfectInput: React.FC<PerfectInputProps> = ({
   type = "text",
   placeholder,
@@ -628,7 +621,6 @@ interface PerfectModalProps {
   };
 }
 
-// @ts-ignore
 export const PerfectModal: React.FC<PerfectModalProps> = ({
   isOpen,
   onClose,
@@ -649,7 +641,6 @@ export const PerfectModal: React.FC<PerfectModalProps> = ({
   // Store previous focus element
   useEffect(() => {
     if (isOpen && accessibility.restoreFocus) {
-// @ts-ignore
       previousFocusRef.current = document.activeElement as HTMLElement;
     }
 
@@ -692,7 +683,6 @@ export const PerfectModal: React.FC<PerfectModalProps> = ({
     if (isOpen && accessibility.trapFocus && modalRef.current) {
       const focusableElements = modalRef.current.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-// @ts-ignore
       ) as NodeListOf<HTMLElement>;
 
       if (focusableElements.length > 0) {
@@ -844,7 +834,6 @@ interface PerfectAvatarProps {
   };
 }
 
-// @ts-ignore
 export const PerfectAvatar: React.FC<PerfectAvatarProps> = ({
   src,
   alt,
@@ -989,7 +978,6 @@ interface PerfectBadgeProps {
   };
 }
 
-// @ts-ignore
 export const PerfectBadge: React.FC<PerfectBadgeProps> = ({
   children,
   variant = "default",
@@ -1082,7 +1070,6 @@ interface PerfectSkeletonProps {
   animation?: "pulse" | "wave" | "none";
 }
 
-// @ts-ignore
 export const PerfectSkeleton: React.FC<PerfectSkeletonProps> = ({
   variant = "text",
   width,
@@ -1164,7 +1151,6 @@ interface PerfectTooltipProps {
   };
 }
 
-// @ts-ignore
 export const PerfectTooltip: React.FC<PerfectTooltipProps> = ({
   content,
   children,

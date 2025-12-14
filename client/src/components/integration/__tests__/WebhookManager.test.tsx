@@ -1,8 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-// @ts-ignore
-import { WebhookManager, useWebhookManager } from '../WebhookManager.js.js';
+import { WebhookManager, useWebhookManager } from '@/components/WebhookManager';
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

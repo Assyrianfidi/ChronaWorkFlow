@@ -13,7 +13,7 @@ import {
   useBulkUpdateInventoryItems,
   useExportInventory,
   type InventoryQueryOptions,
-} from '../hooks/use-inventory.js.js';
+} from '@/components/hooks/use-inventory';
 type SortDirection = "asc" | "desc";
 import type {
   InventoryItem,
@@ -23,20 +23,17 @@ import type {
   InventoryFilterOptions,
   BulkUpdatePayload,
   ExportOptions,
-} from '../types/inventory.js.js';
-// @ts-ignore
-import { Button } from '../components/ui/button.js.js';
+} from '@/components/types/inventory';
+import { Button } from '@/components/components/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from '../components/ui/card.js.js';
-// @ts-ignore
-import { Input } from '../components/ui/input.js.js';
-// @ts-ignore
-import { Badge } from '../components/ui/badge.js.js';
+} from '@/components/components/ui/card';
+import { Input } from '@/components/components/ui/input';
+import { Badge } from '@/components/components/ui/badge';
 import {
   Plus,
   Search,
@@ -54,8 +51,7 @@ import {
   FileSpreadsheet,
   FileType2,
 } from "lucide-react";
-// @ts-ignore
-import { InventoryTable } from '../components/inventory/InventoryTable.js.js';
+import { InventoryTable } from '@/components/components/inventory/InventoryTable';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,15 +60,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuGroup,
-} from '../components/ui/dropdown-menu.js.js';
-// @ts-ignore
-import { Checkbox } from '../components/ui/checkbox.js.js';
-// @ts-ignore
-import { Label } from '../components/ui/label.js.js';
-// @ts-ignore
-import { toast } from '../components/ui/use-toast.js.js';
-// @ts-ignore
-import { DashboardShell } from '../components/ui/layout/DashboardShell.js.js';
+} from '@/components/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/components/ui/checkbox';
+import { Label } from '@/components/components/ui/label';
+import { toast } from '@/components/components/ui/use-toast';
+import { DashboardShell } from '@/components/components/ui/layout/DashboardShell';
 
 // Utility functions for inventory calculations
 const getLowStockItems = (items: InventoryItem[]): InventoryItem[] =>
@@ -103,12 +95,9 @@ export default function InventoryPage() {
   const router = useRouter();
   const [filters, setFilters] = useState({
     searchTerm: "",
-// @ts-ignore
     selectedCategory: undefined as string | undefined,
-// @ts-ignore
     statusFilter: undefined as InventoryStatus | undefined,
     sortBy: "name",
-// @ts-ignore
     sortOrder: "asc" as SortDirection,
     page: 1,
   });

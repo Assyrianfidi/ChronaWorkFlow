@@ -68,7 +68,6 @@ export default function ReportsPage() {
   const [selectedReport, setSelectedReport] = useState("overview");
 
   const handleExport = (format: "pdf" | "excel") => {
-// @ts-ignore
     console.log(`Exporting report as ${format}`);
     // Implement export functionality
   };

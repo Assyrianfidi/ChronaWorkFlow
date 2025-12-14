@@ -1,8 +1,7 @@
 import React from 'react';
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-// @ts-ignore
-import { useAuthStore } from '../store/auth-store.js.js';
+import { useAuthStore } from '@/components/store/auth-store';
 import { Loader2 } from "lucide-react";
 
 interface AuthenticatedLayoutProps {

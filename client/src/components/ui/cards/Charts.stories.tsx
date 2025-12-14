@@ -1,9 +1,8 @@
-import React from 'react';
+import React from 'react'
+;
 import type { Meta, StoryObj } from "@storybook/react";
-// @ts-ignore
-import * as React from "react";
-// @ts-ignore
-import { UsersOverTimeCard, SalesOverviewCard } from './Charts.js.js';
+;
+import { UsersOverTimeCard, SalesOverviewCard } from './Charts';
 
 const meta: Meta = {
   title: "Enterprise/Charts",

@@ -12,7 +12,6 @@ interface MetricCardProps {
   isLoading?: boolean;
 }
 
-// @ts-ignore
 const MetricCard: React.FC<MetricCardProps> = ({
   title,
   value,

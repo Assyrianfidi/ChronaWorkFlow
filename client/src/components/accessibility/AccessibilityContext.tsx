@@ -27,7 +27,6 @@ const AccessibilityContext = createContext<AccessibilityContextType | null>(
   null,
 );
 
-// @ts-ignore
 export const AccessibilityProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {

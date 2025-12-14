@@ -510,7 +510,6 @@ export class OnboardingEngine {
   private completeFlow(): void {
     if (!this.currentFlow || !this.user) return;
 
-// @ts-ignore
     // Mark flow as completed
     if (!this.user.completedFlows.includes(this.currentFlow.id)) {
       this.user.completedFlows.push(this.currentFlow.id);
@@ -776,7 +775,6 @@ export class OnboardingEngine {
         break;
       case "focus":
         if (action.target) {
-// @ts-ignore
           const target = document.querySelector(action.target) as HTMLElement;
           if (target) {
             target.focus();
