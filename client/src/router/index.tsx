@@ -1,7 +1,8 @@
 import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Lazy loaded components for code splitting
 const Dashboard = React.lazy(() => import("@/pages/Dashboard"));
@@ -36,18 +37,11 @@ const Payroll = React.lazy(() => import("@/pages/Payroll"));
 const Reconciliation = React.lazy(() => import("@/pages/Reconciliation"));
 const Vendors = React.lazy(() => import("@/pages/Vendors"));
 
-// Loading component
-const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-  </div>
-);
-
 const AppRouter: React.FC = () => {
   return (
-    <ErrorBoundary>
+    <ErrorBoundary fallback={<div>Something went wrong</div>}>
       <BrowserRouter>
-        <Suspense fallback={<LoadingSpinner />}>
+        <Suspense fallback={<LoadingSpinner fullScreen />}>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
