@@ -2,7 +2,7 @@ import React from "react";
 import { useAuth } from "../contexts/AuthContext.js";
 import { DashboardShell } from "../components/ui/layout/DashboardShell.js";
 
-const DashboardPage: React.FC = () => {
+const DashboardPage = () => {
   const { user } = useAuth();
 
   return (
