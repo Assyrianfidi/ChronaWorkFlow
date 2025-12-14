@@ -119,3 +119,18 @@ export const handleSuccess = (
     variant: "success",
   });
 };
+
+export const handleRuntimeError = (error: Error) => {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Application error:', error.message);
+    // Send error to monitoring service
+  } else {
+    console.error(error);
+  }
+};
+
+if (process.env.NODE_ENV === 'production') {
+  window.onerror = (message, source, lineno, colno, error) => {
+    handleRuntimeError(error || new Error(message.toString()));
+  };
+}

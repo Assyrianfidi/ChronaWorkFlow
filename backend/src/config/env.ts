@@ -3,6 +3,8 @@ import { z } from 'zod';
 
 import { logger } from '../utils/logger';
 
+import { cleanEnv, str, num } from 'envalid';
+
 /**
  * Database configuration schema
  */
@@ -445,3 +447,12 @@ export default {
   externalServices,
   performance,
 };
+
+export const validatedEnv = cleanEnv(process.env, {
+  NODE_ENV: str({ choices: ['development', 'production'] }),
+  PORT: num({ default: 3000 }),
+  DATABASE_URL: str(),
+  JWT_SECRET: str(),
+  COOKIE_SECRET: str(),
+  // Add other required variables
+});

@@ -1,59 +1,29 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApiError } from '../utils/errors.js';
+import { CustomAPIError } from '../utils/errors';
 import { logger } from '../utils/logger.js';
 
 export const errorHandler = (
-  err: Error,
+  err: Error | CustomAPIError,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  let error = { ...err };
-  error.message = err.message;
-
-  // Log error
-  logger.error(err);
-
-  // Prisma error handling
-  if (err.name === 'PrismaClientKnownRequestError') {
-    const message = 'Database operation failed';
-    error = new ApiError(400, message);
+  if (err instanceof CustomAPIError) {
+    return res.status(err.statusCode).json({ error: err.message });
   }
-
-  // Prisma validation error
-  if (err.name === 'PrismaClientValidationError') {
-    const message = 'Invalid data provided';
-    error = new ApiError(400, message);
+  
+  // Production-safe error logging
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Server Error:', err.message);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
-
-  // JWT error handling
-  if (err.name === 'JsonWebTokenError') {
-    const message = 'Invalid token';
-    error = new ApiError(401, message);
-  }
-
-  if (err.name === 'TokenExpiredError') {
-    const message = 'Token expired';
-    error = new ApiError(401, message);
-  }
-
-  // Zod validation error
-  if (err.name === 'ZodError') {
-    const message = 'Validation failed';
-    error = new ApiError(400, message);
-  }
-
-  res.status(error.statusCode || 500).json({
-    success: false,
-    error: {
-      message: error.message || 'Server Error',
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-    },
-  });
+  
+  console.error(err.stack);
+  res.status(500).json({ error: err.message });
 };
 
 export const notFound = (req: Request, res: Response, next: NextFunction) => {
-  const error = new ApiError(404, `Not found - ${req.originalUrl}`);
+  const error = new CustomAPIError(404, `Not found - ${req.originalUrl}`);
   next(error);
 };
 

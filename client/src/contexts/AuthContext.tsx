@@ -222,47 +222,48 @@ export const useAuth = create<AuthState>((set, get) => ({
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const [user, setUser] = React.useState<User | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
   React.useEffect(() => {
-    try {
-      const token = localStorage.getItem("accubooks_token");
-      const storedUser = localStorage.getItem("accubooks_user");
+    const validateSession = async () => {
+      try {
+        const response = await authApi.validate();
+        const storedUser = localStorage.getItem("accubooks_user");
+        if (storedUser) {
+          const parsed = JSON.parse(storedUser) as User;
 
-      if (token && storedUser) {
-        const parsed = JSON.parse(storedUser) as User;
+          const userWithPermissions: User = {
+            ...parsed,
+            permissions:
+              parsed.permissions && parsed.permissions.length > 0
+                ? parsed.permissions
+                : getPermissionsForRole(parsed.role),
+          };
 
-        const userWithPermissions: User = {
-          ...parsed,
-          permissions:
-            parsed.permissions && parsed.permissions.length > 0
-              ? parsed.permissions
-              : getPermissionsForRole(parsed.role),
-        };
-
-        useAuth.setState({
-          user: userWithPermissions,
-          isAuthenticated: true,
-          isLoading: false,
-        });
-
-        console.log(
-          "[AuthProvider] init success for",
-          userWithPermissions.email,
-        );
-      } else {
-        useAuth.setState({ isLoading: false });
-        console.log("[AuthProvider] no stored auth, marking not loading");
+          setUser(userWithPermissions);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        setUser(null);
+        // Clear invalid tokens
+        localStorage.removeItem("accubooks_token");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("[AuthProvider] init error", error);
-      localStorage.removeItem("accubooks_token");
-      localStorage.removeItem("accubooks_user");
-      useAuth.setState({ isLoading: false });
-    } finally {
-      // Safety guard: never leave isLoading stuck as true
-      useAuth.setState({ isLoading: false });
-      console.log("[AuthProvider] init final state", useAuth.getState());
-    }
+    };
+
+    validateSession();
   }, []);
 
-  return <>{children}</>;
+  return (
+    <AuthContext.Provider value={{ user, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
+
+const AuthContext = React.createContext<AuthState | null>(null);
+
+export const useAuthContext = () => React.useContext(AuthContext);

@@ -1,51 +1,31 @@
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import React, { Component, ReactNode } from 'react';
 
-interface Props {
+interface ErrorBoundaryProps {
   children: ReactNode;
+  fallback: ReactNode;
 }
 
-interface State {
+interface ErrorBoundaryState {
   hasError: boolean;
-  error?: Error;
 }
 
-class ErrorBoundary extends Component<Props, State> {
-  public state: State = {
-    hasError: false,
-  };
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  state = { hasError: false };
 
-  public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+  static getDerivedStateFromError() {
+    return { hasError: true };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Uncaught error:", error, errorInfo);
-  }
-
-  public render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-          <div className="max-w-md mx-auto text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Something went wrong
-            </h1>
-            <p className="text-gray-600 mb-6">
-              We're sorry, but something unexpected happened. Please try
-              refreshing the page.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
-            >
-              Refresh Page
-            </button>
-          </div>
-        </div>
-      );
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Error caught by boundary:', error, errorInfo);
     }
+  }
 
-    return this.props.children;
+  render() {
+    return this.state.hasError 
+      ? this.props.fallback 
+      : this.props.children;
   }
 }
 

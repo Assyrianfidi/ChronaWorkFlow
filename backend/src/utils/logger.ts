@@ -1,59 +1,12 @@
-const winston = require("winston");
-const { combine, timestamp, errors, json, prettyPrint } = winston.format;
+import winston from 'winston';
 
 const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || "info",
-  format: combine(
-    timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    errors({ stack: true }),
-    json(),
-    prettyPrint(),
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
   ),
-  defaultMeta: { service: "accubooks-backend" },
-  transports: [
-    new winston.transports.File({
-      filename: "logs/error.log",
-      level: "error",
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
-    }),
-    new winston.transports.File({
-      filename: "logs/combined.log",
-      maxsize: 5242880, // 5MB
-      maxFiles: 5,
-    }),
-  ],
+  transports: [new winston.transports.Console()],
 });
 
-if (process.env.NODE_ENV !== "production") {
-  logger.add(
-    new winston.transports.Console({
-      format: combine(winston.format.colorize(), winston.format.simple()),
-    }),
-  );
-}
-
-export { logger };
-export class Logger {
-  private logger: any;
-
-  constructor() {
-    this.logger = logger;
-  }
-
-  info(message: string, meta?: any) {
-    this.logger.info(message, meta);
-  }
-
-  error(message: string, meta?: any) {
-    this.logger.error(message, meta);
-  }
-
-  warn(message: string, meta?: any) {
-    this.logger.warn(message, meta);
-  }
-
-  debug(message: string, meta?: any) {
-    this.logger.debug(message, meta);
-  }
-}
+export default logger;
