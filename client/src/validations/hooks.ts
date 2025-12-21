@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
 import { useForm, FormState } from "react-hook-form";
 import { z } from "zod";
-import { validateField, validateForm } from "./utils";
+import { formatValidationErrors, validateField, validateForm } from "./utils";
 
 // Real-time validation hook
 export const useRealTimeValidation = <T extends Record<string, any>>(
-  schema: z.ZodSchema,
+  schema: z.ZodTypeAny,
   initialData?: T,
 ) => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -16,7 +16,7 @@ export const useRealTimeValidation = <T extends Record<string, any>>(
 
   const validateFieldRealTime = useCallback(
     (fieldName: string, value: any) => {
-      const error = validateField(schema, fieldName as any, value);
+      const error = validateField(schema as any, fieldName, value);
       const isValid = !error;
 
       setFieldErrors((prev) => ({
@@ -51,8 +51,12 @@ export const useRealTimeValidation = <T extends Record<string, any>>(
         );
         setIsFormValid(true);
         return true;
-      } else {
-        const errors = formatValidationErrors(result.errors);
+      }
+
+      {
+        const errors = formatValidationErrors(
+          (result as { success: false; errors: z.ZodIssue[] }).errors,
+        );
         setFieldErrors(errors);
         setFieldValidities(
           Object.keys(data).reduce(
@@ -286,11 +290,4 @@ export const useFormProgress = (
     isComplete: progress === 100,
     isInProgress: progress > 0 && progress < 100,
   };
-};
-
-export {
-  useRealTimeValidation,
-  useFormSubmission,
-  useAutoSave,
-  useFormProgress,
 };

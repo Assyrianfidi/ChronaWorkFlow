@@ -39,19 +39,19 @@ body {
   font-family: inherit;
   font-size: 16px;
   line-height: 1.5;
-  color: #0f172a;
-  background-color: #ffffff;
+  color: var(--text-default);
+  background-color: var(--surface-1);
 }
 
 /* ===== GLOBAL LINKS ===== */
 a {
-  color: #0f172a;
+  color: inherit;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 a:hover {
-  color: #1e4db7;
+  color: var(--primary-500);
 }
 
 /* ===== ENTERPRISE THEME VARIABLES ===== */
@@ -60,10 +60,10 @@ a:hover {
   --primary-50: #f0f4ff;
   --primary-100: #e0ecff;
   --primary-200: #c2d8ff;
-  --primary-300: #94bfff;
+  --primary-300: #7c93ff;
   --primary-400: #5e92f3;
-  --primary-500: #1e4db7;
-  --primary-600: #1a4099;
+  --primary-500: #2f5bf2;
+  --primary-600: #2446d9;
   --primary-700: #153380;
   --primary-800: #112966;
   --primary-900: #0d1f4d;
@@ -114,15 +114,15 @@ a:hover {
   --glass-bg: rgba(255, 255, 255, 0.6);
   --card-bg: rgba(255, 255, 255, 0.7);
   --border-light: rgba(255, 255, 255, 0.08);
-  --border-gray: #e5e7eb;
+  --border-gray: #e6e8ee;
   --text-dark: #0f172a;
   --text-light: #ffffff;
   --hero-dark: #0b1220;
   --muted: #6b7280;
 
   /* Shadows */
-  --shadow-soft: 0 6px 18px rgba(16, 24, 40, 0.06);
-  --shadow-elevated: 0 18px 40px rgba(16, 24, 40, 0.12);
+  --shadow-soft: 0 6px 18px rgba(16, 24, 40, 0.04);
+  --shadow-elevated: 0 10px 30px rgba(16, 24, 40, 0.08);
   --shadow-strong: 0 25px 50px rgba(16, 24, 40, 0.15);
   --shadow-card:
     0 4px 6px -1px rgba(30, 77, 183, 0.1), 0 2px 4px -2px rgba(30, 77, 183, 0.1);
@@ -731,12 +731,13 @@ textarea:disabled {
 /* ===== GLOBAL THEME OVERRIDES (ACCESSIBILITY FLATTENING) ===== */
 
 /* Replaced the previous global black-on-white accessibility flattening with
-   a scoped, token-aware variant so that Enterprise 2099 tokens can control
+   a scoped, token-aware variant so that enterprise tokens can control
    component appearance. To force a flattened, high-contrast view for a
    specific subtree, wrap it in .accessibility-flatten. */
 
+/* High contrast mode only affects the accessibility-flatten subtree */
+/* Canonical text and background colors based on token surfaces */
 .accessibility-flatten {
-  /* Canonical text and background colors based on token surfaces */
   --text-color: var(--text-default);
   --text-bg: var(--surface-1);
 
@@ -832,21 +833,21 @@ textarea:disabled {
 }
 
 /* The legacy enterprise sidebar wrapper should not be forced to black text,
-   so that specialized themes (including the 2099 sidebar) can control color. */
+   so that specialized themes (including the enterprise sidebar) can control color. */
 .enterprise-sidebar,
 .enterprise-sidebar * {
   color: unset;
 }
 
-/* ===== LEGACY SIDEBAR 2099 FUTURISTIC THEME (SCOPED) ===== */
+/* ===== LEGACY SIDEBAR FUTURISTIC THEME (SCOPED) ===== */
 
 /* This legacy sidebar theme is kept under a legacy class to avoid
    conflicting with the new tokenized Sidebar component that uses
    Tailwind utilities (bg-surface*, border-border-gray, etc.).
-   TODO: migrate any remaining usages of .legacy-sidebar-2099 to
+   TODO: migrate any remaining usages of .legacy-sidebar-enterprise to
    the new Sidebar.tsx implementation or a token-based variant. */
 
-.legacy-sidebar-2099 {
+.legacy-sidebar-enterprise {
   backdrop-filter: blur(6px);
   background: linear-gradient(135deg, #0a0f2f, #001e50);
   color: #ffffff !important;
@@ -854,27 +855,27 @@ textarea:disabled {
   transition: width 0.3s ease;
 }
 
-.legacy-sidebar-2099,
-.legacy-sidebar-2099 * {
+.legacy-sidebar-enterprise,
+.legacy-sidebar-enterprise * {
   color: #ffffff !important;
 }
 
-.legacy-sidebar-2099 .sidebar-2099-link-label,
-.legacy-sidebar-2099 .sidebar-2099-section-title {
-  color: #000000 !important;
+.legacy-sidebar-enterprise .sidebar-enterprise-link-label,
+.legacy-sidebar-enterprise .sidebar-enterprise-section-title {
+  color: #ffffff !important;
 }
 
-.legacy-sidebar-2099.sidebar-2099-collapsed {
+.legacy-sidebar-enterprise.sidebar-enterprise-collapsed {
   width: 72px;
 }
 
-.legacy-sidebar-2099 .active-item {
+.legacy-sidebar-enterprise .active-item {
   box-shadow: 0 0 10px #00f0ff;
   transform: translateX(2px);
   transition: all 0.15s ease-in-out;
 }
 
-.legacy-sidebar-2099 .item:hover {
+.legacy-sidebar-enterprise .item:hover {
   transform: translateX(4px);
   transition: all 0.15s ease-in-out;
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useAnalytics } from "./AnalyticsEngine";
 import { BusinessInsight } from "./AnalyticsEngine";
 
@@ -254,7 +254,7 @@ class BIEngine {
 
   performClustering(data: number[][], k: number): number[] {
     // Simplified k-means clustering
-    const clusters: number[][] = Array.from({ length: k }, () => []);
+    const clusters: number[][][] = Array.from({ length: k }, () => []);
     const centroids: number[][] = [];
 
     // Initialize centroids randomly
@@ -590,7 +590,10 @@ export const BusinessIntelligence: React.FC<{ children: React.ReactNode }> = ({
         return {
           period: `Period ${31 + i}`,
           predicted,
-          confidenceInterval: [predicted - margin, predicted + margin],
+          confidenceInterval: [predicted - margin, predicted + margin] as [
+            number,
+            number,
+          ],
         };
       });
 
@@ -606,7 +609,7 @@ export const BusinessIntelligence: React.FC<{ children: React.ReactNode }> = ({
             period: `Period ${i + 1}`,
             actual: value,
             predicted: model.intercept + model.slope * i,
-            confidenceInterval: [0, 0],
+            confidenceInterval: [0, 0] as [number, number],
           })),
           ...forecastData,
         ],
@@ -648,8 +651,10 @@ export const BusinessIntelligence: React.FC<{ children: React.ReactNode }> = ({
         title: "Revenue Growth Opportunity",
         description:
           "Analysis shows potential for 20% revenue increase through market expansion",
+        severity: "low",
         impact: "high",
         confidence: 0.78,
+        metrics: [],
         recommendations: [
           "Target emerging markets in Southeast Asia",
           "Invest in digital marketing campaigns",
@@ -661,14 +666,17 @@ export const BusinessIntelligence: React.FC<{ children: React.ReactNode }> = ({
           competitionLevel: "medium",
         },
         createdAt: Date.now(),
+        timestamp: Date.now(),
       },
       {
         id: "operational-risk",
         type: "risk",
         title: "Supply Chain Risk",
         description: "Dependency on single supplier creates vulnerability",
+        severity: "medium",
         impact: "medium",
         confidence: 0.85,
+        metrics: [],
         recommendations: [
           "Diversify supplier base",
           "Develop contingency plans",
@@ -680,6 +688,7 @@ export const BusinessIntelligence: React.FC<{ children: React.ReactNode }> = ({
           impactPotential: 250000,
         },
         createdAt: Date.now(),
+        timestamp: Date.now(),
       },
     ];
 

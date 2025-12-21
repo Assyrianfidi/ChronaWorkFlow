@@ -888,7 +888,7 @@ export class BiometricAuthenticationEngine {
   // Session management
   public async createSession(
     userId: string,
-    method: string,
+    method: AuthenticationSession["method"],
     biometricTypes: string[],
     riskScore: number,
   ): Promise<AuthenticationSession> {

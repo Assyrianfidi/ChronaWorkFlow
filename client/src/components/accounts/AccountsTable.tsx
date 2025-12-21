@@ -1,20 +1,14 @@
 import React from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table.js";
-import { Badge } from "../ui/badge.js";
-import { Skeleton } from "../ui/skeleton.js";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/components/ui/table";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Badge } from '../ui/badge';
+import { Skeleton } from '../ui/skeleton';
 import type {
   AccountWithChildren,
   AccountRowProps,
   AccountsTableProps,
-} from "../types/accounts.js";
+} from '../../types/accounts';
 
 export const AccountRow: React.FC<AccountRowProps> = ({
   account,
@@ -145,13 +139,17 @@ export const AccountsTable: React.FC<AccountsTableProps> = ({
 
   if (filteredAccounts.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        {searchQuery ? (
-          <p>No accounts found matching "{searchQuery}"</p>
-        ) : (
-          <p>No accounts found. Create your first account to get started.</p>
-        )}
-      </div>
+      <EmptyState
+        size="sm"
+        title={
+          searchQuery
+            ? `No accounts found matching "${searchQuery}"`
+            : "No accounts found"
+        }
+        description={
+          searchQuery ? undefined : "Create your first account to get started."
+        }
+      />
     );
   }
 

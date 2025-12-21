@@ -46,14 +46,14 @@ vi.mock("../api", () => ({
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { AuthProvider, useAuth } from "../contexts/AuthContext.js";
-import { AccountsProvider, useAccounts } from "../contexts/AccountsContext.js";
+import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { AccountsProvider, useAccounts } from '../contexts/AccountsContext';
 import {
   TransactionsProvider,
   useTransactions,
-} from "../contexts/TransactionsContext.js";
+} from '../contexts/TransactionsContext';
 import React from "react";
-import { authApi, accountsApi, transactionsApi } from "../api.js";
+import { authApi, accountsApi, transactionsApi } from '../api';
 
 describe("AuthContext", () => {
   beforeEach(() => {

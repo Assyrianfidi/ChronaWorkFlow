@@ -321,7 +321,7 @@ export class CrossFeatureWorkflowSync {
         {
           sourceField: "lineItems",
           targetField: "templateItems",
-          type: "transform",
+          type: "custom",
           parameters: { mapToTemplate: true },
         },
         {
@@ -598,7 +598,7 @@ export class CrossFeatureWorkflowSync {
   private getTargetFeatures(sourceFeatureId: string): string {
     // Return all features that depend on the source feature
     const dependentFeatures = Array.from(this.features.values())
-      .filter((feature) => feature.dependencies.includes(sourceFeature))
+      .filter((feature) => feature.dependencies.includes(sourceFeatureId))
       .map((feature) => feature.id)
       .join(",");
 

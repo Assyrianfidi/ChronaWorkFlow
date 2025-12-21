@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { useAuthStore } from "@/components/store/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 import { Loader2 } from "lucide-react";
 
 interface AuthenticatedLayoutProps {
@@ -13,13 +13,11 @@ export default function AuthenticatedLayout({
   children,
   requiredRole = [],
 }: AuthenticatedLayoutProps) {
-  const { isAuthenticated, isLoading, user, checkAuth } = useAuthStore();
+  const { isAuthenticated, isLoading, user } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
     const verifyAuth = async () => {
-      await checkAuth();
-
       if (!isLoading && !isAuthenticated) {
         // Redirect to login if not authenticated
         router.push(`/login?redirect=${encodeURIComponent(router.asPath)}`);
@@ -36,15 +34,15 @@ export default function AuthenticatedLayout({
     };
 
     verifyAuth();
-  }, [isAuthenticated, isLoading, checkAuth, router, requiredRole, user?.role]);
+  }, [isAuthenticated, isLoading, router, requiredRole, user?.role]);
 
   // Show loading state while checking auth
   if (isLoading || (!isAuthenticated && !isLoading)) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto mb-4" />
-          <p className="text-gray-600">Loading your dashboard...</p>
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -57,17 +55,17 @@ export default function AuthenticatedLayout({
     !requiredRole.includes(user.role)
   ) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-center p-8 max-w-md bg-white rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-center p-8 max-w-md bg-card text-card-foreground rounded-lg shadow-md border border-border">
+          <h1 className="text-2xl font-bold text-foreground mb-2">
             Access Denied
           </h1>
-          <p className="text-gray-600 mb-6">
-            You don't have permission to access this page.
+          <p className="text-muted-foreground mb-6">
+            You don&apos;t have permission to access this page.
           </p>
           <button
             onClick={() => router.push("/dashboard")}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             Go to Dashboard
           </button>

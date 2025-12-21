@@ -1,5 +1,5 @@
 import { prisma } from "../utils/prisma";
-import { ROLES, ROLES_HIERARCHY } from "../constants/roles.js";
+import { ROLES, ROLES_HIERARCHY } from "../constants/roles";
 
 /**
  * Database Security Service
@@ -7,7 +7,11 @@ import { ROLES, ROLES_HIERARCHY } from "../constants/roles.js";
  */
 
 class DatabaseSecurityService {
-  private static unauthorizedAttempts: any[] = [];
+  static _unauthorizedAttempts: any[] = [];
+
+  private static normalizeRole(role: unknown): string {
+    return String(role || "").toUpperCase();
+  }
 
   /**
    * Check if user has permission to access a resource
@@ -22,13 +26,15 @@ class DatabaseSecurityService {
       return false;
     }
 
+    const role = this.normalizeRole(user.role);
+
     // Admin can access everything
-    if (user.role === ROLES.ADMIN) {
+    if (role === ROLES.ADMIN) {
       return true;
     }
 
     // Define resource permissions
-    const permissions = {
+    const permissions: Record<string, Record<string, string[]>> = {
       accounts: {
         read: [
           ROLES.USER,
@@ -68,7 +74,7 @@ class DatabaseSecurityService {
 
     // Check if user role has permission for this resource/action
     const allowedRoles = permissions[resource]?.[action] || [];
-    if (!allowedRoles.includes(user.role)) {
+    if (!allowedRoles.includes(role)) {
       return false;
     }
 
@@ -90,7 +96,7 @@ class DatabaseSecurityService {
    * Log unauthorized access attempts
    * @param {Object} attempt - The unauthorized access attempt details
    */
-  static logUnauthorizedAccess(attempt) {
+  static logUnauthorizedAccess(attempt: any) {
     const logEntry = {
       timestamp: new Date().toISOString(),
       userId: attempt.userId || "anonymous",
@@ -106,11 +112,11 @@ class DatabaseSecurityService {
     console.warn("[DB_SECURITY] Unauthorized access attempt:", logEntry);
 
     // Store in memory for now (will be moved to database in Phase 6.4)
-    this.unauthorizedAttempts.push(logEntry);
+    this._unauthorizedAttempts.push(logEntry);
 
     // Keep only last 1000 entries
-    if (this.unauthorizedAttempts.length > 1000) {
-      this.unauthorizedAttempts = this.unauthorizedAttempts.slice(-1000);
+    if (this._unauthorizedAttempts.length > 1000) {
+      this._unauthorizedAttempts = this._unauthorizedAttempts.slice(-1000);
     }
   }
 
@@ -120,7 +126,7 @@ class DatabaseSecurityService {
    * @returns {Array} - Array of unauthorized access attempts
    */
   static getUnauthorizedAttempts(limit = 100) {
-    return this.unauthorizedAttempts.slice(-limit);
+    return this._unauthorizedAttempts.slice(-limit);
   }
 
   /**
@@ -129,13 +135,15 @@ class DatabaseSecurityService {
    * @param {string} field - The field being accessed
    * @returns {boolean} - Whether access is allowed
    */
-  static canAccessSensitiveField(user, field) {
+  static canAccessSensitiveField(user: any, field: string) {
     if (!user || !user.role) {
       return false;
     }
 
+    const role = this.normalizeRole(user.role);
+
     // Define sensitive fields and who can access them
-    const sensitiveFields = {
+    const sensitiveFields: Record<string, string[]> = {
       password: [ROLES.ADMIN],
       email: [ROLES.ADMIN, ROLES.MANAGER],
       phone: [ROLES.ADMIN, ROLES.MANAGER],
@@ -145,7 +153,7 @@ class DatabaseSecurityService {
     };
 
     const allowedRoles = sensitiveFields[field] || [];
-    return allowedRoles.includes(user.role) || user.role === ROLES.ADMIN;
+    return allowedRoles.includes(role) || role === ROLES.ADMIN;
   }
 
   /**
@@ -154,17 +162,19 @@ class DatabaseSecurityService {
    * @param {string} model - The Prisma model name
    * @returns {Object} - Prisma where clause for row-level security
    */
-  static getRowLevelSecurityFilter(user, model) {
+  static getRowLevelSecurityFilter(user: any, model: string) {
     if (!user || !user.role) {
       throw new Error("User authentication required");
     }
 
+    const role = this.normalizeRole(user.role);
+
     // Admin can see everything
-    if (user.role === ROLES.ADMIN) {
+    if (role === ROLES.ADMIN) {
       return {};
     }
 
-    const filters = {
+    const filters: Record<string, any> = {
       Account: {
         companyId: user.currentCompanyId,
       },
@@ -178,7 +188,7 @@ class DatabaseSecurityService {
       },
       User: {
         // Users can only see themselves unless they're managers/auditors
-        ...(user.role === ROLES.USER ? { id: user.id } : {}),
+        ...(role === ROLES.USER ? { id: user.id } : {}),
       },
     };
 
@@ -192,7 +202,7 @@ class DatabaseSecurityService {
    * @param {string} action - The action (create, update, delete)
    * @returns {Object} - Validation result
    */
-  static validateConstraints(model, data, action) {
+  static validateConstraints(model: string, data: any, action: string) {
     const errors = [];
 
     // Validate unique constraints
@@ -245,7 +255,7 @@ class DatabaseSecurityService {
    * @param {string} email - The email to validate
    * @returns {boolean} - Whether the email is valid
    */
-  static isValidEmail(email) {
+  static isValidEmail(email: string) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
@@ -256,7 +266,7 @@ class DatabaseSecurityService {
    * @param {string} ip - The IP address
    * @returns {boolean} - Whether the user/IP is blocked
    */
-  static isBlocked(userId, ip) {
+  static isBlocked(userId: any, ip: string) {
     const attempts = this.getUnauthorizedAttempts(100);
     const recentAttempts = attempts.filter((attempt: any) => {
       const isRecent =

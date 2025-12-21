@@ -410,7 +410,7 @@ export const VisualModeEngine: React.FC<{ children: React.ReactNode }> = ({
         
         a:hover {
           ${settings.hoverStates ? `color: ${settings.accentColor} !important;` : ""}
-          ${settings.transitions ? "transition: color 0.2s ease !important;" : ""}
+          ${settings.transitions ? "transition-colors duration-200;" : ""}
         }
         
         /* Form elements */
@@ -438,12 +438,11 @@ export const VisualModeEngine: React.FC<{ children: React.ReactNode }> = ({
         
         button:hover {
           ${settings.hoverStates ? "opacity: 0.8 !important;" : ""}
-          ${settings.transitions ? "transition: opacity 0.2s ease !important;" : ""}
+          ${settings.transitions ? "transition-colors duration-200;" : ""}
         }
         
         /* Focus indicators */
-        *:focus {
-          ${settings.focusIndicators ? `outline: 3px solid ${settings.accentColor} !important; outline-offset: 2px !important;` : ""}
+        *focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:outline-none
         }
         
         /* Images */
@@ -453,10 +452,10 @@ export const VisualModeEngine: React.FC<{ children: React.ReactNode }> = ({
         
         /* Animations */
         ${!settings.animations ? "* { animation: none !important; }" : ""}
-        ${!settings.transitions ? "* { transition: none !important; }" : ""}
+        ${!settings.transitions ? "* { transition-colors duration-200; }" : ""}
         
         /* Shadows */
-        ${!settings.shadows ? "* { box-shadow: none !important; text-shadow: none !important; }" : ""}
+        ${!settings.shadows ? "* { shadow-md; text-shadow: none !important; }" : ""}
         
         /* Spacing */
         * {

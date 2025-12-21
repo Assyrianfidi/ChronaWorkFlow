@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-import React, { useState } from "react";
+import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,26 +55,29 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
     <NavLink
       to={to}
       className={cn(
-        "sidebar-2099-link item group flex items-center gap-3 px-5 py-3 rounded-lg",
+        "sidebar-enterprise-link item group flex items-center gap-3 px-5 py-3 rounded-lg text-sidebar-foreground",
         "transition-all duration-150 ease-out",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00e0ff]/60",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
         isActive &&
-          "sidebar-2099-link-active sidebar-2099-link-active-pulse active-item",
+          "sidebar-enterprise-link-active sidebar-enterprise-link-active-pulse active-item",
       )}
+      aria-label={label}
+      aria-current={isActive ? "page" : undefined}
+      title={collapsed ? label : undefined}
     >
       <Icon
         className={cn(
-          "sidebar-2099-link-icon w-5 h-5 flex-shrink-0 transition-transform duration-300",
+          "sidebar-enterprise-link-icon w-5 h-5 flex-shrink-0 transition-transform duration-300",
           "group-hover:scale-110",
         )}
       />
       {!collapsed && (
         <>
-          <span className="sidebar-2099-link-label font-medium truncate">
+          <span className="sidebar-enterprise-link-label font-medium truncate text-sidebar-foreground">
             {label}
           </span>
           {badge && (
-            <span className="sidebar-2099-badge ml-auto text-xs px-2 py-0.5">
+            <span className="sidebar-enterprise-badge ml-auto text-xs px-2 py-0.5">
               {badge}
             </span>
           )}
@@ -96,9 +99,9 @@ const SidebarSection: React.FC<SidebarSectionProps> = ({
   collapsed,
 }) => {
   return (
-    <div className="space-y-2 sidebar-2099-section">
+    <div className="space-y-2 sidebar-enterprise-section">
       {!collapsed && (
-        <h3 className="px-5 text-xs font-semibold uppercase tracking-[0.2em] sidebar-2099-section-title">
+        <h3 className="px-5 text-xs font-semibold uppercase tracking-[0.2em] sidebar-enterprise-section-title text-sidebar-foreground/80">
           {title}
         </h3>
       )}
@@ -109,32 +112,52 @@ const SidebarSection: React.FC<SidebarSectionProps> = ({
 
 interface EnterpriseSidebarProps {
   isOpen: boolean;
-  onToggle: () => void;
+  onOpenChange: (open: boolean) => void;
   className?: string;
 }
 
 export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   isOpen,
-  onToggle,
+  onOpenChange,
   className,
 }) => {
   const { user, logout } = useAuth();
   const [isMobile, setIsMobile] = React.useState(false);
 
+  const sidebarRef = React.useRef<HTMLElement>(null);
+
   React.useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth < 768) {
-        if (isOpen) {
-          onToggle(); // Auto-close on mobile (only if currently open)
-        }
-      }
+      setIsMobile(window.innerWidth < 1024);
     };
 
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
-  }, [isOpen, onToggle]);
+  }, []);
+
+  React.useEffect(() => {
+    if (!isMobile || !isOpen) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      onOpenChange(false);
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isMobile, isOpen, onOpenChange]);
+
+  React.useEffect(() => {
+    if (!isMobile || !isOpen) return;
+    requestAnimationFrame(() => {
+      sidebarRef.current
+        ?.querySelector<HTMLElement>("a,button,[href],[tabindex]:not([tabindex='-1'])")
+        ?.focus();
+    });
+  }, [isMobile, isOpen]);
 
   const getNavigationItems = () => {
     const baseItems = [
@@ -188,47 +211,79 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     <>
       {/* Mobile Overlay */}
       {isMobile && isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={onToggle}
+        <button
+          type="button"
+          tabIndex={-1}
+          className="fixed inset-0 bg-foreground/50 z-40 lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          onClick={() => onOpenChange(false)}
+          onKeyDown={(e) => {
+            if (e.key !== "Escape") return;
+            e.preventDefault();
+            onOpenChange(false);
+          }}
+          aria-label="Close sidebar"
         />
       )}
 
       {/* Sidebar */}
       <aside
+        ref={sidebarRef}
+        id="enterprise-sidebar"
         className={cn(
-          "sidebar-2099 fixed left-0 top-0 h-screen z-50 flex flex-col",
-          "bg-[radial-gradient(circle_at_top,_#00F0FF_0,_#020617_45%,_#000000_100%)]",
-          "border-r border-[rgba(15,23,42,0.35)] shadow-sidebar",
+          "sidebar-enterprise fixed left-0 top-0 h-screen z-50 flex flex-col",
+          "bg-sidebar text-sidebar-foreground",
+          "border-r border-sidebar-border shadow-sidebar",
           "transition-all duration-300 ease-in-out",
           isOpen ? "w-64" : "w-16",
-          !isOpen && "sidebar-2099-collapsed",
+          !isOpen && "sidebar-enterprise-collapsed",
           isMobile && !isOpen && "-translate-x-full",
           "lg:translate-x-0",
           className,
         )}
+        aria-label="Primary sidebar navigation"
+        onMouseEnter={() => {
+          if (!isMobile) onOpenChange(true);
+        }}
+        onMouseLeave={() => {
+          if (!isMobile) onOpenChange(false);
+        }}
+        onFocusCapture={() => {
+          if (!isMobile) onOpenChange(true);
+        }}
+        onBlurCapture={(e) => {
+          if (isMobile) return;
+          const next = e.relatedTarget as Node | null;
+          if (next && e.currentTarget.contains(next)) return;
+          onOpenChange(false);
+        }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-[rgba(15,23,42,0.45)]/90 bg-gradient-to-r from-black/40 via-slate-900/60 to-black/40">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border bg-sidebar">
           {isOpen && (
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center border border-cyan-300/70 bg-[radial-gradient(circle_at_top,_#00F0FF_0,_#020617_60%,_#000000_100%)] shadow-[0_0_18px_rgba(0,240,255,0.45)]">
-                <DollarSign className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center border border-sidebar-border bg-sidebar-primary">
+                <DollarSign className="w-5 h-5 text-sidebar-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold tracking-tight sidebar-2099-link-label">
+                <h1 className="text-lg font-semibold tracking-tight sidebar-enterprise-link-label">
                   AccuBooks
                 </h1>
-                <p className="text-[11px] uppercase tracking-[0.22em] sidebar-2099-section-title">
-                  Enterprise 2099
-                </p>
               </div>
             </div>
           )}
 
           <button
-            onClick={onToggle}
-            className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+            type="button"
+            onClick={() => {
+              if (!isMobile) return;
+              onOpenChange(!isOpen);
+            }}
+            className="p-2 rounded-lg text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+            aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+            aria-expanded={isOpen}
+            aria-controls="enterprise-sidebar"
+            aria-disabled={!isMobile || undefined}
+            tabIndex={!isMobile ? -1 : undefined}
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -322,20 +377,20 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
         </nav>
 
         {/* User Section */}
-        <div className="p-4 border-t border-[rgba(15,23,42,0.45)]/90 bg-black/30 backdrop-blur-sm">
+        <div className="p-4 border-t border-sidebar-border bg-sidebar backdrop-blur-sm">
           {isOpen ? (
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center border border-cyan-300/70 bg-[radial-gradient(circle_at_top,_#00F0FF_0,_#020617_60%,_#000000_100%)] shadow-[0_0_14px_rgba(0,240,255,0.4)]">
-                  <span className="text-sm font-medium text-white">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center border border-sidebar-border bg-sidebar-primary">
+                  <span className="text-sm font-medium text-sidebar-primary-foreground">
                     {user?.name?.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium sidebar-2099-link-label truncate">
+                  <p className="text-sm font-medium sidebar-enterprise-link-label truncate">
                     {user?.name}
                   </p>
-                  <p className="text-xs text-white/60 truncate">
+                  <p className="text-xs text-sidebar-foreground/70 truncate">
                     {user?.email}
                   </p>
                 </div>
@@ -343,15 +398,18 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => {}}
-                  className="flex-1 flex items-center gap-2 px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  className="flex-1 flex items-center gap-2 px-3 py-2 text-sm text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/10 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-sidebar-foreground/70"
                 >
                   <Settings className="w-4 h-4" />
                   <span>Settings</span>
                 </button>
                 <button
+                  type="button"
                   onClick={logout}
-                  className="flex items-center gap-2 px-3 py-2 text-sm text-white/70 hover:text-red-300 hover:bg-white/5 rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-sidebar-foreground/70 hover:text-destructive hover:bg-sidebar-accent/10 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
                 >
                   <LogOut className="w-4 h-4" />
                   <span>Logout</span>
@@ -361,14 +419,19 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           ) : (
             <div className="space-y-2">
               <button
-                onClick={() => {}}
-                className="w-full p-2 text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors flex items-center justify-center"
+                type="button"
+                disabled
+                aria-disabled="true"
+                className="w-full p-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/10 rounded-lg transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-sidebar-foreground/70"
+                aria-label="Settings (disabled)"
               >
                 <Settings className="w-5 h-5" />
               </button>
               <button
+                type="button"
                 onClick={logout}
-                className="w-full p-2 text-white/70 hover:text-red-300 hover:bg-white/5 rounded-lg transition-colors flex items-center justify-center"
+                className="w-full p-2 text-sidebar-foreground/70 hover:text-destructive hover:bg-sidebar-accent/10 rounded-lg transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
+                aria-label="Logout"
               >
                 <LogOut className="w-5 h-5" />
               </button>

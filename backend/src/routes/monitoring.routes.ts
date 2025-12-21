@@ -26,11 +26,12 @@ router.get("/health", (req: any, res: any) => {
       success: true,
       data: health,
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
       message: "Failed to get health status",
-      error: error.message,
+      error: msg,
     });
   }
 });
@@ -56,11 +57,12 @@ router.get("/metrics", authenticate, (req: any, res: any) => {
       success: true,
       data: metrics,
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
       message: "Failed to get metrics",
-      error: error.message,
+      error: msg,
     });
   }
 });
@@ -99,11 +101,12 @@ router.get("/alerts", authenticate, (req: any, res: any) => {
       data: alerts,
       filters: filters,
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
       message: "Failed to get alerts",
-      error: error.message,
+      error: msg,
     });
   }
 });
@@ -139,11 +142,12 @@ router.post("/alerts/:alertId/acknowledge", authenticate, (req: any, res: any) =
         message: "Alert not found",
       });
     }
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
       message: "Failed to acknowledge alert",
-      error: error.message,
+      error: msg,
     });
   }
 });
@@ -180,11 +184,12 @@ router.get("/audit-logs", authenticate, (req: any, res: any) => {
       filters: filters,
       total: logs.length,
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
       message: "Failed to get audit logs",
-      error: error.message,
+      error: msg,
     });
   }
 });
@@ -224,11 +229,12 @@ router.get("/security-alerts", authenticate, (req: any, res: any) => {
       filters: filters,
       total: alerts.length,
     });
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
       message: "Failed to get security alerts",
-      error: error.message,
+      error: msg,
     });
   }
 });
@@ -267,11 +273,12 @@ router.post(
           message: "Security alert not found",
         });
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
       res.status(500).json({
         success: false,
         message: "Failed to acknowledge security alert",
-        error: error.message,
+        error: msg,
       });
     }
   },
@@ -303,10 +310,11 @@ router.get("/audit-stats", authenticate, (req: any, res: any) => {
       data: stats,
     });
   } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
       message: "Failed to get audit statistics",
-      error: error.message,
+      error: msg,
     });
   }
 });
@@ -337,10 +345,11 @@ router.get("/performance-report", authenticate, (req: any, res: any) => {
       data: report,
     });
   } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
       message: "Failed to generate performance report",
-      error: error.message,
+      error: msg,
     });
   }
 });
@@ -382,10 +391,11 @@ router.get("/export-audit-logs", authenticate, (req: any, res: any) => {
 
     res.status(200).json(exportData);
   } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
       message: "Failed to export audit logs",
-      error: error.message,
+      error: msg,
     });
   }
 });
@@ -433,10 +443,11 @@ router.get("/dashboard", authenticate, (req: any, res: any) => {
       },
     });
   } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
     res.status(500).json({
       success: false,
       message: "Failed to get dashboard data",
-      error: error.message,
+      error: msg,
     });
   }
 });

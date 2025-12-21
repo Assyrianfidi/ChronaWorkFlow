@@ -11,7 +11,7 @@ import {
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ZodType } from "zod";
-import { cn } from "../lib/utils.js";
+import { cn } from "@/lib/utils";
 
 type SubmitHandler<T extends FieldValues> = RHFSubmitHandler<T>;
 
@@ -81,14 +81,14 @@ export function FormField({
     <div className={cn("space-y-2", className)}>
       <label
         htmlFor={name}
-        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+        className="block text-sm font-medium text-foreground"
       >
         {label}
       </label>
       {description && (
         <p
           id={descriptionId}
-          className="text-xs text-gray-500 dark:text-gray-400"
+          className="text-xs text-muted-foreground"
         >
           {description}
         </p>
@@ -125,7 +125,7 @@ export function FormError({ name, id, className }: FormErrorProps) {
   return (
     <p
       id={id || `${name}-error`}
-      className={cn("mt-1 text-sm text-red-600 dark:text-red-400", className)}
+      className={cn("mt-1 text-sm text-destructive", className)}
     >
       {String(error.message)}
     </p>

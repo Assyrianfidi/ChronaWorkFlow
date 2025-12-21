@@ -1,5 +1,4 @@
-import { getSession, signOut } from "next-auth/react";
-import { useAuthStore } from "../store/auth-store.js";
+import { useAuthStore } from "@/store/auth-store";
 import React from "react";
 
 /**
@@ -20,25 +19,19 @@ export const isTokenExpiringSoon = (token: any): boolean => {
 // Refresh the session manually
 export const refreshSession = async (): Promise<boolean> => {
   try {
-    // Trigger a session refresh by calling getSession
-    const session = await getSession();
-
-    if (!session) {
-      // No session means we need to logout
-      await signOut({ redirect: false });
+    const state = useAuthStore.getState();
+    if (!state.user) {
+      state.logout();
       return false;
     }
 
-    // Update the auth store with the refreshed session
-    const { setUser, setSession } = useAuthStore.getState();
-    setUser(session.user as any);
-    setSession(session);
-
+    // No-op refresh for the Vite client (no next-auth session available here).
+    // Consider re-validating the token via an API endpoint if/when available.
     return true;
   } catch (error) {
     console.error("Failed to refresh session:", error);
     // On error, logout the user
-    await signOut({ redirect: false });
+    useAuthStore.getState().logout();
     return false;
   }
 };
@@ -47,10 +40,17 @@ export const refreshSession = async (): Promise<boolean> => {
 export const setupTokenRefresh = (): (() => void) => {
   const refreshInterval: NodeJS.Timeout = setInterval(
     async () => {
-      const session = await getSession();
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-      if (session && isTokenExpiringSoon(session)) {
-        await refreshSession();
+      // If the token payload is JWT-like and contains exp, try to refresh/logout.
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1] || ""));
+        if (isTokenExpiringSoon(payload)) {
+          await refreshSession();
+        }
+      } catch {
+        // If parsing fails, do nothing.
       }
     },
     2 * 60 * 1000,

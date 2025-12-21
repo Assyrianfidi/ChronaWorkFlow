@@ -1,26 +1,39 @@
-import { describe, it, expect } from 'vitest';
-import { logger } from '../utils/logger';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { logger } from '../../utils/logger';
 
 describe('Logger', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+
+  beforeEach(() => {
+    process.env.NODE_ENV = 'development';
+    logger.clearLogs();
+  });
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv;
+  });
+
   it('should log messages correctly', () => {
-    const consoleSpy = jest.spyOn(console, 'info').mockImplementation();
+    const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
 
     logger.info('Test message');
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[INFO]: Test message')
+      expect.stringMatching(/\[.*\]\sINFO:\sTest message/),
+      ''
     );
 
     consoleSpy.mockRestore();
   });
 
   it('should handle error logging', () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     logger.error('Test error');
 
     expect(consoleSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[ERROR]: Test error')
+      expect.stringMatching(/\[.*\]\sERROR:\sTest error/),
+      ''
     );
 
     consoleSpy.mockRestore();

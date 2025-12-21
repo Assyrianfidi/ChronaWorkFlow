@@ -1,17 +1,16 @@
 "use client";
 
-import { useSession as useNextAuthSession } from "next-auth/react";
+type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 
 export function useSession() {
-  const { data: session, status, update } = useNextAuthSession();
-  const isLoading = status === "loading";
-  const isAuthenticated = status === "authenticated";
+  const status: SessionStatus = "unauthenticated";
+  const session = null;
 
   return {
     session,
     status,
-    isLoading,
-    isAuthenticated,
-    update,
+    isLoading: false,
+    isAuthenticated: false,
+    update: async () => session,
   };
 }

@@ -1,4 +1,10 @@
-import React, { useState } from "react";
+declare global {
+  interface Window {
+    [key: string]: any;
+  }
+}
+
+import React, { useState, useEffect } from "react";
 /**
  * Role-Adaptive Intelligent UI System
  * Automatically adjusts interface based on user role, experience, and patterns

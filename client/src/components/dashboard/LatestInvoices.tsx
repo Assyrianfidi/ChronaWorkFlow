@@ -1,67 +1,8 @@
 import * as React from "react";
 import { FileText, Download, Eye, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "elevated" | "outlined" | "glass";
-}
-
-const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
-  ({ className, variant = "default", ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(
-        "rounded-lg border bg-white shadow-sm transition-all duration-200",
-        {
-          "border-gray-200 hover:shadow-md": variant === "default",
-          "border-gray-100 shadow-lg hover:shadow-xl": variant === "elevated",
-          "border-2 border-gray-300 hover:border-primary-300":
-            variant === "outlined",
-          "border-transparent bg-white/80 backdrop-blur-sm hover:bg-white/90":
-            variant === "glass",
-        },
-        className,
-      )}
-      {...props}
-    />
-  ),
-);
-
-EnterpriseCard.displayName = "EnterpriseCard";
-
-interface EnterpriseButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
-}
-
-const EnterpriseButton = React.forwardRef<
-  HTMLButtonElement,
-  EnterpriseButtonProps
->(({ className, variant = "primary", size = "md", ...props }, ref) => (
-  <button
-    ref={ref}
-    className={cn(
-      "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50",
-      {
-        "bg-primary-600 text-white hover:bg-primary-700": variant === "primary",
-        "bg-gray-100 text-gray-900 hover:bg-gray-200": variant === "secondary",
-        "border border-gray-300 bg-white hover:bg-gray-50":
-          variant === "outline",
-        "hover:bg-gray-100": variant === "ghost",
-      },
-      {
-        "h-8 px-3 text-sm": size === "sm",
-        "h-10 px-4 py-2": size === "md",
-        "h-12 px-6 text-lg": size === "lg",
-      },
-      className,
-    )}
-    {...props}
-  />
-));
-
-EnterpriseButton.displayName = "EnterpriseButton";
+import Card from "@/components/ui/card";
+import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
 
 interface Invoice {
   id: string;
@@ -80,9 +21,9 @@ interface LatestInvoicesProps {
 }
 
 const statusColors = {
-  paid: "bg-green-100 text-green-800",
-  pending: "bg-yellow-100 text-yellow-800",
-  overdue: "bg-red-100 text-red-800",
+  paid: "bg-success/10 text-success-700 dark:text-success",
+  pending: "bg-warning/10 text-warning-700 dark:text-warning",
+  overdue: "bg-destructive/10 text-destructive dark:text-destructive-500",
 };
 
 const formatCurrency = (amount: number) => {
@@ -155,26 +96,26 @@ const LatestInvoices = React.forwardRef<HTMLDivElement, LatestInvoicesProps>(
 
     if (loading) {
       return (
-        <EnterpriseCard ref={ref} className={cn("p-6", className)} {...props}>
+        <Card ref={ref} className={cn("p-6", className)} {...props}>
           <div className="animate-pulse">
-            <div className="h-6 bg-gray-200 rounded mb-4"></div>
+            <div className="h-6 bg-muted rounded mb-4"></div>
             <div className="space-y-3">
               {[...Array(maxItems)].map((_, i) => (
-                <div key={i} className="h-12 bg-gray-200 rounded"></div>
+                <div key={i} className="h-12 bg-muted rounded"></div>
               ))}
             </div>
           </div>
-        </EnterpriseCard>
+        </Card>
       );
     }
 
     return (
-      <EnterpriseCard ref={ref} className={cn("p-6", className)} {...props}>
+      <Card ref={ref} className={cn("p-6", className)} {...props}>
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <FileText className="w-5 h-5 text-ocean-blue" />
-            <h3 className="text-lg font-semibold text-gray-900">
+            <FileText className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-semibold text-foreground">
               Latest Invoices
             </h3>
           </div>
@@ -187,20 +128,20 @@ const LatestInvoices = React.forwardRef<HTMLDivElement, LatestInvoicesProps>(
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">
+              <tr className="border-b border-border">
+                <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                   Invoice
                 </th>
-                <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">
+                <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">
                   Client
                 </th>
-                <th className="text-right py-3 px-2 text-sm font-medium text-gray-600">
+                <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">
                   Amount
                 </th>
-                <th className="text-center py-3 px-2 text-sm font-medium text-gray-600">
+                <th className="text-center py-3 px-2 text-sm font-medium text-muted-foreground">
                   Status
                 </th>
-                <th className="text-center py-3 px-2 text-sm font-medium text-gray-600">
+                <th className="text-center py-3 px-2 text-sm font-medium text-muted-foreground">
                   Actions
                 </th>
               </tr>
@@ -209,25 +150,25 @@ const LatestInvoices = React.forwardRef<HTMLDivElement, LatestInvoicesProps>(
               {displayedInvoices.map((invoice) => (
                 <tr
                   key={invoice.id}
-                  className="border-b border-gray-100 hover:bg-gray-50"
+                  className="border-b border-border hover:bg-muted"
                 >
                   <td className="py-3 px-2">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-foreground">
                         {invoice.number}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         {formatDate(invoice.createdAt)}
                       </div>
                     </div>
                   </td>
                   <td className="py-3 px-2">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-foreground">
                       {invoice.client}
                     </div>
                   </td>
                   <td className="py-3 px-2 text-right">
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-foreground">
                       {formatCurrency(invoice.amount)}
                     </div>
                   </td>
@@ -244,14 +185,14 @@ const LatestInvoices = React.forwardRef<HTMLDivElement, LatestInvoicesProps>(
                   </td>
                   <td className="py-3 px-2">
                     <div className="flex items-center justify-center gap-1">
-                      <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-                        <Eye className="w-4 h-4 text-gray-500" />
+                      <button className="p-1 hover:bg-muted rounded transition-colors" aria-label="Button button">
+                        <Eye className="w-4 h-4 text-muted-foreground" />
                       </button>
-                      <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-                        <Download className="w-4 h-4 text-gray-500" />
+                      <button className="p-1 hover:bg-muted rounded transition-colors" aria-label="Button button">
+                        <Download className="w-4 h-4 text-muted-foreground" />
                       </button>
-                      <button className="p-1 hover:bg-gray-100 rounded transition-colors">
-                        <MoreHorizontal className="w-4 h-4 text-gray-500" />
+                      <button className="p-1 hover:bg-muted rounded transition-colors" aria-label="Button button">
+                        <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                       </button>
                     </div>
                   </td>
@@ -262,9 +203,9 @@ const LatestInvoices = React.forwardRef<HTMLDivElement, LatestInvoicesProps>(
         </div>
 
         {/* Footer */}
-        <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="mt-4 pt-4 border-t border-border">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">
+            <span className="text-muted-foreground">
               Showing {displayedInvoices.length} of {invoices.length} invoices
             </span>
             <EnterpriseButton variant="ghost" size="sm">
@@ -272,7 +213,7 @@ const LatestInvoices = React.forwardRef<HTMLDivElement, LatestInvoicesProps>(
             </EnterpriseButton>
           </div>
         </div>
-      </EnterpriseCard>
+      </Card>
     );
   },
 );

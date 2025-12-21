@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   useInventoryItems,
@@ -18,22 +18,13 @@ import { InventoryItem, InventoryStatus } from "@/types/inventory";
 import { getInventoryStatus } from "@/lib/inventory-utils";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import {
-  Card,
+import Card, {
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/Table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -295,8 +286,8 @@ export default function InventoryPage() {
   );
 
   const handleSort = useCallback(
-    (column: keyof InventoryItem) => {
-      handleSortChange(column as any);
+    (column: "name" | "quantity" | "value") => {
+      handleSortChange(column);
     },
     [handleSortChange],
   );
@@ -325,6 +316,20 @@ export default function InventoryPage() {
       });
     },
     [inventoryResponse],
+  );
+
+  const inventoryItems = inventoryResponse as InventoryItem[];
+  const totalItemsCount = inventoryItems?.length ?? 0;
+  const selectedCount = selectedItems.size;
+  const allSelected = totalItemsCount > 0 && selectedCount === totalItemsCount;
+  const partiallySelected = selectedCount > 0 && selectedCount < totalItemsCount;
+
+  const sortDirectionFor = useCallback(
+    (column: "name" | "quantity" | "value") => {
+      if (sortBy !== column) return "none" as const;
+      return sortOrder === "asc" ? ("ascending" as const) : ("descending" as const);
+    },
+    [sortBy, sortOrder],
   );
 
   const handleToggleRow = useCallback((id: string) => {
@@ -410,11 +415,14 @@ export default function InventoryPage() {
   const renderRow = useCallback(
     (item: InventoryItem) => {
       return (
-        <TableRow>
-          <TableCell>
+        <div
+          role="row"
+          className="grid grid-cols-[2.5rem_2fr_1fr_1fr_6rem_7rem_3rem] items-center border-b border-border transition-colors even:bg-muted/10 hover:bg-muted/20"
+        >
+          <div role="cell" className="p-4">
             <Checkbox
               checked={selectedItems.has(item.id)}
-              onChange={(checked) => {
+              onCheckedChange={(checked) => {
                 setSelectedItems((prev) => {
                   const newSet = new Set(prev);
                   if (checked) {
@@ -425,12 +433,16 @@ export default function InventoryPage() {
                   return newSet;
                 });
               }}
-              aria-label="Select row"
+              aria-label={`Select ${item.name}`}
             />
-          </TableCell>
-          <TableCell className="font-medium">{item.name}</TableCell>
-          <TableCell>{item.sku}</TableCell>
-          <TableCell>
+          </div>
+          <div role="cell" className="p-4 font-medium">
+            {item.name}
+          </div>
+          <div role="cell" className="p-4">
+            {item.sku}
+          </div>
+          <div role="cell" className="p-4">
             <Badge
               variant={
                 item.inventoryStatus === "in_stock"
@@ -442,13 +454,22 @@ export default function InventoryPage() {
             >
               {item.inventoryStatus?.replace(/_/g, " ") || "Unknown"}
             </Badge>
-          </TableCell>
-          <TableCell>{item.quantityOnHand}</TableCell>
-          <TableCell>${item.unitCost?.toFixed(2)}</TableCell>
-          <TableCell className="text-right">
+          </div>
+          <div role="cell" className="p-4">
+            {item.quantityOnHand}
+          </div>
+          <div role="cell" className="p-4">
+            ${item.unitCost?.toFixed(2)}
+          </div>
+          <div role="cell" className="p-4 flex justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="h-8 w-8 p-0"
+                  aria-label={`Row actions for ${item.name}`}
+                >
                   <span className="sr-only">Open menu</span>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
@@ -467,8 +488,8 @@ export default function InventoryPage() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </TableCell>
-        </TableRow>
+          </div>
+        </div>
       );
     },
     [selectedItems, router, handleDeleteItem],
@@ -571,7 +592,7 @@ export default function InventoryPage() {
           </div>
           <div className="flex gap-2">
             <select
-              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
               value={statusFilter || ""}
               onChange={(e) =>
                 handleStatusChange(
@@ -595,7 +616,7 @@ export default function InventoryPage() {
               selected
             </span>
             <select
-              className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60"
               onChange={(e) => {
                 const inventoryStatus = e.target.value as InventoryStatus;
                 if (inventoryStatus) {
@@ -701,6 +722,94 @@ export default function InventoryPage() {
         renderRow={renderRow}
         estimateRowHeight={() => 50}
         overscanCount={5}
+        ariaLabel="Inventory items"
+        scrollRole="table"
+        contentRole="rowgroup"
+        itemRole="row"
+        renderHeader={
+          <div
+            role="row"
+            className="grid grid-cols-[2.5rem_2fr_1fr_1fr_6rem_7rem_3rem] items-center border-b border-border bg-muted/20"
+          >
+            <div role="columnheader" className="p-4">
+              <Checkbox
+                checked={partiallySelected ? "indeterminate" : allSelected}
+                onCheckedChange={(checked) => handleSelectAll(Boolean(checked))}
+                aria-label="Select all rows"
+              />
+            </div>
+            <div role="columnheader" className="p-4">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
+                onClick={() => handleSort("name")}
+                aria-label="Sort by Name"
+                aria-sort={sortDirectionFor("name")}
+              >
+                Name
+                {sortBy === "name" ? (
+                  sortOrder === "asc" ? (
+                    <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                  )
+                ) : (
+                  <ChevronsUpDown className="h-4 w-4" aria-hidden="true" />
+                )}
+              </button>
+            </div>
+            <div role="columnheader" className="p-4">
+              SKU
+            </div>
+            <div role="columnheader" className="p-4">
+              Status
+            </div>
+            <div role="columnheader" className="p-4">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
+                onClick={() => handleSort("quantity")}
+                aria-label="Sort by Quantity"
+                aria-sort={sortDirectionFor("quantity")}
+              >
+                Qty
+                {sortBy === "quantity" ? (
+                  sortOrder === "asc" ? (
+                    <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                  )
+                ) : (
+                  <ChevronsUpDown className="h-4 w-4" aria-hidden="true" />
+                )}
+              </button>
+            </div>
+            <div role="columnheader" className="p-4">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
+                onClick={() => handleSort("value")}
+                aria-label="Sort by Unit Cost"
+                aria-sort={sortDirectionFor("value")}
+              >
+                Unit Cost
+                {sortBy === "value" ? (
+                  sortOrder === "asc" ? (
+                    <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                  )
+                ) : (
+                  <ChevronsUpDown className="h-4 w-4" aria-hidden="true" />
+                )}
+              </button>
+            </div>
+            <div role="columnheader" className="p-4 text-right">
+              Actions
+            </div>
+          </div>
+        }
+        headerHeight={48}
       />
 
       {/* Pagination */}
@@ -713,10 +822,12 @@ export default function InventoryPage() {
           </div>
           <div className="flex items-center space-x-2">
             <Button
+              type="button"
               variant="outline"
               size="sm"
               onClick={() => handlePageChangeWrapper(page - 1)}
               disabled={page === 1}
+              aria-label="Previous page"
             >
               Previous
             </Button>
@@ -750,9 +861,11 @@ export default function InventoryPage() {
                   return (
                     <Button
                       key={pageNum}
+                      type="button"
                       variant={pageNum === page ? "default" : "outline"}
                       size="sm"
                       onClick={() => handlePageChangeWrapper(pageNum)}
+                      aria-label={`Go to page ${pageNum}`}
                     >
                       {pageNum}
                     </Button>
@@ -761,12 +874,14 @@ export default function InventoryPage() {
               )}
             </div>
             <Button
+              type="button"
               variant="outline"
               size="sm"
               onClick={() => handlePageChangeWrapper(page + 1)}
               disabled={
                 page * pageSize >= ((inventoryResponse as any)?.total || 0)
               }
+              aria-label="Next page"
             >
               Next
             </Button>

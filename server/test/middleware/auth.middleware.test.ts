@@ -1,23 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { authenticate, authorize } from '../../middleware/auth.middleware';
 import { ApiError } from '../../utils/error';
 
-// Mock the verifyJwt function
-vi.mock('../../utils/jwt', () => ({
-  verifyJwt: vi.fn(),
-}));
-
-// Mock the prisma client
 vi.mock('../../prisma', () => ({
-  user: {
-    findUnique: vi.fn(),
+  prisma: {
+    user: {
+      findUnique: vi.fn(),
+    },
   },
 }));
 
-const { verifyJwt } = await import('../../utils/jwt');
 const { prisma } = await import('../../prisma');
+const { authenticate, authorize } = await import('../../middleware/auth.middleware');
 
 describe('Authentication Middleware', () => {
   let mockRequest: Partial<Request>;
@@ -25,26 +20,24 @@ describe('Authentication Middleware', () => {
   const nextFunction: NextFunction = vi.fn();
 
   beforeEach(() => {
+    process.env.JWT_SECRET = 'test-secret';
     mockRequest = {
       headers: {},
       cookies: {},
     };
-    mockResponse = {
-      status: vi.fn().mockReturnThis(),
-      json: vi.fn(),
-    };
+    mockResponse = {};
     vi.clearAllMocks();
   });
 
   describe('authenticate', () => {
     it('should return 401 if no token is provided', async () => {
-      await authenticate(mockRequest as Request, mockResponse as Response, nextFunction);
-      
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        success: false,
-        error: 'Authentication required',
-      });
+      const middleware = authenticate();
+      await middleware(mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+      const err = (nextFunction as any).mock.calls[0][0];
+      expect(err).toBeInstanceOf(ApiError);
+      expect((err as ApiError).statusCode).toBe(401);
     });
 
     it('should return 401 for invalid token', async () => {
@@ -55,17 +48,18 @@ describe('Authentication Middleware', () => {
         },
       };
 
-      (verifyJwt as jest.Mock).mockImplementation(() => {
-        throw new Error('Invalid token');
+      vi.spyOn(jwt, 'verify').mockImplementation(() => {
+        throw new (jwt as any).JsonWebTokenError('Invalid token');
       });
 
-      await authenticate(mockRequest as Request, mockResponse as Response, nextFunction);
-      
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        success: false,
-        error: 'Invalid or expired token',
-      });
+      const middleware = authenticate();
+      await middleware(mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+      const err = (nextFunction as any).mock.calls[0][0];
+      expect(err).toBeInstanceOf(ApiError);
+      expect((err as ApiError).statusCode).toBe(401);
+      expect((err as ApiError).message).toBe('Invalid token');
     });
 
     it('should call next() for valid token', async () => {
@@ -82,13 +76,19 @@ describe('Authentication Middleware', () => {
         },
       };
 
-      (verifyJwt as jest.Mock).mockReturnValue({ userId: 'user123' });
-      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      vi.spyOn(jwt, 'verify').mockReturnValue({ id: 'user123', role: 'USER', tenantId: 'tenant123' } as any);
+      (prisma.user.findUnique as any).mockResolvedValue(mockUser);
 
-      await authenticate(mockRequest as Request, mockResponse as Response, nextFunction);
-      
-      expect(nextFunction).toHaveBeenCalled();
-      expect(mockRequest.user).toEqual(mockUser);
+      const middleware = authenticate();
+      await middleware(mockRequest as Request, mockResponse as Response, nextFunction);
+
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+      expect((nextFunction as any).mock.calls[0][0]).toBeUndefined();
+      expect((mockRequest as any).user).toEqual({
+        id: mockUser.id,
+        role: mockUser.role,
+        tenantId: mockUser.tenantId,
+      });
     });
   });
 
@@ -117,12 +117,11 @@ describe('Authentication Middleware', () => {
 
       const middleware = authorize(requiredRoles);
       middleware(mockRequest as Request, mockResponse as Response, nextFunction);
-      
-      expect(mockResponse.status).toHaveBeenCalledWith(403);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        success: false,
-        error: 'Insufficient permissions',
-      });
+
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+      const err = (nextFunction as any).mock.calls[0][0];
+      expect(err).toBeInstanceOf(ApiError);
+      expect((err as ApiError).statusCode).toBe(403);
     });
 
     it('should handle missing user object', () => {
@@ -130,12 +129,11 @@ describe('Authentication Middleware', () => {
       
       const middleware = authorize(requiredRoles);
       middleware(mockRequest as Request, mockResponse as Response, nextFunction);
-      
-      expect(mockResponse.status).toHaveBeenCalledWith(403);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        success: false,
-        error: 'Authentication required',
-      });
+
+      expect(nextFunction).toHaveBeenCalledTimes(1);
+      const err = (nextFunction as any).mock.calls[0][0];
+      expect(err).toBeInstanceOf(ApiError);
+      expect((err as ApiError).statusCode).toBe(401);
     });
   });
 });

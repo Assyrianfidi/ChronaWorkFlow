@@ -956,8 +956,8 @@ export class ThreatAdaptiveUIEngine {
       /(\%27)|(\')|(\-\-)|(\%23)|(#)/i,
       /((\%3D)|(=))[^\n]*((\%27)|(\')|(\-\-)|(\%3B)|(;))/i,
       /\w*((\%27)|(\'))((\%6F)|o|(\%4F))((\%72)|r|(\%52))/i,
-      /((\%27)|(\'))union/ix,
-      /exec(\s|\+)+(s|x)p\w+/ix,
+      /((\%27)|(\'))union/i,
+      /exec(\s|\+)+(s|x)p\w+/i,
       /UNION(\s|\+)+SELECT/i,
       /INSERT(\s|\+)+INTO/i,
       /DELETE(\s|\+)+FROM/i,
@@ -975,7 +975,7 @@ export class ThreatAdaptiveUIEngine {
       /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi,
       /javascript:/gi,
       /on\w+\s*=/gi,
-      /<img[^>]*src[^>]*javascript:/gi,
+      /<img[^ alt="Image" />]*src[^>]*javascript:/gi,
       /<\s*script/gi,
       /<\s*object/gi,
       /<\s*embed/gi,
@@ -1367,10 +1367,10 @@ export class ThreatAdaptiveUIEngine {
       background: ${level.color};
       color: white;
       padding: 15px 20px;
-      border-radius: 5px;
+      rounded-1;
       z-index: 10000;
       max-width: 400px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      shadow-md;
     `;
 
     notification.innerHTML = `

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { businessLogicService } from "../business-logic/business.logic.service";
 import { logger } from "../utils/logger.js";
 import { ApiError, ErrorCodes } from "../utils/errorHandler.js";
-import { UserRole } from "../services/auth.service.js";
+import { Role } from "@prisma/client";
 
 // Extend Express Request type
 declare global {
@@ -11,7 +11,7 @@ declare global {
       user?: {
         id: number;
         email: string;
-        role: UserRole;
+        role: Role;
       };
     }
   }

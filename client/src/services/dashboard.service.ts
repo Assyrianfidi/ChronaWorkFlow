@@ -1,5 +1,6 @@
-import { apiClient, handleApiError } from "./api-client.js";
+import { apiClient, handleApiError } from "./api-client";
 import { toast } from "sonner";
+import { demoDashboardApi, isDemoModeEnabled } from "../lib/demo";
 
 // Dashboard Types
 export interface DashboardKPI {
@@ -74,6 +75,9 @@ export class DashboardService {
   // Health Check
   async getHealth() {
     try {
+      if (isDemoModeEnabled()) {
+        return { status: "ok" };
+      }
       const response = await apiClient.get("/health");
       return response.data;
     } catch (error) {
@@ -87,6 +91,9 @@ export class DashboardService {
     period: "7-day" | "30-day" | "quarter" = "30-day",
   ): Promise<DashboardKPI> {
     try {
+      if (isDemoModeEnabled()) {
+        return demoDashboardApi().getKPIs(period);
+      }
       const response = await apiClient.get<DashboardKPI>("/dashboard/kpis", {
         period,
       });
@@ -110,6 +117,9 @@ export class DashboardService {
     totalPages: number;
   }> {
     try {
+      if (isDemoModeEnabled()) {
+        return demoDashboardApi().getInvoices(params) as any;
+      }
       const response = await apiClient.get<{
         invoices: Invoice[];
         total: number;
@@ -125,6 +135,9 @@ export class DashboardService {
 
   async getInvoice(id: string): Promise<Invoice> {
     try {
+      if (isDemoModeEnabled()) {
+        return demoDashboardApi().getInvoice(id) as any;
+      }
       const response = await apiClient.get<Invoice>(`/invoices/${id}`);
       return response.data;
     } catch (error) {
@@ -137,6 +150,11 @@ export class DashboardService {
     invoice: Omit<Invoice, "id" | "createdAt">,
   ): Promise<Invoice> {
     try {
+      if (isDemoModeEnabled()) {
+        const created = demoDashboardApi().createInvoice(invoice as any) as any;
+        toast.success("Invoice created successfully");
+        return created;
+      }
       const response = await apiClient.post<Invoice>("/invoices", invoice);
       toast.success("Invoice created successfully");
       return response.data;
@@ -148,6 +166,11 @@ export class DashboardService {
 
   async updateInvoice(id: string, invoice: Partial<Invoice>): Promise<Invoice> {
     try {
+      if (isDemoModeEnabled()) {
+        const updated = demoDashboardApi().updateInvoice(id, invoice as any) as any;
+        toast.success("Invoice updated successfully");
+        return updated;
+      }
       const response = await apiClient.put<Invoice>(`/invoices/${id}`, invoice);
       toast.success("Invoice updated successfully");
       return response.data;
@@ -159,6 +182,11 @@ export class DashboardService {
 
   async deleteInvoice(id: string): Promise<void> {
     try {
+      if (isDemoModeEnabled()) {
+        demoDashboardApi().deleteInvoice(id);
+        toast.success("Invoice deleted successfully");
+        return;
+      }
       await apiClient.delete(`/invoices/${id}`);
       toast.success("Invoice deleted successfully");
     } catch (error) {
@@ -181,6 +209,9 @@ export class DashboardService {
     totalPages: number;
   }> {
     try {
+      if (isDemoModeEnabled()) {
+        return demoDashboardApi().getTransactions(params) as any;
+      }
       const response = await apiClient.get<{
         transactions: Transaction[];
         total: number;
@@ -198,6 +229,14 @@ export class DashboardService {
     transaction: Omit<Transaction, "id">,
   ): Promise<Transaction> {
     try {
+      if (isDemoModeEnabled()) {
+        const created = {
+          ...transaction,
+          id: `demo-transaction-${Date.now()}`,
+        } as any;
+        toast.success("Transaction created successfully");
+        return created;
+      }
       const response = await apiClient.post<Transaction>(
         "/transactions",
         transaction,
@@ -223,6 +262,9 @@ export class DashboardService {
     totalPages: number;
   }> {
     try {
+      if (isDemoModeEnabled()) {
+        return demoDashboardApi().getCustomers(params) as any;
+      }
       const response = await apiClient.get<{
         customers: Customer[];
         total: number;
@@ -271,6 +313,9 @@ export class DashboardService {
     period: "month" | "quarter" | "year" = "month",
   ): Promise<ExpenseCategory[]> {
     try {
+      if (isDemoModeEnabled()) {
+        return demoDashboardApi().getExpenseBreakdown(period) as any;
+      }
       const response = await apiClient.get<ExpenseCategory[]>(
         "/analytics/expenses",
         { period },
@@ -286,6 +331,9 @@ export class DashboardService {
     period: "6-months" | "12-months" | "24-months" = "6-months",
   ): Promise<CashFlowData[]> {
     try {
+      if (isDemoModeEnabled()) {
+        return demoDashboardApi().getCashFlow(period) as any;
+      }
       const response = await apiClient.get<CashFlowData[]>(
         "/analytics/cash-flow",
         { period },

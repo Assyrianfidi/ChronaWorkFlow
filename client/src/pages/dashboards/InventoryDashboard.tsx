@@ -2,13 +2,8 @@ import * as React from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import useSWR from "swr";
 import {
-  DashboardMetricCard,
-  InventoryStatus,
-} from "../../components/dashboard";
-import {
   Package,
   AlertTriangle,
-  TrendingUp,
   ShoppingCart,
   Truck,
   Warehouse,
@@ -25,14 +20,14 @@ const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-2xl border border-border-gray bg-surface2 shadow-soft transition-transform duration-150",
+        "rounded-2xl border border-border bg-card text-card-foreground shadow-soft transition-transform duration-150",
         {
           "hover:-translate-y-[1px] hover:shadow-elevated":
             variant === "default" || !variant,
           "hover:-translate-y-[2px] hover:shadow-elevated":
             variant === "elevated",
           "border-2": variant === "outlined",
-          "bg-surface2/80 backdrop-blur-sm": variant === "glass",
+          "bg-card/80 backdrop-blur-sm": variant === "glass",
         },
         className,
       )}
@@ -67,20 +62,19 @@ const InventoryDashboard: React.FC = () => {
   const { user } = useAuth();
 
   // Fetch inventory metrics
-  const {
-    data: metrics,
-    error: metricsError,
-    isLoading: metricsLoading,
-  } = useSWR<InventoryMetrics>("/api/inventory/status", async (url: string) => {
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) throw new Error("Failed to fetch inventory metrics");
-    return response.json();
-  });
+  const { data: metrics, isLoading: metricsLoading } = useSWR<InventoryMetrics>(
+    "/api/inventory/status",
+    async (url: string) => {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch inventory metrics");
+      return response.json();
+    },
+  );
 
   // Fetch stock alerts
   const {
@@ -105,7 +99,7 @@ const InventoryDashboard: React.FC = () => {
       change: "+24",
       changeType: "increase" as const,
       icon: Package,
-      color: "text-blue-600",
+      color: "text-primary",
     },
     {
       title: "Low Stock",
@@ -113,7 +107,7 @@ const InventoryDashboard: React.FC = () => {
       change: "-5",
       changeType: "decrease" as const,
       icon: AlertTriangle,
-      color: "text-orange-600",
+      color: "text-warning-700 dark:text-warning",
     },
     {
       title: "Out of Stock",
@@ -121,7 +115,7 @@ const InventoryDashboard: React.FC = () => {
       change: "-2",
       changeType: "decrease" as const,
       icon: ShoppingCart,
-      color: "text-red-600",
+      color: "text-destructive dark:text-destructive-500",
     },
     {
       title: "Pending Orders",
@@ -129,20 +123,20 @@ const InventoryDashboard: React.FC = () => {
       change: "+8",
       changeType: "increase" as const,
       icon: Truck,
-      color: "text-purple-600",
+      color: "text-info",
     },
   ];
 
   const getAlertSeverity = (status: string) => {
     switch (status) {
       case "critical":
-        return "bg-rose-50 text-rose-800 border-border-gray";
+        return "bg-destructive/10 text-destructive dark:text-destructive-500 border-destructive/20";
       case "out":
-        return "bg-rose-50/80 text-rose-700 border-border-gray";
+        return "bg-destructive/10 text-destructive dark:text-destructive-500 border-destructive/20";
       case "low":
-        return "bg-amber-50 text-amber-800 border-border-gray";
+        return "bg-warning/10 text-warning-700 dark:text-warning border-warning/20";
       default:
-        return "bg-surface1 text-foreground border-border-gray";
+        return "bg-muted text-foreground border-border";
     }
   };
 
@@ -150,7 +144,7 @@ const InventoryDashboard: React.FC = () => {
     <DashboardShell>
       <div className="container mx-auto max-w-7xl px-6 py-6 space-y-6">
         {/* Header */}
-        <header className="bg-surface1 border border-border-gray rounded-2xl shadow-soft px-6 py-5 flex items-center justify-between gap-4">
+        <header className="bg-card border border-border rounded-2xl shadow-soft px-6 py-5 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
               Inventory Manager Dashboard
@@ -171,16 +165,16 @@ const InventoryDashboard: React.FC = () => {
             ? [0, 1, 2, 3].map((key) => (
                 <div
                   key={key}
-                  className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 animate-pulse"
+                  className="bg-card border border-border rounded-xl shadow-soft p-4 animate-pulse"
                 >
-                  <div className="h-3 w-32 bg-surface2 rounded mb-3" />
-                  <div className="h-5 w-20 bg-surface2 rounded" />
+                  <div className="h-3 w-32 bg-muted rounded mb-3" />
+                  <div className="h-5 w-20 bg-muted rounded" />
                 </div>
               ))
             : inventoryMetrics.map((metric, index) => (
                 <div
                   key={index}
-                  className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1"
+                  className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1"
                 >
                   <p className="text-xs font-medium uppercase tracking-wide opacity-70">
                     {metric.title}
@@ -200,19 +194,19 @@ const InventoryDashboard: React.FC = () => {
           <div className="lg:col-span-2 space-y-6">
             {/* Critical Alerts */}
             {alerts?.some((alert) => alert.status === "critical") && (
-              <EnterpriseCard className="p-6 border border-border-gray bg-rose-50/80">
+              <EnterpriseCard className="p-6 border border-destructive/20 bg-destructive/10">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-6 h-6 text-rose-600" />
+                  <AlertTriangle className="w-6 h-6 text-destructive dark:text-destructive-500" />
                   <div className="space-y-1">
-                    <h2 className="text-base font-semibold text-rose-900">
+                    <h2 className="text-base font-semibold text-foreground">
                       Critical Stock Alerts
                     </h2>
-                    <p className="text-sm opacity-80 text-rose-800">
+                    <p className="text-sm opacity-80 text-muted-foreground">
                       {alerts.filter((a) => a.status === "critical").length}{" "}
                       items require immediate restocking.
                     </p>
                   </div>
-                  <button className="ml-auto px-4 py-2 text-sm font-medium rounded-xl bg-rose-600 text-white hover:bg-rose-700 transition-colors">
+                  <button className="ml-auto px-4 py-2 text-sm font-medium rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors">
                     Order Now
                   </button>
                 </div>
@@ -221,7 +215,7 @@ const InventoryDashboard: React.FC = () => {
 
             {/* Stock Alerts */}
             <EnterpriseCard className="p-0 overflow-hidden">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-border-gray bg-surface1/60">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/60">
                 <h2 className="text-sm font-semibold uppercase tracking-wide opacity-80">
                   Stock Alerts
                 </h2>
@@ -229,30 +223,30 @@ const InventoryDashboard: React.FC = () => {
                   View all alerts
                 </button>
               </div>
-              <div className="bg-surface2">
+              <div className="bg-card">
                 {alertsLoading ? (
                   <div className="p-6 space-y-3">
                     {[0, 1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className="bg-surface2 border border-border-gray rounded-xl p-4 animate-pulse shadow-soft"
+                        className="bg-muted border border-border rounded-xl p-4 animate-pulse shadow-soft"
                       >
-                        <div className="h-3 w-48 bg-surface1 rounded mb-2" />
-                        <div className="h-2 w-32 bg-surface1 rounded" />
+                        <div className="h-3 w-48 bg-background rounded mb-2" />
+                        <div className="h-2 w-32 bg-background rounded" />
                       </div>
                     ))}
                   </div>
                 ) : alertsError ? (
-                  <div className="px-6 py-8 text-center text-sm text-rose-600">
+                  <div className="px-6 py-8 text-center text-sm text-destructive dark:text-destructive-500">
                     Failed to load stock alerts
                   </div>
                 ) : alerts && alerts.length > 0 ? (
-                  <ul className="divide-y divide-border-gray">
+                  <ul className="divide-y divide-border">
                     {alerts.map((alert) => (
                       <li
                         key={alert.id}
                         className={cn(
-                          "px-6 py-4 bg-surface2 transition duration-150 shadow-soft hover:shadow-elevated hover:-translate-y-[1px]",
+                          "px-6 py-4 bg-card transition duration-150 shadow-soft hover:bg-muted hover:shadow-elevated hover:-translate-y-[1px]",
                           "flex flex-col gap-2 md:flex-row md:items-start md:justify-between",
                         )}
                       >
@@ -291,7 +285,7 @@ const InventoryDashboard: React.FC = () => {
                                 ? "Out of stock"
                                 : "Low stock"}
                           </span>
-                          <button className="px-3 py-1 text-xs font-medium rounded-xl bg-surface1 border border-border-gray hover:bg-surface0 transition-colors">
+                          <button className="px-3 py-1 text-xs font-medium rounded-xl bg-card border border-border hover:bg-muted transition-colors">
                             Order Stock
                           </button>
                         </div>
@@ -345,7 +339,7 @@ const InventoryDashboard: React.FC = () => {
               </h2>
               <div className="text-center">
                 <div className="relative w-32 h-32 mx-auto mb-4">
-                  <svg className="w-32 h-32 transform -rotate-90 text-border-gray">
+                  <svg className="w-32 h-32 transform -rotate-90 text-border">
                     <circle
                       cx="64"
                       cy={64}
@@ -364,7 +358,7 @@ const InventoryDashboard: React.FC = () => {
                       fill="none"
                       strokeDasharray={`${2 * Math.PI * 56}`}
                       strokeDashoffset={`${2 * Math.PI * 56 * (1 - (metrics?.warehouseCapacity || 0) / 100)}`}
-                      className="text-emerald-500 transition-all duration-500"
+                      className="text-success-700 dark:text-success transition-all duration-500"
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -383,19 +377,19 @@ const InventoryDashboard: React.FC = () => {
                 Quick Actions
               </h2>
               <div className="space-y-3">
-                <button className="w-full px-4 py-2 text-left text-sm bg-surface1 border border-border-gray rounded-xl shadow-soft hover:-translate-y-[1px] hover:shadow-elevated transition flex items-center gap-3">
+                <button className="w-full px-4 py-2 text-left text-sm bg-card border border-border rounded-xl shadow-soft hover:bg-muted hover:-translate-y-[1px] hover:shadow-elevated transition flex items-center gap-3">
                   <Package className="w-4 h-4" />
                   <span>Add New Item</span>
                 </button>
-                <button className="w-full px-4 py-2 text-left text-sm bg-surface1 border border-border-gray rounded-xl shadow-soft hover:-translate-y-[1px] hover:shadow-elevated transition flex items-center gap-3">
+                <button className="w-full px-4 py-2 text-left text-sm bg-card border border-border rounded-xl shadow-soft hover:bg-muted hover:-translate-y-[1px] hover:shadow-elevated transition flex items-center gap-3">
                   <Truck className="w-4 h-4" />
                   <span>Receive Shipment</span>
                 </button>
-                <button className="w-full px-4 py-2 text-left text-sm bg-surface1 border border-border-gray rounded-xl shadow-soft hover:-translate-y-[1px] hover:shadow-elevated transition flex items-center gap-3">
+                <button className="w-full px-4 py-2 text-left text-sm bg-card border border-border rounded-xl shadow-soft hover:bg-muted hover:-translate-y-[1px] hover:shadow-elevated transition flex items-center gap-3">
                   <ShoppingCart className="w-4 h-4" />
                   <span>Place Order</span>
                 </button>
-                <button className="w-full px-4 py-2 text-left text-sm bg-surface1 border border-border-gray rounded-xl shadow-soft hover:-translate-y-[1px] hover:shadow-elevated transition flex items-center gap-3">
+                <button className="w-full px-4 py-2 text-left text-sm bg-card border border-border rounded-xl shadow-soft hover:bg-muted hover:-translate-y-[1px] hover:shadow-elevated transition flex items-center gap-3">
                   <Warehouse className="w-4 h-4" />
                   <span>Warehouse Map</span>
                 </button>

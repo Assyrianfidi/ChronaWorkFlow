@@ -34,14 +34,17 @@ export const EnterpriseHeader: React.FC<EnterpriseHeaderProps> = ({
 
   return (
     <>
-      <header className="bg-surface0 border-b border-border-gray shadow-soft">
+      <header className="bg-background border-b border-border shadow-soft">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
           {/* Left: logo + title + mobile hamburger */}
           <div className="flex items-center gap-4">
             <button
+              type="button"
               aria-label="Open sidebar"
               onClick={onSidebarToggle}
-              className="p-2 rounded-md text-black/80 hover:text-black hover:bg-surface1/60 lg:hidden"
+              aria-expanded={sidebarOpen}
+              aria-controls="enterprise-sidebar"
+              className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -53,10 +56,9 @@ export const EnterpriseHeader: React.FC<EnterpriseHeaderProps> = ({
                 className="h-8 w-8 rounded-md object-contain"
               />
               <div className="hidden sm:block">
-                <div className="text-sm font-semibold text-black">
+                <div className="text-sm font-semibold text-foreground">
                   AccuBooks
                 </div>
-                <div className="text-xs opacity-70">Enterprise 2099</div>
               </div>
             </div>
           </div>
@@ -67,12 +69,13 @@ export const EnterpriseHeader: React.FC<EnterpriseHeaderProps> = ({
               <label className="relative block">
                 <span className="sr-only">Search</span>
                 <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="w-4 h-4 text-black/50" />
+                  <Search className="w-4 h-4 text-muted-foreground" />
                 </span>
                 <input
+                  id="input-jh5eydkwq"
                   className={cn(
-                    "w-full bg-surface1 border border-border-gray rounded-full py-2 px-10 text-black placeholder:opacity-50",
-                    "focus:outline-none focus:border-primary-600 focus:ring-2 focus:ring-primary-300/20",
+                    "w-full bg-background border border-input rounded-full py-2 px-10 text-foreground placeholder:text-muted-foreground",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   )}
                   placeholder="Search reports, transactions, users..."
                   type="search"
@@ -85,7 +88,8 @@ export const EnterpriseHeader: React.FC<EnterpriseHeaderProps> = ({
           <div className="flex items-center gap-3">
             {/* Search button for mobile */}
             <button
-              className="md:hidden p-2 rounded-full bg-surface1 border border-border-gray text-black/80"
+              type="button"
+              className="md:hidden p-2 rounded-full bg-background border border-border text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               aria-label="Open search"
               onClick={() => setMobileOpen(true)}
             >
@@ -94,7 +98,8 @@ export const EnterpriseHeader: React.FC<EnterpriseHeaderProps> = ({
 
             {/* Notifications */}
             <button
-              className="p-2 rounded-full bg-surface1 border border-border-gray text-black/80 hover:shadow-elevated transition"
+              type="button"
+              className="p-2 rounded-full bg-background border border-border text-muted-foreground hover:bg-muted hover:text-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               aria-label="Notifications"
               title="Notifications"
             >
@@ -103,7 +108,8 @@ export const EnterpriseHeader: React.FC<EnterpriseHeaderProps> = ({
 
             {/* Help */}
             <button
-              className="hidden md:inline-flex p-2 rounded-full bg-surface1 border border-border-gray text-black/80 hover:shadow-elevated transition"
+              type="button"
+              className="hidden md:inline-flex p-2 rounded-full bg-background border border-border text-muted-foreground hover:bg-muted hover:text-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               aria-label="Help"
             >
               <HelpCircle className="w-4 h-4" />
@@ -123,9 +129,12 @@ export const EnterpriseHeader: React.FC<EnterpriseHeaderProps> = ({
 
             {/* Mobile menu toggle to open drawer */}
             <button
-              className="inline-flex p-2 rounded-full bg-surface1 border border-border-gray text-black/80 lg:hidden"
+              type="button"
+              className="inline-flex p-2 rounded-full bg-background border border-border text-muted-foreground hover:bg-muted hover:text-foreground lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               onClick={() => setMobileOpen(true)}
               aria-label="Open mobile drawer"
+              aria-haspopup="dialog"
+              aria-expanded={mobileOpen}
             >
               <Menu className="w-4 h-4" />
             </button>

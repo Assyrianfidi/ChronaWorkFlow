@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useUserExperienceMode } from "@/components/adaptive/UserExperienceMode";
 import { usePerformance } from "@/components/adaptive/UI-Performance-Engine";
-import { useAuthStore } from "@/../../store/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 // GraphQL Types
 interface GraphQLSchema {
@@ -148,7 +148,7 @@ interface GraphQLContextType {
   subscribe: (
     query: string,
     variables?: Record<string, any>,
-    clientId: string,
+    clientId?: string,
   ) => Promise<string>;
   unsubscribe: (subscriptionId: string, clientId: string) => Promise<void>;
 
@@ -172,8 +172,10 @@ class GraphQLEngine {
     (parent: any, args: any, context: any, info: any) => any
   > = new Map();
   private subscriptions: Map<string, GraphQLSubscription> = new Map();
-  private middleware: Map<string, (req: any, res: any, next: any) => void> =
-    new Map();
+  private middleware: Map<
+    string,
+    (context: any, info: any) => unknown | Promise<unknown>
+  > = new Map();
   private queries: Map<string, GraphQLQuery> = new Map();
   private executions: GraphQLExecution[] = [];
   private complexityAnalyzer: ComplexityAnalyzer;
@@ -630,7 +632,9 @@ class GraphQLEngine {
       if (!field?.resolver) continue;
 
       try {
-        const result = await field.resolver(variables, context);
+        const result = await field.resolver(null, variables, context, {
+          fieldName,
+        });
         data[fieldName] = result;
       } catch (error) {
         data[fieldName] = null;
@@ -661,7 +665,9 @@ class GraphQLEngine {
       if (!field?.resolver) continue;
 
       try {
-        const result = await field.resolver(variables, context);
+        const result = await field.resolver(null, variables, context, {
+          fieldName,
+        });
         data[fieldName] = result;
       } catch (error) {
         data[fieldName] = null;
@@ -749,10 +755,10 @@ class GraphQLEngine {
   // Subscription management
   async subscribe(
     query: string,
-    variables: Record<string, any>,
     clientId: string,
+    variables?: Record<string, any>,
   ): Promise<string> {
-    return this.subscriptionManager.subscribe(query, variables, clientId);
+    return this.subscriptionManager.subscribe(query, variables || {}, clientId);
   }
 
   async unsubscribe(subscriptionId: string, clientId: string): Promise<void> {
@@ -1100,8 +1106,8 @@ export const GraphQLServer: React.FC<{ children: React.ReactNode }> = ({
 
       const subscriptionId = await engineRef.current.subscribe(
         query,
-        variables,
         clientId || "default",
+        variables,
       );
       loadData();
       return subscriptionId;
@@ -1172,11 +1178,11 @@ export const useGraphQL = (): GraphQLContextType => {
 export const withGraphQL = <P extends object>(
   Component: React.ComponentType<P>,
 ) => {
-  return React.forwardRef<any, P>((props, ref) => (
+  return (props: P) => (
     <GraphQLServer>
-      <Component {...props} ref={ref} />
+      <Component {...props} />
     </GraphQLServer>
-  ));
+  );
 };
 
 // Utility Components

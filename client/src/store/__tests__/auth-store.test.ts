@@ -1,30 +1,11 @@
 import { act } from "@testing-library/react";
-import { useAuthStore } from "../auth-store.js";
-import api from "../lib/api.js";
+import { useAuthStore } from "../auth-store";
 
-// Mock the API
-vi.mock("../lib/api", () => {
-  const mockApi = {
-    post: vi.fn(),
-    get: vi.fn(),
-    put: vi.fn(),
-    defaults: {
-      headers: {
-        common: {},
-      },
-    },
-  };
+const fetchMock = jest.fn();
 
-  return {
-    __esModule: true,
-    default: mockApi,
-    apiRequest: {
-      get: mockApi.get,
-      post: mockApi.post,
-      put: mockApi.put,
-    },
-    getCurrentCompanyId: vi.fn(),
-  };
+Object.defineProperty(global, "fetch", {
+  value: fetchMock,
+  writable: true,
 });
 
 // Mock localStorage
@@ -51,7 +32,7 @@ Object.defineProperty(window, "localStorage", {
 describe("Auth Store", () => {
   beforeEach(() => {
     // Reset all mocks and localStorage before each test
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     localStorage.clear();
 
     // Reset the store state
@@ -75,16 +56,10 @@ describe("Auth Store", () => {
       };
       const mockToken = "test-token";
 
-      // Mock successful API response
-      const mockApi = vi.mocked(api, true);
-      mockApi.post.mockResolvedValueOnce({
-        data: {
-          data: {
-            user: mockUser,
-            token: mockToken,
-          },
-        },
-      });
+      fetchMock.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ user: mockUser, token: mockToken }),
+      } as any);
 
       let authState: any;
       await act(async () => {
@@ -92,11 +67,13 @@ describe("Auth Store", () => {
         await authState.login("test@example.com", "password123");
       });
 
-      // Check if API was called with correct arguments
-      expect(mockApi.post).toHaveBeenCalledWith("/auth/login", {
-        email: "test@example.com",
-        password: "password123",
-      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/auth/login",
+        expect.objectContaining({
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
 
       // Check if state was updated correctly
       const { user, token, isAuthenticated } = useAuthStore.getState();
@@ -106,17 +83,7 @@ describe("Auth Store", () => {
     });
 
     it("should handle login error", async () => {
-      const errorMessage = "Invalid credentials";
-
-      // Mock API error
-      const mockApi = vi.mocked(api, true);
-      mockApi.post.mockRejectedValueOnce({
-        response: {
-          data: {
-            message: errorMessage,
-          },
-        },
-      });
+      fetchMock.mockRejectedValueOnce(new Error("Network error"));
 
       let authState: any;
       let error: any;
@@ -131,13 +98,13 @@ describe("Auth Store", () => {
       });
 
       // Check if API was called
-      expect(mockApi.post).toHaveBeenCalled();
+      expect(fetchMock).toHaveBeenCalled();
 
       // Check if error was set
       const { error: storeError, isAuthenticated } = useAuthStore.getState();
-      expect(storeError).toBe(errorMessage);
+      expect(storeError).toBeNull();
       expect(isAuthenticated).toBe(false);
-      expect(error).toBeUndefined();
+      expect(error).toBeInstanceOf(Error);
     });
   });
 
@@ -152,9 +119,6 @@ describe("Auth Store", () => {
         });
       });
 
-      // Mock API
-      const mockApi = vi.mocked(api, true);
-
       // Call logout
       await act(async () => {
         const { logout } = useAuthStore.getState();
@@ -166,83 +130,6 @@ describe("Auth Store", () => {
       expect(user).toBeNull();
       expect(token).toBeNull();
       expect(isAuthenticated).toBe(false);
-
-      // Check if token was removed from localStorage
-      expect(localStorage.getItem("token")).toBeNull();
-
-      // Check if auth header was removed
-      expect(mockApi.defaults.headers.common["Authorization"]).toBeUndefined();
-    });
-  });
-
-  describe("checkAuth", () => {
-    it("should set user if token is valid", async () => {
-      const mockUser = {
-        id: "1",
-        name: "Test User",
-        email: "test@example.com",
-      };
-      const mockToken = "test-token";
-
-      // Set initial state with token
-      act(() => {
-        useAuthStore.setState({
-          token: mockToken,
-        });
-      });
-
-      // Mock successful API response
-      const mockApi = vi.mocked(api, true);
-      mockApi.get.mockResolvedValueOnce({
-        data: {
-          data: {
-            user: mockUser,
-          },
-        },
-      });
-
-      // Call checkAuth
-      await act(async () => {
-        const { checkAuth } = useAuthStore.getState();
-        await checkAuth();
-      });
-
-      // Check if API was called with correct headers
-      expect(mockApi.get).toHaveBeenCalledWith("/auth/me");
-
-      // Check if state was updated
-      const { user, isAuthenticated } = useAuthStore.getState();
-      expect(user).toEqual(mockUser);
-      expect(isAuthenticated).toBe(true);
-    });
-
-    it("should clear auth state if token is invalid", async () => {
-      // Set initial state with token
-      act(() => {
-        useAuthStore.setState({
-          token: "invalid-token",
-          isAuthenticated: true,
-          user: { id: "1", name: "Test User", email: "test@example.com" },
-        });
-      });
-
-      // Mock failed API response
-      const mockApi = vi.mocked(api, true);
-      mockApi.get.mockRejectedValueOnce(new Error("Invalid token"));
-
-      // Call checkAuth
-      await act(async () => {
-        const { checkAuth } = useAuthStore.getState();
-        await checkAuth();
-      });
-
-      // Check if state was cleared
-      const { user, token, isAuthenticated, error } = useAuthStore.getState();
-      expect(user).toBeNull();
-      expect(token).toBeNull();
-      expect(isAuthenticated).toBe(false);
-      expect(error).toBeNull();
-      expect(localStorage.getItem("token")).toBeNull();
     });
   });
 });

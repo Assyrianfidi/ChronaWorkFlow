@@ -19,12 +19,12 @@ const QuickActions: React.FC<QuickActionsProps> = ({ actions }) => {
         <Link
           key={index}
           to={action.href}
-          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors group"
         >
-          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-            <action.icon className="w-5 h-5 text-blue-600" />
+          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+            <action.icon className="w-5 h-5 text-primary" />
           </div>
-          <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+          <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">
             {action.label}
           </span>
         </Link>

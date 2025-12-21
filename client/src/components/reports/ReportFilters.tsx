@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { format, subMonths, formatISO, parseISO } from "date-fns";
 import { Button } from "@/components/components/ui/button";
@@ -18,7 +17,7 @@ import {
 } from "@/components/components/ui/popover";
 import { Calendar } from "@/components/components/ui/calendar";
 import { CalendarIcon, Filter, X } from "lucide-react";
-import { cn } from "@/components/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface ReportFiltersProps {
   onFilterChange?: (filters: ReportFilters) => void;

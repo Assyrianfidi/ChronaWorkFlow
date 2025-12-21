@@ -9,7 +9,9 @@ export const rateLimitMiddleware = (
 ) => {
   return (req: NextRequest) => {
     const identifier =
-      req.ip || req.headers.get("x-forwarded-for") || "unknown";
+      req.headers.get("x-forwarded-for") ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
 
     if (!rateLimiter.isAllowed(identifier, limit, windowMs)) {
       return NextResponse.json(

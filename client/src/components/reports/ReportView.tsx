@@ -5,16 +5,16 @@ declare global {
 }
 
 import { useParams, useNavigate } from "react-router-dom";
-import { useReport } from "../../hooks/useReports.js";
-import { Button } from "../ui/button.js";
+import { LoadingState } from '@/components/ui/LoadingState';
+import { useReport } from "@/hooks/useReports";
+import Button from "@/components/ui/Button";
 import {
-  Card,
+  default as Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "../ui/card.js";
-import { Avatar } from "../ui/avatar.js";
+} from "@/components/ui/Card";
 import {
   Table,
   TableBody,
@@ -22,19 +22,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../ui/table.js";
-import { Badge } from "../ui/badge.js";
-import { Skeleton } from "../ui/skeleton.js";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs.js";
-import { Progress } from "../ui/progress.js";
-import { Input } from "../ui/input.js";
+} from "@/components/ui/Table";
+import Badge from "@/components/ui/Badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
+import Input from "@/components/ui/Input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select.js";
+} from "@/components/ui/Select";
 import {
   ArrowLeft,
   Download,
@@ -44,37 +42,36 @@ import {
   Edit,
   FileText,
   Eye,
-  Loader2,
   MoreHorizontal,
   Save,
 } from "lucide-react";
-import { useToast } from "../ui/use-toast.js";
-import { Report } from "../../types/report.js";
+import { toast } from "@/components/ui/use-toast";
+import Alert, { AlertDescription, AlertTitle } from "@/components/ui/Alert";
+import { Report } from "@/types/report";
 import { format } from "date-fns";
 import React from "react"; // Added missing import
+import { SecureHTML } from "@/components/security";
 
 export function ReportView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const { data: report, isLoading, isError } = useReport(id || "");
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-10 w-48" />
-        <Skeleton className="h-6 w-32" />
-        <Skeleton className="h-64 w-full" />
+      <div className="min-h-64">
+        <LoadingState label="Loading report…" />
       </div>
     );
   }
 
   if (isError || !report) {
     return (
-      <div className="p-4 text-destructive">
-        Failed to load report. Please try again later.
-      </div>
+      <Alert variant="error">
+        <AlertTitle>Failed to load report</AlertTitle>
+        <AlertDescription>Please try again later.</AlertDescription>
+      </Alert>
     );
   }
 
@@ -169,9 +166,7 @@ export function ReportView() {
             <div className="rounded-lg border p-4">
               <p className="text-sm text-muted-foreground">Created By</p>
               <p className="font-medium">
-                {/* @ts-ignore */}
-                {/* @ts-ignore */}
-                {(report as any).createdBy?.name || "Unknown User"}
+                {report.createdBy?.name || "Unknown User"}
               </p>
             </div>
 
@@ -185,37 +180,25 @@ export function ReportView() {
 
           <div className="rounded-lg border p-4">
             <h3 className="mb-4 text-lg font-medium">Description</h3>
-            <div
+            <SecureHTML
+              html={report.description || "No description provided."}
               className="prose max-w-none dark:prose-invert"
-              dangerouslySetInnerHTML={{
-                __html: report.description || "No description provided.",
-              }}
+              tag="div"
             />
           </div>
 
-          {/* @ts-ignore */}
-          {/* @ts-ignore */}
-          {(report as any).notes && (
+          {report.notes && (
             <div className="rounded-lg border p-4">
               <h3 className="mb-4 text-lg font-medium">Notes</h3>
-              {/* @ts-ignore */}
-              {/* @ts-ignore */}
-              <p className="whitespace-pre-line">{(report as any).notes}</p>
+              <p className="whitespace-pre-line">{report.notes}</p>
             </div>
           )}
 
-          {/* @ts-ignore */}
-          {/* @ts-ignore */}
-          {(report as any).attachments &&
-            /* @ts-ignore */
-            /* @ts-ignore */
-            (report as any).attachments.length > 0 && (
+          {report.attachments && report.attachments.length > 0 && (
               <div className="rounded-lg border p-4">
                 <h3 className="mb-4 text-lg font-medium">Attachments</h3>
                 <div className="space-y-2">
-                  {/* @ts-ignore */}
-                  {/* @ts-ignore */}
-                  {(report as any).attachments.map((attachment: any) => (
+                  {report.attachments.map((attachment) => (
                     <div
                       key={attachment.id}
                       className="flex items-center justify-between rounded border p-3"

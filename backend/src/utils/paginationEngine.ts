@@ -330,7 +330,7 @@ export class PaginationEngine {
    * Validate pagination parameters
    */
   static validatePaginationParams(params: any): void {
-    if (params.page && (isNaN(params.page) || params.page < 1)) {
+    if (params.page !== undefined && (isNaN(params.page) || params.page < 1)) {
       throw new ApiError(
         "Invalid page parameter. Must be a positive integer.",
         400,
@@ -339,7 +339,7 @@ export class PaginationEngine {
     }
 
     if (
-      params.limit &&
+      params.limit !== undefined &&
       (isNaN(params.limit) || params.limit < 1 || params.limit > 100)
     ) {
       throw new ApiError(

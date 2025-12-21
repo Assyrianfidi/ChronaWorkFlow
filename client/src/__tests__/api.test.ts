@@ -24,7 +24,7 @@ vi.mock("../api/index", () => ({
 }));
 
 // Import the mocked APIs
-import { authApi, accountsApi, transactionsApi } from "../api.js";
+import { authApi, accountsApi, transactionsApi } from '../api';
 
 describe("API Tests", () => {
   beforeEach(() => {

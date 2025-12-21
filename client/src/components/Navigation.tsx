@@ -101,7 +101,7 @@ const Navigation: React.FC = () => {
             </span>
 
             {/* Role-specific dashboards */}
-            {user?.role && user.role !== "User" && (
+            {user?.role && (
               <div className="relative group">
                 <Button
                   variant="outline"

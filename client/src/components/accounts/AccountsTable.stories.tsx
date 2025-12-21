@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { AccountsTable } from "./AccountsTable.js";
-import { AccountTableFilters } from "./AccountTableFilters.js";
-import { VirtualizedAccountsTable } from "./VirtualizedAccountsTable.js";
+import { AccountsTable } from './AccountsTable';
+import { VirtualizedAccountsTable } from './VirtualizedAccountsTable';
 
 // Mock account data
 const mockAccounts = [
@@ -57,9 +56,6 @@ const meta: Meta<typeof AccountsTable> = {
   tags: ["autodocs"],
   argTypes: {
     accounts: { control: "object" },
-    loading: { control: "boolean" },
-    searchable: { control: "boolean" },
-    expandable: { control: "boolean" },
   },
 };
 
@@ -69,36 +65,36 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     accounts: mockAccounts,
-    loading: false,
-    searchable: true,
-    expandable: true,
+    searchQuery: "",
+    expandedIds: new Set<string>(),
+    onToggleExpand: () => {},
   },
 };
 
 export const Loading: Story = {
   args: {
     accounts: [],
-    loading: true,
-    searchable: true,
-    expandable: true,
+    searchQuery: "",
+    expandedIds: new Set<string>(),
+    onToggleExpand: () => {},
   },
 };
 
 export const Empty: Story = {
   args: {
     accounts: [],
-    loading: false,
-    searchable: true,
-    expandable: true,
+    searchQuery: "",
+    expandedIds: new Set<string>(),
+    onToggleExpand: () => {},
   },
 };
 
 export const NonExpandable: Story = {
   args: {
     accounts: mockAccounts,
-    loading: false,
-    searchable: true,
-    expandable: false,
+    searchQuery: "",
+    expandedIds: new Set<string>(),
+    onToggleExpand: () => {},
   },
 };
 
@@ -123,8 +119,8 @@ export const LargeDataset: Story = {
         children: [],
       },
     ],
-    loading: false,
-    searchable: true,
-    expandable: true,
+    searchQuery: "",
+    expandedIds: new Set<string>(),
+    onToggleExpand: () => {},
   },
 };

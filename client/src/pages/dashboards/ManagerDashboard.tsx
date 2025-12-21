@@ -1,11 +1,7 @@
 import * as React from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import useSWR from "swr";
-import {
-  DashboardMetricCard,
-  QuickActions,
-  ActivityFeed,
-} from "../../components/dashboard";
+import { DashboardMetricCard, QuickActions } from "../../components/dashboard";
 import {
   TrendingUp,
   DollarSign,
@@ -16,6 +12,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardShell } from "../../components/ui/layout/DashboardShell";
+import {
+  getDemoManagerFinancialKPIs,
+  getDemoManagerTeamActivity,
+  isDemoModeEnabled,
+} from "@/lib/demo";
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "elevated" | "outlined" | "glass";
@@ -26,7 +27,7 @@ const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-2xl border border-border-gray bg-surface2 shadow-soft transition-transform transition-shadow duration-150",
+        "rounded-2xl border border-border bg-card text-card-foreground shadow-soft transition-transform transition-shadow duration-150",
         {
           "hover:-translate-y-[1px] hover:shadow-elevated":
             variant === "default",
@@ -34,7 +35,7 @@ const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
             variant === "elevated",
           "border-2 hover:-translate-y-[2px] hover:shadow-elevated":
             variant === "outlined",
-          "bg-surface2/90 backdrop-blur-sm hover:-translate-y-[1px] hover:shadow-elevated":
+          "bg-card/90 backdrop-blur-sm hover:-translate-y-[1px] hover:shadow-elevated":
             variant === "glass",
         },
         className,
@@ -74,6 +75,9 @@ const ManagerDashboard: React.FC = () => {
   } = useSWR<FinancialKPIs>(
     "/api/dashboard/financial-kpis",
     async (url: string) => {
+      if (isDemoModeEnabled()) {
+        return getDemoManagerFinancialKPIs() as any;
+      }
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -93,6 +97,9 @@ const ManagerDashboard: React.FC = () => {
   } = useSWR<TeamActivity[]>(
     "/api/dashboard/team-activity",
     async (url: string) => {
+      if (isDemoModeEnabled()) {
+        return getDemoManagerTeamActivity() as any;
+      }
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -137,7 +144,7 @@ const ManagerDashboard: React.FC = () => {
       change: "+8%",
       changeType: "increase" as const,
       icon: Target,
-      color: "text-purple-600",
+      color: "text-muted-foreground",
     },
   ];
 
@@ -152,7 +159,7 @@ const ManagerDashboard: React.FC = () => {
     <DashboardShell>
       <div className="container mx-auto max-w-7xl px-6 py-6 space-y-6">
         {/* Header */}
-        <header className="bg-surface1 border border-border-gray rounded-2xl shadow-soft px-6 py-5 flex items-center justify-between gap-4">
+        <header className="bg-card border border-border rounded-2xl shadow-soft px-6 py-5 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
               Manager Dashboard
@@ -174,11 +181,11 @@ const ManagerDashboard: React.FC = () => {
             ? [0, 1, 2, 3].map((key) => (
                 <div
                   key={key}
-                  className="bg-surface2 border border-border-gray rounded-2xl shadow-soft p-6 animate-pulse flex flex-col gap-3"
+                  className="bg-card border border-border rounded-2xl shadow-soft p-6 animate-pulse flex flex-col gap-3"
                 >
-                  <div className="h-4 w-24 bg-surface1 rounded" />
-                  <div className="h-7 w-20 bg-surface1 rounded" />
-                  <div className="h-3 w-16 bg-surface1 rounded" />
+                  <div className="h-4 w-24 bg-muted rounded" />
+                  <div className="h-7 w-20 bg-muted rounded" />
+                  <div className="h-3 w-16 bg-muted rounded" />
                 </div>
               ))
             : metrics.map((metric, index) => (
@@ -240,18 +247,18 @@ const ManagerDashboard: React.FC = () => {
                     {[0, 1, 2, 3].map((key) => (
                       <div
                         key={key}
-                        className="flex items-start gap-3 bg-surface2 border border-border-gray rounded-xl p-3 animate-pulse shadow-soft"
+                        className="flex items-start gap-3 bg-muted border border-border rounded-xl p-3 animate-pulse shadow-soft"
                       >
-                        <div className="w-2 h-2 rounded-full bg-surface1 mt-2" />
+                        <div className="w-2 h-2 rounded-full bg-background mt-2" />
                         <div className="flex-1 space-y-2">
-                          <div className="h-3 w-40 bg-surface1 rounded" />
-                          <div className="h-2 w-24 bg-surface1 rounded" />
+                          <div className="h-3 w-40 bg-background rounded" />
+                          <div className="h-2 w-24 bg-background rounded" />
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : activityError ? (
-                  <div className="text-center py-8 text-red-600">
+                  <div className="text-center py-8 text-destructive dark:text-destructive-500">
                     Failed to load team activity
                   </div>
                 ) : activity && activity.length > 0 ? (
@@ -259,16 +266,16 @@ const ManagerDashboard: React.FC = () => {
                     {activity.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-start gap-3 p-3 rounded-xl border border-border-gray bg-surface2 hover:bg-surface1 hover:-translate-y-[1px] hover:shadow-elevated transition-transform transition-shadow duration-150"
+                        className="flex items-start gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted hover:-translate-y-[1px] hover:shadow-elevated transition-transform transition-shadow duration-150"
                       >
                         <div
                           className={cn(
                             "w-2 h-2 rounded-full mt-2",
                             item.priority === "high"
-                              ? "bg-red-500"
+                              ? "bg-destructive"
                               : item.priority === "medium"
-                                ? "bg-amber-400"
-                                : "bg-emerald-500",
+                                ? "bg-warning"
+                                : "bg-success",
                           )}
                         />
                         <div className="flex-1 min-w-0">
@@ -311,7 +318,7 @@ const ManagerDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1">
                   <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                     Revenue
                   </span>
@@ -324,7 +331,7 @@ const ManagerDashboard: React.FC = () => {
                     Current month billings
                   </span>
                 </div>
-                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1">
                   <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                     Budget Usage
                   </span>
@@ -337,7 +344,7 @@ const ManagerDashboard: React.FC = () => {
                     Of allocated spend consumed
                   </span>
                 </div>
-                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1">
                   <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                     Expense Flags
                   </span>
@@ -348,7 +355,7 @@ const ManagerDashboard: React.FC = () => {
                     Items requiring financial review
                   </span>
                 </div>
-                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1">
                   <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                     Team Output
                   </span>

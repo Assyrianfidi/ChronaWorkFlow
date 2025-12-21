@@ -30,7 +30,7 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 export const PublicRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   // Temporarily bypass loading check to test
   // if (isLoading) {

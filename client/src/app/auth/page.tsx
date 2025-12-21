@@ -1,7 +1,7 @@
-import React from "react";
-("use client");
+"use client";
 
-import { signIn } from "next-auth/react";
+import React from "react";
+
 import { Button } from "@/components/components/ui/button";
 import {
   Card,
@@ -15,9 +15,11 @@ import { Input } from "@/components/components/ui/input";
 import { Label } from "@/components/components/ui/label";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Icons } from "@/components/components/icons";
+import { Icons } from "@/components/icons";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function AuthPage() {
+  const { login } = useAuthStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,18 +34,8 @@ export default function AuthPage() {
     setError(null);
 
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-        callbackUrl,
-      });
-
-      if (result?.error) {
-        setError("Invalid email or password");
-      } else {
-        router.push(callbackUrl);
-      }
+      await login(email, password);
+      router.push(callbackUrl);
     } catch (error) {
       setError("An error occurred. Please try again.");
     } finally {
@@ -54,7 +46,8 @@ export default function AuthPage() {
   const handleOAuthSignIn = async (provider: string) => {
     setIsLoading(true);
     setError(null);
-    await signIn(provider, { callbackUrl });
+    setError(`OAuth provider '${provider}' is not configured.`);
+    setIsLoading(false);
   };
 
   return (

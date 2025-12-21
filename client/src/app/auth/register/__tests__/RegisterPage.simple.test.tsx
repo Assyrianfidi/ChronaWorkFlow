@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import RegisterPage from "../page.js";
+import RegisterPage from '../page';
 
 // Simple mock for useRouter
 const mockPush = vi.fn();

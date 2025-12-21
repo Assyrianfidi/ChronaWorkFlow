@@ -69,7 +69,7 @@ export interface HealingStrategy {
 
 export interface ErrorCondition {
   type: "error_type" | "component" | "route" | "network" | "custom";
-  operator: "equals" | "contains" | "regex" | "custom";
+  operator: "equals" | "contains" | "regex" | "exists" | "custom";
   value: any;
   customLogic?: (error: Error, context: ErrorContext) => boolean;
 }

@@ -1,9 +1,13 @@
 import React from "react";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
-  ReactTable,
+  Table,
+  TableState,
+  Updater,
 } from "@tanstack/react-table";
 import {
   flexRender,
@@ -13,7 +17,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { cn } from "@/../../../lib/utils";
+import { cn } from "@/lib/utils";
 
 export interface EnterpriseDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -33,13 +37,9 @@ export interface EnterpriseDataTableProps<TData, TValue> {
     columnFilters?: ColumnFiltersState;
     globalFilter?: string;
   };
-  onStateChange?: (state: {
-    sorting?: SortingState;
-    columnFilters?: ColumnFiltersState;
-    globalFilter?: string;
-  }) => void;
+  onStateChange?: (updater: Updater<TableState>) => void;
 
-  renderToolbar?: (state: any, table: ReactTable<any>) => React.ReactNode;
+  renderToolbar?: (state: any, table: Table<TData>) => React.ReactNode;
   onRowClick?: (row: TData) => void;
 }
 
@@ -65,7 +65,6 @@ function EnterpriseDataTableInner<TData, TValue>(
     className,
     enableSorting,
     enableColumnFilters,
-    enableGlobalFilter,
     state,
     onStateChange,
     renderToolbar,
@@ -93,25 +92,22 @@ function EnterpriseDataTableInner<TData, TValue>(
     <div
       ref={ref}
       className={cn(
-        "relative w-full overflow-x-auto overflow-y-auto max-h-[600px] rounded-lg border border-border-gray bg-surface1 shadow-soft",
+        "relative w-full overflow-x-auto overflow-y-auto max-h-[600px] rounded-lg border border-border bg-card text-card-foreground shadow-soft",
         className,
       )}
     >
       {renderToolbar && (
-        <div className="mb-4">
-          {/* @ts-ignore */}
-          {renderToolbar(table.getState(), table as unknown as ReactTable<any>)}
-        </div>
+        <div className="mb-4">{renderToolbar(table.getState(), table)}</div>
       )}
 
       <table className="w-full border-collapse text-sm">
-        <thead className="sticky top-0 z-10 bg-surface2">
+        <thead className="sticky top-0 z-10 bg-muted/20">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="h-11 px-4 text-left align-middle text-xs font-medium text-black/70 border-b border-border-gray bg-surface2"
+                  className="h-11 px-4 text-left align-middle text-xs font-semibold text-muted-foreground border-b border-border bg-muted/20"
                 >
                   {header.isPlaceholder
                     ? null
@@ -126,29 +122,21 @@ function EnterpriseDataTableInner<TData, TValue>(
         </thead>
         <tbody>
           {isLoading ? (
-            // Skeleton rows
-            [...Array(5)].map((_, rowIndex) => (
-              <tr
-                key={`skeleton-${rowIndex}`}
-                className="border-b border-border-gray"
+            <tr>
+              <td
+                colSpan={table.getAllLeafColumns().length || 1}
+                className="px-4"
               >
-                {table.getAllLeafColumns().map((column) => (
-                  <td key={column.id} className="px-4 py-3 align-middle">
-                    <div className="h-4 w-3/4 rounded-full bg-surface2 animate-pulse" />
-                  </td>
-                ))}
-              </tr>
-            ))
+                <LoadingState label="Loading…" />
+              </td>
+            </tr>
           ) : showEmptyState ? (
             <tr>
               <td
                 colSpan={table.getAllLeafColumns().length || 1}
-                className="px-4 py-10 text-center text-sm text-black/70"
+                className="px-4"
               >
-                <div className="flex flex-col items-center justify-center gap-2">
-                  <div className="h-10 w-10 rounded-full border border-border-gray bg-surface2" />
-                  <p>{noResultsMessage}</p>
-                </div>
+                <EmptyState size="sm" title={noResultsMessage} />
               </td>
             </tr>
           ) : (
@@ -156,7 +144,7 @@ function EnterpriseDataTableInner<TData, TValue>(
               <tr
                 key={row.id}
                 className={cn(
-                  "border-b border-border-gray hover:bg-surface2/60 transition-colors duration-200",
+                  "border-b border-border hover:bg-muted/30 transition-colors duration-200",
                   onRowClick && "cursor-pointer",
                 )}
                 onClick={() => onRowClick?.(row.original)}
@@ -164,7 +152,7 @@ function EnterpriseDataTableInner<TData, TValue>(
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="px-4 py-3 align-middle text-sm text-black"
+                    className="px-4 py-3 align-middle text-sm text-foreground"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

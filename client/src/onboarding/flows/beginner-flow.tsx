@@ -3,7 +3,7 @@
  * Comprehensive step-by-step guide for new users
  */
 
-import { OnboardingFlow } from "../OnboardingEngine.js";
+import { OnboardingFlow } from "../OnboardingEngine";
 
 export const beginnerFlow: OnboardingFlow = {
   id: "beginner-getting-started",

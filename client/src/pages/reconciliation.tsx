@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   Card,
   CardContent,
@@ -46,11 +47,9 @@ import {
 import {
   useBankTransactions,
   useAccounts,
-  useTransactions,
   type BankTransaction,
   type Account,
-  type Transaction,
-} from "@/components/hooks/use-api";
+} from "@/hooks/use-api";
 import { Skeleton } from "@/components/components/ui/skeleton";
 import { DashboardShell } from "@/components/components/ui/layout/DashboardShell";
 import { format } from "date-fns";
@@ -60,13 +59,10 @@ export default function Reconciliation() {
   const [selectedAccount, setSelectedAccount] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedBankTxn, setSelectedBankTxn] =
-    useState<BankTransaction | null>(null);
 
   const { data: bankTransactions = [], isLoading: bankLoading } =
     useBankTransactions();
   const { data: accounts = [] } = useAccounts();
-  const { data: transactions = [] } = useTransactions();
 
   // Get cash/bank accounts for reconciliation
   const bankAccounts = accounts.filter(
@@ -161,7 +157,7 @@ export default function Reconciliation() {
                 Unreconciled
               </CardTitle>
               <div
-                className="text-2xl font-semibold text-destructive"
+                className="text-2xl font-semibold text-destructive dark:text-destructive-500"
                 data-testid="text-unreconciled-count"
               >
                 {unreconciledCount}
@@ -361,11 +357,14 @@ export default function Reconciliation() {
           </CardHeader>
           <CardContent>
             {filteredBankTransactions.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                {selectedAccount
-                  ? "No bank transactions found for this account."
-                  : "Select a bank account to view transactions."}
-              </div>
+              <EmptyState
+                size="sm"
+                title={
+                  selectedAccount
+                    ? "No bank transactions found for this account."
+                    : "Select a bank account to view transactions."
+                }
+              />
             ) : (
               <Table>
                 <TableHeader>
@@ -404,7 +403,7 @@ export default function Reconciliation() {
                           </div>
                         </TableCell>
                         <TableCell
-                          className={`text-right tabular-nums font-medium ${isPositive ? "text-chart-2" : "text-destructive"}`}
+                          className={`text-right tabular-nums font-medium ${isPositive ? "text-chart-2" : "text-destructive dark:text-destructive-500"}`}
                         >
                           {isPositive ? "+" : ""}$
                           {Math.abs(parseFloat(txn.amount)).toFixed(2)}
@@ -433,7 +432,6 @@ export default function Reconciliation() {
                                   variant="ghost"
                                   size="icon"
                                   data-testid={`button-view-bank-transaction-${txn.id}`}
-                                  onClick={() => setSelectedBankTxn(txn)}
                                 >
                                   <Eye className="h-4 w-4" />
                                 </Button>

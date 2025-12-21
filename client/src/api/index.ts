@@ -5,13 +5,19 @@ declare global {
 }
 
 import axios, { AxiosInstance, AxiosResponse } from "axios";
+import {
+  demoAccountsApi,
+  demoLedgerApi,
+  getDemoCompanyId,
+  isDemoModeEnabled,
+} from "../lib/demo";
 
 // API base URL from environment
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api/v1`
-    : "http://localhost:3001/api/v1");
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : "/api");
 
 // Create axios instance with default config
 const api: AxiosInstance = axios.create({
@@ -81,9 +87,7 @@ export interface ApiResponse<T = any> {
 // Auth API
 export const authApi = {
   login: (email: string, password: string) =>
-    api.post<
-      ApiResponse<{ user: any; accessToken: string; expiresIn: number }>
-    >("/auth/login", {
+    api.post<any>("/auth/login", {
       email,
       password,
     }),
@@ -105,12 +109,32 @@ export const authApi = {
   getProfile: () => api.get<ApiResponse<{ user: any }>>("/auth/profile"),
 };
 
+export const ownerApi = {
+  getOverview: () => api.get<any>("/owner/overview"),
+  getPlans: () => api.get<any>("/owner/plans"),
+  createPlan: (payload: any) => api.post<any>("/owner/plans", payload),
+  updatePlan: (id: string, payload: any) => api.patch<any>(`/owner/plans/${id}`, payload),
+  deletePlan: (id: string) => api.delete<any>(`/owner/plans/${id}`),
+
+  getSubscriptions: (params?: { status?: string }) =>
+    api.get<any>("/owner/subscriptions", { params }),
+  updateSubscription: (id: string, payload: any) =>
+    api.patch<any>(`/owner/subscriptions/${id}`, payload),
+};
+
 // Accounts API
 export const accountsApi = {
   list: (companyId: string, limit?: number) =>
-    api.get<ApiResponse<any[]>>("/accounts", {
-      params: { companyId, limit: limit || 50 },
-    }),
+    isDemoModeEnabled()
+      ? Promise.resolve({
+          data: {
+            success: true,
+            data: demoAccountsApi().list(companyId || getDemoCompanyId()),
+          },
+        } as any)
+      : api.get<ApiResponse<any[]>>("/accounts", {
+          params: { companyId, limit: limit || 50 },
+        }),
 
   create: (accountData: {
     companyId: string;
@@ -121,7 +145,20 @@ export const accountsApi = {
     balance?: string;
     description?: string;
     isActive?: boolean;
-  }) => api.post<ApiResponse<any>>("/accounts", accountData),
+  }) =>
+    isDemoModeEnabled()
+      ? Promise.resolve({
+          data: {
+            success: true,
+            data: demoAccountsApi().create({
+              ...accountData,
+              companyId: accountData.companyId || getDemoCompanyId(),
+              createdAt: "",
+              updatedAt: "",
+            } as any),
+          },
+        } as any)
+      : api.post<ApiResponse<any>>("/accounts", accountData),
 
   update: (
     id: string,
@@ -134,18 +171,42 @@ export const accountsApi = {
       description?: string;
       isActive?: boolean;
     }>,
-  ) => api.put<ApiResponse<any>>(`/accounts/${id}`, updateData),
+  ) =>
+    isDemoModeEnabled()
+      ? Promise.resolve({
+          data: {
+            success: true,
+            data: demoAccountsApi().update(id, updateData as any),
+          },
+        } as any)
+      : api.put<ApiResponse<any>>(`/accounts/${id}`, updateData),
 
   adjustBalance: (id: string, amount: number) =>
-    api.post<ApiResponse<any>>(`/accounts/${id}/adjust-balance`, { amount }),
+    isDemoModeEnabled()
+      ? Promise.resolve({
+          data: {
+            success: true,
+            data: demoAccountsApi().adjustBalance(id, amount),
+          },
+        } as any)
+      : api.post<ApiResponse<any>>(`/accounts/${id}/adjust-balance`, {
+          amount,
+        }),
 };
 
 // Transactions API
 export const transactionsApi = {
   list: (companyId: string, limit?: number) =>
-    api.get<ApiResponse<any[]>>("/transactions", {
-      params: { companyId, limit: limit || 50 },
-    }),
+    isDemoModeEnabled()
+      ? Promise.resolve({
+          data: {
+            success: true,
+            data: demoLedgerApi().list(companyId || getDemoCompanyId()),
+          },
+        } as any)
+      : api.get<ApiResponse<any[]>>("/transactions", {
+          params: { companyId, limit: limit || 50 },
+        }),
 
   create: (transactionData: {
     companyId: string;
@@ -161,7 +222,26 @@ export const transactionsApi = {
     }[];
     description?: string;
     referenceNumber?: string;
-  }) => api.post<ApiResponse<any>>("/transactions", transactionData),
+  }) =>
+    isDemoModeEnabled()
+      ? Promise.resolve({
+          data: {
+            success: true,
+            data: demoLedgerApi().create({
+              ...transactionData,
+              companyId: transactionData.companyId || getDemoCompanyId(),
+              createdBy: "demo-user",
+              createdAt: "",
+              updatedAt: "",
+              lines: transactionData.lines.map((l) => ({
+                ...l,
+                id: "",
+                transactionId: "",
+              })),
+            } as any),
+          },
+        } as any)
+      : api.post<ApiResponse<any>>("/transactions", transactionData),
 };
 
 export default api;

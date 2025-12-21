@@ -4,10 +4,13 @@ import {
   screen,
   fireEvent,
   waitFor,
-  userEvent,
 } from "@testing-library/react";
-import { ReactElement } from "react";
-import { vi } from "vitest";
+import userEvent from "@testing-library/user-event";
+import * as React from "react";
+import type { ReactElement } from "react";
+import * as Vitest from "vitest";
+
+const vi = (Vitest as any).vi as any;
 
 // Comprehensive mock data factories
 export const createMockUser = (overrides = {}) => ({
@@ -369,18 +372,24 @@ export const createMockResizeObserver = () => {
 };
 
 // Error boundary test helper
-export const createErrorBoundary = (children) => {
-  class TestErrorBoundary extends React.Component {
-    constructor(props) {
+export const createErrorBoundary = (children: React.ReactNode) => {
+  type TestErrorBoundaryProps = { children?: React.ReactNode };
+  type TestErrorBoundaryState = { hasError: boolean; error: Error | null };
+
+  class TestErrorBoundary extends React.Component<
+    TestErrorBoundaryProps,
+    TestErrorBoundaryState
+  > {
+    constructor(props: TestErrorBoundaryProps) {
       super(props);
       this.state = { hasError: false, error: null };
     }
 
-    static getDerivedStateFromError(error) {
+    static getDerivedStateFromError(error: Error): TestErrorBoundaryState {
       return { hasError: true, error };
     }
 
-    componentDidCatch(error, errorInfo) {
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
       console.error("Test Error Boundary caught an error:", error, errorInfo);
     }
 
@@ -422,7 +431,9 @@ export const testFormValidation = async (formElement, validationRules) => {
   for (const [fieldName, rule] of Object.entries(validationRules)) {
     const field = formElement.querySelector(`[name="${fieldName}"]`);
 
-    if (rule.required) {
+    const typedRule = rule as { required?: boolean; pattern?: RegExp };
+
+    if (typedRule.required) {
       // Test empty field
       fireEvent.change(field, { target: { value: "" } });
       fireEvent.blur(field);
@@ -435,7 +446,7 @@ export const testFormValidation = async (formElement, validationRules) => {
         : null;
     }
 
-    if (rule.pattern) {
+    if (typedRule.pattern) {
       // Test invalid pattern
       fireEvent.change(field, { target: { value: "invalid" } });
       fireEvent.blur(field);

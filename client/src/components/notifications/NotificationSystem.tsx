@@ -11,7 +11,7 @@ declare global {
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Icon, { IconPresets } from "@/../../design-system/icons/IconSystem";
+import Icon from "@/design-system/icons/IconSystem";
 
 export interface Notification {
   id: string;
@@ -24,7 +24,7 @@ export interface Notification {
   icon?: string;
   progress?: number;
   timestamp: Date;
-  priority: "low" | "medium" | "high" | "critical";
+  priority?: "low" | "medium" | "high" | "critical";
   category?: "system" | "user" | "security" | "performance" | "business";
   metadata?: Record<string, any>;
 }
@@ -152,6 +152,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
         ...notification,
         id,
         timestamp: new Date(),
+        priority: notification.priority ?? "medium",
       };
 
       setNotifications((prev) => {
@@ -289,12 +290,17 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
   const notificationVariants = {
     initial: { opacity: 0, y: 50, scale: 0.3 },
     animate: { opacity: 1, y: 0, scale: 1 },
-    exit: { opacity: 0, scale: 0.5, transition: { duration: 0.2 } },
+    exit: {
+      opacity: 0,
+      y: 20,
+      scale: 0.9,
+      transition: { duration: 0.2, ease: "easeOut" },
+    },
   };
 
   const containerVariants = {
     initial: { opacity: 0 },
-    animate: { opacity: 1, transition: { staggerChildren: 0.1 } },
+    animate: { opacity: 1, transition: { duration: 0.2, ease: "easeOut" } },
   };
 
   return (
@@ -425,70 +431,58 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
                           height: "100%",
                           background: "currentColor",
                           borderRadius: 2,
-                          transition: "width 0.3s ease",
-                          width: `${notification.progress}%`,
+                          width: `${Math.max(0, Math.min(100, notification.progress))}%`,
+                          transition: "width 200ms ease",
                         }}
                       />
                     </div>
                   </div>
                 )}
 
-              {/* Custom actions */}
+              {/* Actions */}
               {notification.actions && notification.actions.length > 0 && (
                 <div
-                  className="notification-actions"
-                  style={{ marginTop: 12, display: "flex", gap: 8 }}
+                  className="notification-action-row"
+                  style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}
                 >
-                  {notification.actions.map((action) => (
-                    <button
-                      key={action.id}
-                      className={`notification-action ${action.variant || "secondary"}`}
-                      onClick={() => {
-                        action.action();
-                        if (!notification.persistent) {
-                          removeNotification(notification.id);
-                        }
-                      }}
-                      style={{
-                        padding: "6px 12px",
-                        borderRadius: 4,
-                        border:
-                          action.variant === "primary"
-                            ? "none"
-                            : "1px solid currentColor",
-                        background:
-                          action.variant === "primary"
+                  {notification.actions.map((action) => {
+                    const isPrimary = action.variant === "primary";
+                    const isDanger = action.variant === "danger";
+                    return (
+                      <button
+                        key={action.id}
+                        type="button"
+                        onClick={() => {
+                          void action.action();
+                          if (!notification.persistent) {
+                            removeNotification(notification.id);
+                          }
+                        }}
+                        style={{
+                          padding: "6px 12px",
+                          borderRadius: 4,
+                          border: isPrimary ? "none" : "1px solid currentColor",
+                          background: isPrimary
                             ? "currentColor"
-                            : "transparent",
-                        color:
-                          action.variant === "primary"
-                            ? "white"
-                            : "currentColor",
-                        cursor: "pointer",
-                        fontSize: 12,
-                        fontWeight: 500,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 4,
-                        transition: "all 0.2s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (action.variant !== "primary") {
-                          e.currentTarget.style.background = "currentColor";
-                          e.currentTarget.style.color = "white";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (action.variant !== "primary") {
-                          e.currentTarget.style.background = "transparent";
-                          e.currentTarget.style.color = "currentColor";
-                        }
-                      }}
-                    >
-                      {action.icon && <Icon name={action.icon} size={12} />}
-                      {action.label}
-                    </button>
-                  ))}
+                            : isDanger
+                              ? "rgba(239, 68, 68, 0.1)"
+                              : "transparent",
+                          color: isPrimary ? "white" : "currentColor",
+                          cursor: "pointer",
+                          fontSize: 12,
+                          fontWeight: 500,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 4,
+                          transition: "all 200ms ease",
+                        }}
+                        aria-label={action.label}
+                      >
+                        {action.icon && <Icon name={action.icon} size={12} />}
+                        {action.label}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
 
@@ -536,7 +530,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
 // Notification hook for easy usage
 export const useNotification = () => {
   const [notificationSystem, setNotificationSystem] =
-    useState<NotificationSystem | null>(null);
+    useState<any>(null);
 
   const showNotification = useCallback(
     (

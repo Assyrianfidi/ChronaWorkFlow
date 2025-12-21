@@ -78,8 +78,8 @@ export const inventoryQuerySchema = z.object({
   search: z.string().optional(),
   category: z.string().uuid('Invalid category ID').optional(),
   status: z.enum(['in-stock', 'low-stock', 'out-of-stock']).optional(),
-  minQuantity: z.string().regex(/^\d+$/).optional().transform(Number),
-  maxQuantity: z.string().regex(/^\d+$/).optional().transform(Number),
+  minQuantity: z.string().regex(/^\d+$/).transform(Number).optional(),
+  maxQuantity: z.string().regex(/^\d+$/).transform(Number).optional(),
   sortBy: z.enum(['name', 'quantity', 'updatedAt', 'createdAt']).default('name'),
   sortOrder: z.enum(['asc', 'desc']).default('asc'),
 });

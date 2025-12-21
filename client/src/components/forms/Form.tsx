@@ -28,22 +28,28 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(
       <div className="w-full max-w-md mx-auto">
         {title && (
           <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+            <h2 className="text-2xl font-bold text-foreground">{title}</h2>
             {description && (
-              <p className="mt-2 text-sm text-gray-600">{description}</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {description}
+              </p>
             )}
           </div>
         )}
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">{error}</p>
+          <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+            <p className="text-sm text-destructive dark:text-destructive-500">
+              {error}
+            </p>
           </div>
         )}
 
         {success && (
-          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-sm text-green-600">{success}</p>
+          <div className="mb-4 p-3 bg-success/10 border border-success/20 rounded-md">
+            <p className="text-sm text-success-700 dark:text-success">
+              {success}
+            </p>
           </div>
         )}
 
@@ -53,7 +59,7 @@ const Form = React.forwardRef<HTMLFormElement, FormProps>(
 
         {loading && (
           <div className="mt-4 flex justify-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
           </div>
         )}
       </div>
@@ -80,17 +86,21 @@ const FormField: React.FC<FormFieldProps> = ({
 }) => {
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+      <label className="block text-sm font-medium text-foreground">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && (
+          <span className="text-destructive dark:text-destructive-500 ml-1">*</span>
+        )}
       </label>
 
       {children}
 
-      {description && <p className="text-xs text-gray-500">{description}</p>}
+      {description && (
+        <p className="text-xs text-muted-foreground">{description}</p>
+      )}
 
       {error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-destructive dark:text-destructive-500" role="alert">
           {error}
         </p>
       )}

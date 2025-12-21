@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/components/ui/button";
 import { Upload, X, FileText, Loader2 } from "lucide-react";
-import { cn } from "@/components/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface FileUploadProps {
   onFilesSelected: (files: File[]) => void;
@@ -89,7 +89,12 @@ export function FileUpload({
           className,
         )}
       >
-        <input {...getInputProps()} />
+        
+        <label htmlFor="input-kzoqcriv2" className="sr-only">
+          Field
+        </label>
+        <input id="input-kzoqcriv2" {...getInputProps()} />
+      
         {isUploading ? (
           <div className="flex flex-col items-center justify-center space-y-2">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />

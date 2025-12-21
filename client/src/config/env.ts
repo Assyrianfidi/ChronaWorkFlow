@@ -7,7 +7,6 @@ interface EnvConfig {
   VITE_ENABLE_CSRF: boolean;
   VITE_ENABLE_CSP: boolean;
   VITE_SESSION_TIMEOUT: number;
-  VITE_JWT_SECRET: string;
   VITE_JWT_EXPIRES_IN: string;
   VITE_REFRESH_TOKEN_EXPIRES_IN: string;
   VITE_ALLOWED_ORIGINS: string[];
@@ -30,7 +29,6 @@ export const validateEnv = (): EnvConfig => {
     "NODE_ENV",
     "VITE_API_URL",
     "VITE_API_VERSION",
-    "VITE_JWT_SECRET",
   ];
 
   const missingVars = requiredVars.filter(
@@ -103,7 +101,6 @@ export const validateEnv = (): EnvConfig => {
     VITE_ENABLE_CSRF: enableCSRF,
     VITE_ENABLE_CSP: enableCSP,
     VITE_SESSION_TIMEOUT: sessionTimeout,
-    VITE_JWT_SECRET: import.meta.env.VITE_JWT_SECRET,
     VITE_JWT_EXPIRES_IN: import.meta.env.VITE_JWT_EXPIRES_IN || "1h",
     VITE_REFRESH_TOKEN_EXPIRES_IN:
       import.meta.env.VITE_REFRESH_TOKEN_EXPIRES_IN || "7d",
@@ -135,7 +132,6 @@ export const securityConfig = {
   enableCSRF: config.VITE_ENABLE_CSRF,
   enableCSP: config.VITE_ENABLE_CSP,
   sessionTimeout: config.VITE_SESSION_TIMEOUT,
-  jwtSecret: config.VITE_JWT_SECRET,
   jwtExpiresIn: config.VITE_JWT_EXPIRES_IN,
   refreshTokenExpiresIn: config.VITE_REFRESH_TOKEN_EXPIRES_IN,
   allowedOrigins: config.VITE_ALLOWED_ORIGINS,

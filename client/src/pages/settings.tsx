@@ -38,15 +38,9 @@ import {
   Shield,
   Users,
   Database,
-  Globe,
   Zap,
 } from "lucide-react";
-import {
-  useCompanies,
-  useCreateCompany,
-  useUpdateCompany,
-  useUsers,
-} from "../hooks/use-api";
+import { useCompanies, useUpdateCompany, useUsers } from "../hooks/use-api";
 import { format } from "date-fns";
 import { Skeleton } from "../components/ui/Skeleton";
 import { useToast } from "../hooks/use-toast";
@@ -86,7 +80,6 @@ export default function Settings() {
   const { user } = useAuthStore();
   const { data: companies = [], isLoading: companiesLoading } = useCompanies();
   const { data: users = [] } = useUsers();
-  const createCompanyMutation = useCreateCompany();
   const updateCompanyMutation = useUpdateCompany();
 
   // Get current company
@@ -864,7 +857,7 @@ export default function Settings() {
 
               <div className="border-t pt-6">
                 <div className="space-y-4">
-                  <h3 className="font-medium text-destructive">Danger Zone</h3>
+                  <h3 className="font-medium text-destructive dark:text-destructive-500">Danger Zone</h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-3 border border-destructive/20 rounded-md">
                       <div>

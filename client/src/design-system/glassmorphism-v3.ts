@@ -243,11 +243,8 @@ export class GlassmorphismV3Engine {
         backdrop-filter: blur(${config.layers.background.blur}px);
         -webkit-backdrop-filter: blur(${config.layers.background.blur}px);
         border: 1px solid rgba(255, 255, 255, ${config.layers.foreground.opacity * 0.3});
-        box-shadow: 
-          0 8px 32px rgba(0, 0, 0, 0.1),
-          inset 0 1px 0 rgba(255, 255, 255, 0.2),
-          inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
+        shadow-md;
+        rounded-3;
         overflow: hidden;
       }
       
@@ -325,14 +322,20 @@ export class GlassmorphismV3Engine {
     return css;
   }
 
-  private getBackgroundColor(element: HTMLElement): string {
+  private getBackgroundColor(element: HTMLElement): {
+    r: number;
+    g: number;
+    b: number;
+  } {
     const computedStyle = window.getComputedStyle(element);
     const bgColor = computedStyle.backgroundColor;
 
     // Extract RGB values from background color
     const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
     if (match) {
-      const [_, r, g, b] = match.map(Number);
+      const r = Number.parseInt(match[1] ?? "0", 10);
+      const g = Number.parseInt(match[2] ?? "0", 10);
+      const b = Number.parseInt(match[3] ?? "0", 10);
       return { r, g, b };
     }
 

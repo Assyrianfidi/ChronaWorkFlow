@@ -1,6 +1,3 @@
-import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
-
-// Mock Prisma Client before importing RefreshTokenService
 const mockPrisma = {
   refreshToken: {
     create: jest.fn(),
@@ -13,37 +10,70 @@ const mockPrisma = {
   },
 };
 
-jest.mock("@prisma/client", () => ({
-  PrismaClient: jest.fn(() => mockPrisma),
+let cryptoCounterValue = 0;
+let randomBytesMock: jest.Mock;
+let createHashMock: jest.Mock;
+
+jest.mock("../lib/prisma", () => ({
+  PrismaClientSingleton: {
+    getInstance: () => mockPrisma,
+  },
 }));
 
-// Mock logger
-jest.mock("../utils/logger.ts", () => ({
+jest.mock("../utils/logger", () => ({
   logger: {
     info: jest.fn(),
     error: jest.fn(),
   },
 }));
 
-// Mock crypto
-jest.mock("crypto", () => ({
-  __esModule: true,
-  default: {
-    randomBytes: jest.fn(() => ({
-      toString: jest.fn(() => 'mocked-random-hex-string-64-chars-long-abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'),
-    })),
-    createHash: jest.fn(() => ({
-      update: jest.fn().mockReturnThis(),
-      digest: jest.fn(() => 'mocked-sha256-hash-64-chars-long-abcdef1234567890abcdef1234567890abcdef1234567890'),
-    })),
-  },
-}));
+jest.mock("crypto", () => {
+  randomBytesMock = jest.fn();
+  createHashMock = jest.fn();
 
-import { RefreshTokenService } from "../services/refreshToken.service";
+  return {
+    __esModule: true,
+    default: { randomBytes: randomBytesMock, createHash: createHashMock },
+    randomBytes: randomBytesMock,
+    createHash: createHashMock,
+  };
+});
+
+let RefreshTokenService: typeof import("../services/refreshToken.service").RefreshTokenService;
 
 describe("RefreshTokenService - Unit Tests", () => {
+  beforeAll(async () => {
+    ({ RefreshTokenService } = await import("../services/refreshToken.service"));
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
+    cryptoCounterValue = 0;
+
+    randomBytesMock.mockImplementation(() => {
+      cryptoCounterValue += 1;
+      const suffix = String(cryptoCounterValue).padStart(64, "0");
+      return {
+        toString: jest.fn((_encoding?: string) => suffix + suffix),
+      };
+    });
+
+    createHashMock.mockImplementation(() => {
+      const state = { data: "" };
+      const hashObj: any = {
+        update: jest.fn((val: string) => {
+          state.data = String(val);
+          return hashObj;
+        }),
+        digest: jest.fn((_encoding?: string) => {
+          const hex = state.data;
+          return (hex + "0".repeat(64)).slice(0, 64);
+        }),
+      };
+      return hashObj;
+    });
+
+    mockPrisma.refreshToken.deleteMany.mockResolvedValue({ count: 0 } as any);
   });
 
   describe("generateRefreshToken", () => {
@@ -132,4 +162,68 @@ describe("RefreshTokenService - Unit Tests", () => {
       );
     });
   });
+
+  describe("Rotation and Revocation", () => {
+    it("should reject reuse of an invalidated refresh token", async () => {
+      const token = RefreshTokenService.generateRefreshToken();
+      const tokenHash = RefreshTokenService.hashToken(token);
+      const record = {
+        id: 1,
+        tokenHash,
+        userId: 42,
+        expiresAt: new Date(Date.now() + 1000 * 60 * 5),
+        user: { id: 42 },
+      };
+
+      mockPrisma.refreshToken.findUnique.mockResolvedValueOnce(record);
+      mockPrisma.refreshToken.deleteMany.mockResolvedValue({ count: 1 } as any);
+      mockPrisma.refreshToken.create.mockResolvedValue({ id: 2 } as any);
+
+      await expect(RefreshTokenService.rotateRefreshToken(token)).resolves.toEqual(
+        expect.any(String),
+      );
+
+      mockPrisma.refreshToken.findUnique.mockResolvedValueOnce(null);
+
+      await expect(
+        RefreshTokenService.verifyRefreshToken(token),
+      ).rejects.toThrow("Invalid refresh token");
+    });
+
+    it("should treat revoked tokens as invalid", async () => {
+      const revokedToken = RefreshTokenService.generateRefreshToken();
+      mockPrisma.refreshToken.findUnique.mockResolvedValueOnce(null);
+
+      await expect(
+        RefreshTokenService.verifyRefreshToken(revokedToken),
+      ).rejects.toThrow("Invalid refresh token");
+    });
+
+    it("should bubble rotation failures when storing the new token fails", async () => {
+      const token = RefreshTokenService.generateRefreshToken();
+      const tokenHash = RefreshTokenService.hashToken(token);
+      const record = {
+        id: 1,
+        tokenHash,
+        userId: 99,
+        expiresAt: new Date(Date.now() + 1000 * 60 * 5),
+        user: { id: 99 },
+      };
+
+      mockPrisma.refreshToken.findUnique.mockResolvedValueOnce(record);
+      mockPrisma.refreshToken.deleteMany.mockResolvedValue({ count: 1 } as any);
+
+      const createTokenSpy = jest
+        .spyOn(RefreshTokenService, "createRefreshToken")
+        .mockRejectedValueOnce(new Error("DB down"));
+
+      await expect(
+        RefreshTokenService.rotateRefreshToken(token),
+      ).rejects.toThrow("DB down");
+
+      createTokenSpy.mockRestore();
+    });
+  });
 });
+
+export {};

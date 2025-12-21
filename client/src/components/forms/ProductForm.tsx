@@ -103,7 +103,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         <textarea
           {...register("description")}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-input bg-background rounded-md shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
           placeholder="Product description (optional)"
           aria-label="Product description"
         />
@@ -165,7 +165,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
         <Button
           type="submit"
           disabled={!isDirty || !isValid || isSubmitting}
-          loading={isSubmitting}
           aria-label={initialData ? "Update product" : "Add product"}
         >
           {isSubmitting

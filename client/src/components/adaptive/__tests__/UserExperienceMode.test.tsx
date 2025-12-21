@@ -5,10 +5,10 @@ import {
   useUserExperienceMode,
   UXModeSelector,
   UXCustomSettings,
-} from "../UserExperienceMode.js";
+} from '../UserExperienceMode';
 
 // Mock the auth store
-jest.mock("../store/auth-store", () => ({
+jest.mock("@/store/auth-store", () => ({
   useAuthStore: jest.fn(() => ({
     user: { role: "user" },
   })),
@@ -29,6 +29,8 @@ Object.defineProperty(window, "localStorage", {
 describe("UserExperienceModeProvider", () => {
   beforeEach(() => {
     localStorageMock.getItem.mockImplementation(() => null);
+    const { useAuthStore } = require("@/store/auth-store");
+    useAuthStore.mockReturnValue({ user: { role: "user" } });
     jest.clearAllMocks();
   });
 
@@ -44,7 +46,7 @@ describe("UserExperienceModeProvider", () => {
 
   it("loads saved mode from localStorage", () => {
     localStorageMock.getItem.mockImplementation((key) => {
-      if (key === "ux-mode") return JSON.stringify("power-user");
+      if (key === "ux-mode") return "power-user";
       return null;
     });
 
@@ -59,7 +61,8 @@ describe("UserExperienceModeProvider", () => {
       </UserExperienceModeProvider>,
     );
 
-    expect(screen.getByText("Current mode: power-user")).toBeInTheDocument();
+    expect(screen.getByText(/Current mode:/i)).toBeInTheDocument();
+    expect(screen.getByText((content) => content.includes("power-user"))).toBeInTheDocument();
   });
 
   it("saves mode to localStorage when changed", async () => {
@@ -109,7 +112,7 @@ describe("UserExperienceModeProvider", () => {
   });
 
   it("auto-selects mode based on user role", () => {
-    const { useAuthStore } = require("../store/auth-store");
+    const { useAuthStore } = require("@/store/auth-store");
     useAuthStore.mockReturnValue({ user: { role: "admin" } });
 
     const TestComponent = () => {
@@ -166,6 +169,13 @@ describe("UXModeSelector", () => {
 });
 
 describe("UXCustomSettings", () => {
+  beforeEach(() => {
+    const { useAuthStore } = require("@/store/auth-store");
+    useAuthStore.mockReturnValue({ user: { role: "user" } });
+    localStorageMock.getItem.mockImplementation(() => null);
+    jest.clearAllMocks();
+  });
+
   it("renders custom settings controls", () => {
     render(
       <UserExperienceModeProvider>
@@ -187,11 +197,12 @@ describe("UXCustomSettings", () => {
       </UserExperienceModeProvider>,
     );
 
-    const themeSelect = screen.getByDisplayValue("auto");
+    const themeSelect = screen.getAllByRole("combobox")[0];
     fireEvent.change(themeSelect, { target: { value: "dark" } });
 
     await waitFor(() => {
       expect(localStorageMock.setItem).toHaveBeenCalled();
+      expect(themeSelect).toHaveValue("dark");
     });
   });
 
@@ -206,7 +217,8 @@ describe("UXCustomSettings", () => {
     fireEvent.click(resetButton);
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue("auto")).toBeInTheDocument();
+      const themeSelect = screen.getAllByRole("combobox")[0];
+      expect(themeSelect).toHaveValue("auto");
     });
   });
 });
@@ -248,7 +260,8 @@ describe("useUserExperienceMode hook", () => {
       </UserExperienceModeProvider>,
     );
 
-    expect(screen.getByText("Current mode: Standard")).toBeInTheDocument();
+    expect(screen.getByText(/Current mode:/i)).toBeInTheDocument();
+    expect(screen.getByText((content) => content.includes("Standard"))).toBeInTheDocument();
     expect(screen.getByText("Available modes: 5")).toBeInTheDocument();
   });
 

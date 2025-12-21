@@ -23,8 +23,8 @@ vi.mock("next/navigation", () => ({
 
 // Import after setting up mocks
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "../store/auth-store.js";
-import LoginPage from "../page.js";
+import { useAuthStore } from '../store/auth-store';
+import LoginPage from '../page';
 
 // Setup mocks
 const mockUseAuthStore = vi.mocked(useAuthStore);

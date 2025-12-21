@@ -1,4 +1,10 @@
-import { User, Invoice } from '@/types';
+import type { User } from "@/types/user";
+
+type Invoice = {
+  id: string;
+  amount: number;
+  date: string;
+};
 
 export const isUser = (data: unknown): data is User => {
   return (

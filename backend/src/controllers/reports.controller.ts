@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-import { ApiError } from "../middleware/errorHandler.js";
+import { ApiError } from "../utils/errorHandler.js";
 import { ROLES } from "../constants/roles.js";
-
-const prisma = PrismaClientSingleton.getInstance();
+import { prisma } from "../utils/prisma";
 
 /**
  * @desc    Get all reports (admin/manager can see all, others see only their own)
@@ -14,8 +12,8 @@ export const getReports = async (req: any, res: any, next: any) => {
     const { role, id: userId } = req.user;
 
     // Build where clause based on user role
-    const where = {};
-    if ([ROLES.USER, ROLES.ASSISTANT_MANAGER].includes(role)) {
+    const where: any = {};
+    if (role === ROLES.USER) {
       where.userId = userId;
     }
 
@@ -71,12 +69,12 @@ export const getReport = async (req: any, res: any, next: any) => {
     });
 
     if (!report) {
-      throw new ApiError(404, "Report not found");
+      throw new ApiError("Report not found", 404);
     }
 
     // Check if user is authorized to view this report
     if (report.userId !== userId && !["admin", "manager"].includes(role)) {
-      throw new ApiError(403, "Not authorized to access this report");
+      throw new ApiError("Not authorized to access this report", 403);
     }
 
     res.status(200).json({
@@ -100,7 +98,7 @@ export const createReport = async (req: any, res: any, next: any) => {
 
     // Validate input
     if (!title || !amount) {
-      throw new ApiError(400, "Please provide title and amount");
+      throw new ApiError("Please provide title and amount", 400);
     }
 
     const report = await prisma.reconciliationReport.create({
@@ -147,7 +145,7 @@ export const updateReport = async (req: any, res: any, next: any) => {
     });
 
     if (!existingReport) {
-      throw new ApiError(404, "Report not found");
+      throw new ApiError("Report not found", 404);
     }
 
     // Check if user is authorized to update this report
@@ -155,7 +153,7 @@ export const updateReport = async (req: any, res: any, next: any) => {
       existingReport.userId !== userId &&
       !["admin", "manager"].includes(role)
     ) {
-      throw new ApiError(403, "Not authorized to update this report");
+      throw new ApiError("Not authorized to update this report", 403);
     }
 
     const updatedReport = await prisma.reconciliationReport.update({
@@ -201,12 +199,12 @@ export const deleteReport = async (req: any, res: any, next: any) => {
     });
 
     if (!report) {
-      throw new ApiError(404, "Report not found");
+      throw new ApiError("Report not found", 404);
     }
 
     // Check if user is authorized to delete this report
     if (report.userId !== userId && !["admin", "manager"].includes(role)) {
-      throw new ApiError(403, "Not authorized to delete this report");
+      throw new ApiError("Not authorized to delete this report", 403);
     }
 
     await prisma.reconciliationReport.delete({

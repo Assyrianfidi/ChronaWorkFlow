@@ -5,10 +5,12 @@ declare global {
 }
 
 import React from "react";
+import { LoadingState } from '@/components/ui/LoadingState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { Button } from "../ui/button.js";
+import Button from "@/components/ui/Button";
 import {
   Table,
   TableBody,
@@ -16,26 +18,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../ui/table.js";
+} from "@/components/ui/Table";
 import {
-  Card,
+  default as Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "../ui/card.js";
-import { Input } from "../ui/input.js";
+} from "@/components/ui/Card";
+import Input from "@/components/ui/Input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select.js";
-import { useReports, useDeleteReport } from "../../hooks/useReports.js";
-import { useToast } from "../ui/use-toast.js";
-import { Loader2, Plus, Search, Trash2, Edit, FileText } from "lucide-react";
-import { Report, ReportStatus } from "../../types/report.js";
+} from "@/components/ui/Select";
+import { useReports, useDeleteReport } from "@/hooks/useReports";
+import { toast } from "@/components/ui/use-toast";
+import { Plus, Search, Trash2, Edit, FileText } from "lucide-react";
+import { Alert } from "@/components/ui/Alert";
+import { Report, ReportStatus } from "@/types/report";
 
 type ReportWithMeta = {
   data: Report[];
@@ -49,7 +52,6 @@ type ReportWithMeta = {
 
 export function ReportList() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<ReportStatus | "all">("all");
 
@@ -79,17 +81,17 @@ export function ReportList() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="min-h-64">
+        <LoadingState label="Loading reports…" />
       </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="p-4 text-destructive">
-        Failed to load reports. Please try again later.
-      </div>
+      <Alert variant="error" title="Failed to load reports">
+        Please try again later.
+      </Alert>
     );
   }
 
@@ -214,8 +216,8 @@ export function ReportList() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                      No reports found.
+                    <TableCell colSpan={5} className="px-4">
+                      <EmptyState size="sm" title="No reports found" />
                     </TableCell>
                   </TableRow>
                 )}

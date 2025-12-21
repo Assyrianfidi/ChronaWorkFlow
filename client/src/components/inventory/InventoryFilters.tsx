@@ -1,18 +1,18 @@
 import React, { useMemo } from "react";
-import { Input } from "../components/ui/input.js";
-import { Button } from "../components/ui/button.js";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select.js";
-import { Slider } from "../components/ui/slider.js";
-import { Label } from "../components/ui/label.js";
+} from "@/components/ui/Select";
+import { Slider } from "@/components/ui/Slider";
+import Label from "@/components/ui/Label";
 import { X, Search, Filter } from "lucide-react";
-import { InventoryStatus } from "../types/inventory.js";
-import { useInventoryFilters } from "../hooks/useInventoryFilters.js";
+import { InventoryStatus } from "@/types/inventory";
+import { useInventoryFilters } from "@/hooks/useInventoryFilters";
 
 interface InventoryFiltersProps {
   categories: string[];
@@ -100,7 +100,7 @@ export function InventoryFilters({
             value={selectedCategory || ""}
             onValueChange={handleCategoryChange}
           >
-            <SelectTrigger id="category">
+            <SelectTrigger>
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
@@ -123,7 +123,7 @@ export function InventoryFilters({
               handleStatusChange(value as InventoryStatus | "all")
             }
           >
-            <SelectTrigger id="status">
+            <SelectTrigger>
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
             <SelectContent>
@@ -170,7 +170,7 @@ export function InventoryFilters({
               handleSortChange(sortBy as any);
             }}
           >
-            <SelectTrigger id="sort">
+            <SelectTrigger>
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>

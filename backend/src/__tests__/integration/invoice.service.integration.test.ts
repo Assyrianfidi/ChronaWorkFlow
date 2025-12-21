@@ -1,18 +1,7 @@
-import { InvoiceService } from "../../services/invoice.service";
-import { prisma } from "../../utils/prisma";
 import { ApiError } from "../../utils/errors";
-import {
-  jest,
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-} from "@jest/globals";
-import type { PrismaClient, Invoice, InvoiceItem } from "@prisma/client";
 
 // Mock data
-const mockInvoice: Invoice = {
+const mockInvoice: any = {
   id: "1",
   customerId: "cust-123",
   issueDate: new Date(),
@@ -29,7 +18,7 @@ const mockInvoice: Invoice = {
   deletedAt: null,
 };
 
-const mockInvoiceItems: InvoiceItem[] = [
+const mockInvoiceItems: any[] = [
   {
     id: "item-1",
     invoiceId: "1",
@@ -42,75 +31,50 @@ const mockInvoiceItems: InvoiceItem[] = [
   },
 ];
 
-// Create a mock Prisma client with proper typing
-const mockPrisma = {
-  $transaction: jest.fn(),
-  invoice: {
-    findUnique: jest.fn(),
-    findMany: jest.fn(),
-    create: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
-    count: jest.fn(),
-  },
-  invoiceItem: {
-    createMany: jest.fn(),
-    findMany: jest.fn(),
-    deleteMany: jest.fn(),
-  },
-} as unknown as PrismaClient;
+var mockPrisma: any;
 
 // Mock the Prisma client
-jest.mock("../../utils/prisma", () => ({
-  prisma: mockPrisma,
-}));
-
-// Mock the generateInvoiceNumber method
-const mockGenerateInvoiceNumber = jest.fn().mockResolvedValue("INV-001");
-
-// Create a partial mock of the InvoiceService class
-jest.mock("../../services/invoice.service", () => ({
-  InvoiceService: jest.fn().mockImplementation(() => {
-    return {
-      ...jest.requireActual("../../services/invoice.service")
-        .InvoiceService.prototype,
-      generateInvoiceNumber: mockGenerateInvoiceNumber,
-    };
-  }),
-}));
-        generateInvoiceNumber: mockGenerateInvoiceNumber,
-      };
-    }),
+jest.mock("../../utils/prisma", () => {
+  mockPrisma = {
+    $transaction: jest.fn(),
+    invoice: {
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn(),
+    },
+    invoiceItem: {
+      createMany: jest.fn(),
+      findMany: jest.fn(),
+      deleteMany: jest.fn(),
+    },
   };
+
+  return { prisma: mockPrisma };
 });
 
 describe("InvoiceService Integration Tests", () => {
-  let invoiceService: InvoiceService;
+  let InvoiceServiceCtor: typeof import("../../services/invoice.service").InvoiceService;
+  let invoiceService: InstanceType<typeof import("../../services/invoice.service").InvoiceService>;
+
+  beforeAll(async () => {
+    ({ InvoiceService: InvoiceServiceCtor } = await import(
+      "../../services/invoice.service"
+    ));
+  });
 
   beforeEach(() => {
     // Reset all mocks before each test
     jest.clearAllMocks();
 
     // Create a new instance of the service for each test
-    invoiceService = new InvoiceService();
+    invoiceService = new InvoiceServiceCtor();
 
-    // Set up default mock implementations
-    const mockTransaction = {
-      invoice: {
-        create: jest.fn(),
-        update: jest.fn(),
-        findUnique: jest.fn(),
-        delete: jest.fn(),
-      },
-      invoiceItem: {
-        createMany: jest.fn(),
-        findMany: jest.fn(),
-        deleteMany: jest.fn(),
-      },
-    };
-
-    mockPrisma.$transaction.mockImplementation(async (callback) => {
-      return callback(mockTransaction);
+    // Ensure the tx object uses the same spies configured on mockPrisma
+    mockPrisma.$transaction.mockImplementation(async (callback: any) => {
+      return callback(mockPrisma as any);
     });
   });
 
@@ -123,13 +87,24 @@ describe("InvoiceService Integration Tests", () => {
     it("should create a new invoice with items", async () => {
       try {
         // Setup mocks
-        mockPrisma.invoice.create.mockResolvedValue(mockInvoice);
-        mockPrisma.invoiceItem.createMany.mockResolvedValue({ count: 1 });
-        mockPrisma.invoiceItem.findMany.mockResolvedValue(mockInvoiceItems);
+        const createdInvoice: any = {
+          id: "1",
+          invoiceNumber: "INV-001",
+          date: new Date(),
+          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          totalAmount: 1200,
+          status: "DRAFT",
+          companyId: "company-123",
+          clientId: "cust-123",
+        };
+
+        mockPrisma.invoice.create.mockResolvedValue(createdInvoice);
+        mockPrisma.invoiceItem.createMany.mockResolvedValue({ count: 1 } as any);
+        mockPrisma.invoiceItem.findMany.mockResolvedValue(mockInvoiceItems as any);
 
         // Mock the generateInvoiceNumber method
         const generateInvoiceNumberSpy = jest
-          .spyOn(InvoiceService.prototype as any, "generateInvoiceNumber")
+          .spyOn(InvoiceServiceCtor.prototype as any, "generateInvoiceNumber")
           .mockResolvedValue("INV-001");
 
         const invoiceData = {
@@ -161,11 +136,15 @@ describe("InvoiceService Integration Tests", () => {
         expect(mockPrisma.$transaction).toHaveBeenCalled();
 
         // Verify invoice was created with correct data (excluding items)
-        const { items, ...invoiceDataWithoutItems } = invoiceData;
         expect(mockPrisma.invoice.create).toHaveBeenCalledWith({
           data: {
-            ...invoiceDataWithoutItems,
             invoiceNumber: "INV-001",
+            date: invoiceData.issueDate,
+            dueDate: invoiceData.dueDate,
+            totalAmount: invoiceData.total,
+            status: invoiceData.status,
+            companyId: invoiceData.companyId,
+            clientId: invoiceData.customerId,
           },
         });
 
@@ -176,15 +155,16 @@ describe("InvoiceService Integration Tests", () => {
               description: "Test Item 1",
               quantity: 2,
               unitPrice: 500,
-              amount: 1000,
+              totalAmount: 1000,
               invoiceId: "1",
+              accountId: "default-account-id",
             },
           ],
         });
 
         // Verify the result
         expect(result).toEqual({
-          ...mockInvoice,
+          ...createdInvoice,
           items: mockInvoiceItems,
         });
 
@@ -425,3 +405,5 @@ describe("InvoiceService Integration Tests", () => {
     });
   });
 });
+
+export {};

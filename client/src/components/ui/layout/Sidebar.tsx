@@ -1,13 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import type { ReactNode } from "react";
 import {
   HomeIcon,
   ChartBarIcon,
   DocumentIcon,
   BellIcon,
-  LayoutDashboard,
-  FileText,
-  Users,
 } from "@heroicons/react/24/outline";
 
 interface SidebarProps {
@@ -95,7 +92,7 @@ export function Sidebar({
       <button
         type="button"
         onClick={onToggle}
-        className="self-end m-2 rounded-full bg-surface1 border border-border-gray text-black/70 shadow-soft hover:shadow-elevated transition-shadow duration-200 px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-navy focus-visible:ring-offset-2 focus-visible:ring-offset-surface2"
+        className="self-end m-2 rounded-full bg-surface1 border border-border-gray text-muted-foreground shadow-soft hover:shadow-elevated transition-shadow duration-200 px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-navy focus-visible:ring-offset-2 focus-visible:ring-offset-surface2"
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         aria-expanded={!isCollapsed}
         aria-controls="main-sidebar-nav"
@@ -119,15 +116,15 @@ export function Sidebar({
                 className="flex flex-col items-center gap-1"
                 title="Unread notifications"
               >
-                <BellIcon className="w-5 h-5 text-black/70" />
-                <span className="text-sm font-medium text-black">3</span>
+                <BellIcon className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">3</span>
               </div>
               <div
                 className="flex flex-col items-center gap-1"
                 title="Account setup completion"
               >
-                <ChartBarIcon className="w-5 h-5 text-black/70" />
-                <span className="text-xs text-black/70">72% ready</span>
+                <ChartBarIcon className="w-5 h-5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">72% ready</span>
               </div>
             </div>
             <div className="flex flex-col items-center gap-4">
@@ -145,9 +142,9 @@ export function Sidebar({
                       if (onNavigate) onNavigate(item.path);
                     }}
                     className={
-                      "p-2 rounded-xl border border-border-gray bg-surface1 text-black/70 shadow-soft " +
+                      "p-2 rounded-xl border border-border-gray bg-surface1 text-muted-foreground shadow-soft " +
                       "hover:shadow-elevated transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-navy focus-visible:ring-offset-2 focus-visible:ring-offset-surface2 " +
-                      (isActive ? "ring-2 ring-black/40" : "")
+                      (isActive ? "ring-2 ring-ring/30 text-foreground" : "")
                     }
                     aria-current={isActive ? "page" : undefined}
                   >
@@ -175,8 +172,8 @@ export function Sidebar({
                       "w-full flex items-center gap-3 px-3 py-2 text-left rounded-xl border border-border-gray " +
                       "transition-all duration-200 shadow-soft hover:shadow-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-enterprise-navy focus-visible:ring-offset-2 focus-visible:ring-offset-surface2 " +
                       (isActive
-                        ? "bg-surface1 text-black"
-                        : "bg-surface2 text-black/70 hover:bg-surface1")
+                        ? "bg-surface1 text-foreground"
+                        : "bg-surface2 text-muted-foreground hover:bg-surface1 hover:text-foreground")
                     }
                     aria-current={isActive ? "page" : undefined}
                   >
@@ -184,7 +181,7 @@ export function Sidebar({
                     <span
                       className={
                         "h-8 w-1 rounded-full transition-all duration-200 " +
-                        (isActive ? "bg-black/70" : "bg-transparent")
+                        (isActive ? "bg-ring/40" : "bg-transparent")
                       }
                     />
                     <span className="flex items-center gap-2">

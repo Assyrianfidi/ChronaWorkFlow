@@ -1,4 +1,5 @@
 import * as React from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import Card, {
   CardContent,
   CardHeader,
@@ -7,7 +8,7 @@ import Card, {
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Badge from "../components/ui/Badge";
-import { Plus, Search, Eye, Ban, Calendar, Filter } from "lucide-react";
+import { Plus, Search, Eye, Filter, Ban } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -31,12 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/Select";
-import {
-  useTransactions,
-  useAccounts,
-  type Transaction,
-  type Account,
-} from "../hooks/use-api";
+import { useTransactions, type Transaction } from "../hooks/use-api";
 import { Skeleton } from "../components/ui/Skeleton";
 import { DashboardShell } from "../components/ui/layout/DashboardShell";
 import { format } from "date-fns";
@@ -59,21 +55,9 @@ export default function Transactions() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [typeFilter, setTypeFilter] = React.useState<string>("all");
   const [dateRange, setDateRange] = React.useState<string>("all");
-  const [selectedTransaction, setSelectedTransaction] =
-    React.useState<Transaction | null>(null);
 
   const { data: transactions = [], isLoading: transactionsLoading } =
     useTransactions();
-  const { data: accounts = [] } = useAccounts();
-
-  // Create account map for quick lookup
-  const accountMap = accounts.reduce(
-    (acc: Record<string, Account>, account: Account) => {
-      acc[account.id] = account;
-      return acc;
-    },
-    {},
-  );
 
   // Filter transactions based on search and filters
   const filteredTransactions = transactions.filter((txn: Transaction) => {
@@ -112,22 +96,10 @@ export default function Transactions() {
     return matchesSearch && matchesType && matchesDate;
   });
 
-  // Get transaction lines for a specific transaction
-  const getTransactionLines = (transactionId: string): any[] => {
-    // For now, return empty array - will implement proper transaction lines later
-    return [];
-  };
-
   // Calculate totals
   const totalTransactions = filteredTransactions.length;
   const journalEntries = filteredTransactions.filter(
     (txn: Transaction) => txn.type === "journal_entry",
-  ).length;
-  const invoiceTransactions = filteredTransactions.filter(
-    (txn: Transaction) => txn.type === "invoice",
-  ).length;
-  const paymentTransactions = filteredTransactions.filter(
-    (txn: Transaction) => txn.type === "payment",
   ).length;
 
   const totalAmount = filteredTransactions.reduce(
@@ -332,11 +304,14 @@ export default function Transactions() {
           </CardHeader>
           <CardContent>
             {filteredTransactions.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                {searchQuery || typeFilter !== "all" || dateRange !== "all"
-                  ? "No transactions found matching your filters."
-                  : "No transactions yet. Create your first journal entry to get started."}
-              </div>
+              <EmptyState
+                size="sm"
+                title={
+                  searchQuery || typeFilter !== "all" || dateRange !== "all"
+                    ? "No transactions found matching your filters."
+                    : "No transactions yet. Create your first journal entry to get started."
+                }
+              />
             ) : (
               <Table>
                 <TableHeader>
@@ -351,10 +326,6 @@ export default function Transactions() {
                 </TableHeader>
                 <TableBody>
                   {filteredTransactions.map((txn: Transaction) => {
-                    const lines = getTransactionLines(txn.id);
-                    const debitTotal = 0; // TODO: Calculate from real transaction lines
-                    const creditTotal = 0; // TODO: Calculate from real transaction lines
-
                     return (
                       <TableRow
                         key={txn.id}
@@ -372,7 +343,6 @@ export default function Transactions() {
                               typeColors[txn.type as keyof typeof typeColors]
                             }
                           >
-                            {/* @ts-ignore */}
                             {typeLabels[txn.type as keyof typeof typeLabels]}
                           </Badge>
                         </TableCell>
@@ -401,7 +371,6 @@ export default function Transactions() {
                                   variant="ghost"
                                   size="icon"
                                   data-testid={`button-view-transaction-${txn.id}`}
-                                  onClick={() => setSelectedTransaction(txn)}
                                 >
                                   <Eye className="h-4 w-4" />
                                 </Button>

@@ -7,7 +7,7 @@ import {
   type Customer,
   type ExpenseCategory,
   type CashFlowData,
-} from '../services/dashboard.service.js';
+} from "../services/dashboard.service";
 
 // Generic fetcher for SWR
 const fetcher = async (key: string) => {
@@ -18,10 +18,11 @@ const fetcher = async (key: string) => {
     throw new Error(`Method ${method} not found on service`);
   }
 
-   - Dynamic method call
-  return await serviceInstance[method as keyof typeof dashboardService](
-    ...params,
-  );
+  const fn = serviceInstance[method as keyof typeof dashboardService] as unknown as (
+    ...args: unknown[]
+  ) => Promise<unknown>;
+
+  return await fn(...params);
 };
 
 // Configuration for SWR

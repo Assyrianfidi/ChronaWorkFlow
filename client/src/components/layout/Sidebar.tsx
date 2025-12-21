@@ -1,7 +1,6 @@
-import React, { useState } from "react";
 import * as React from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAuth } from "@/../../contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard,
   FileText,
@@ -10,15 +9,13 @@ import {
   TrendingUp,
   Settings,
   BarChart3,
-  Calendar,
   Building2,
   Receipt,
-  PiggyBank,
   Calculator,
   Briefcase,
   Shield,
 } from "lucide-react";
-import { cn } from "@/../../lib/utils";
+import { cn } from "@/lib/utils";
 
 interface SidebarProps {
   className?: string;
@@ -155,21 +152,27 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({
-  className,
-  isOpen = true,
-  onClose,
-}) => {
+const Sidebar: React.FC<SidebarProps> = ({ className, isOpen = false, onClose }) => {
   const location = useLocation();
   const { user, hasRole } = useAuth();
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
+
+  const roleLabel = React.useMemo(() => {
+    const role = user?.role;
+    if (!role) return "";
+    return role
+      .split("_")
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ");
+  }, [user?.role]);
 
   const filteredNavigationItems = React.useMemo(() => {
     return navigationItems.filter((item) => {
       if (!item.roles || item.roles.length === 0) return true;
       return hasRole(item.roles as any);
     });
-  }, [user, hasRole]);
+  }, [hasRole]);
 
   const toggleExpanded = (title: string) => {
     setExpandedItems((prev) =>
@@ -196,25 +199,27 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div
       className={cn(
-        "w-64 bg-white border-r border-gray-200 h-full flex flex-col transition-all duration-300",
-        !isOpen && "w-0 overflow-hidden",
+        "group h-full border-r border-border bg-card text-foreground flex flex-col",
+        "fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 md:static md:transform-none",
+        "md:w-16 md:hover:w-64 md:focus-within:w-64 md:transition-[width] md:duration-200",
+        !isOpen && "-translate-x-full md:translate-x-0",
         className,
       )}
     >
       {/* Logo Section */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-4 border-b border-border">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-enterprise-navy rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">AB</span>
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span className="text-primary-foreground font-bold text-sm">AB</span>
           </div>
-          <span className="text-xl font-bold text-enterprise-navy">
+          <span className="text-xl font-bold text-foreground md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 md:transition-opacity">
             AccuBooks
           </span>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-2 overflow-y-auto">
         {filteredNavigationItems.map((item) => {
           const active = isParentActive(item);
           const expanded = expandedItems.includes(item.title);
@@ -224,17 +229,25 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div key={item.title}>
               <NavLink
                 to={item.href}
-                onClick={() => hasChildren && toggleExpanded(item.title)}
+                onClick={() => {
+                  if (hasChildren) {
+                    toggleExpanded(item.title);
+                    return;
+                  }
+                  onClose?.();
+                }}
                 className={cn(
                   "flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors group",
                   active
-                    ? "bg-enterprise-navy text-white"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-enterprise-navy",
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                 )}
               >
                 <div className="flex items-center gap-3">
                   <item.icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="truncate">{item.title}</span>
+                  <span className="truncate md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 md:transition-opacity">
+                    {item.title}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -243,8 +256,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className={cn(
                         "px-2 py-1 text-xs rounded-full",
                         active
-                          ? "bg-white/20 text-white"
-                          : "bg-gray-100 text-gray-600",
+                          ? "bg-primary-foreground/20 text-primary-foreground"
+                          : "bg-muted text-muted-foreground",
                       )}
                     >
                       {item.badge}
@@ -273,15 +286,18 @@ const Sidebar: React.FC<SidebarProps> = ({
                       <NavLink
                         key={child.title}
                         to={child.href}
+                        onClick={() => onClose?.()}
                         className={cn(
                           "flex items-center gap-3 w-full px-3 py-2 text-sm rounded-lg transition-colors group",
                           childActive
-                            ? "bg-enterprise-navy/10 text-enterprise-navy font-medium"
-                            : "text-gray-600 hover:bg-gray-50 hover:text-enterprise-navy",
+                            ? "bg-accent text-accent-foreground font-medium"
+                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                         )}
                       >
                         <child.icon className="w-4 h-4 flex-shrink-0" />
-                        <span className="truncate">{child.title}</span>
+                        <span className="truncate md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 md:transition-opacity">
+                          {child.title}
+                        </span>
                       </NavLink>
                     );
                   })}
@@ -293,10 +309,10 @@ const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* User Section */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-ocean-accent rounded-full flex items-center justify-center">
-            <span className="text-white font-medium text-sm">
+      <div className="p-4 border-t border-border">
+        <div className="flex items-center gap-3 md:justify-center md:gap-0 md:group-hover:justify-start md:group-hover:gap-3 md:group-focus-within:justify-start md:group-focus-within:gap-3">
+          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+            <span className="text-primary-foreground font-medium text-sm">
               {user?.name
                 .split(" ")
                 .map((n) => n[0])
@@ -304,12 +320,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
+            <p className="text-sm font-medium text-foreground truncate md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 md:transition-opacity">
               {user?.name}
             </p>
-            <p className="text-xs text-gray-500 truncate">
-              {user?.role?.replace("_", " ").charAt(0).toUpperCase() +
-                user?.role?.slice(1)}
+            <p className="text-xs text-muted-foreground truncate md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 md:transition-opacity">
+              {roleLabel}
             </p>
           </div>
         </div>

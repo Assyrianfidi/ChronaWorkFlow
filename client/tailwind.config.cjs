@@ -26,34 +26,47 @@ module.exports = {
       colors: {
         ...enterpriseTheme.colors,
         // Design token colors
-        primary: tokens.colors.primary,
+        primary: "var(--primary-500)",
         accent: tokens.colors.accent,
         danger: tokens.colors.danger,
-        muted: tokens.colors.muted,
-        success: tokens.colors.success,
-        warning: tokens.colors.warning,
+        muted: "var(--surface-2)",
+        bgGradientStart: "var(--bg-gradient-start)",
+        bgGradientEnd: "var(--bg-gradient-end)",
+        glass: "var(--glass-bg)",
+        success: {
+          DEFAULT: tokens.colors.success,
+          700: "var(--success-700)",
+        },
+        warning: {
+          DEFAULT: tokens.colors.warning,
+          700: "var(--warning-700)",
+        },
         error: tokens.colors.error,
         info: tokens.colors.info,
         "hero-dark": tokens.colors.heroDark,
-        "text-dark": tokens.colors.textDark,
-        "text-light": tokens.colors.textLight,
+        "text-dark": "var(--text-default)",
+        "text-light": "var(--text-inverse)",
         "border-light": tokens.colors.borderLight,
-        "border-gray": tokens.colors.borderGray,
+        "border-gray": "var(--border-gray)",
         // Semantic color aliases
-        background: tokens.colors.bgGradientEnd,
-        foreground: tokens.colors.textDark,
-        card: tokens.colors.cardBg,
-        "card-foreground": tokens.colors.textDark,
-        popover: tokens.colors.bgGradientEnd,
-        "popover-foreground": tokens.colors.textDark,
-        "primary-foreground": tokens.colors.textLight,
-        secondary: tokens.colors.bgGradientStart,
-        "secondary-foreground": tokens.colors.textDark,
-        "muted-foreground": tokens.colors.muted,
-        "accent-foreground": tokens.colors.primary,
-        "destructive-foreground": tokens.colors.textLight,
-        border: tokens.colors.borderGray,
-        input: tokens.colors.borderGray,
+        background: "var(--surface-1)",
+        foreground: "var(--text-default)",
+        card: "var(--surface-1)",
+        "card-foreground": "var(--text-default)",
+        popover: "var(--surface-1)",
+        "popover-foreground": "var(--text-default)",
+        "primary-foreground": "var(--text-inverse)",
+        secondary: "var(--surface-2)",
+        "secondary-foreground": "var(--text-default)",
+        "muted-foreground": "var(--text-muted)",
+        "accent-foreground": "#020617",
+        destructive: {
+          DEFAULT: tokens.colors.danger,
+          500: tokens.colors.error,
+        },
+        "destructive-foreground": "var(--text-inverse)",
+        border: "var(--border-gray)",
+        input: "var(--border-gray)",
         ring: tokens.colors.accent,
 
         // Ocean blue accent colors
@@ -62,16 +75,16 @@ module.exports = {
         // Sidebar specific colors
         sidebar: {
           DEFAULT: tokens.colors.heroDark,
-          foreground: tokens.colors.textLight,
-          primary: tokens.colors.primary,
-          "primary-foreground": tokens.colors.textLight,
-          accent: tokens.colors.muted,
-          "accent-foreground": tokens.colors.textLight,
+          foreground: "var(--text-inverse)",
+          primary: "var(--primary-500)",
+          "primary-foreground": "var(--text-inverse)",
+          accent: "var(--surface-2)",
+          "accent-foreground": "var(--text-inverse)",
           border: tokens.colors.borderLight,
-          ring: tokens.colors.primary,
+          ring: "var(--primary-500)",
         },
 
-        // Enterprise 2099 surface and text tokens from CSS variables
+        // Enterprise surface and text tokens from CSS variables
         surface0: "var(--surface-0)",
         surface1: "var(--surface-1)",
         surface2: "var(--surface-2)",
@@ -80,6 +93,8 @@ module.exports = {
         "text-default": "var(--text-default)",
         "text-muted": "var(--text-muted)",
       },
+
+      variants: tokens.variants,
 
       // Design token spacing
       spacing: {

@@ -1,3 +1,3 @@
-export * from "./VirtualizedTable.js";
+export * from "./VirtualizedTable";
 
-export { default } from "./VirtualizedTable.js";
+export { default } from "./VirtualizedTable";

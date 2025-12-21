@@ -1,49 +1,55 @@
-import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 
 // Mock all dependencies
+const authLoginMock = jest.fn();
+const authRegisterMock = jest.fn();
+const authGenerateAccessTokenMock = jest.fn();
+const authChangePasswordMock = jest.fn();
+
+const refreshCreateRefreshTokenMock = jest.fn();
+const refreshRotateRefreshTokenMock = jest.fn();
+const refreshVerifyRefreshTokenMock = jest.fn();
+const refreshInvalidateRefreshTokenMock = jest.fn();
+const refreshInvalidateUserRefreshTokensMock = jest.fn();
+const refreshGetRefreshTokenExpiryMock = jest.fn();
+
+const loggerInfoMock = jest.fn();
+const loggerErrorMock = jest.fn();
+
+const auditLogAuthEventMock = jest.fn();
+
 const mockAuthService = {
-  login: jest.fn(),
-  register: jest.fn(),
-  generateAccessToken: jest.fn(),
-  changePassword: jest.fn(),
+  login: authLoginMock,
+  register: authRegisterMock,
+  generateAccessToken: authGenerateAccessTokenMock,
+  changePassword: authChangePasswordMock,
 };
 
 const mockRefreshTokenService = {
-  createRefreshToken: jest.fn(),
-  rotateRefreshToken: jest.fn(),
-  verifyRefreshToken: jest.fn(),
-  invalidateRefreshToken: jest.fn(),
-  invalidateUserRefreshTokens: jest.fn(),
-  getRefreshTokenExpiry: jest.fn(() => 30),
+  createRefreshToken: refreshCreateRefreshTokenMock,
+  rotateRefreshToken: refreshRotateRefreshTokenMock,
+  verifyRefreshToken: refreshVerifyRefreshTokenMock,
+  invalidateRefreshToken: refreshInvalidateRefreshTokenMock,
+  invalidateUserRefreshTokens: refreshInvalidateUserRefreshTokensMock,
+  getRefreshTokenExpiry: refreshGetRefreshTokenExpiryMock,
 };
 
 const mockLogger = {
-  info: jest.fn(),
-  error: jest.fn(),
+  info: loggerInfoMock,
+  error: loggerErrorMock,
 };
 
 jest.mock("../services/auth.service", () => ({
   authService: mockAuthService,
 }));
 
-jest.mock("../services/refreshToken.service.ts", () => ({
+jest.mock("../services/refreshToken.service", () => ({
   RefreshTokenService: mockRefreshTokenService,
 }));
 
-jest.mock("../utils/logger.ts", () => ({
+jest.mock("../utils/logger", () => ({
   logger: mockLogger,
-}));
-
-jest.mock("../utils/errors", () => ({
-  ApiError: jest.fn().mockImplementation((statusCode, message, errors) => {
-    const error = new Error(message);
-    error.statusCode = statusCode;
-    error.errors = errors;
-    error.name = "ApiError";
-    return error;
-  }),
 }));
 
 jest.mock("../config/config", () => ({
@@ -54,6 +60,13 @@ jest.mock("../config/config", () => ({
   },
 }));
 
+jest.mock("../services/auditLogger.service", () => ({
+  __esModule: true,
+  default: {
+    logAuthEvent: auditLogAuthEventMock,
+  },
+}));
+
 describe("Auth Controller - Simple Tests", () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
@@ -61,6 +74,9 @@ describe("Auth Controller - Simple Tests", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    refreshGetRefreshTokenExpiryMock.mockImplementation(() => 30);
+    auditLogAuthEventMock.mockResolvedValue(undefined);
 
     // Setup mock request/response
     mockRequest = {
@@ -84,7 +100,7 @@ describe("Auth Controller - Simple Tests", () => {
   describe("login", () => {
     it("should login user successfully", async () => {
       // Import dynamically to avoid circular dependencies
-      const { login } = await import("../controllers/auth.controller");
+      const { login } = await import("../controllers/auth.controller.ts");
 
       const mockUser = { id: 1, email: "test@example.com", name: "Test User" };
       const mockTokens = { accessToken: "access-token", expiresIn: 900 };
@@ -144,7 +160,7 @@ describe("Auth Controller - Simple Tests", () => {
     });
 
     it("should handle validation errors", async () => {
-      const { login } = await import("../controllers/auth.controller");
+      const { login } = await import("../controllers/auth.controller.ts");
 
       mockRequest.body = {
         email: "invalid-email",
@@ -165,7 +181,7 @@ describe("Auth Controller - Simple Tests", () => {
     });
 
     it("should handle authentication errors", async () => {
-      const { login } = await import("../controllers/auth.controller");
+      const { login } = await import("../controllers/auth.controller.ts");
 
       mockRequest.body = {
         email: "test@example.com",
@@ -189,7 +205,7 @@ describe("Auth Controller - Simple Tests", () => {
 
   describe("register", () => {
     it("should register new user successfully", async () => {
-      const { register } = await import("../controllers/auth.controller");
+      const { register } = await import("../controllers/auth.controller.ts");
 
       const mockUser = { id: 2, email: "new@example.com", name: "New User" };
       const mockTokens = { accessToken: "access-token", expiresIn: 900 };
@@ -239,7 +255,7 @@ describe("Auth Controller - Simple Tests", () => {
 
   describe("refreshToken", () => {
     it("should refresh access token successfully", async () => {
-      const authModule = await import("../controllers/auth.controller");
+      const authModule = await import("../controllers/auth.controller.ts");
       const { refreshToken } = authModule;
 
       const mockRefreshToken = "valid-refresh-token";
@@ -278,7 +294,7 @@ describe("Auth Controller - Simple Tests", () => {
 
     it("should reject missing refresh token", async () => {
       const { refreshToken } = await import(
-        "../controllers/auth.controller"
+        "../controllers/auth.controller.ts"
       );
 
       mockRequest.cookies = {};
@@ -300,7 +316,7 @@ describe("Auth Controller - Simple Tests", () => {
 
   describe("logout", () => {
     it("should logout user successfully", async () => {
-      const { logout } = await import("../controllers/auth.controller");
+      const { logout } = await import("../controllers/auth.controller.ts");
 
       const mockRefreshToken = "valid-refresh-token";
       mockRequest.cookies = { refreshToken: mockRefreshToken };
@@ -339,7 +355,7 @@ describe("Auth Controller - Simple Tests", () => {
 
   describe("logoutAll", () => {
     it("should logout from all sessions", async () => {
-      const { logoutAll } = await import("../controllers/auth.controller");
+      const { logoutAll } = await import("../controllers/auth.controller.ts");
 
       mockRequest.user = { id: 1, role: "USER" as const };
 
@@ -364,7 +380,7 @@ describe("Auth Controller - Simple Tests", () => {
     });
 
     it("should require authentication", async () => {
-      const { logoutAll } = await import("../controllers/auth.controller");
+      const { logoutAll } = await import("../controllers/auth.controller.ts");
 
       mockRequest.user = undefined;
 
@@ -386,7 +402,7 @@ describe("Auth Controller - Simple Tests", () => {
   describe("changePassword", () => {
     it("should change password successfully", async () => {
       const { changePassword } = await import(
-        "../controllers/auth.controller"
+        "../controllers/auth.controller.ts"
       );
 
       mockRequest.user = { id: 1, role: "USER" as const };
@@ -424,7 +440,7 @@ describe("Auth Controller - Simple Tests", () => {
 
     it("should require authentication", async () => {
       const { changePassword } = await import(
-        "../controllers/auth.controller"
+        "../controllers/auth.controller.ts"
       );
 
       mockRequest.user = undefined;

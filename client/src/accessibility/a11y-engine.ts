@@ -169,16 +169,11 @@ export class AccessibilityEngine {
       .a11y-focus-visible {
         outline: 3px solid #005fcc;
         outline-offset: 2px;
-        border-radius: 4px;
-        box-shadow: 0 0 0 2px rgba(0, 95, 204, 0.3);
+        rounded-1;
+        shadow-md;
       }
 
-      .a11y-focus-visible:focus {
-        outline: 3px solid #005fcc;
-        outline-offset: 2px;
-        border-radius: 4px;
-        box-shadow: 0 0 0 2px rgba(0, 95, 204, 0.3);
-      }
+      .a11y-focus-visiblefocus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:outline-none
 
       /* High Contrast Mode */
       .a11y-high-contrast {
@@ -198,7 +193,7 @@ export class AccessibilityEngine {
 
       .a11y-high-contrast .a11y-focus-visible {
         outline-color: var(--focus-color) !important;
-        box-shadow: 0 0 0 2px var(--focus-color) !important;
+        shadow-md;
       }
 
       /* Large Text Mode */
@@ -244,9 +239,9 @@ export class AccessibilityEngine {
         color: #fff;
         padding: 8px;
         text-decoration: none;
-        border-radius: 4px;
+        rounded-1;
         z-index: 10000;
-        transition: top 0.3s;
+        transition-colors duration-200;
       }
 
       .a11y-skip-link:focus {
@@ -307,7 +302,7 @@ export class AccessibilityEngine {
         background: #fff !important;
         color: #000 !important;
         border: 1px solid #000 !important;
-        box-shadow: none !important;
+        shadow-md;
         text-shadow: none !important;
       }
 
@@ -361,14 +356,14 @@ export class AccessibilityEngine {
         width: 100%;
         height: 20px;
         background: #f0f0f0;
-        border-radius: 10px;
+        rounded-3;
         overflow: hidden;
       }
 
       .a11y-progress-bar {
         height: 100%;
         background: #4caf50;
-        transition: width 0.3s ease;
+        transition-colors duration-200;
       }
 
       .a11y-progress[aria-valuenow]::before {
@@ -606,15 +601,16 @@ export class AccessibilityEngine {
       const tabs = tabList.querySelectorAll('[role="tab"]');
 
       tabList.addEventListener("keydown", (e) => {
+        const keyEvent = e as KeyboardEvent;
         const currentTab = e.target as HTMLElement;
         const currentIndex = Array.from(tabs).indexOf(currentTab);
 
         let newIndex: number;
 
-        switch (e.key) {
+        switch (keyEvent.key) {
           case "ArrowRight":
           case "ArrowDown":
-            e.preventDefault();
+            keyEvent.preventDefault();
             newIndex = (currentIndex + 1) % tabs.length;
             (tabs[newIndex] as HTMLElement).focus();
             (tabs[newIndex] as HTMLElement).click();
@@ -622,20 +618,20 @@ export class AccessibilityEngine {
 
           case "ArrowLeft":
           case "ArrowUp":
-            e.preventDefault();
+            keyEvent.preventDefault();
             newIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
             (tabs[newIndex] as HTMLElement).focus();
             (tabs[newIndex] as HTMLElement).click();
             break;
 
           case "Home":
-            e.preventDefault();
+            keyEvent.preventDefault();
             (tabs[0] as HTMLElement).focus();
             (tabs[0] as HTMLElement).click();
             break;
 
           case "End":
-            e.preventDefault();
+            keyEvent.preventDefault();
             (tabs[tabs.length - 1] as HTMLElement).focus();
             (tabs[tabs.length - 1] as HTMLElement).click();
             break;
@@ -651,35 +647,36 @@ export class AccessibilityEngine {
       const menuItems = menu.querySelectorAll('[role="menuitem"]');
 
       menu.addEventListener("keydown", (e) => {
+        const keyEvent = e as KeyboardEvent;
         const currentItem = e.target as HTMLElement;
         const currentIndex = Array.from(menuItems).indexOf(currentItem);
 
-        switch (e.key) {
+        switch (keyEvent.key) {
           case "ArrowDown":
-            e.preventDefault();
+            keyEvent.preventDefault();
             const nextIndex = (currentIndex + 1) % menuItems.length;
             (menuItems[nextIndex] as HTMLElement).focus();
             break;
 
           case "ArrowUp":
-            e.preventDefault();
+            keyEvent.preventDefault();
             const prevIndex =
               currentIndex === 0 ? menuItems.length - 1 : currentIndex - 1;
             (menuItems[prevIndex] as HTMLElement).focus();
             break;
 
           case "Home":
-            e.preventDefault();
+            keyEvent.preventDefault();
             (menuItems[0] as HTMLElement).focus();
             break;
 
           case "End":
-            e.preventDefault();
+            keyEvent.preventDefault();
             (menuItems[menuItems.length - 1] as HTMLElement).focus();
             break;
 
           case "Escape":
-            e.preventDefault();
+            keyEvent.preventDefault();
             menu.setAttribute("aria-hidden", "true");
             menu.classList.remove("open");
             break;
@@ -696,26 +693,27 @@ export class AccessibilityEngine {
       let currentCellIndex = 0;
 
       grid.addEventListener("keydown", (e) => {
+        const keyEvent = e as KeyboardEvent;
         const currentCell = cells[currentCellIndex] as HTMLElement;
         const cols = grid.getAttribute("aria-colcount")
           ? parseInt(grid.getAttribute("aria-colcount")!)
           : Math.sqrt(cells.length);
 
-        switch (e.key) {
+        switch (keyEvent.key) {
           case "ArrowRight":
-            e.preventDefault();
+            keyEvent.preventDefault();
             currentCellIndex = Math.min(currentCellIndex + 1, cells.length - 1);
             (cells[currentCellIndex] as HTMLElement).focus();
             break;
 
           case "ArrowLeft":
-            e.preventDefault();
+            keyEvent.preventDefault();
             currentCellIndex = Math.max(currentCellIndex - 1, 0);
             (cells[currentCellIndex] as HTMLElement).focus();
             break;
 
           case "ArrowDown":
-            e.preventDefault();
+            keyEvent.preventDefault();
             currentCellIndex = Math.min(
               currentCellIndex + cols,
               cells.length - 1,
@@ -724,7 +722,7 @@ export class AccessibilityEngine {
             break;
 
           case "ArrowUp":
-            e.preventDefault();
+            keyEvent.preventDefault();
             currentCellIndex = Math.max(currentCellIndex - cols, 0);
             (cells[currentCellIndex] as HTMLElement).focus();
             break;
@@ -953,12 +951,13 @@ export class AccessibilityEngine {
 
     // Check for missing labels on form inputs
     document.querySelectorAll("input, textarea, select").forEach((input) => {
+      const inputEl = input as HTMLInputElement;
       const hasLabel =
         document.querySelector(`label[for="${input.id}"]`) ||
         input.getAttribute("aria-label") ||
         input.getAttribute("aria-labelledby");
 
-      if (!hasLabel && input.type !== "hidden") {
+      if (!hasLabel && inputEl.type !== "hidden") {
         issues.push({
           type: "error",
           element: input,
@@ -1046,7 +1045,7 @@ export class AccessibilityEngine {
 
     // Remove observers
     this.observers.forEach((observer) => observer.disconnect());
-    this.observers.clear();
+    this.observers = [];
 
     // Remove skip links
     this.skipLinks.forEach((link) => link.remove());

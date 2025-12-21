@@ -1,8 +1,8 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import { IntelligentScheduler } from "../IntelligentScheduler.js";
-import { AutomationEngine } from "../AutomationEngine.js";
+import { IntelligentScheduler } from '../IntelligentScheduler';
+import { AutomationEngine } from '../AutomationEngine';
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

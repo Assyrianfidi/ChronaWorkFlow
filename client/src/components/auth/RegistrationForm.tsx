@@ -12,8 +12,8 @@ import { CardContent, CardFooter } from "@/components/components/ui/card";
 import {
   type RegisterFormData,
   registerSchema,
-} from "@/components/lib/validations/schemas";
-import { useToast } from "@/components/hooks/use-toast";
+} from "@/lib/validations/schemas";
+import { toast } from "@/components/hooks/use-toast";
 
 interface RegistrationFormProps {
   onSubmit: (data: RegisterFormData) => Promise<void>;
@@ -28,8 +28,6 @@ export function RegistrationForm({
   error,
   clearError,
 }: RegistrationFormProps): ReactElement {
-  const { toast } = useToast();
-
   const methods = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {

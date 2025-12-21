@@ -69,21 +69,21 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
     switch (type) {
       case "login":
       case "user_created":
-        return "text-blue-600 bg-blue-50";
+        return "text-primary bg-primary/10";
       case "report":
       case "document":
-        return "text-green-600 bg-green-50";
+        return "text-success-700 dark:text-success bg-success/10";
       case "system":
       case "notification":
-        return "text-purple-600 bg-purple-50";
+        return "text-info bg-info/10";
       case "task":
       case "target":
-        return "text-orange-600 bg-orange-50";
+        return "text-warning-700 dark:text-warning bg-warning/10";
       case "approval":
       case "expense":
-        return "text-red-600 bg-red-50";
+        return "text-destructive dark:text-destructive-500 bg-destructive/10";
       default:
-        return "text-gray-600 bg-gray-50";
+        return "text-muted-foreground bg-muted";
     }
   };
 
@@ -92,10 +92,10 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
       <div className="space-y-4">
         {[1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="animate-pulse flex items-start space-x-3">
-            <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+            <div className="w-8 h-8 bg-muted rounded-full"></div>
             <div className="flex-1">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-muted rounded w-1/2"></div>
             </div>
           </div>
         ))}
@@ -106,10 +106,10 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
   if (error) {
     return (
       <div className="text-center py-8">
-        <div className="text-red-600 mb-2">Failed to load activity</div>
+        <div className="text-destructive mb-2">Failed to load activity</div>
         <button
           onClick={() => window.location.reload()}
-          className="text-sm text-blue-600 hover:text-blue-700"
+          className="text-sm text-primary hover:text-primary/90"
         >
           Try again
         </button>
@@ -119,7 +119,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
 
   if (activities.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-muted-foreground">
         No recent activity to display
       </div>
     );
@@ -139,13 +139,13 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
               <Icon className="w-4 h-4" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm text-gray-900 mb-1">
+              <div className="text-sm text-foreground mb-1">
                 {activity.message}
                 {activity.user && (
                   <span className="font-medium"> by {activity.user}</span>
                 )}
               </div>
-              <div className="text-xs text-gray-500">{activity.timestamp}</div>
+              <div className="text-xs text-muted-foreground">{activity.timestamp}</div>
             </div>
           </div>
         );

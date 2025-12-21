@@ -88,7 +88,7 @@ export class OnboardingEngine {
   private currentFlow: OnboardingFlow | null = null;
   private currentStepIndex: number = 0;
   private user: OnboardingUser | null = null;
-  private isActive: boolean = false;
+  private active: boolean = false;
   private eventListeners: Map<string, EventListener> = new Map();
   private observers: Map<string, MutationObserver> = new Map();
 
@@ -372,7 +372,7 @@ export class OnboardingEngine {
       .filter(
         (flow) => flow.targetAudience === role || flow.targetAudience === "all",
       )
-      .sort((a, b) => (a.priority || 0) - (b.priority || 0));
+      .sort((a: any, b: any) => ((a.priority as number) || 0) - ((b.priority as number) || 0));
   }
 
   public startFlow(flowId: string): boolean {
@@ -389,7 +389,7 @@ export class OnboardingEngine {
 
     this.currentFlow = flow;
     this.currentStepIndex = 0;
-    this.isActive = true;
+    this.active = true;
 
     // Initialize progress
     const existingProgress = this.user.progress.find(
@@ -423,7 +423,7 @@ export class OnboardingEngine {
 
     this.currentFlow = null;
     this.currentStepIndex = 0;
-    this.isActive = false;
+    this.active = false;
     this.cleanup();
     this.saveUserProgress();
   }
@@ -759,7 +759,7 @@ export class OnboardingEngine {
         if (action.target) {
           const target = document.querySelector(action.target);
           if (target) {
-            target.click();
+            (target as HTMLElement).click();
           }
         }
         break;
@@ -1028,7 +1028,7 @@ export class OnboardingEngine {
   }
 
   public isActive(): boolean {
-    return this.isActive;
+    return this.active;
   }
 
   public destroy(): void {

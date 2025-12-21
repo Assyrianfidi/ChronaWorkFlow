@@ -1,4 +1,6 @@
 import * as React from "react";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useEffect, useState } from "react";
 import { Switch } from "../components/ui/Switch";
 import Button from "../components/ui/Button";
@@ -10,14 +12,6 @@ import {
   CardTitle,
 } from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../components/ui/Table";
 import { DashboardShell } from "../components/ui/layout/DashboardShell";
 import {
   Select,
@@ -38,7 +32,6 @@ import {
   Check,
   Trash2,
   Eye,
-  EyeOff,
   Settings,
   Volume2,
   VolumeX,
@@ -577,14 +570,13 @@ const NotificationsPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-enterprise-navy"></div>
-              </div>
+              <LoadingState label="Loading notifications…" size="sm" />
             ) : filteredNotifications.length === 0 ? (
-              <div className="text-center py-8">
-                <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No notifications found</p>
-              </div>
+              <EmptyState
+                size="sm"
+                title="No notifications found"
+                icon={<Bell className="h-5 w-5" />}
+              />
             ) : (
               <div className="space-y-4">
                 {filteredNotifications.map((notification) => {

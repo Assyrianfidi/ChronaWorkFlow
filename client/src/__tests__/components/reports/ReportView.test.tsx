@@ -9,11 +9,11 @@ import {
   renderWithProviders,
   getMockNavigate,
   resetMockNavigate,
-} from "../../test-utils.js";
+} from '../../test-utils';
 import { vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { ReportView } from "../components/reports/ReportView.js";
-import { useReport } from "../hooks/useReports.js";
+import { ReportView } from '../components/reports/ReportView';
+import { useReport } from '../hooks/useReports';
 
 // Mock the useToast hook
 const mockToast = vi.fn();

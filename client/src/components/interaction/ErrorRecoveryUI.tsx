@@ -722,7 +722,7 @@ function DefaultErrorFallback({
 export function ErrorRecoveryUI({ children }: { children: React.ReactNode }) {
   const { currentMode } = useUserExperienceMode();
   const { isLowPerformanceMode } = usePerformance();
-  const { success } = useNotifications();
+  const { addNotification } = useNotifications();
 
   const [errors, setErrors] = useState<ErrorInfo[]>([]);
   const [patterns, setPatterns] = useState<ErrorPattern[]>(BUILTIN_PATTERNS);
@@ -741,8 +741,10 @@ export function ErrorRecoveryUI({ children }: { children: React.ReactNode }) {
 
       // Show notification for critical errors
       if (error.severity === "critical") {
-        success(`Critical error: ${error.message}`, {
+        addNotification({
           type: "error",
+          title: "Critical error",
+          message: error.message,
           duration: 10000,
         });
       }
@@ -750,16 +752,18 @@ export function ErrorRecoveryUI({ children }: { children: React.ReactNode }) {
 
     const handleRecoveryCompleted = ({
       session,
-      success,
+      success: wasSuccessful,
     }: {
       session: RecoverySession;
       success: boolean;
     }) => {
       setSessions((prev) => [...prev, session]);
 
-      if (success) {
-        success(`Error recovered: ${session.strategy.name}`, {
+      if (wasSuccessful) {
+        addNotification({
           type: "success",
+          title: "Recovered",
+          message: `Error recovered: ${session.strategy.name}`,
           duration: 3000,
         });
       }
@@ -778,7 +782,7 @@ export function ErrorRecoveryUI({ children }: { children: React.ReactNode }) {
         handleRecoveryCompleted,
       );
     };
-  }, [success]);
+  }, [addNotification]);
 
   const addError = useCallback((error: Partial<ErrorInfo>) => {
     if (managerRef.current) {
@@ -1032,7 +1036,7 @@ function ErrorPanel({
                                 handleRecover(error.id, strategy.id)
                               }
                               disabled={isRecovering}
-                              className="w-full text-left px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50 disabled:opacity-50"
+                              className="w-full text-left px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50 disabled:opacity-60"
                             >
                               {isRecovering ? "Recovering..." : strategy.name}
                             </button>
@@ -1078,8 +1082,7 @@ export function withErrorBoundary<P extends object>(
   return function WrappedComponent(props: P) {
     return (
       <ErrorBoundary {...options}>
-        {/* @ts-ignore */}
-        <Component {...(props as P)} />
+        <Component {...props} />
       </ErrorBoundary>
     );
   };

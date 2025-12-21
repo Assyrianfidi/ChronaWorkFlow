@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useUserExperienceMode } from "@/components/adaptive/UserExperienceMode";
 import { usePerformance } from "@/components/adaptive/UI-Performance-Engine";
-import { useAuthStore } from "@/../../store/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 // API Gateway Types
 interface APIEndpoint {
@@ -178,10 +178,18 @@ class APIGatewayEngine {
   private requests: Map<string, APIRequest> = new Map();
   private apiKeys: Map<string, APIKey> = new Map();
   private webhooks: Map<string, Webhook> = new Map();
-  private middleware: Map<string, (req: any, res: any, next: any) => void> =
-    new Map();
-  private transformers: Map<string, (data: any) => any> = new Map();
-  private validators: Map<string, (data: any) => boolean> = new Map();
+  private middleware: Map<
+    string,
+    (req: any, endpoint: any) => unknown | Promise<unknown>
+  > = new Map();
+  private transformers: Map<
+    string,
+    (...args: any[]) => any | Promise<any>
+  > = new Map();
+  private validators: Map<
+    string,
+    (...args: any[]) => boolean | Promise<boolean>
+  > = new Map();
 
   constructor() {
     this.initializeMiddleware();
@@ -1119,11 +1127,11 @@ export const useAPIGateway = (): APIGatewayContextType => {
 export const withAPIGateway = <P extends object>(
   Component: React.ComponentType<P>,
 ) => {
-  return React.forwardRef<any, P>((props, ref) => (
+  return (props: P) => (
     <EnterpriseAPIGateway>
-      <Component {...props} ref={ref} />
+      <Component {...props} />
     </EnterpriseAPIGateway>
-  ));
+  );
 };
 
 // Utility Components

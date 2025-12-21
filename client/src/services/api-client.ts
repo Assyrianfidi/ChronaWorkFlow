@@ -147,18 +147,6 @@ class ApiClient {
   }
 }
 
-class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public code?: string,
-    public details?: any,
-  ) {
-    super(message);
-    this.name = "ApiError";
-  }
-}
-
 // Create singleton instance
 export const apiClient = new ApiClient();
 

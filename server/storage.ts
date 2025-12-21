@@ -212,8 +212,8 @@ export interface IStorage {
 
   // Audit Logs
   createAuditLog(log: {
-    companyId: string;
-    userId: string;
+    companyId?: string | null;
+    userId?: string | null;
     action: string;
     entityType: string;
     entityId: string;
@@ -974,8 +974,8 @@ export class DatabaseStorage implements IStorage {
   // Audit Log Operations
   // ===================
   async createAuditLog(log: {
-    companyId: string;
-    userId: string;
+    companyId?: string | null;
+    userId?: string | null;
     action: string;
     entityType: string;
     entityId: string;

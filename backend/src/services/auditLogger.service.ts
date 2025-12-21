@@ -2,9 +2,9 @@
 import { prisma } from "../utils/prisma";
 
 // Create a singleton instance for production
-let prismaInstance = null;
+let prismaInstance: any = null;
 
-function getPrismaInstance() {
+function getPrismaInstance(): any {
   if (!prismaInstance) {
     prismaInstance = prisma;
   }
@@ -23,7 +23,7 @@ class AuditLoggerService {
    * Set the Prisma client instance (for testing)
    * @param {PrismaClient} prisma - The Prisma client instance
    */
-  static setPrismaInstance(prisma) {
+  static setPrismaInstance(prisma: any) {
     prismaInstance = prisma;
   }
 
@@ -31,7 +31,7 @@ class AuditLoggerService {
    * Log an authentication event
    * @param {Object} event - The authentication event details
    */
-  static async logAuthEvent(event) {
+  static async logAuthEvent(event: any) {
     const logEntry = {
       timestamp: new Date(),
       eventType: "AUTH",
@@ -79,7 +79,7 @@ class AuditLoggerService {
    * Log a data access/modification event
    * @param {Object} event - The data event details
    */
-  static async logDataEvent(event) {
+  static async logDataEvent(event: any) {
     const logEntry: any = {
       timestamp: new Date(),
       eventType: "DATA",
@@ -129,7 +129,7 @@ class AuditLoggerService {
    * Log a security event
    * @param {Object} event - The security event details
    */
-  static async logSecurityEvent(event) {
+  static async logSecurityEvent(event: any) {
     const logEntry = {
       timestamp: new Date(),
       eventType: "SECURITY",
@@ -172,7 +172,7 @@ class AuditLoggerService {
    * Log a system event
    * @param {Object} event - The system event details
    */
-  static async logSystemEvent(event) {
+  static async logSystemEvent(event: any) {
     const logEntry = {
       timestamp: new Date(),
       eventType: "SYSTEM",
@@ -210,7 +210,7 @@ class AuditLoggerService {
    * Trigger a security alert
    * @param {Object} alert - The alert details
    */
-  static async triggerSecurityAlert(alert) {
+  static async triggerSecurityAlert(alert: any) {
     const alertEntry = {
       timestamp: alert.timestamp || new Date(),
       alertType: alert.alertType,
@@ -278,15 +278,14 @@ class AuditLoggerService {
     if (filters.severity) {
       logs = logs.filter((log: any) => log.severity === filters.severity);
     }
-    if (filters.startDate) {
-      logs = logs.filter(
-        (log: any) => new Date(log.timestamp) >= new Date(filters.startDate),
-      );
+    const startDate = filters.startDate ? new Date(filters.startDate) : null;
+    if (startDate) {
+      logs = logs.filter((log: any) => new Date(log.timestamp) >= startDate);
     }
-    if (filters.endDate) {
-      logs = logs.filter(
-        (log: any) => new Date(log.timestamp) <= new Date(filters.endDate),
-      );
+
+    const endDate = filters.endDate ? new Date(filters.endDate) : null;
+    if (endDate) {
+      logs = logs.filter((log: any) => new Date(log.timestamp) <= endDate);
     }
 
     // Sort by timestamp descending
@@ -355,7 +354,7 @@ class AuditLoggerService {
    * @param {string} userId - The user acknowledging the alert
    * @returns {boolean} - Whether the alert was acknowledged
    */
-  static acknowledgeAlert(alertId, userId) {
+  static acknowledgeAlert(alertId: any, userId: any) {
     if (!this._securityAlerts) {
       return false;
     }

@@ -1,4 +1,5 @@
 import React from "react";
+import { EmptyState } from '@/components/ui/EmptyState';
 import { Package, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 
 interface InventoryItem {
@@ -37,13 +38,13 @@ const InventoryStatus: React.FC<InventoryStatusProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "in_stock":
-        return "text-green-600 bg-green-50";
+        return "text-success-700 dark:text-success bg-success/10";
       case "low_stock":
-        return "text-yellow-600 bg-yellow-50";
+        return "text-warning-700 dark:text-warning bg-warning/10";
       case "out_of_stock":
-        return "text-red-600 bg-red-50";
+        return "text-destructive dark:text-destructive-500 bg-destructive/10";
       default:
-        return "text-gray-600 bg-gray-50";
+        return "text-muted-foreground bg-muted";
     }
   };
 
@@ -66,10 +67,10 @@ const InventoryStatus: React.FC<InventoryStatusProps> = ({
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="animate-pulse border border-gray-200 rounded-lg p-4"
+            className="animate-pulse border border-border rounded-lg p-4"
           >
-            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+            <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+            <div className="h-3 bg-muted rounded w-1/2"></div>
           </div>
         ))}
       </div>
@@ -78,9 +79,7 @@ const InventoryStatus: React.FC<InventoryStatusProps> = ({
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        No inventory items to display
-      </div>
+      <EmptyState size="sm" title="No inventory items to display" />
     );
   }
 
@@ -93,15 +92,15 @@ const InventoryStatus: React.FC<InventoryStatusProps> = ({
         return (
           <div
             key={item.id}
-            className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow"
+            className="border border-border rounded-lg p-4 hover:shadow-soft transition-shadow"
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
-                  <h3 className="font-medium text-gray-900">{item.name}</h3>
-                  <span className="text-sm text-gray-500">SKU: {item.sku}</span>
+                  <h3 className="font-medium text-foreground">{item.name}</h3>
+                  <span className="text-sm text-muted-foreground">SKU: {item.sku}</span>
                 </div>
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                   <span>Quantity: {item.quantity}</span>
                   <span>Min: {item.minStock}</span>
                   <span>Max: {item.maxStock}</span>
@@ -120,20 +119,20 @@ const InventoryStatus: React.FC<InventoryStatusProps> = ({
 
             {/* Stock Level Indicator */}
             <div className="mt-3">
-              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                 <span>Stock Level</span>
                 <span>
                   {Math.round((item.quantity / item.maxStock) * 100)}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-muted rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all duration-300 ${
                     item.status === "in_stock"
-                      ? "bg-green-600"
+                      ? "bg-success"
                       : item.status === "low_stock"
-                        ? "bg-yellow-600"
-                        : "bg-red-600"
+                        ? "bg-warning"
+                        : "bg-destructive"
                   }`}
                   style={{
                     width: `${Math.min((item.quantity / item.maxStock) * 100, 100)}%`,

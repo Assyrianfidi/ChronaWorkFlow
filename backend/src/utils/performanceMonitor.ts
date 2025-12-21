@@ -261,7 +261,7 @@ export class LoadTester {
     // Wait for remaining requests
     await Promise.all(promises);
 
-    const totalTime = Date.now() - startTime;
+    const totalTime = Math.max(1, Date.now() - startTime);
     const avgResponseTime =
       responseTimes.length > 0
         ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length

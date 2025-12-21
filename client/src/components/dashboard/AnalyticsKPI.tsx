@@ -8,33 +8,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "elevated" | "outlined" | "glass";
-}
-
-const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
-  ({ className, variant = "default", ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(
-        "rounded-lg border bg-white shadow-sm transition-all duration-200",
-        {
-          "border-gray-200 hover:shadow-md": variant === "default",
-          "border-gray-100 shadow-lg hover:shadow-xl": variant === "elevated",
-          "border-2 border-gray-300 hover:border-primary-300":
-            variant === "outlined",
-          "border-transparent bg-white/80 backdrop-blur-sm hover:bg-white/90":
-            variant === "glass",
-        },
-        className,
-      )}
-      {...props}
-    />
-  ),
-);
-
-EnterpriseCard.displayName = "EnterpriseCard";
+import Card from "@/components/ui/card";
 
 interface KPIMetric {
   title: string;
@@ -88,53 +62,56 @@ const KPICard = React.forwardRef<
     }, [value, format, loading]);
 
     return (
-      <EnterpriseCard
+      <Card
         ref={ref}
-        variant="elevated"
         className={cn(
-          "hover:shadow-xl transition-all duration-300",
+          "p-6 hover:shadow-elevated transition-all duration-300",
           loading && "animate-pulse",
         )}
       >
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-            <p className="text-2xl font-bold text-gray-900 mb-2">
+            <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
+            <p className="text-2xl font-bold text-foreground mb-2">
               {formattedValue}
             </p>
             <div className="flex items-center gap-2">
               {changeType === "increase" ? (
-                <TrendingUp className="w-4 h-4 text-green-500" />
+                <TrendingUp className="w-4 h-4 text-success-700 dark:text-success" />
               ) : (
-                <TrendingDown className="w-4 h-4 text-red-500" />
+                <TrendingDown className="w-4 h-4 text-destructive dark:text-destructive-500" />
               )}
               <span
                 className={cn(
                   "text-sm font-medium",
-                  changeType === "increase" ? "text-green-500" : "text-red-500",
+                  changeType === "increase"
+                    ? "text-success-700 dark:text-success"
+                    : "text-destructive dark:text-destructive-500",
                 )}
               >
                 {change > 0 ? "+" : ""}
                 {change}%
               </span>
-              <span className="text-sm text-gray-500">{period}</span>
+              <span className="text-sm text-muted-foreground">{period}</span>
             </div>
           </div>
           <div
             className={cn(
               "p-3 rounded-lg",
-              changeType === "increase" ? "bg-green-100" : "bg-red-100",
+              changeType === "increase" ? "bg-success/10" : "bg-destructive/10",
             )}
           >
             <Icon
               className={cn(
                 "w-6 h-6",
-                changeType === "increase" ? "text-green-600" : "text-red-600",
+                changeType === "increase"
+                  ? "text-success-700 dark:text-success"
+                  : "text-destructive dark:text-destructive-500",
               )}
             />
           </div>
         </div>
-      </EnterpriseCard>
+      </Card>
     );
   },
 );

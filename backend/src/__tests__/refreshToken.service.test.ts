@@ -1,14 +1,197 @@
-import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
-import { PrismaClient } from "@prisma/client";
-import { RefreshTokenService } from "../services/refreshToken.service";
+const store = {
+  userIdSeq: 1,
+  refreshTokenIdSeq: 1,
+  users: new Map<number, any>(),
+  refreshTokensByHash: new Map<
+    string,
+    { id: number; tokenHash: string; userId: number; expiresAt: Date; user: any }
+  >(),
+};
 
-const prisma = new PrismaClient();
+const mockPrisma = {
+  user: {
+    create: jest.fn(),
+    delete: jest.fn(),
+    findUnique: jest.fn(),
+  },
+  refreshToken: {
+    create: jest.fn(),
+    findUnique: jest.fn(),
+    deleteMany: jest.fn(),
+    delete: jest.fn(),
+    update: jest.fn(),
+  },
+};
+
+const loggerInfoMock = jest.fn();
+const loggerErrorMock = jest.fn();
+
+const cryptoCounter = { value: 0 };
+const randomBytesToStringMock = jest.fn();
+const cryptoRandomBytesMock = jest.fn();
+const cryptoCreateHashMock = jest.fn();
+
+jest.mock("../lib/prisma", () => ({
+  PrismaClientSingleton: {
+    getInstance: () => mockPrisma,
+  },
+}));
+
+jest.mock("../utils/logger", () => ({
+  logger: {
+    info: loggerInfoMock,
+    error: loggerErrorMock,
+  },
+}));
+
+jest.mock("crypto", () => {
+  return {
+    __esModule: true,
+    default: {
+      randomBytes: cryptoRandomBytesMock,
+      createHash: cryptoCreateHashMock,
+    },
+    randomBytes: cryptoRandomBytesMock,
+    createHash: cryptoCreateHashMock,
+  };
+});
+
+let RefreshTokenService: typeof import("../services/refreshToken.service").RefreshTokenService;
+
+const prisma = mockPrisma;
+
+beforeAll(async () => {
+  const mod = await import("../services/refreshToken.service");
+  RefreshTokenService = mod.RefreshTokenService;
+});
 
 describe("RefreshTokenService", () => {
   let testUser: any;
   let testUserId: number;
 
   beforeEach(async () => {
+    store.userIdSeq = 1;
+    store.refreshTokenIdSeq = 1;
+    store.users.clear();
+    store.refreshTokensByHash.clear();
+
+    cryptoCounter.value = 0;
+
+    randomBytesToStringMock.mockImplementation(() => {
+      const suffix = String(cryptoCounter.value).padStart(64, "0");
+      return suffix + suffix;
+    });
+
+    cryptoRandomBytesMock.mockImplementation(() => {
+      cryptoCounter.value += 1;
+      return {
+        toString: randomBytesToStringMock,
+      };
+    });
+
+    cryptoCreateHashMock.mockImplementation(() => {
+      const state = { data: "" };
+      const hashObj: any = {
+        update: jest.fn((val: string) => {
+          state.data = String(val);
+          return hashObj;
+        }),
+        digest: jest.fn(() => {
+          const hex = state.data;
+          return (hex + "0".repeat(64)).slice(0, 64);
+        }),
+      };
+      return hashObj;
+    });
+
+    mockPrisma.user.create.mockImplementation(async ({ data }: any) => {
+      const id = store.userIdSeq++;
+      const user = {
+        id,
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: data.role,
+      };
+      store.users.set(id, user);
+      return user;
+    });
+
+    mockPrisma.user.delete.mockImplementation(async ({ where }: any) => {
+      const user = store.users.get(where.id);
+      store.users.delete(where.id);
+      for (const [hash, rt] of store.refreshTokensByHash.entries()) {
+        if (rt.userId === where.id) {
+          store.refreshTokensByHash.delete(hash);
+        }
+      }
+      return user;
+    });
+
+    mockPrisma.user.findUnique.mockImplementation(async ({ where }: any) => {
+      return store.users.get(where.id) ?? null;
+    });
+
+    mockPrisma.refreshToken.create.mockImplementation(async ({ data }: any) => {
+      const user = store.users.get(data.userId);
+      const record = {
+        id: store.refreshTokenIdSeq++,
+        tokenHash: data.tokenHash,
+        userId: data.userId,
+        expiresAt: data.expiresAt,
+        user,
+      };
+      store.refreshTokensByHash.set(data.tokenHash, record);
+      return record;
+    });
+
+    mockPrisma.refreshToken.findUnique.mockImplementation(
+      async ({ where, include }: any) => {
+        const rt = store.refreshTokensByHash.get(where.tokenHash) ?? null;
+        if (!rt) return null;
+        if (include?.user) return rt;
+        const { user, ...rest } = rt;
+        return rest;
+      },
+    );
+
+    mockPrisma.refreshToken.deleteMany.mockImplementation(async ({ where }: any) => {
+      let count = 0;
+      for (const [hash, rt] of store.refreshTokensByHash.entries()) {
+        const byUserId =
+          where?.userId !== undefined ? rt.userId === where.userId : true;
+        const byTokenHash = where?.tokenHash ? rt.tokenHash === where.tokenHash : true;
+        const byExpiresAtLt = where?.expiresAt?.lt
+          ? rt.expiresAt < where.expiresAt.lt
+          : true;
+
+        if (byUserId && byTokenHash && byExpiresAtLt) {
+          store.refreshTokensByHash.delete(hash);
+          count += 1;
+        }
+      }
+
+      return { count };
+    });
+
+    mockPrisma.refreshToken.delete.mockImplementation(async ({ where }: any) => {
+      for (const [hash, rt] of store.refreshTokensByHash.entries()) {
+        if (rt.id === where.id) {
+          store.refreshTokensByHash.delete(hash);
+          return rt;
+        }
+      }
+      return null;
+    });
+
+    mockPrisma.refreshToken.update.mockImplementation(async ({ where, data }: any) => {
+      const rt = store.refreshTokensByHash.get(where.tokenHash);
+      if (!rt) throw new Error("RefreshToken not found");
+      const updated = { ...rt, ...data };
+      store.refreshTokensByHash.set(where.tokenHash, updated);
+      return updated;
+    });
+
     // Create a test user
     testUser = await prisma.user.create({
       data: {
@@ -19,16 +202,10 @@ describe("RefreshTokenService", () => {
       },
     });
     testUserId = testUser.id;
-
-    // Clean up any existing refresh tokens for this user
-    await prisma.refreshToken.deleteMany({ where: { userId: testUserId } });
   });
 
   afterEach(async () => {
-    // Clean up refresh tokens
     await prisma.refreshToken.deleteMany({ where: { userId: testUserId } });
-
-    // Clean up test user
     await prisma.user.delete({ where: { id: testUserId } });
   });
 
@@ -199,19 +376,12 @@ describe("RefreshTokenService", () => {
 
   describe("invalidateUserRefreshTokens", () => {
     it("should invalidate all user tokens", async () => {
-      // Create multiple tokens
-      const token1 = await RefreshTokenService.createRefreshToken(testUserId);
-      const token2 = await RefreshTokenService.createRefreshToken(testUserId);
+      // createRefreshToken invalidates existing tokens, so only one active token
+      const token = await RefreshTokenService.createRefreshToken(testUserId);
+      const tokenHash = RefreshTokenService.hashToken(token);
 
-      const hash1 = RefreshTokenService.hashToken(token1);
-      const hash2 = RefreshTokenService.hashToken(token2);
-
-      // Verify tokens exist
       expect(
-        await prisma.refreshToken.findUnique({ where: { tokenHash: hash1 } }),
-      ).toBeTruthy();
-      expect(
-        await prisma.refreshToken.findUnique({ where: { tokenHash: hash2 } }),
+        await prisma.refreshToken.findUnique({ where: { tokenHash } }),
       ).toBeTruthy();
 
       // Invalidate all tokens
@@ -219,40 +389,25 @@ describe("RefreshTokenService", () => {
 
       // All tokens should be gone
       expect(
-        await prisma.refreshToken.findUnique({ where: { tokenHash: hash1 } }),
-      ).toBeFalsy();
-      expect(
-        await prisma.refreshToken.findUnique({ where: { tokenHash: hash2 } }),
+        await prisma.refreshToken.findUnique({ where: { tokenHash } }),
       ).toBeFalsy();
     });
   });
 
   describe("invalidateRefreshToken", () => {
     it("should invalidate specific token", async () => {
-      const token1 = await RefreshTokenService.createRefreshToken(testUserId);
-      const token2 = await RefreshTokenService.createRefreshToken(testUserId);
+      const token = await RefreshTokenService.createRefreshToken(testUserId);
+      const tokenHash = RefreshTokenService.hashToken(token);
 
-      const hash1 = RefreshTokenService.hashToken(token1);
-      const hash2 = RefreshTokenService.hashToken(token2);
-
-      // Verify tokens exist
       expect(
-        await prisma.refreshToken.findUnique({ where: { tokenHash: hash1 } }),
-      ).toBeTruthy();
-      expect(
-        await prisma.refreshToken.findUnique({ where: { tokenHash: hash2 } }),
+        await prisma.refreshToken.findUnique({ where: { tokenHash } }),
       ).toBeTruthy();
 
-      // Invalidate only token1
-      await RefreshTokenService.invalidateRefreshToken(token1);
+      await RefreshTokenService.invalidateRefreshToken(token);
 
-      // Only token1 should be gone
       expect(
-        await prisma.refreshToken.findUnique({ where: { tokenHash: hash1 } }),
+        await prisma.refreshToken.findUnique({ where: { tokenHash } }),
       ).toBeFalsy();
-      expect(
-        await prisma.refreshToken.findUnique({ where: { tokenHash: hash2 } }),
-      ).toBeTruthy();
     });
 
     it("should throw error for non-existent token", async () => {
@@ -273,9 +428,17 @@ describe("RefreshTokenService", () => {
         data: { expiresAt: new Date(Date.now() - 1000) },
       });
 
-      // Create another valid token
-      const validToken =
-        await RefreshTokenService.createRefreshToken(testUserId);
+      // Create another valid token for a different user (so it doesn't invalidate the expired one)
+      const user2 = await prisma.user.create({
+        data: {
+          name: "Test User 2",
+          email: `test2-${Date.now()}@example.com`,
+          password: "hashedpassword",
+          role: "USER",
+        },
+      });
+      const user2Id = user2.id;
+      const validToken = await RefreshTokenService.createRefreshToken(user2Id);
       const validHash = RefreshTokenService.hashToken(validToken);
 
       // Run cleanup
@@ -294,6 +457,9 @@ describe("RefreshTokenService", () => {
           where: { tokenHash: validHash },
         }),
       ).toBeTruthy();
+
+      await prisma.refreshToken.deleteMany({ where: { userId: user2Id } });
+      await prisma.user.delete({ where: { id: user2Id } });
     });
 
     it("should return 0 when no expired tokens exist", async () => {
@@ -316,3 +482,5 @@ describe("RefreshTokenService", () => {
     });
   });
 });
+
+export {};

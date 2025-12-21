@@ -405,7 +405,7 @@ class MLModelManager {
       case "error-predictor":
         return `There's a ${Math.round(output.errorLikelihood * 100)}% chance of encountering errors based on current conditions.`;
       case "efficiency-analyzer":
-        return `Your efficiency score is ${Math.round(output.efficiencyScore * 100)}%. Consider reducing ${Object.entries(output.factors).find(([_, v]) => v < 0)?.[0] || "clicks"} to improve.`;
+        return `Your efficiency score is ${Math.round(output.efficiencyScore * 100)}%. Consider reducing ${Object.entries((output.factors || {}) as Record<string, number>).find(([_, v]) => v < 0)?.[0] || "clicks"} to improve.`;
       default:
         return "Prediction based on machine learning analysis.";
     }
@@ -674,7 +674,9 @@ class SuggestionEngine {
         prediction.confidence > 0.5 &&
         prediction.output.efficiencyScore < 0.7
       ) {
-        const factors = Object.entries(prediction.output.factors || {});
+        const factors = Object.entries(
+          (prediction.output.factors || {}) as Record<string, number>,
+        );
         const worstFactor = factors.find(([_, value]) => value < 0)?.[0];
 
         return {
@@ -1307,8 +1309,7 @@ export function withBehaviorTracking<P extends object>(
 
     return (
       <div onClick={handleClick} onMouseUp={handleMouseUp}>
-        {/* @ts-ignore */}
-        <Component {...(props as P)} />
+        <Component {...props} />
       </div>
     );
   };

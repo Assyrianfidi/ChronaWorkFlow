@@ -1,27 +1,43 @@
-import {
-  FraudDetector,
-  FraudMonitoringService,
-  TransactionPattern,
+import type {
   FraudAlert,
+  TransactionPattern,
 } from "../../business-logic/anti-fraud/fraud.detector";
 
 // Mock the logging bridge
 jest.mock("../../utils/loggingBridge", () => ({
   LoggingBridge: {
-    logSecurityEvent: jest.fn().mockResolvedValue(undefined),
-    logSystemEvent: jest.fn().mockResolvedValue(undefined),
+    logSecurityEvent: jest.fn(),
+    logSystemEvent: jest.fn(),
   },
 }));
 
-// Get the mocked functions
-const mockLogSystemEvent = require("../../utils/loggingBridge").LoggingBridge
-  .logSystemEvent;
+let FraudDetector: typeof import("../../business-logic/anti-fraud/fraud.detector").FraudDetector;
+let FraudMonitoringService: typeof import("../../business-logic/anti-fraud/fraud.detector").FraudMonitoringService;
+
+let logSecurityEventMock: jest.Mock;
+let logSystemEventMock: jest.Mock;
 
 describe("Fraud Detector", () => {
+  const debug = process.env.DEBUG_TESTS === "true";
+
+  beforeAll(async () => {
+    const { LoggingBridge } = await import("../../utils/loggingBridge");
+    logSecurityEventMock = LoggingBridge.logSecurityEvent as unknown as jest.Mock;
+    logSystemEventMock = LoggingBridge.logSystemEvent as unknown as jest.Mock;
+
+    ({ FraudDetector, FraudMonitoringService } = await import(
+      "../../business-logic/anti-fraud/fraud.detector"
+    ));
+  });
+
   beforeEach(() => {
     // Clear all alerts before each test
     (FraudMonitoringService as any).alerts = [];
     jest.clearAllMocks();
+
+    // resetMocks:true resets implementations; re-apply defaults each test
+    logSecurityEventMock.mockResolvedValue(undefined);
+    logSystemEventMock.mockResolvedValue(undefined);
   });
 
   describe("analyzeTransaction", () => {
@@ -94,15 +110,16 @@ describe("Fraud Detector", () => {
       );
 
       // Debug: log actual alerts
-      console.log(
-        "Alerts generated:",
-        result.alerts.map((a) => ({
-          type: a.alertType,
-          severity: a.severity,
-          action: a.action,
-        })),
-      );
-      console.log("Approved:", result.approved);
+      if (debug)
+        console.log(
+          "Alerts generated:",
+          result.alerts.map((a) => ({
+            type: a.alertType,
+            severity: a.severity,
+            action: a.action,
+          })),
+        );
+      if (debug) console.log("Approved:", result.approved);
 
       // LARGE_AMOUNT alert should be present
       expect(result.alerts.some((a) => a.alertType === "LARGE_AMOUNT")).toBe(
@@ -172,6 +189,103 @@ describe("Fraud Detector", () => {
           result.alerts.some((a) => a.alertType === "RAPID_TRANSACTIONS"),
         ).toBe(true);
       }
+    });
+
+    it("should generate RAPID_TRANSACTIONS when 3 transactions occur within 5 minutes", async () => {
+      const baseTime = Date.now();
+      const historicalPatterns: TransactionPattern[] = [
+        {
+          userId: "user1",
+          accountId: "acc1",
+          amount: 100,
+          timestamp: new Date(baseTime - 60 * 1000),
+          location: "US",
+          device: "mobile",
+        },
+        {
+          userId: "user1",
+          accountId: "acc1",
+          amount: 100,
+          timestamp: new Date(baseTime - 2 * 60 * 1000),
+          location: "US",
+          device: "mobile",
+        },
+        {
+          userId: "user1",
+          accountId: "acc1",
+          amount: 100,
+          timestamp: new Date(baseTime - 3 * 60 * 1000),
+          location: "US",
+          device: "mobile",
+        },
+      ];
+
+      const currentTransaction: TransactionPattern = {
+        userId: "user1",
+        accountId: "acc1",
+        amount: 100,
+        timestamp: new Date(baseTime),
+        location: "US",
+        device: "mobile",
+      };
+
+      const result = await FraudDetector.analyzeTransaction(
+        currentTransaction,
+        historicalPatterns,
+      );
+
+      expect(result.approved).toBe(true);
+      expect(result.alerts.some((a) => a.alertType === "RAPID_TRANSACTIONS")).toBe(
+        true,
+      );
+    });
+
+    it("should not generate RAPID_TRANSACTIONS when a transaction is exactly 5 minutes old (boundary)", async () => {
+      const baseTime = Date.now();
+      const historicalPatterns: TransactionPattern[] = [
+        {
+          userId: "user1",
+          accountId: "acc1",
+          amount: 100,
+          timestamp: new Date(baseTime - 5 * 60 * 1000),
+          location: "US",
+          device: "mobile",
+        },
+        {
+          userId: "user1",
+          accountId: "acc1",
+          amount: 100,
+          timestamp: new Date(baseTime - 60 * 1000),
+          location: "US",
+          device: "mobile",
+        },
+        {
+          userId: "user1",
+          accountId: "acc1",
+          amount: 100,
+          timestamp: new Date(baseTime - 2 * 60 * 1000),
+          location: "US",
+          device: "mobile",
+        },
+      ];
+
+      const currentTransaction: TransactionPattern = {
+        userId: "user1",
+        accountId: "acc1",
+        amount: 100,
+        timestamp: new Date(baseTime),
+        location: "US",
+        device: "mobile",
+      };
+
+      const result = await FraudDetector.analyzeTransaction(
+        currentTransaction,
+        historicalPatterns,
+      );
+
+      expect(result.alerts.some((a) => a.alertType === "RAPID_TRANSACTIONS")).toBe(
+        false,
+      );
     });
 
     it("should flag unusual location", async () => {
@@ -296,16 +410,19 @@ describe("Fraud Detector", () => {
       );
 
       // Debug: log alerts and transaction count
-      console.log(
-        "High velocity alerts:",
-        result.alerts.map((a) => ({ type: a.alertType, action: a.action })),
-      );
-      console.log("Historical patterns count:", historicalPatterns.length);
-      console.log(
-        "Time window:",
-        baseTime - historicalPatterns[50].timestamp.getTime(),
-        "ms",
-      );
+      if (debug)
+        console.log(
+          "High velocity alerts:",
+          result.alerts.map((a) => ({ type: a.alertType, action: a.action })),
+        );
+      if (debug)
+        console.log("Historical patterns count:", historicalPatterns.length);
+      if (debug)
+        console.log(
+          "Time window:",
+          baseTime - historicalPatterns[50].timestamp.getTime(),
+          "ms",
+        );
 
       expect(result.alerts.some((a) => a.alertType === "HIGH_VELOCITY")).toBe(
         true,
@@ -352,6 +469,74 @@ describe("Fraud Detector", () => {
       expect(
         result.alerts.some((a) => a.alertType === "SUSPICIOUS_MERCHANT"),
       ).toBe(true);
+    });
+
+    it("should not flag non-suspicious merchant category", async () => {
+      const currentTransaction: TransactionPattern = {
+        userId: "user1",
+        accountId: "acc1",
+        amount: 100,
+        timestamp: new Date(),
+        merchantCategory: "GROCERY",
+      };
+
+      const result = await FraudDetector.analyzeTransaction(
+        currentTransaction,
+        [],
+      );
+
+      expect(result.alerts.some((a) => a.alertType === "SUSPICIOUS_MERCHANT")).toBe(
+        false,
+      );
+    });
+
+    it("should continue analysis when a fraud rule throws", async () => {
+      const consoleErrorSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => undefined);
+
+      const originalInitializeRules = (FraudDetector as any).initializeRules;
+      (FraudDetector as any).initializeRules = function initializeRulesWithThrowingRule() {
+        originalInitializeRules.call(FraudDetector);
+        FraudDetector.addCustomRule({
+          id: "THROWING_RULE",
+          name: "Throwing Rule",
+          description: "Throws for coverage",
+          enabled: true,
+          severity: "low",
+          action: "monitor",
+          checkFunction: () => {
+            throw new Error("boom");
+          },
+        });
+      };
+
+      const currentTransaction: TransactionPattern = {
+        userId: "user1",
+        accountId: "acc1",
+        amount: 100,
+        timestamp: new Date(),
+      };
+
+      const result = await FraudDetector.analyzeTransaction(
+        currentTransaction,
+        [],
+      );
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          approved: expect.any(Boolean),
+          alerts: expect.any(Array),
+          riskScore: expect.any(Number),
+        }),
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining("Error in fraud rule THROWING_RULE"),
+        expect.any(Error),
+      );
+
+      (FraudDetector as any).initializeRules = originalInitializeRules;
+      consoleErrorSpy.mockRestore();
     });
 
     it("should block potential account takeover", async () => {
@@ -493,7 +678,7 @@ describe("Fraud Monitoring Service", () => {
       await FraudMonitoringService.recordAlert(criticalAlert);
 
       // Verify critical alert was logged
-      expect(mockLogSystemEvent).toHaveBeenCalledWith(
+      expect(logSystemEventMock).toHaveBeenCalledWith(
         expect.objectContaining({
           type: "ERROR",
           message: "CRITICAL_FRAUD_ALERT",
@@ -607,6 +792,57 @@ describe("Fraud Monitoring Service", () => {
       const mediumAlerts = FraudMonitoringService.getAlertsBySeverity("medium");
       expect(mediumAlerts).toHaveLength(1);
       expect(mediumAlerts[0].severity).toBe("medium");
+    });
+
+    it("should sort by detectedAt desc and respect limit", async () => {
+      const baseTime = Date.now();
+      const highOlder: FraudAlert = {
+        id: "HIGH_OLD",
+        userId: "user1",
+        accountId: "acc1",
+        alertType: "LARGE_AMOUNT",
+        severity: "high",
+        description: "Old high alert",
+        confidence: 0.8,
+        detectedAt: new Date(baseTime - 1000),
+        metadata: {},
+        action: "flag",
+      };
+
+      const highNewest: FraudAlert = {
+        id: "HIGH_NEW",
+        userId: "user1",
+        accountId: "acc1",
+        alertType: "LARGE_AMOUNT",
+        severity: "high",
+        description: "New high alert",
+        confidence: 0.8,
+        detectedAt: new Date(baseTime + 1000),
+        metadata: {},
+        action: "flag",
+      };
+
+      const highMiddle: FraudAlert = {
+        id: "HIGH_MID",
+        userId: "user1",
+        accountId: "acc1",
+        alertType: "LARGE_AMOUNT",
+        severity: "high",
+        description: "Middle high alert",
+        confidence: 0.8,
+        detectedAt: new Date(baseTime),
+        metadata: {},
+        action: "flag",
+      };
+
+      await FraudMonitoringService.recordAlert(highOlder);
+      await FraudMonitoringService.recordAlert(highNewest);
+      await FraudMonitoringService.recordAlert(highMiddle);
+
+      const highAlerts = FraudMonitoringService.getAlertsBySeverity("high", 2);
+      expect(highAlerts).toHaveLength(2);
+      expect(highAlerts[0].id).toBe("HIGH_NEW");
+      expect(highAlerts[1].id).toBe("HIGH_MID");
     });
   });
 });

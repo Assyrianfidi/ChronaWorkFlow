@@ -1,4 +1,4 @@
-import { InventoryItem } from "../types/inventory.js";
+import { InventoryItem } from "@/types/inventory";
 
 export const mockInventoryItems: InventoryItem[] = [
   {

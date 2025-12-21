@@ -1,18 +1,15 @@
-import React from "react";
-("use client");
+"use client";
 
-import { MainLayout } from "../components/layout/MainLayout.js";
-import {
-  EnterpriseDataTable,
-  type Column,
-} from "../components/ui/EnterpriseDataTable.js";
-import { EnterpriseButton } from "../components/ui/EnterpriseButton.js";
-import {
-  Card,
+import React from "react";
+
+import { MainLayout } from "@/components/layout/MainLayout";
+import EnterpriseDataTable, { type Column } from "@/components/ui/EnterpriseDataTable";
+import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
+import Card, {
   CardContent,
   CardHeader,
   CardTitle,
-} from "../components/ui/card.js";
+} from "@/components/ui/card";
 import {
   CreditCard,
   Plus,
@@ -111,7 +108,6 @@ export default function TransactionsPage() {
       title: "Transaction ID",
       sortable: true,
       filterable: true,
-      width: "120px",
       render: (value) => (
         <div className="font-mono text-sm font-medium text-primary">
           {value}
@@ -123,7 +119,6 @@ export default function TransactionsPage() {
       title: "Date",
       sortable: true,
       filterable: true,
-      width: "120px",
       render: (value) => (
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-gray-400" />
@@ -152,7 +147,9 @@ export default function TransactionsPage() {
           <div
             className={cn(
               "font-semibold flex items-center gap-1",
-              isExpense ? "text-danger" : "text-success",
+              isExpense
+                ? "text-destructive dark:text-destructive-500"
+                : "text-success-700 dark:text-success",
             )}
           >
             <DollarSign className="h-4 w-4" />
@@ -216,13 +213,13 @@ export default function TransactionsPage() {
         <div className="flex items-center gap-2">
           {value ? (
             <>
-              <Check className="h-4 w-4 text-success" />
-              <span className="text-xs text-success">Yes</span>
+              <Check className="h-4 w-4 text-success-700 dark:text-success" />
+              <span className="text-xs text-success-700 dark:text-success">Yes</span>
             </>
           ) : (
             <>
-              <X className="h-4 w-4 text-gray-400" />
-              <span className="text-xs text-gray-500">No</span>
+              <X className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">No</span>
             </>
           )}
         </div>
@@ -280,14 +277,14 @@ export default function TransactionsPage() {
               <CardTitle>Transaction Management</CardTitle>
               <div className="flex gap-2">
                 <EnterpriseButton
-                  variant="outline"
+                  variant="secondary"
                   icon={<Filter className="h-4 w-4" />}
                   onClick={() => setShowFilters(!showFilters)}
                 >
                   Filters
                 </EnterpriseButton>
                 <EnterpriseButton
-                  variant="outline"
+                  variant="secondary"
                   icon={<Download className="h-4 w-4" />}
                   onClick={handleBulkExport}
                   disabled={selectedTransactions.size === 0}
@@ -421,9 +418,8 @@ export default function TransactionsPage() {
               columns={transactionColumns}
               searchable={true}
               exportable={true}
-              pagination={true}
+              paginated={true}
               pageSize={25}
-              height="500px"
               emptyMessage="No transactions found matching your criteria"
             />
           </CardContent>
@@ -442,21 +438,31 @@ export default function TransactionsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Transaction ID
                     </label>
-                    <input
+                    
+        <label htmlFor="input-aj5h85x3p" className="sr-only">
+          Text
+        </label>
+        <input id="input-aj5h85x3p"
                       type="text"
                       placeholder="TRN-XXX"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                     />
+      
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Date
                     </label>
-                    <input
+                    
+        <label htmlFor="input-gisasli77" className="sr-only">
+          Date
+        </label>
+        <input id="input-gisasli77"
                       type="date"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                     />
+      
                   </div>
 
                   <div>
@@ -479,11 +485,16 @@ export default function TransactionsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Amount
                     </label>
-                    <input
+                    
+        <label htmlFor="input-d82v6b7ll" className="sr-only">
+          Number
+        </label>
+        <input id="input-d82v6b7ll"
                       type="number"
                       placeholder="0.00"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                     />
+      
                   </div>
 
                   <div>
@@ -514,17 +525,22 @@ export default function TransactionsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Description
                     </label>
-                    <input
+                    
+        <label htmlFor="input-r8blcj0ed" className="sr-only">
+          Text
+        </label>
+        <input id="input-r8blcj0ed"
                       type="text"
                       placeholder="Transaction description"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                     />
+      
                   </div>
                 </div>
 
                 <div className="flex gap-3 mt-6">
                   <EnterpriseButton
-                    variant="outline"
+                    variant="secondary"
                     className="flex-1"
                     onClick={() => setShowAddModal(false)}
                   >

@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
-import RegisterPage from "../page.js";
+import RegisterPage from '../page';
 
 // Mock next/navigation
 const mockPush = vi.fn();

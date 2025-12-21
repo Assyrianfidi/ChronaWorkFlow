@@ -1,10 +1,13 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+
+import { UIPerformanceEngine } from "../UI-Performance-Engine";
+
 import {
   InteractiveDashboard,
   DashboardBuilder,
   withPerformanceTracking,
-} from "../DashboardComponents.js";
+} from '../DashboardComponents';
 
 // Mock the adaptive layout hook
 jest.mock("../AdaptiveLayoutEngine", () => ({
@@ -158,7 +161,7 @@ describe("DashboardBuilder", () => {
 
 describe("Widget Components", () => {
   it("renders metric widget with data", () => {
-    const MetricWidget = require("../DashboardComponents").ChartWidget;
+    const MetricWidget = require("../DashboardComponents").MetricWidget;
     const data = { value: 5000, label: "Test Metric", change: -10 };
 
     render(<MetricWidget data={data} />);
@@ -210,7 +213,7 @@ describe("Widget Components", () => {
     render(<CalendarWidget data={data} />);
 
     expect(screen.getByText("Calendar View")).toBeInTheDocument();
-    expect(screen.getByText("1/15/2024")).toBeInTheDocument();
+    expect(screen.getByText("2024-01-15")).toBeInTheDocument();
   });
 });
 
@@ -222,15 +225,11 @@ describe("withPerformanceTracking HOC", () => {
       "TestComponent",
     );
 
-    // Mock performance hook
-    jest.doMock("../UI-Performance-Engine", () => ({
-      usePerformance: jest.fn(() => ({
-        registerComponent: jest.fn(),
-        unregisterComponent: jest.fn(),
-      })),
-    }));
-
-    render(<TrackedComponent />);
+    render(
+      <UIPerformanceEngine>
+        <TrackedComponent />
+      </UIPerformanceEngine>,
+    );
 
     expect(screen.getByText("Test Component")).toBeInTheDocument();
   });

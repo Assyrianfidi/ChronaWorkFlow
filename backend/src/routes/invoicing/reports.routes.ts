@@ -76,7 +76,32 @@ router.get(
       }
 
       // Calculate aging buckets
-      const agingBuckets = {
+      type AgingInvoiceInfo = {
+        id: string;
+        invoiceNumber: string;
+        customerName: string;
+        customerEmail: string | null | undefined;
+        issueDate: Date;
+        dueDate: Date;
+        daysOverdue: number;
+        totalAmount: number;
+        amountPaid: number;
+        balanceDue: number;
+      };
+
+      type AgingBucket = {
+        total: number;
+        count: number;
+        invoices: AgingInvoiceInfo[];
+      };
+
+      const agingBuckets: {
+        current: AgingBucket;
+        days1_30: AgingBucket;
+        days31_60: AgingBucket;
+        days61_90: AgingBucket;
+        days90_plus: AgingBucket;
+      } = {
         current: { total: 0, count: 0, invoices: [] },
         days1_30: { total: 0, count: 0, invoices: [] },
         days31_60: { total: 0, count: 0, invoices: [] },
@@ -263,7 +288,7 @@ router.get(
 
       // Top customers by revenue
       const customerRevenue = invoices.reduce((acc: any, invoice) => {
-        const customerKey = invoice.clientId;
+        const customerKey = invoice.clientId ?? "unknown";
         if (!acc[customerKey]) {
           acc[customerKey] = {
             customerId: invoice.clientId,

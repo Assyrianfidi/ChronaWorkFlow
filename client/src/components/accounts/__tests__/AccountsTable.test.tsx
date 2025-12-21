@@ -1,8 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { vi, describe, it, expect, beforeEach } from "vitest";
-import { AccountsTable } from "../AccountsTable.js";
-import type { AccountWithChildren } from "../types/accounts.js";
+import { AccountsTable } from '../AccountsTable';
+import type { AccountWithChildren } from '../types/accounts';
 
 // Mock data for testing
 const mockAccounts: AccountWithChildren[] = [
@@ -50,7 +49,7 @@ const mockAccounts: AccountWithChildren[] = [
 ];
 
 describe("AccountsTable", () => {
-  const mockOnToggleExpand = vi.fn();
+  const mockOnToggleExpand = jest.fn();
   const defaultProps = {
     accounts: mockAccounts,
     searchQuery: "",
@@ -59,7 +58,7 @@ describe("AccountsTable", () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it("renders accounts table with correct data", () => {
@@ -80,7 +79,7 @@ describe("AccountsTable", () => {
     render(<AccountsTable {...defaultProps} expandedIds={new Set(["1"])} />);
 
     // Click on the expand button
-    const expandButton = screen.getByLabelText("Expand account");
+    const expandButton = screen.getByLabelText("Collapse account");
     fireEvent.click(expandButton);
 
     // Check if onToggleExpand was called with the correct account ID
@@ -90,9 +89,10 @@ describe("AccountsTable", () => {
   it("filters accounts based on search query", () => {
     render(<AccountsTable {...defaultProps} searchQuery="bank" />);
 
-    // Check if only matching accounts are shown
-    expect(screen.queryByText("Cash")).not.toBeInTheDocument();
-    expect(screen.queryByText("Bank Account")).toBeInTheDocument();
+    // Parent is still shown if any child matches
+    expect(screen.queryByText("Cash")).toBeInTheDocument();
+    // Child rows are not shown unless expanded
+    expect(screen.queryByText("Bank Account")).not.toBeInTheDocument();
     expect(screen.queryByText("Accounts Payable")).not.toBeInTheDocument();
   });
 
@@ -107,10 +107,9 @@ describe("AccountsTable", () => {
   it("shows empty state when there are no accounts", () => {
     render(<AccountsTable {...defaultProps} accounts={[]} />);
 
+    expect(screen.getByText("No accounts found")).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "No accounts found. Create your first account to get started.",
-      ),
+      screen.getByText("Create your first account to get started."),
     ).toBeInTheDocument();
   });
 });

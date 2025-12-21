@@ -8,12 +8,10 @@ import React, { useState } from "react";
 import {
   EnterpriseButton,
   EnterpriseKPICard,
-  EnterpriseDataTable,
 } from "@/components/components/ui";
 import {
   Download,
   Calendar,
-  FileText,
   TrendingUp,
   TrendingDown,
   DollarSign,
@@ -21,7 +19,6 @@ import {
   PieChart,
   Target,
   Activity,
-  Filter,
   Printer,
   Mail,
   FileSpreadsheet,
@@ -40,12 +37,11 @@ import {
   PieChart as RechartsPieChart,
   Pie,
   Cell,
-  LineChart,
   Line,
   ComposedChart,
   Legend,
 } from "recharts";
-import { cn } from "@/components/lib/utils";
+import { cn } from "@/lib/utils";
 
 // Mock data for reports
 const profitLossData = [
@@ -222,7 +218,6 @@ export default function Reports() {
                 onClick={() => exportReport("pdf")}
               >
                 <FileIcon className="w-4 h-4" />
-                {/* @ts-ignore */}
                 Export as PDF
               </button>
               <button
@@ -230,7 +225,6 @@ export default function Reports() {
                 onClick={() => exportReport("excel")}
               >
                 <FileSpreadsheet className="w-4 h-4" />
-                {/* @ts-ignore */}
                 Export as Excel
               </button>
               <button
@@ -238,7 +232,6 @@ export default function Reports() {
                 onClick={() => exportReport("csv")}
               >
                 <FileSpreadsheet className="w-4 h-4" />
-                {/* @ts-ignore */}
                 Export as CSV
               </button>
             </div>

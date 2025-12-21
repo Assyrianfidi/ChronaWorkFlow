@@ -16,6 +16,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardShell } from "../../components/ui/layout/DashboardShell";
+import {
+  getDemoAdminActivity,
+  getDemoAdminSummary,
+  isDemoModeEnabled,
+} from "@/lib/demo";
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "elevated" | "outlined" | "glass";
@@ -26,7 +31,7 @@ const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-2xl border border-border-gray bg-surface2 shadow-soft transition-transform transition-shadow duration-150",
+        "rounded-2xl border border-border bg-card text-card-foreground shadow-soft transition-transform transition-shadow duration-150",
         {
           "hover:-translate-y-[1px] hover:shadow-elevated":
             variant === "default",
@@ -34,7 +39,7 @@ const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
             variant === "elevated",
           "border-2 hover:-translate-y-[2px] hover:shadow-elevated":
             variant === "outlined",
-          "bg-surface2/90 backdrop-blur-sm hover:-translate-y-[1px] hover:shadow-elevated":
+          "bg-card/90 backdrop-blur-sm hover:-translate-y-[1px] hover:shadow-elevated":
             variant === "glass",
         },
         className,
@@ -67,13 +72,12 @@ const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
 
   // Fetch dashboard summary
-  const {
-    data: summary,
-    error: summaryError,
-    isLoading: summaryLoading,
-  } = useSWR<DashboardSummary>(
+  const { data: summary, isLoading: summaryLoading } = useSWR<DashboardSummary>(
     "/api/dashboard/summary",
     async (url: string) => {
+      if (isDemoModeEnabled()) {
+        return getDemoAdminSummary() as any;
+      }
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -91,6 +95,9 @@ const AdminDashboard: React.FC = () => {
     error: activityError,
     isLoading: activityLoading,
   } = useSWR<ActivityItem[]>("/api/dashboard/activity", async (url: string) => {
+    if (isDemoModeEnabled()) {
+      return getDemoAdminActivity() as any;
+    }
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -134,7 +141,7 @@ const AdminDashboard: React.FC = () => {
       change: "-2",
       changeType: "decrease" as const,
       icon: AlertTriangle,
-      color: "text-red-600",
+      color: "text-destructive dark:text-destructive-500",
     },
   ];
 
@@ -142,7 +149,7 @@ const AdminDashboard: React.FC = () => {
     <DashboardShell>
       <div className="container mx-auto max-w-7xl px-6 py-6 space-y-6">
         {/* Header / System Overview */}
-        <header className="bg-surface1 border border-border-gray rounded-2xl shadow-soft px-6 py-5 flex items-center justify-between gap-4">
+        <header className="bg-card border border-border rounded-2xl shadow-soft px-6 py-5 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
               Admin Dashboard
@@ -164,11 +171,11 @@ const AdminDashboard: React.FC = () => {
             ? [0, 1, 2, 3].map((key) => (
                 <div
                   key={key}
-                  className="bg-surface2 border border-border-gray rounded-2xl shadow-soft p-6 animate-pulse flex flex-col gap-3"
+                  className="bg-card border border-border rounded-2xl shadow-soft p-6 animate-pulse flex flex-col gap-3"
                 >
-                  <div className="h-4 w-24 bg-surface1 rounded" />
-                  <div className="h-7 w-20 bg-surface1 rounded" />
-                  <div className="h-3 w-16 bg-surface1 rounded" />
+                  <div className="h-4 w-24 bg-muted rounded" />
+                  <div className="h-7 w-20 bg-muted rounded" />
+                  <div className="h-3 w-16 bg-muted rounded" />
                 </div>
               ))
             : metrics.map((metric, index) => (
@@ -225,21 +232,21 @@ const AdminDashboard: React.FC = () => {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                  <div className="w-3 h-3 rounded-full bg-success" />
                   <div>
                     <div className="font-medium">Database</div>
                     <div className="text-xs opacity-70">Operational</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                  <div className="w-3 h-3 rounded-full bg-success" />
                   <div>
                     <div className="font-medium">API Services</div>
                     <div className="text-xs opacity-70">All systems online</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full bg-amber-400" />
+                  <div className="w-3 h-3 rounded-full bg-warning" />
                   <div>
                     <div className="font-medium">Storage</div>
                     <div className="text-xs opacity-70">78% capacity used</div>
@@ -289,7 +296,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1">
                   <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                     Daily Transactions
                   </span>
@@ -302,7 +309,7 @@ const AdminDashboard: React.FC = () => {
                     Processed in the last 24 hours
                   </span>
                 </div>
-                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1">
                   <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                     Pending Approvals
                   </span>
@@ -313,7 +320,7 @@ const AdminDashboard: React.FC = () => {
                     Items awaiting admin review
                   </span>
                 </div>
-                <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+                <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1">
                   <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                     Compliance Coverage
                   </span>

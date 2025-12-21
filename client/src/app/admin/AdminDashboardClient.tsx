@@ -4,28 +4,37 @@ declare global {
   }
 }
 
-("use client");
+"use client";
 
-import { useSession } from "next-auth/react";
+import { LoadingState } from '@/components/ui/LoadingState';
 import { useRouter } from "next/navigation";
-import { User, Account } from "../types/user.js";
+import { useAuthStore } from "@/store/auth-store";
+
+type AdminUser = {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string;
+  image?: string | null;
+  accounts?: Array<{ provider: string }>;
+};
 
 interface AdminDashboardClientProps {
-  users: User[];
+  users: AdminUser[];
 }
 
 export default function AdminDashboardClient({
   users,
 }: AdminDashboardClientProps) {
-  const { data: session, status } = useSession();
+  const { user, isLoading } = useAuthStore();
   const router = useRouter();
 
   // Check if user is admin
-  if (status === "loading") {
-    return <div>Loading users...</div>;
+  if (isLoading) {
+    return <LoadingState size="sm" />;
   }
 
-  if (session?.user.role !== "ADMIN") {
+  if (user?.role !== "ADMIN") {
     router.push("/unauthorized");
     return null;
   }
@@ -101,9 +110,7 @@ export default function AdminDashboardClient({
                           {user.name}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {user.accounts
-                            .map((acc: Account) => acc.provider)
-                            .join(", ")}
+                          {user.accounts?.map((acc) => acc.provider).join(", ")}
                         </div>
                       </div>
                     </div>

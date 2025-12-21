@@ -9,72 +9,12 @@ import {
 } from "recharts";
 import { CreditCard, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "elevated" | "outlined" | "glass";
-}
-
-const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
-  ({ className, variant = "default", ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(
-        "rounded-lg border bg-white shadow-sm transition-all duration-200",
-        {
-          "border-gray-200 hover:shadow-md": variant === "default",
-          "border-gray-100 shadow-lg hover:shadow-xl": variant === "elevated",
-          "border-2 border-gray-300 hover:border-primary-300":
-            variant === "outlined",
-          "border-transparent bg-white/80 backdrop-blur-sm hover:bg-white/90":
-            variant === "glass",
-        },
-        className,
-      )}
-      {...props}
-    />
-  ),
-);
-
-EnterpriseCard.displayName = "EnterpriseCard";
-
-interface EnterpriseButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
-}
-
-const EnterpriseButton = React.forwardRef<
-  HTMLButtonElement,
-  EnterpriseButtonProps
->(({ className, variant = "primary", size = "md", ...props }, ref) => (
-  <button
-    ref={ref}
-    className={cn(
-      "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50",
-      {
-        "bg-primary-600 text-white hover:bg-primary-700": variant === "primary",
-        "bg-gray-100 text-gray-900 hover:bg-gray-200": variant === "secondary",
-        "border border-gray-300 bg-white hover:bg-gray-50":
-          variant === "outline",
-        "hover:bg-gray-100": variant === "ghost",
-      },
-      {
-        "h-8 px-3 text-sm": size === "sm",
-        "h-10 px-4 py-2": size === "md",
-        "h-12 px-6 text-lg": size === "lg",
-      },
-      className,
-    )}
-    {...props}
-  />
-));
-
-EnterpriseButton.displayName = "EnterpriseButton";
+import Card from "@/components/ui/card";
+import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
 
 interface ExpenseCategory {
   name: string;
   value: number;
-  color: string;
   percentage: number;
 }
 
@@ -92,34 +32,40 @@ const ExpenseBreakdown = React.forwardRef<
     {
       name: "Software & Subscriptions",
       value: 12450,
-      color: "#007bff",
       percentage: 35.2,
     },
     {
       name: "Office Operations",
       value: 8750,
-      color: "#00c795",
       percentage: 24.7,
     },
     {
       name: "Marketing & Advertising",
       value: 6500,
-      color: "#ffc107",
       percentage: 18.4,
     },
     {
       name: "Professional Services",
       value: 4500,
-      color: "#dc3545",
       percentage: 12.7,
     },
     {
       name: "Travel & Entertainment",
       value: 3200,
-      color: "#6f42c1",
       percentage: 9.0,
     },
   ]);
+
+  const chartColors = React.useMemo(
+    () => [
+      "var(--primary-500)",
+      "var(--success-600)",
+      "var(--warning-500)",
+      "var(--error-500)",
+      "var(--info-500)",
+    ],
+    [],
+  );
 
   const totalExpenses = expenses.reduce(
     (sum, expense) => sum + expense.value,
@@ -129,9 +75,9 @@ const ExpenseBreakdown = React.forwardRef<
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="text-sm font-medium text-gray-900">{payload[0].name}</p>
-          <p className="text-sm text-gray-600">
+        <div className="bg-popover text-popover-foreground p-3 border border-border rounded-lg shadow-elevated">
+          <p className="text-sm font-medium text-foreground">{payload[0].name}</p>
+          <p className="text-sm text-muted-foreground">
             ${payload[0].value.toLocaleString()} (
             {payload[0].payload.percentage}%)
           </p>
@@ -159,7 +105,7 @@ const ExpenseBreakdown = React.forwardRef<
       <text
         x={x}
         y={y}
-        fill="white"
+        fill="var(--text-inverse)"
         textAnchor={x > cx ? "start" : "end"}
         dominantBaseline="central"
         className="text-sm font-medium"
@@ -171,26 +117,26 @@ const ExpenseBreakdown = React.forwardRef<
 
   if (loading) {
     return (
-      <EnterpriseCard ref={ref} className={cn("p-6", className)} {...props}>
+      <Card ref={ref} className={cn("p-6", className)} {...props}>
         <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 rounded mb-4 w-48"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-6 bg-muted rounded mb-4 w-48"></div>
+          <div className="h-64 bg-muted rounded"></div>
         </div>
-      </EnterpriseCard>
+      </Card>
     );
   }
 
   return (
-    <EnterpriseCard ref={ref} className={cn("p-6", className)} {...props}>
+    <Card ref={ref} className={cn("p-6", className)} {...props}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <CreditCard className="w-5 h-5 text-ocean-blue" />
+          <CreditCard className="w-5 h-5 text-primary" />
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-foreground">
               Expense Breakdown
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {period === "month"
                 ? "This Month"
                 : period === "quarter"
@@ -200,10 +146,10 @@ const ExpenseBreakdown = React.forwardRef<
           </div>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-foreground">
             ${totalExpenses.toLocaleString()}
           </p>
-          <p className="text-sm text-gray-500">Total Expenses</p>
+          <p className="text-sm text-muted-foreground">Total Expenses</p>
         </div>
       </div>
 
@@ -212,17 +158,17 @@ const ExpenseBreakdown = React.forwardRef<
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={expenses}
+              data={expenses as any}
               cx="50%"
               cy="50%"
               labelLine={false}
               label={CustomLabel}
               outerRadius={100}
-              fill="#8884d8"
+              fill="var(--primary-500)"
               dataKey="value"
             >
               {expenses.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+                <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
@@ -231,7 +177,7 @@ const ExpenseBreakdown = React.forwardRef<
               align="right"
               layout="vertical"
               formatter={(value, entry: any) => (
-                <span className="text-sm text-gray-700">
+                <span className="text-sm text-muted-foreground">
                   {value} (${entry.payload.value.toLocaleString()})
                 </span>
               )}
@@ -241,9 +187,9 @@ const ExpenseBreakdown = React.forwardRef<
       </div>
 
       {/* Summary */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
+      <div className="mt-6 pt-4 border-t border-border">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <TrendingUp className="w-4 h-4" />
             <span>Top category: Software & Subscriptions</span>
           </div>
@@ -252,7 +198,7 @@ const ExpenseBreakdown = React.forwardRef<
           </EnterpriseButton>
         </div>
       </div>
-    </EnterpriseCard>
+    </Card>
   );
 });
 ExpenseBreakdown.displayName = "ExpenseBreakdown";

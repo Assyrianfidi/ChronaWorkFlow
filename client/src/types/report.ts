@@ -1,11 +1,20 @@
 import { z } from "zod";
-import { reportFormSchema } from "../lib/validations/schemas.js";
+import { reportFormSchema } from "../lib/validations/schemas";
 
 // Base report type from the form schema
 export type ReportFormData = z.infer<typeof reportFormSchema>;
 
 // Report status type
 export type ReportStatus = "pending" | "approved" | "rejected";
+
+export interface ReportUserSummary {
+  name: string;
+}
+
+export interface ReportAttachment {
+  id: string;
+  name: string;
+}
 
 // Extended report type with server-generated fields
 export interface Report extends Omit<ReportFormData, "date" | "status"> {
@@ -19,6 +28,9 @@ export interface Report extends Omit<ReportFormData, "date" | "status"> {
   approvedAt?: string;
   approvedBy?: string;
   rejectionReason?: string;
+  createdBy?: ReportUserSummary;
+  notes?: string;
+  attachments?: ReportAttachment[];
 }
 
 // Report list response with pagination

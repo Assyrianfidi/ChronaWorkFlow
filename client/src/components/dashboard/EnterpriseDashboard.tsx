@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import * as React from "react";
 import {
   BarChart3,
@@ -23,10 +22,10 @@ import {
   EnterpriseDataTable,
   type Column,
 } from "@/components/ui/EnterpriseDataTable";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/../../lib/utils";
+import Button from "@/components/ui/button";
+import Input from "@/components/ui/input";
+import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface EnterpriseDashboardProps {
   className?: string;
@@ -78,36 +77,31 @@ const EnterpriseDashboard = React.forwardRef<
     },
   ];
 
-  const transactionColumns = [
+  const transactionColumns: Column<(typeof recentTransactions)[0]>[] = [
     {
-      accessorKey: "id",
-      header: "Invoice ID",
-      cell: ({ row }) => (
-        <div className="font-medium">{row.getValue("id")}</div>
-      ),
+      key: "id",
+      title: "Invoice ID",
+      render: (value) => <div className="font-medium">{value}</div>,
     },
     {
-      accessorKey: "customer",
-      header: "Customer",
-      cell: ({ row }) => <div>{row.getValue("customer")}</div>,
+      key: "customer",
+      title: "Customer",
+      render: (value) => <div>{value}</div>,
     },
     {
-      accessorKey: "amount",
-      header: "Amount",
-      cell: ({ row }) => (
-        <span className="font-semibold">{row.getValue("amount")}</span>
-      ),
+      key: "amount",
+      title: "Amount",
+      render: (value) => <span className="font-semibold">{value}</span>,
     },
     {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
+      key: "status",
+      title: "Status",
+      render: (value) => {
         const statusColors = {
-          Paid: "bg-green-100 text-green-800",
-          Pending: "bg-yellow-100 text-yellow-800",
-          Overdue: "bg-red-100 text-red-800",
+          Paid: "bg-success/10 text-success-700 dark:text-success",
+          Pending: "bg-warning/10 text-warning-700 dark:text-warning",
+          Overdue: "bg-destructive/10 text-destructive dark:text-destructive-500",
         };
-        const value = row.getValue("status") as string;
         return (
           <span
             className={cn(
@@ -121,9 +115,9 @@ const EnterpriseDashboard = React.forwardRef<
       },
     },
     {
-      accessorKey: "date",
-      header: "Date",
-      cell: ({ row }) => <div>{row.getValue("date")}</div>,
+      key: "date",
+      title: "Date",
+      render: (value) => <div>{value}</div>,
     },
   ];
 
@@ -137,9 +131,9 @@ const EnterpriseDashboard = React.forwardRef<
   ];
 
   return (
-    <div ref={ref} className={cn("min-h-screen bg-gray-50", className)}>
+    <div ref={ref} className={cn("min-h-screen bg-background", className)}>
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+      <header className="bg-background border-b border-border fixed top-0 left-0 right-0 z-50">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
             <Button
@@ -155,16 +149,16 @@ const EnterpriseDashboard = React.forwardRef<
               )}
             </Button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-white" />
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-primary-foreground" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900">AccuBooks</h1>
+              <h1 className="text-xl font-bold text-foreground">AccuBooks</h1>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search transactions, customers..."
                 value={searchQuery}
@@ -175,18 +169,18 @@ const EnterpriseDashboard = React.forwardRef<
 
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />
             </Button>
 
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">A</span>
+              <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                <span className="text-accent-foreground text-sm font-medium">A</span>
               </div>
               <div className="hidden md:block">
-                <div className="text-sm font-medium text-gray-900">
+                <div className="text-sm font-medium text-foreground">
                   Admin User
                 </div>
-                <div className="text-xs text-gray-500">Administrator</div>
+                <div className="text-xs text-muted-foreground">Administrator</div>
               </div>
             </div>
           </div>
@@ -197,7 +191,7 @@ const EnterpriseDashboard = React.forwardRef<
         {/* Sidebar */}
         <aside
           className={cn(
-            "fixed left-0 top-16 h-full bg-white border-r border-gray-200 transition-all duration-300 z-40",
+            "fixed left-0 top-16 h-full bg-card text-card-foreground border-r border-border transition-all duration-300 z-40",
             sidebarOpen ? "w-64" : "w-0",
           )}
         >
@@ -208,8 +202,8 @@ const EnterpriseDashboard = React.forwardRef<
                 className={cn(
                   "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                   item.active
-                    ? "bg-primary-50 text-primary-700 border-l-4 border-primary-600"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                    ? "bg-primary/10 text-primary border-l-4 border-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 <item.icon className="h-5 w-5" />
@@ -229,10 +223,10 @@ const EnterpriseDashboard = React.forwardRef<
           <div className="p-6">
             {/* Page Header */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl font-bold text-foreground mb-2">
                 Dashboard Overview
               </h2>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Welcome back! Here's what's happening with your business today.
               </p>
             </div>
@@ -252,11 +246,11 @@ const EnterpriseDashboard = React.forwardRef<
                   <CardTitle>Revenue Overview</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                  <div className="h-64 flex items-center justify-center bg-muted rounded-lg border-2 border-dashed border-border">
                     <div className="text-center">
-                      <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-500">Revenue Chart</p>
-                      <p className="text-sm text-gray-400">
+                      <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-muted-foreground">Revenue Chart</p>
+                      <p className="text-sm text-muted-foreground">
                         Chart component will be integrated here
                       </p>
                     </div>
@@ -269,11 +263,11 @@ const EnterpriseDashboard = React.forwardRef<
                   <CardTitle>Transaction Volume</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                  <div className="h-64 flex items-center justify-center bg-muted rounded-lg border-2 border-dashed border-border">
                     <div className="text-center">
-                      <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-500">Transaction Chart</p>
-                      <p className="text-sm text-gray-400">
+                      <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                      <p className="text-muted-foreground">Transaction Chart</p>
+                      <p className="text-sm text-muted-foreground">
                         Chart component will be integrated here
                       </p>
                     </div>
@@ -294,53 +288,10 @@ const EnterpriseDashboard = React.forwardRef<
                 <EnterpriseDataTable
                   data={recentTransactions}
                   columns={transactionColumns}
-                  enableSorting={true}
-                  enableColumnFilters={false}
-                  enableGlobalFilter={false}
+                  searchable={false}
+                  exportable={false}
+                  paginated={false}
                   onRowClick={(row) => console.log("Transaction clicked:", row)}
-                  renderToolbar={(state, table) => (
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          // Export functionality
-                          const rows = table.getFilteredRowModel().rows;
-                          const csvContent = [
-                            [
-                              "Transaction #",
-                              "Date",
-                              "Description",
-                              "Amount",
-                            ].join(","),
-                            ...rows.map((row) =>
-                              [
-                                row.original.transactionNumber || "",
-                                row.original.date || "",
-                                row.original.description || "",
-                                row.original.totalAmount || "",
-                              ].join(","),
-                            ),
-                          ].join("\n");
-
-                          const blob = new Blob([csvContent], {
-                            type: "text/csv",
-                          });
-                          const url = window.URL.createObjectURL(blob);
-                          const a = document.createElement("a");
-                          a.href = url;
-                          a.download = "transactions.csv";
-                          a.click();
-                          window.URL.revokeObjectURL(url);
-                        }}
-                      >
-                        Export
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        View All
-                      </Button>
-                    </div>
-                  )}
                 />
               </CardContent>
             </Card>

@@ -229,7 +229,7 @@ export class UIDensityAdaptationEngine {
       errorRate: 0, // Would be tracked
       sessionDuration: 0, // Would be tracked
       accessibilityMode:
-        this.detectUserCharacteristics().user.preferences.highContrast,
+        this.detectUserCharacteristics().preferences.highContrast,
     };
   }
 

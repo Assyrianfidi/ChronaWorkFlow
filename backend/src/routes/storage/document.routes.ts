@@ -19,7 +19,7 @@ const upload = multer({
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (req: any, file: any, cb: any) => {
     const allowedMimeTypes = [
       "application/pdf",
       "image/jpeg",
@@ -45,39 +45,39 @@ router.post(
   "/upload",
   upload.single("file"),
   validateUploadDocument,
-  documentController.uploadDocument.bind(documentController),
+  documentController.uploadDocument.bind(documentController) as any,
 );
 
 // GET /api/documents - List documents
 router.get(
   "/",
   validateListDocuments,
-  documentController.listDocuments.bind(documentController),
+  documentController.listDocuments.bind(documentController) as any,
 );
 
 // GET /api/documents/stats - Get document statistics
 router.get(
   "/stats",
-  documentController.getDocumentStats.bind(documentController),
+  documentController.getDocumentStats.bind(documentController) as any,
 );
 
 // GET /api/documents/:documentId/download - Download document
 router.get(
   "/:documentId/download",
-  documentController.downloadDocument.bind(documentController),
+  documentController.downloadDocument.bind(documentController) as any,
 );
 
 // PUT /api/documents/:documentId - Update document
 router.put(
   "/:documentId",
   validateUpdateDocument,
-  documentController.updateDocument.bind(documentController),
+  documentController.updateDocument.bind(documentController) as any,
 );
 
 // DELETE /api/documents/:documentId - Delete document
 router.delete(
   "/:documentId",
-  documentController.deleteDocument.bind(documentController),
+  documentController.deleteDocument.bind(documentController) as any,
 );
 
 export default router;

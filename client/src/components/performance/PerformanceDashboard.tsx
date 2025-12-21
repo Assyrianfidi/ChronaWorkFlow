@@ -7,7 +7,7 @@ import React, { useState, useEffect } from "react";
 import PerformanceEngine, {
   PerformanceReport,
   PerformanceMetrics,
-} from "@/../../performance/performance-engine";
+} from "@/performance/performance-engine";
 
 interface PerformanceDashboardProps {
   engine: PerformanceEngine;
@@ -543,18 +543,16 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         .refresh-button {
           padding: 0.75rem 1.5rem;
           border: 1px solid #ddd;
-          border-radius: 6px;
+          rounded-2;
           background: white;
           cursor: pointer;
           font-weight: 600;
-          transition: all 0.2s;
+          transition-colors duration-200;
         }
 
         .optimize-button:hover,
         .performance-mode-button:hover,
-        .refresh-button:hover {
-          background: #f0f0f0;
-        }
+        .refresh-buttonhover:bg-#f0f0f0
 
         .optimize-button.optimizing {
           background: #10b981;
@@ -576,9 +574,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
         .score-card {
           background: white;
-          border-radius: 12px;
+          rounded-3;
           padding: 2rem;
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+          shadow-md;
           display: flex;
           align-items: center;
           gap: 2rem;
@@ -632,7 +630,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         .grade-badge {
           display: inline-block;
           padding: 0.25rem 0.75rem;
-          border-radius: 12px;
+          rounded-3;
           font-size: 0.875rem;
           font-weight: 600;
           margin-bottom: 0.5rem;
@@ -645,9 +643,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
         .core-web-vitals {
           background: white;
-          border-radius: 12px;
+          rounded-3;
           padding: 2rem;
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+          shadow-md;
         }
 
         .core-web-vitals h3 {
@@ -667,7 +665,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           text-align: center;
           padding: 1rem;
           border: 1px solid #e5e7eb;
-          border-radius: 8px;
+          rounded-2;
         }
 
         .vital-name {
@@ -697,9 +695,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
         .metric-card {
           background: white;
-          border-radius: 8px;
+          rounded-2;
           padding: 1.5rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          shadow-md;
         }
 
         .metric-header {
@@ -719,7 +717,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           font-size: 0.75rem;
           font-weight: 600;
           padding: 0.25rem 0.5rem;
-          border-radius: 4px;
+          rounded-1;
           text-transform: uppercase;
         }
 
@@ -740,9 +738,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         .violations-section,
         .historical-section {
           background: white;
-          border-radius: 8px;
+          rounded-2;
           padding: 2rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          shadow-md;
           margin-bottom: 2rem;
         }
 
@@ -765,7 +763,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         .recommendation-item,
         .violation-item {
           padding: 1.5rem;
-          border-radius: 8px;
+          rounded-2;
           border-left: 4px solid;
         }
 
@@ -819,7 +817,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           font-size: 0.75rem;
           font-weight: 600;
           padding: 0.25rem 0.5rem;
-          border-radius: 4px;
+          rounded-1;
           text-transform: uppercase;
         }
 
@@ -894,7 +892,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           font-size: 0.75rem;
           font-weight: 600;
           padding: 0.25rem 0.5rem;
-          border-radius: 4px;
+          rounded-1;
           text-transform: uppercase;
         }
 
@@ -914,7 +912,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
         .chart-container {
           background: #f8f9fa;
-          border-radius: 8px;
+          rounded-2;
           padding: 1.5rem;
         }
 
@@ -943,8 +941,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         .chart-bar {
           width: 100%;
           min-height: 10px;
-          border-radius: 4px 4px 0 0;
-          transition: height 0.3s ease;
+          rounded-1 4px 0 0;
+          transition-colors duration-200;
         }
 
         .chart-label {

@@ -692,8 +692,8 @@ const BUILTIN_TEMPLATES: WorkflowTemplate[] = [
       },
     ],
     variables: [
-      { id: "userId", type: "string", required: true },
-      { id: "role", type: "string", defaultValue: "user" },
+      { id: "userId", name: "User ID", type: "string", required: true },
+      { id: "role", name: "Role", type: "string", defaultValue: "user" },
     ],
   },
   {
@@ -762,8 +762,13 @@ const BUILTIN_TEMPLATES: WorkflowTemplate[] = [
       },
     ],
     variables: [
-      { id: "invoiceId", type: "string", required: true },
-      { id: "approverId", type: "string", required: true },
+      { id: "invoiceId", name: "Invoice ID", type: "string", required: true },
+      {
+        id: "approverId",
+        name: "Approver ID",
+        type: "string",
+        required: true,
+      },
     ],
   },
 ];
@@ -1127,6 +1132,7 @@ export function WorkflowBuilder() {
     try {
       await createWorkflow({
         name: selectedTemplate.name,
+        version: "1.0.0",
         description: selectedTemplate.description,
         category: selectedTemplate.category,
         steps: selectedTemplate.steps.map((step, index) => ({
@@ -1207,12 +1213,17 @@ export function WorkflowBuilder() {
                       <span className="text-red-500 ml-1">*</span>
                     )}
                   </label>
-                  <input
+                  
+        <label htmlFor="input-1fa8mhum8" className="sr-only">
+          Field
+        </label>
+        <input id="input-1fa8mhum8"
                     type={variable.type === "number" ? "number" : "text"}
                     className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     placeholder={variable.description}
                     defaultValue={variable.defaultValue}
                     onChange={(e) =>
+      
                       setVariables((prev) => ({
                         ...prev,
                         [variable.id]:

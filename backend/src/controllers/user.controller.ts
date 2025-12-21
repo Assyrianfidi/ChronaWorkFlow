@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { PrismaClient, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { logger } from "../utils/logger.js";
 import { ApiError, ErrorCodes } from "../utils/errorHandler.js";
 import bcrypt from "bcryptjs";
-
-const prisma = prisma;
+import { prisma } from "../utils/prisma";
 
 export const getAllUsers = async (
   req: Request,

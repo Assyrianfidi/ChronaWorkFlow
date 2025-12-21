@@ -8,78 +8,81 @@ import {
   logSecurityEvent,
   logAllRequests,
   logPerformance,
-} from "../../middleware/security/auditLogger.middleware.js";
+} from "../../middleware/security/auditLogger.middleware";
 
 // Mock the services
-jest.mock("../../services/auditLogger.service");
-jest.mock("../../services/monitoring.service");
+jest.mock("../../services/auditLogger.service", () => ({
+  __esModule: true,
+  default: {
+    setPrismaInstance: jest.fn(),
+    logAuthEvent: jest.fn(),
+    logDataEvent: jest.fn(),
+    logSecurityEvent: jest.fn(),
+    logSystemEvent: jest.fn(),
+    triggerSecurityAlert: jest.fn(),
+    getAuditLogs: jest.fn(),
+    getSecurityAlerts: jest.fn(),
+    acknowledgeAlert: jest.fn(),
+    getAuditStatistics: jest.fn(),
+    exportAuditLogs: jest.fn(),
+  },
+}));
 
-const MockedAuditLoggerService = AuditLoggerService as jest.Mocked<
-  typeof AuditLoggerService
->;
+const MockedAuditLoggerService = AuditLoggerService as any;
 
 // Create mock functions for MonitoringService methods
-const mockInitializeMetrics = jest.fn();
-const mockGetMetrics = jest.fn().mockReturnValue({
-  requests: {
-    total: 0,
-    successful: 0,
-    failed: 0,
-    averageResponseTime: 0,
-    slowRequests: 0,
-  },
-  auth: { logins: 0, failedLogins: 0, activeSessions: 0, passwordChanges: 0 },
-  security: { unauthorizedAttempts: 0, rateLimitHits: 0, blockedIps: 0 },
-  system: {
-    uptime: 1000,
-    memoryUsage: { heapUsed: 50000000 },
-    cpuUsage: { user: 0, system: 0 },
-  },
-});
-const mockRecordRequestMetrics = jest.fn();
-const mockRecordAuthMetrics = jest.fn();
-const mockRecordSecurityMetrics = jest.fn();
-const mockGetHealthStatus = jest.fn().mockReturnValue({
-  status: "healthy",
-  issues: [],
-  uptime: 1000,
-  memoryUsage: 50,
-  averageResponseTime: 0,
-  errorRate: 0,
-});
-const mockTriggerAlert = jest.fn();
-const mockGetAlerts = jest.fn().mockReturnValue([]);
-const mockAcknowledgeAlert = jest.fn().mockReturnValue(true);
-const mockGetPerformanceReport = jest.fn().mockReturnValue({
-  period: { hours: 24 },
-  generatedAt: new Date(),
-  metrics: {},
-  health: {},
-  alerts: { total: 0, critical: 0, warning: 0, info: 0 },
-  topIssues: [],
-  recommendations: [],
-});
-const mockCleanup = jest.fn();
-
-// Mock the MonitoringService class
 jest.mock("../../services/monitoring.service", () => {
+  const __mocks = {
+    initializeMetrics: jest.fn(),
+    getMetrics: jest.fn(),
+    recordRequestMetrics: jest.fn(),
+    recordAuthMetrics: jest.fn(),
+    recordSecurityMetrics: jest.fn(),
+    getHealthStatus: jest.fn(),
+    triggerAlert: jest.fn(),
+    getAlerts: jest.fn(),
+    acknowledgeAlert: jest.fn(),
+    getPerformanceReport: jest.fn(),
+    cleanup: jest.fn(),
+  };
+
+  class MonitoringServiceMock {
+    initializeMetrics = __mocks.initializeMetrics;
+    getMetrics = __mocks.getMetrics;
+    recordRequestMetrics = __mocks.recordRequestMetrics;
+    recordAuthMetrics = __mocks.recordAuthMetrics;
+    recordSecurityMetrics = __mocks.recordSecurityMetrics;
+    getHealthStatus = __mocks.getHealthStatus;
+    triggerAlert = __mocks.triggerAlert;
+    getAlerts = __mocks.getAlerts;
+    acknowledgeAlert = __mocks.acknowledgeAlert;
+    getPerformanceReport = __mocks.getPerformanceReport;
+    cleanup = __mocks.cleanup;
+  }
+
   return {
     __esModule: true,
-    default: jest.fn().mockImplementation(() => ({
-      initializeMetrics: mockInitializeMetrics,
-      getMetrics: mockGetMetrics,
-      recordRequestMetrics: mockRecordRequestMetrics,
-      recordAuthMetrics: mockRecordAuthMetrics,
-      recordSecurityMetrics: mockRecordSecurityMetrics,
-      getHealthStatus: mockGetHealthStatus,
-      triggerAlert: mockTriggerAlert,
-      getAlerts: mockGetAlerts,
-      acknowledgeAlert: mockAcknowledgeAlert,
-      getPerformanceReport: mockGetPerformanceReport,
-      cleanup: mockCleanup,
-    })),
+    default: MonitoringServiceMock,
+    __mocks,
   };
 });
+
+const monitoringServiceModule = jest.requireMock(
+  "../../services/monitoring.service",
+) as any;
+const monitoringServiceMocks = monitoringServiceModule.__mocks;
+
+const mockInitializeMetrics = monitoringServiceMocks.initializeMetrics;
+const mockGetMetrics = monitoringServiceMocks.getMetrics;
+const mockRecordRequestMetrics = monitoringServiceMocks.recordRequestMetrics;
+const mockRecordAuthMetrics = monitoringServiceMocks.recordAuthMetrics;
+const mockRecordSecurityMetrics = monitoringServiceMocks.recordSecurityMetrics;
+const mockGetHealthStatus = monitoringServiceMocks.getHealthStatus;
+const mockTriggerAlert = monitoringServiceMocks.triggerAlert;
+const mockGetAlerts = monitoringServiceMocks.getAlerts;
+const mockAcknowledgeAlert = monitoringServiceMocks.acknowledgeAlert;
+const mockGetPerformanceReport = monitoringServiceMocks.getPerformanceReport;
+const mockCleanup = monitoringServiceMocks.cleanup;
 
 describe("Audit Logger Middleware", () => {
   let app: express.Application;
@@ -87,11 +90,31 @@ describe("Audit Logger Middleware", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    MockedAuditLoggerService.getAuditLogs.mockReturnValue([]);
+    MockedAuditLoggerService.getSecurityAlerts.mockReturnValue([]);
+    MockedAuditLoggerService.acknowledgeAlert.mockReturnValue(true);
+    MockedAuditLoggerService.getAuditStatistics.mockReturnValue({
+      totalEvents: 0,
+      authEvents: 0,
+      dataEvents: 0,
+      securityEvents: 0,
+      systemEvents: 0,
+      criticalEvents: 0,
+      alertsTriggered: 0,
+    });
+    MockedAuditLoggerService.exportAuditLogs.mockImplementation(() => ({
+      exportDate: new Date(),
+      filters: {},
+      auditLogs: [],
+      securityAlerts: [],
+      statistics: MockedAuditLoggerService.getAuditStatistics(),
+    }));
+
     app = express();
     app.use(express.json());
 
     // Mock authentication
-    const mockAuth = (req, res, next) => {
+    const mockAuth = (req: any, res: any, next: any) => {
       if (req.headers.authorization) {
         req.user = { id: 1, email: "test@example.com", role: "admin" };
       }
@@ -249,6 +272,42 @@ describe("Monitoring Service", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGetMetrics.mockReturnValue({
+      requests: {
+        total: 0,
+        successful: 0,
+        failed: 0,
+        averageResponseTime: 0,
+        slowRequests: 0,
+      },
+      auth: { logins: 0, failedLogins: 0, activeSessions: 0, passwordChanges: 0 },
+      security: { unauthorizedAttempts: 0, rateLimitHits: 0, blockedIps: 0 },
+      system: {
+        uptime: 1000,
+        memoryUsage: { heapUsed: 50000000 },
+        cpuUsage: { user: 0, system: 0 },
+      },
+    });
+    mockGetHealthStatus.mockReturnValue({
+      status: "healthy",
+      issues: [],
+      uptime: 1000,
+      memoryUsage: 50,
+      averageResponseTime: 0,
+      errorRate: 0,
+    });
+    mockGetAlerts.mockReturnValue([]);
+    mockAcknowledgeAlert.mockReturnValue(true);
+    mockGetPerformanceReport.mockReturnValue({
+      period: { hours: 24 },
+      generatedAt: new Date(),
+      metrics: {},
+      health: {},
+      alerts: { total: 0, critical: 0, warning: 0, info: 0 },
+      topIssues: [],
+      recommendations: [],
+    });
+
     mockMonitoringService = new MonitoringService();
   });
 
@@ -498,3 +557,5 @@ describe("Audit Logger Service", () => {
     });
   });
 });
+
+export {};

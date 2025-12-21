@@ -17,10 +17,10 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { useSuperAccessibility } from "@/components/accessibility/super-accessibility";
-import { useThreatAdaptiveUI } from "@/components/security/threat-adaptive-ui";
-import { useSmartAutoLazy } from "@/components/performance/smart-auto-lazy";
-import { useGPUAcceleration } from "@/components/performance/gpu-acceleration";
+import { useSuperAccessibility } from "@/accessibility/super-accessibility";
+import { useThreatAdaptiveUI } from "@/security/threat-adaptive-ui";
+import { useSmartAutoLazy } from "@/performance/smart-auto-lazy";
+import { useGPUAcceleration } from "@/performance/gpu-acceleration";
 
 // Perfect Button Component
 interface PerfectButtonProps {
@@ -162,7 +162,7 @@ export const PerfectButton: React.FC<PerfectButtonProps> = ({
         relative overflow-hidden inline-flex items-center justify-center
         border font-medium transition-all duration-200
         focus:outline-none focus:ring-2 focus:ring-offset-2
-        disabled:opacity-50 disabled:cursor-not-allowed
+        disabled:opacity-60 disabled:cursor-not-allowed
         ${fullWidth ? "w-full" : ""}
         ${rounded ? "rounded-full" : "rounded-lg"}
         ${glow ? "shadow-lg hover:shadow-xl" : "shadow-sm hover:shadow-md"}
@@ -296,7 +296,12 @@ export const PerfectCard: React.FC<PerfectCardProps> = ({
     if (clickable && onClick) {
       // Create live region for feedback
       const liveRegion = createLiveRegion();
-      liveRegion.announce("Card activated");
+      if (liveRegion) {
+        liveRegion.textContent = "Card activated";
+        setTimeout(() => {
+          liveRegion.remove();
+        }, 1000);
+      }
       onClick();
     }
   }, [clickable, onClick, createLiveRegion]);
@@ -510,7 +515,7 @@ export const PerfectInput: React.FC<PerfectInputProps> = ({
           className={`
             w-full transition-all duration-200 rounded-lg border
             focus:outline-none focus:ring-2 focus:ring-offset-0
-            disabled:opacity-50 disabled:cursor-not-allowed
+            disabled:opacity-60 disabled:cursor-not-allowed
             ${icon && iconPosition === "left" ? "pl-10" : ""}
             ${icon && iconPosition === "right" ? "pr-10" : ""}
             ${getSizeClasses()}

@@ -1,19 +1,20 @@
-import React, { useState } from "react";
 import * as React from "react";
+import type { ToastVariant } from "@/components/ui/EnterpriseToast";
 
-import type {
-  ToastActionElement,
-  ToastProps,
-} from "@/components/components/ui/toast";
+type ToastActionElement = React.ReactNode;
 
 const TOAST_LIMIT = 1;
 const TOAST_REMOVE_DELAY = 1000000;
 
-type ToasterToast = ToastProps & {
+type ToasterToast = {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
+  variant?: ToastVariant;
+  duration?: number;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 const actionTypes = {

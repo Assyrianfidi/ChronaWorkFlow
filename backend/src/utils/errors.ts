@@ -41,6 +41,16 @@ export class ApiError extends AppError {
   }
 }
 
+export class CustomAPIError extends Error {
+  statusCode: number;
+
+  constructor(statusCode: number, message: string) {
+    super(message);
+    this.statusCode = statusCode;
+    this.name = "CustomAPIError";
+  }
+}
+
 /**
  * 404 Not Found Error
  */

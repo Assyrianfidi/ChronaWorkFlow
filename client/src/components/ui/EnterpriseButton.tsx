@@ -3,25 +3,25 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden group backdrop-blur-sm",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-60 relative overflow-hidden group",
   {
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white border-0 hover:from-blue-700 hover:via-blue-600 hover:to-blue-700 focus-visible:ring-blue-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
+          "bg-primary text-primary-foreground shadow-soft hover:bg-primary/90",
         secondary:
-          "bg-gradient-to-r from-navy-700 via-navy-600 to-navy-700 text-white border-0 hover:from-navy-800 hover:via-navy-700 hover:to-navy-800 focus-visible:ring-navy-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
+          "bg-secondary text-secondary-foreground shadow-soft hover:bg-secondary/80",
         ghost:
-          "bg-white/10 backdrop-blur-md text-gray-700 hover:bg-white/20 focus-visible:ring-gray-500 border border-white/20 hover:border-white/30 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 glass",
+          "bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
         danger:
-          "bg-gradient-to-r from-red-600 via-red-500 to-red-600 text-white border-0 hover:from-red-700 hover:via-red-600 hover:to-red-700 focus-visible:ring-red-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
+          "bg-destructive text-destructive-foreground shadow-soft hover:bg-destructive/90",
         success:
-          "bg-gradient-to-r from-green-500 via-green-400 to-green-500 text-white border-0 hover:from-green-600 hover:via-green-500 hover:to-green-600 focus-visible:ring-green-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
+          "bg-success text-primary-foreground shadow-soft hover:opacity-90",
         warning:
-          "bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-white border-0 hover:from-amber-700 hover:via-amber-600 hover:to-amber-700 focus-visible:ring-amber-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
-        info: "bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 text-white border-0 hover:from-blue-700 hover:via-blue-600 hover:to-blue-700 focus-visible:ring-blue-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
+          "bg-warning text-primary-foreground shadow-soft hover:opacity-90",
+        info: "bg-info text-primary-foreground shadow-soft hover:opacity-90",
         neutral:
-          "bg-gradient-to-r from-gray-600 via-gray-500 to-gray-600 text-white border-0 hover:from-gray-700 hover:via-gray-600 hover:to-gray-700 focus-visible:ring-gray-500 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 animate-gradient",
+          "bg-accent text-accent-foreground shadow-soft hover:opacity-90",
       },
       size: {
         xs: "h-8 px-3 text-xs",
@@ -76,7 +76,7 @@ const EnterpriseButton = React.forwardRef<
           glowEffect && "hover-glow",
           isPressed && "scale-95",
           loading && "cursor-not-allowed",
-          "hover-lift",
+          "active:translate-y-px",
         )}
         ref={ref}
         disabled={disabled || loading}
@@ -86,12 +86,12 @@ const EnterpriseButton = React.forwardRef<
         {...props}
       >
         {/* Ripple Effect */}
-        <span className="absolute inset-0 rounded-xl bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+        <span className="absolute inset-0 rounded-lg bg-primary-foreground/15 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
 
         {/* Loading Spinner */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+            <div className="animate-spin h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
           </div>
         )}
 
@@ -112,7 +112,7 @@ const EnterpriseButton = React.forwardRef<
 
         {/* Glow Effect */}
         {glowEffect && (
-          <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <span className="absolute inset-0 rounded-lg bg-primary-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         )}
       </button>
     );

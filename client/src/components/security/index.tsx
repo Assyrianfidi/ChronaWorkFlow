@@ -160,7 +160,9 @@ export const SecureForm: React.FC<SecureFormProps> = ({
 
   return (
     <form {...props} onSubmit={handleSubmit}>
-      {csrfToken && <input type="hidden" name="csrf_token" value={csrfToken} />}
+      {csrfToken && (
+        <input type="hidden" name="csrf_token" value={csrfToken} />
+      )}
       {children}
     </form>
   );
@@ -267,6 +269,7 @@ export const SecureImage: React.FC<SecureImageProps> = ({
       onError={handleError}
       loading="lazy"
       referrerPolicy="no-referrer"
+      alt={props.alt || "Image"}
     />
   );
 };

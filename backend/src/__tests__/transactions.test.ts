@@ -1,4 +1,4 @@
-// Mock Prisma client first
+// Mock Prisma client first (must be hoisted for vi.mock)
 const mockPrisma = {
   transaction: {
     findMany: jest.fn(),
@@ -16,23 +16,23 @@ jest.mock("../utils/prisma", () => ({
   prisma: mockPrisma,
 }));
 
-jest.mock("../utils/errors", () => ({
-  ApiError: jest.fn().mockImplementation((statusCode, message) => {
-    const error = new Error(message);
-    error.statusCode = statusCode;
-    error.name = "ApiError";
-    return error;
-  }),
-}));
-
-import { transactionsService } from "../modules/transactions/transactions.service";
-import { transactionsController } from "../modules/transactions/transactions.controller";
+let transactionsService: typeof import("../modules/transactions/transactions.service").transactionsService;
+let transactionsController: typeof import("../modules/transactions/transactions.controller").transactionsController;
 import { Request, Response, NextFunction } from "express";
 
 describe("Transactions Module", () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let nextFunction: NextFunction;
+
+  beforeAll(async () => {
+    ({ transactionsService } = await import(
+      "../modules/transactions/transactions.service"
+    ));
+    ({ transactionsController } = await import(
+      "../modules/transactions/transactions.controller"
+    ));
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -136,13 +136,6 @@ describe("Transactions Module", () => {
       });
 
       it("should throw error for unbalanced transaction", async () => {
-        // Temporarily restore the original prisma to test service logic
-        const { prisma: originalPrisma } = jest.requireActual('../utils/prisma');
-        jest.doMock('../utils/prisma', () => ({ prisma: originalPrisma }));
-        
-        // Import fresh service instance
-        const { transactionsService: freshService } = require('../modules/transactions/transactions.service');
-        
         const transactionData: {
           companyId: string;
           transactionNumber: string;
@@ -175,8 +168,10 @@ describe("Transactions Module", () => {
         };
 
         await expect(
-          freshService.create(transactionData, "user-1"),
+          transactionsService.create(transactionData, "user-1"),
         ).rejects.toThrow("Transaction must be balanced");
+
+        expect(mockPrisma.$transaction).not.toHaveBeenCalled();
       });
     });
   });

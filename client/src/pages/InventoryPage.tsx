@@ -53,8 +53,6 @@ import {
   TrendingUp,
   TrendingDown,
   BarChart3,
-  ArrowUpRight,
-  ArrowDownRight,
   Warehouse,
   Truck,
   Settings,
@@ -269,8 +267,7 @@ const movementConfig = {
 const InventoryPage: React.FC = () => {
   const [inventoryItems, setInventoryItems] =
     useState<InventoryItem[]>(mockInventoryItems);
-  const [stockMovements, setStockMovements] =
-    useState<StockMovement[]>(mockStockMovements);
+  const [stockMovements] = useState<StockMovement[]>(mockStockMovements);
   const [filteredItems, setFilteredItems] =
     useState<InventoryItem[]>(mockInventoryItems);
   const [searchTerm, setSearchTerm] = useState("");
@@ -278,10 +275,12 @@ const InventoryPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Mock fetch inventory
   const fetchInventory = async () => {
     setIsLoading(true);
+    setLoadError(null);
     try {
       console.log("📦 Fetching inventory items...");
       await new Promise((resolve) => setTimeout(resolve, 800));
@@ -289,6 +288,7 @@ const InventoryPage: React.FC = () => {
       setFilteredItems(mockInventoryItems);
     } catch (error) {
       console.error("Failed to fetch inventory:", error);
+      setLoadError("Unable to load inventory items. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -354,66 +354,6 @@ const InventoryPage: React.FC = () => {
     }
   };
 
-  const handleUpdateStock = async (
-    itemId: string,
-    newQuantity: number,
-    type: "IN" | "OUT" | "ADJUSTMENT",
-    reason: string,
-  ) => {
-    try {
-      console.log("📦 Updating stock:", itemId, newQuantity, type);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const item = inventoryItems.find((i) => i.id === itemId);
-      if (!item) return;
-
-      const updatedQuantity =
-        type === "IN"
-          ? item.quantity + newQuantity
-          : type === "OUT"
-            ? item.quantity - newQuantity
-            : newQuantity;
-
-      const newStatus =
-        updatedQuantity === 0
-          ? "OUT_OF_STOCK"
-          : updatedQuantity <= item.minStock
-            ? "LOW_STOCK"
-            : "IN_STOCK";
-
-      setInventoryItems(
-        inventoryItems.map((i) =>
-          i.id === itemId
-            ? {
-                ...i,
-                quantity: updatedQuantity,
-                totalPrice: updatedQuantity * i.unitPrice,
-                status: newStatus,
-                lastUpdated: new Date().toISOString(),
-              }
-            : i,
-        ),
-      );
-
-      // Add stock movement record
-      const movement: StockMovement = {
-        id: Date.now().toString(),
-        itemId,
-        itemName: item.name,
-        type,
-        quantity: newQuantity,
-        reason,
-        timestamp: new Date().toISOString(),
-        user: "Current User",
-      };
-
-      setStockMovements([movement, ...stockMovements]);
-      console.log("✅ Stock updated successfully");
-    } catch (error) {
-      console.error("Failed to update stock:", error);
-    }
-  };
-
   const handleDeleteItem = async (itemId: string) => {
     const item = inventoryItems.find((i) => i.id === itemId);
     if (!item) return;
@@ -470,9 +410,6 @@ const InventoryPage: React.FC = () => {
   );
   const lowStockItems = inventoryItems.filter(
     (item) => item.status === "LOW_STOCK",
-  ).length;
-  const outOfStockItems = inventoryItems.filter(
-    (item) => item.status === "OUT_OF_STOCK",
   ).length;
   const totalItems = inventoryItems.reduce(
     (sum, item) => sum + item.quantity,
@@ -652,6 +589,40 @@ const InventoryPage: React.FC = () => {
                 <div className="flex justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-enterprise-navy"></div>
                 </div>
+              ) : loadError ? (
+                <div className="py-6 space-y-3">
+                  <div className="text-sm text-red-700">{loadError}</div>
+                  <div>
+                    <Button variant="outline" onClick={fetchInventory}>
+                      Retry
+                    </Button>
+                  </div>
+                </div>
+              ) : filteredItems.length === 0 ? (
+                <div className="py-10 text-center space-y-3">
+                  <div className="text-sm font-medium">No inventory items found</div>
+                  <div className="text-sm text-muted-foreground">
+                    Try adjusting your filters or add a new item.
+                  </div>
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSearchTerm("");
+                        setCategoryFilter("all");
+                        setStatusFilter("all");
+                      }}
+                    >
+                      Clear filters
+                    </Button>
+                    <Button
+                      className="bg-enterprise-navy hover:bg-enterprise-navy/90"
+                      onClick={() => setIsCreateDialogOpen(true)}
+                    >
+                      Add Item
+                    </Button>
+                  </div>
+                </div>
               ) : (
                 <Table>
                   <TableHeader>
@@ -725,16 +696,29 @@ const InventoryPage: React.FC = () => {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="sm">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled
+                                aria-disabled="true"
+                                aria-label="View item (disabled)"
+                              >
                                 <Eye className="w-4 h-4" />
                               </Button>
-                              <Button variant="ghost" size="sm">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                disabled
+                                aria-disabled="true"
+                                aria-label="Edit item (disabled)"
+                              >
                                 <Edit className="w-4 h-4" />
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleDeleteItem(item.id)}
+                                aria-label={`Delete ${item.name}`}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
@@ -760,6 +744,14 @@ const InventoryPage: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {stockMovements.length === 0 ? (
+                <div className="py-10 text-center space-y-2">
+                  <div className="text-sm font-medium">No stock movements yet</div>
+                  <div className="text-sm text-muted-foreground">
+                    Movements will appear here when inventory changes occur.
+                  </div>
+                </div>
+              ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -810,6 +802,7 @@ const InventoryPage: React.FC = () => {
                   })}
                 </TableBody>
               </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

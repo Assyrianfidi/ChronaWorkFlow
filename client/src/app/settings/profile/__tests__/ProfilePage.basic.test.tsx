@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import ProfilePage from "../page.js";
+import ProfilePage from '../page';
 
 describe("ProfilePage - Basic Tests", () => {
   it("renders the profile form with all sections", () => {

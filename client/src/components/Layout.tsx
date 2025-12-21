@@ -1,7 +1,7 @@
 import React from "react";
 import Navigation from "@/components/Navigation";
 import BreadcrumbNavigation from "@/components/BreadcrumbNavigation";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -30,7 +30,7 @@ const Layout: React.FC<LayoutProps> = ({
   }, [title, description]);
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary fallback={<div>Something went wrong.</div>}>
       <div className="min-h-screen bg-gray-50">
         <Navigation />
         {showBreadcrumb && <BreadcrumbNavigation />}

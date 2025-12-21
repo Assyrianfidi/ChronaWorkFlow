@@ -2,12 +2,116 @@ import * as React from "react";
 import { create } from "zustand";
 import { authApi } from "@/api";
 
+const STORAGE_KEYS = {
+  token: "accubooks_token",
+  user: "accubooks_user",
+  demo: "accubooks_demo",
+  companyId: "accubooks_company_id",
+} as const;
+
+const DEMO_COMPANY_ID = "demo-company";
+
+const DEMO_USERS: Array<{
+  email: string;
+  password: string;
+  role: UserRole;
+  name: string;
+}> = [
+  {
+    email: "owner@accubooks.com",
+    password: "owner123",
+    role: "OWNER",
+    name: "Demo Owner",
+  },
+  {
+    email: "admin@accubooks.com",
+    password: "admin123",
+    role: "ADMIN",
+    name: "Demo Admin",
+  },
+  {
+    email: "manager@accubooks.com",
+    password: "manager123",
+    role: "MANAGER",
+    name: "Demo Manager",
+  },
+  {
+    email: "user@accubooks.com",
+    password: "user123",
+    role: "ACCOUNTANT",
+    name: "Demo Accountant",
+  },
+  {
+    email: "auditor@accubooks.com",
+    password: "auditor123",
+    role: "AUDITOR",
+    name: "Demo Auditor",
+  },
+  {
+    email: "inventory@accubooks.com",
+    password: "inventory123",
+    role: "INVENTORY_MANAGER",
+    name: "Demo Inventory Manager",
+  },
+];
+
+function storageAvailable() {
+  return (
+    typeof window !== "undefined" && typeof window.localStorage !== "undefined"
+  );
+}
+
+function persistAuth(user: User, token: string, demo: boolean) {
+  if (!storageAvailable()) return;
+  localStorage.setItem(STORAGE_KEYS.token, token);
+  localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
+  if (demo) {
+    localStorage.setItem(STORAGE_KEYS.companyId, DEMO_COMPANY_ID);
+  }
+  localStorage.setItem("token", token);
+  localStorage.setItem("auth_token", token);
+  localStorage.setItem("auth_user", JSON.stringify(user));
+
+  if (demo) localStorage.setItem(STORAGE_KEYS.demo, "true");
+  else localStorage.removeItem(STORAGE_KEYS.demo);
+}
+
+function clearAuthStorage() {
+  if (!storageAvailable()) return;
+  localStorage.removeItem(STORAGE_KEYS.token);
+  localStorage.removeItem(STORAGE_KEYS.user);
+  localStorage.removeItem(STORAGE_KEYS.demo);
+  localStorage.removeItem(STORAGE_KEYS.companyId);
+  localStorage.removeItem("token");
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("auth_user");
+  localStorage.removeItem("accubooks_remember");
+}
+
 export type UserRole =
+  | "OWNER"
   | "ADMIN"
   | "MANAGER"
   | "ACCOUNTANT"
   | "AUDITOR"
   | "INVENTORY_MANAGER";
+
+function normalizeRole(role: unknown): UserRole {
+  if (typeof role !== "string") return "ACCOUNTANT";
+
+  const normalized = role.trim().toUpperCase();
+
+  if (normalized === "OWNER") return "OWNER";
+  if (normalized === "ADMIN") return "ADMIN";
+  if (normalized === "MANAGER") return "MANAGER";
+  if (normalized === "ACCOUNTANT") return "ACCOUNTANT";
+  if (normalized === "AUDITOR") return "AUDITOR";
+  if (normalized === "INVENTORY_MANAGER") return "INVENTORY_MANAGER";
+
+  if (normalized === "USER") return "ACCOUNTANT";
+
+  return "ACCOUNTANT";
+}
 
 interface User {
   id: string;
@@ -38,6 +142,17 @@ interface AuthState {
 // Helper function to get permissions for a role
 function getPermissionsForRole(role: UserRole): string[] {
   switch (role) {
+    case "OWNER":
+      return [
+        "read:*",
+        "write:*",
+        "owner:access",
+        "owner:impersonate",
+        "owner:feature-flags",
+        "owner:billing",
+        "owner:security",
+        "owner:audit",
+      ];
     case "ADMIN":
       return [
         "read:dashboard",
@@ -102,166 +217,150 @@ function getPermissionsForRole(role: UserRole): string[] {
   }
 }
 
-export const useAuth = create<AuthState>((set, get) => ({
-  user: null,
-  isAuthenticated: false,
-  isLoading: false,
+export const useAuth = create<AuthState>((set, get) => {
+  const token = storageAvailable()
+    ? localStorage.getItem(STORAGE_KEYS.token)
+    : null;
+  const rawUser = storageAvailable()
+    ? localStorage.getItem(STORAGE_KEYS.user)
+    : null;
+  const hydratedUser = rawUser ? (JSON.parse(rawUser) as User) : null;
 
-  login: async (email: string, password: string) => {
-    set({ isLoading: true });
+  return {
+    user: hydratedUser,
+    isAuthenticated: Boolean(token && hydratedUser),
+    isLoading: false,
 
-    try {
-      const response = await authApi.login(email, password);
-      const { user, accessToken } = response.data.data;
+    login: async (email: string, password: string) => {
+      set({ isLoading: true });
 
-      const role = (user?.role as UserRole) || "ACCOUNTANT";
-      const name =
-        user?.name ||
-        [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
-        user?.email ||
-        "User";
+      const demoUser = DEMO_USERS.find(
+        (candidate) =>
+          candidate.email.toLowerCase() === email.toLowerCase() &&
+          candidate.password === password,
+      );
 
-      const transformedUser: User = {
-        id: String(user?.id ?? ""),
-        name,
-        email: String(user?.email ?? email),
-        avatar: user?.avatar,
-        role,
-        permissions: getPermissionsForRole(role),
-      };
+      if (demoUser) {
+        const transformedUser: User = {
+          id: `demo-${demoUser.role.toLowerCase()}`,
+          name: demoUser.name,
+          email: demoUser.email,
+          role: demoUser.role,
+          permissions: getPermissionsForRole(demoUser.role),
+        };
+        const demoToken = `demo-token-${Date.now()}`;
 
-      localStorage.setItem("accubooks_token", accessToken);
-      localStorage.setItem("accubooks_user", JSON.stringify(transformedUser));
+        persistAuth(transformedUser, demoToken, true);
+        set({ user: transformedUser, isAuthenticated: true, isLoading: false });
+        return;
+      }
 
-      set({
-        user: transformedUser,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-    } catch (error) {
-      set({ isLoading: false });
-      throw error;
-    }
-  },
+      try {
+        const response = await authApi.login(email, password);
+        const payload = response?.data;
+        const user = payload?.data?.data?.user ?? payload?.user ?? payload?.data?.user;
+        const accessToken =
+          payload?.data?.data?.accessToken ??
+          payload?.data?.accessToken ??
+          payload?.accessToken ??
+          payload?.token;
 
-  register: async (userData: {
-    name: string;
-    email: string;
-    password: string;
-    role: UserRole;
-  }) => {
-    set({ isLoading: true });
+        const role = normalizeRole(user?.role);
+        const name =
+          user?.name ||
+          [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+          user?.email ||
+          "User";
 
-    try {
-      const newUser: User = {
-        id: Date.now().toString(),
-        name: userData.name,
-        email: userData.email,
-        role: userData.role,
-        permissions: getPermissionsForRole(userData.role),
-      };
+        const transformedUser: User = {
+          id: String(user?.id ?? ""),
+          name,
+          email: String(user?.email ?? email),
+          avatar: user?.avatar,
+          role,
+          permissions: getPermissionsForRole(role),
+        };
 
-      const token = "mock-jwt-token-" + Date.now();
+        persistAuth(transformedUser, String(accessToken || ""), false);
 
-      // Store token and user
-      localStorage.setItem("accubooks_token", token);
-      localStorage.setItem("accubooks_user", JSON.stringify(newUser));
+        set({ user: transformedUser, isAuthenticated: true, isLoading: false });
+      } catch (error) {
+        set({ isLoading: false });
+        throw error;
+      }
+    },
 
-      set({
-        user: newUser,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-    } catch (error) {
-      set({ isLoading: false });
-      throw error;
-    }
-  },
+    register: async (userData: {
+      name: string;
+      email: string;
+      password: string;
+      role: UserRole;
+    }) => {
+      set({ isLoading: true });
 
-  logout: async () => {
-    try {
-    } catch (error) {}
+      try {
+        const newUser: User = {
+          id: Date.now().toString(),
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          permissions: getPermissionsForRole(userData.role),
+        };
 
-    set({
-      user: null,
-      isAuthenticated: false,
-    });
+        const token = "mock-jwt-token-" + Date.now();
 
-    // Clear all stored data
-    localStorage.removeItem("accubooks_token");
-    localStorage.removeItem("accubooks_user");
-    localStorage.removeItem("accubooks_remember");
-  },
+        // Store token and user
+        localStorage.setItem("accubooks_token", token);
+        localStorage.setItem("accubooks_user", JSON.stringify(newUser));
 
-  updateUser: (userData: Partial<User>) => {
-    const currentUser = get().user;
-    if (currentUser) {
-      const updatedUser = { ...currentUser, ...userData };
-      set({ user: updatedUser });
-      localStorage.setItem("accubooks_user", JSON.stringify(updatedUser));
-    }
-  },
+        set({
+          user: newUser,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+      } catch (error) {
+        set({ isLoading: false });
+        throw error;
+      }
+    },
 
-  hasPermission: (permission: string) => {
-    const { user } = get();
-    return user?.permissions.includes(permission) || false;
-  },
+    logout: () => {
+      set({ user: null, isAuthenticated: false });
+      clearAuthStorage();
+    },
 
-  hasRole: (role: UserRole | UserRole[]) => {
-    const { user } = get();
-    if (!user) return false;
+    updateUser: (userData: Partial<User>) => {
+      const currentUser = get().user;
+      if (currentUser) {
+        const updatedUser = { ...currentUser, ...userData };
+        set({ user: updatedUser });
+        localStorage.setItem("accubooks_user", JSON.stringify(updatedUser));
+      }
+    },
 
-    if (Array.isArray(role)) {
-      return role.includes(user.role);
-    }
+    hasPermission: (permission: string) => {
+      const { user } = get();
+      return user?.permissions.includes(permission) || false;
+    },
 
-    return user.role === role;
-  },
-}));
+    hasRole: (role: UserRole | UserRole[]) => {
+      const { user } = get();
+      if (!user) return false;
+
+      if (Array.isArray(role)) {
+        return role.includes(user.role);
+      }
+
+      return user.role === role;
+    },
+  };
+});
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = React.useState<User | null>(null);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const validateSession = async () => {
-      try {
-        const response = await authApi.validate();
-        const storedUser = localStorage.getItem("accubooks_user");
-        if (storedUser) {
-          const parsed = JSON.parse(storedUser) as User;
-
-          const userWithPermissions: User = {
-            ...parsed,
-            permissions:
-              parsed.permissions && parsed.permissions.length > 0
-                ? parsed.permissions
-                : getPermissionsForRole(parsed.role),
-          };
-
-          setUser(userWithPermissions);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        setUser(null);
-        // Clear invalid tokens
-        localStorage.removeItem("accubooks_token");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    validateSession();
-  }, []);
-
-  return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const auth = useAuth();
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };
 
 const AuthContext = React.createContext<AuthState | null>(null);

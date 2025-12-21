@@ -1,6 +1,6 @@
 import React from "react";
-import { useAuth } from "../contexts/AuthContext.js";
-import { DashboardShell } from "../components/ui/layout/DashboardShell.js";
+import { useAuth } from "../contexts/AuthContext";
+import { DashboardShell } from "../components/ui/layout/DashboardShell";
 
 const DashboardPage = () => {
   const { user } = useAuth();

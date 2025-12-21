@@ -114,14 +114,12 @@ declare module "recharts" {
 }
 
 declare module "@tanstack/react-table" {
-  import React = require("react");
-  export function useTable<T>(options: any): any;
+  export function useTable(options: any): any;
   export const Column: any;
   export const HeaderGroup: any;
 }
 
 declare module "@tanstack/react-virtual" {
-  import React = require("react");
   export function useVirtualizer(options: any): any;
 }
 
@@ -143,6 +141,14 @@ declare module "lucide-react" {
   export const Settings: React.FC<any>;
   export const User: React.FC<any>;
   export const LogOut: React.FC<any>;
+}
+
+declare global {
+  // Web Speech API (minimal ambient typings for TS builds)
+  // Some TS lib.dom versions omit these types, so we provide safe aliases.
+  type SpeechRecognition = any;
+  type SpeechRecognitionEvent = any;
+  type SpeechRecognitionErrorEvent = any;
 }
 
 export type ID = string | number;

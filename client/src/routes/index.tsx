@@ -2,7 +2,6 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy } from "react";
 import { MainLayout } from "../components/layout/MainLayout";
 import PrivateRoute from "./PrivateRoute";
-import RoleAllowed from "./RoleAllowed";
 import { ProtectedRoute, PublicRoute, SuspenseWrapper } from "./RouteGuards";
 import { FeatureRoute } from "./FeatureRoute";
 
@@ -25,6 +24,18 @@ const FeatureManagementPage = lazy(
   () => import("../pages/FeatureManagementPage"),
 );
 const Unauthorized = lazy(() => import("../pages/Unauthorized"));
+const OwnerDashboardPage = lazy(
+  () => import("../pages/owner/OwnerDashboardPage"),
+);
+const OwnerPlansPage = lazy(
+  () => import("../pages/owner/OwnerPlansPage"),
+);
+const OwnerSubscriptionsPage = lazy(
+  () => import("../pages/owner/OwnerSubscriptionsPage"),
+);
+const OwnerPlaceholderPage = lazy(
+  () => import("../pages/owner/OwnerPlaceholderPage"),
+);
 
 const router = createBrowserRouter([
   {
@@ -236,6 +247,47 @@ const router = createBrowserRouter([
           </SuspenseWrapper>
         </MainLayout>
       </ProtectedRoute>
+    ),
+  },
+  // Owner Console (super-admin)
+  {
+    path: "/owner",
+    element: (
+      <PrivateRoute requiredRole="OWNER">
+        <SuspenseWrapper>
+          <OwnerDashboardPage />
+        </SuspenseWrapper>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/owner/plans",
+    element: (
+      <PrivateRoute requiredRole="OWNER">
+        <SuspenseWrapper>
+          <OwnerPlansPage />
+        </SuspenseWrapper>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/owner/subscriptions",
+    element: (
+      <PrivateRoute requiredRole="OWNER">
+        <SuspenseWrapper>
+          <OwnerSubscriptionsPage />
+        </SuspenseWrapper>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/owner/:section",
+    element: (
+      <PrivateRoute requiredRole="OWNER">
+        <SuspenseWrapper>
+          <OwnerPlaceholderPage />
+        </SuspenseWrapper>
+      </PrivateRoute>
     ),
   },
   // 404 route

@@ -1,19 +1,16 @@
-import React from "react";
-("use client");
+"use client";
 
-import { MainLayout } from "../components/layout/MainLayout.js";
-import {
-  EnterpriseDataTable,
-  type Column,
-} from "../components/ui/EnterpriseDataTable.js";
-import { EnterpriseButton } from "../components/ui/EnterpriseButton.js";
-import { EnterpriseInput } from "../components/ui/EnterpriseInput.js";
-import {
-  Card,
+import React from "react";
+
+import { MainLayout } from "@/components/layout/MainLayout";
+import EnterpriseDataTable, { type Column } from "@/components/ui/EnterpriseDataTable";
+import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
+import { EnterpriseInput } from "@/components/ui/EnterpriseInput";
+import Card, {
   CardContent,
   CardHeader,
   CardTitle,
-} from "../components/ui/card.js";
+} from "@/components/ui/card";
 import {
   Users,
   Plus,
@@ -172,7 +169,7 @@ export default function SettingsPage() {
             className={`w-2 h-2 rounded-full ${value === "Active" ? "bg-success" : "bg-gray-400"}`}
           />
           <span
-            className={`text-sm ${value === "Active" ? "text-success" : "text-gray-500"}`}
+            className={`text-sm ${value === "Active" ? "text-success-700 dark:text-success" : "text-gray-500"}`}
           >
             {value}
           </span>
@@ -230,8 +227,9 @@ export default function SettingsPage() {
       );
       setEditingUser(null);
     } else {
+      const nextId = users.length ? Math.max(...users.map((u) => u.id)) + 1 : 1;
       const newUser = {
-        id: Math.max(...users.map((u) => u.id)) + 1,
+        id: nextId,
         ...userData,
         status: "Active",
         lastLogin: new Date().toISOString().replace("T", " ").slice(0, 16),
@@ -323,7 +321,7 @@ export default function SettingsPage() {
                   columns={userColumns}
                   searchable={true}
                   exportable={true}
-                  pagination={true}
+                  paginated={true}
                   emptyMessage="No users found"
                 />
               </CardContent>
@@ -368,7 +366,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex gap-2 mt-4">
                       <EnterpriseButton
-                        variant="outline"
+                        variant="secondary"
                         size="sm"
                         className="flex-1"
                       >
@@ -376,7 +374,7 @@ export default function SettingsPage() {
                       </EnterpriseButton>
                       {role.name !== "Admin" && role.name !== "Viewer" && (
                         <EnterpriseButton
-                          variant="outline"
+                          variant="secondary"
                           size="sm"
                           className="text-danger"
                         >
@@ -407,8 +405,11 @@ export default function SettingsPage() {
                     </p>
                   </div>
                   <button
+                    type="button"
                     onClick={handleToggleDarkMode}
                     className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
+                    aria-label="Toggle dark mode"
+                    aria-pressed={darkMode}
                   >
                     <span
                       className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -428,8 +429,11 @@ export default function SettingsPage() {
                     </p>
                   </div>
                   <button
+                    type="button"
                     onClick={() => setNotifications(!notifications)}
                     className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2"
+                    aria-label="Toggle email notifications"
+                    aria-pressed={notifications}
                   >
                     <span
                       className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -499,7 +503,7 @@ export default function SettingsPage() {
                   <EnterpriseButton variant="primary">
                     Save Changes
                   </EnterpriseButton>
-                  <EnterpriseButton variant="outline">Cancel</EnterpriseButton>
+                  <EnterpriseButton variant="secondary">Cancel</EnterpriseButton>
                 </div>
               </CardContent>
             </Card>
@@ -527,7 +531,7 @@ export default function SettingsPage() {
                         </p>
                       </div>
                     </div>
-                    <EnterpriseButton variant="outline" size="sm">
+                    <EnterpriseButton variant="secondary" size="sm">
                       Enable
                     </EnterpriseButton>
                   </div>
@@ -544,7 +548,7 @@ export default function SettingsPage() {
                         </p>
                       </div>
                     </div>
-                    <EnterpriseButton variant="outline" size="sm">
+                    <EnterpriseButton variant="secondary" size="sm">
                       View Sessions
                     </EnterpriseButton>
                   </div>
@@ -559,7 +563,7 @@ export default function SettingsPage() {
                         </p>
                       </div>
                     </div>
-                    <EnterpriseButton variant="outline" size="sm">
+                    <EnterpriseButton variant="secondary" size="sm">
                       Manage
                     </EnterpriseButton>
                   </div>
@@ -618,7 +622,7 @@ export default function SettingsPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         {log.status === "success" ? (
-                          <Check className="h-4 w-4 text-success" />
+                          <Check className="h-4 w-4 text-success-700 dark:text-success" />
                         ) : (
                           <X className="h-4 w-4 text-danger" />
                         )}
@@ -696,7 +700,7 @@ export default function SettingsPage() {
 
                 <div className="flex gap-3 mt-6">
                   <EnterpriseButton
-                    variant="outline"
+                    variant="secondary"
                     className="flex-1"
                     onClick={() => {
                       setShowAddUserModal(false);

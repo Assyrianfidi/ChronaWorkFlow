@@ -77,6 +77,7 @@ class MonitoringService {
   private lastCleanup: number = Date.now();
   private cleanupInterval: NodeJS.Timeout | null = null;
   private metricsInterval: NodeJS.Timeout | null = null;
+  _metricsInterval: NodeJS.Timeout | null = null;
   private dbCircuitBreaker: any;
   private endpointMetrics = new Map<string, { times: number[]; errors: number }>();
 
@@ -177,6 +178,7 @@ class MonitoringService {
   startMetricsCollection(): void {
     if (process.env.NODE_ENV === 'test') {
       logger.info('[MONITORING] Metrics collection skipped in test mode');
+      this._metricsInterval = null;
       return;
     }
 
@@ -194,6 +196,8 @@ class MonitoringService {
       }
     }, 30000); // Every 30 seconds
 
+    this._metricsInterval = this.metricsInterval;
+
     logger.info('Metrics collection started');
   }
 
@@ -205,6 +209,8 @@ class MonitoringService {
       clearInterval(this.metricsInterval);
       this.metricsInterval = null;
     }
+
+    this._metricsInterval = this.metricsInterval;
     
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
@@ -719,7 +725,13 @@ class MonitoringService {
     metric?: string;
     value?: number;
   }> {
-    const recommendations = [];
+    const recommendations: Array<{
+      type: string;
+      priority: 'low' | 'medium' | 'high' | 'critical';
+      message: string;
+      metric?: string;
+      value?: number;
+    }> = [];
 
     // Check response times
     if (this.metrics.requests.avgResponseTime > 500) {

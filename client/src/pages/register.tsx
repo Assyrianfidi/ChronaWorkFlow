@@ -1,18 +1,30 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
-import {
-  Card,
+import Card, {
   CardHeader,
   CardTitle,
   CardDescription,
-} from "../components/ui/card.js";
-import { useAuthStore } from "../store/auth-store.js";
-import { RegistrationForm } from "../components/auth/RegistrationForm.js";
+} from "@/components/ui/Card";
+import { useAuthStore } from "@/store/auth-store";
+import { RegistrationForm } from "../components/auth/RegistrationForm";
 import { Wallet } from "lucide-react";
 
 export default function Register() {
   const router = useRouter();
-  const { register, isLoading, error, clearError } = useAuthStore();
+  const auth = useAuthStore() as unknown as {
+    register?: (input: {
+      name: string;
+      email: string;
+      password: string;
+    }) => Promise<void>;
+    isLoading?: boolean;
+    error?: string | null;
+    clearError?: () => void;
+  };
+  const register = auth.register;
+  const isLoading = auth.isLoading ?? false;
+  const error = auth.error ?? null;
+  const clearError = auth.clearError;
 
   const handleSubmit = async (data: {
     name: string;
@@ -20,7 +32,7 @@ export default function Register() {
     password: string;
   }) => {
     try {
-      await register({
+      await register?.({
         name: data.name,
         email: data.email,
         password: data.password,

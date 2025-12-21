@@ -1,18 +1,17 @@
 "use client";
 
-import { signOut } from "next-auth/react";
+import { LoadingState } from '@/components/ui/LoadingState';
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function SignOutPage() {
   const router = useRouter();
+  const { logout } = useAuthStore();
 
   useEffect(() => {
     const handleSignOut = async () => {
-      await signOut({
-        redirect: false,
-        callbackUrl: "/auth/signin",
-      });
+      logout();
       router.push("/auth/signin");
     };
 
@@ -20,8 +19,6 @@ export default function SignOutPage() {
   }, [router]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
-      <div className="animate-pulse text-lg">Signing out...</div>
-    </div>
+    <LoadingState size="sm" />
   );
 }

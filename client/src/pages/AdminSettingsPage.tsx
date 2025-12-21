@@ -45,21 +45,16 @@ import {
   Users,
   Settings,
   Shield,
-  Bell,
-  Database,
   Plus,
   Search,
   Edit,
   Trash2,
   Key,
-  Mail,
   Lock,
   Unlock,
   AlertTriangle,
   CheckCircle,
   XCircle,
-  Eye,
-  EyeOff,
 } from "lucide-react";
 
 interface User {
@@ -186,29 +181,46 @@ const mockSystemSettings: SystemSetting[] = [
 ];
 
 const roleConfig = {
-  ADMIN: { color: "bg-purple-100 text-purple-800", label: "Administrator" },
-  MANAGER: { color: "bg-blue-100 text-blue-800", label: "Manager" },
-  ACCOUNTANT: { color: "bg-green-100 text-green-800", label: "Accountant" },
-  AUDITOR: { color: "bg-orange-100 text-orange-800", label: "Auditor" },
+  ADMIN: {
+    color:
+      "bg-purple-100 text-purple-900 dark:bg-purple-500/20 dark:text-purple-200",
+    label: "Administrator",
+  },
+  MANAGER: {
+    color: "bg-blue-100 text-blue-900 dark:bg-blue-500/20 dark:text-blue-200",
+    label: "Manager",
+  },
+  ACCOUNTANT: {
+    color:
+      "bg-green-100 text-green-900 dark:bg-green-500/20 dark:text-green-200",
+    label: "Accountant",
+  },
+  AUDITOR: {
+    color:
+      "bg-orange-100 text-orange-900 dark:bg-orange-500/20 dark:text-orange-200",
+    label: "Auditor",
+  },
   INVENTORY_MANAGER: {
-    color: "bg-yellow-100 text-yellow-800",
+    color:
+      "bg-yellow-100 text-yellow-900 dark:bg-yellow-500/20 dark:text-yellow-200",
     label: "Inventory Manager",
   },
 };
 
 const statusConfig = {
   ACTIVE: {
-    color: "bg-green-100 text-green-800",
+    color:
+      "bg-green-100 text-green-900 dark:bg-green-500/20 dark:text-green-200",
     icon: CheckCircle,
     label: "Active",
   },
   INACTIVE: {
-    color: "bg-gray-100 text-gray-800",
+    color: "bg-gray-100 text-gray-900 dark:bg-white/10 dark:text-gray-200",
     icon: XCircle,
     label: "Inactive",
   },
   SUSPENDED: {
-    color: "bg-red-100 text-red-800",
+    color: "bg-red-100 text-red-900 dark:bg-red-500/20 dark:text-red-200",
     icon: AlertTriangle,
     label: "Suspended",
   },
@@ -223,17 +235,22 @@ const AdminSettingsPage: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isCreateUserDialogOpen, setIsCreateUserDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [usersLoadError, setUsersLoadError] = useState<string | null>(null);
 
   // Mock fetch users
   const fetchUsers = async () => {
-    setIsLoading(true);
+    setIsLoadingUsers(true);
+    setUsersLoadError(null);
     try {
       await new Promise((resolve) => setTimeout(resolve, 800));
       setUsers(mockUsers);
       setFilteredUsers(mockUsers);
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+      setUsersLoadError("Unable to load users. Please try again.");
     } finally {
-      setIsLoading(false);
+      setIsLoadingUsers(false);
     }
   };
 
@@ -265,59 +282,34 @@ const AdminSettingsPage: React.FC = () => {
   }, [users, searchTerm, roleFilter, statusFilter]);
 
   const handleCreateUser = async (userData: any) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      const newUser: User = {
-        id: Date.now().toString(),
-        name: userData.name,
-        email: userData.email,
-        role: userData.role,
-        status: "ACTIVE",
-        lastLogin: new Date().toISOString(),
-        createdAt: new Date().toISOString().split("T")[0],
-        permissions: getPermissionsForRole(userData.role),
-      };
+    const newUser: User = {
+      id: Date.now().toString(),
+      name: userData.name,
+      email: userData.email,
+      role: userData.role,
+      status: "ACTIVE",
+      lastLogin: new Date().toISOString(),
+      createdAt: new Date().toISOString().split("T")[0],
+      permissions: getPermissionsForRole(userData.role),
+    };
 
-      setUsers([newUser, ...users]);
-      setIsCreateUserDialogOpen(false);
-    } catch (error) {}
-  };
-
-  const handleUpdateUserRole = async (
-    userId: string,
-    newRole: User["role"],
-  ) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      setUsers(
-        users.map((user) =>
-          user.id === userId
-            ? {
-                ...user,
-                role: newRole,
-                permissions: getPermissionsForRole(newRole),
-              }
-            : user,
-        ),
-      );
-    } catch (error) {}
+    setUsers([newUser, ...users]);
+    setIsCreateUserDialogOpen(false);
   };
 
   const handleUpdateUserStatus = async (
     userId: string,
     newStatus: User["status"],
   ) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-      setUsers(
-        users.map((user) =>
-          user.id === userId ? { ...user, status: newStatus } : user,
-        ),
-      );
-    } catch (error) {}
+    setUsers(
+      users.map((user) =>
+        user.id === userId ? { ...user, status: newStatus } : user,
+      ),
+    );
   };
 
   const handleDeleteUser = async (userId: string) => {
@@ -339,23 +331,19 @@ const AdminSettingsPage: React.FC = () => {
     )
       return;
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-      setUsers(users.filter((user) => user.id !== userId));
-    } catch (error) {}
+    setUsers(users.filter((user) => user.id !== userId));
   };
 
   const handleUpdateSetting = async (settingId: string, newValue: any) => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-      setSystemSettings(
-        systemSettings.map((setting) =>
-          setting.id === settingId ? { ...setting, value: newValue } : setting,
-        ),
-      );
-    } catch (error) {}
+    setSystemSettings(
+      systemSettings.map((setting) =>
+        setting.id === settingId ? { ...setting, value: newValue } : setting,
+      ),
+    );
   };
 
   const getPermissionsForRole = (role: User["role"]): string[] => {
@@ -398,7 +386,7 @@ const AdminSettingsPage: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Admin Settings</h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Manage users, roles, and system configuration
           </p>
         </div>
@@ -518,7 +506,7 @@ const AdminSettingsPage: React.FC = () => {
               <div className="flex flex-col lg:flex-row gap-4 mb-4">
                 <div className="flex-1">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
                       placeholder="Search users..."
                       value={searchTerm}
@@ -556,94 +544,138 @@ const AdminSettingsPage: React.FC = () => {
               </div>
 
               {/* Users Table */}
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Last Login</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredUsers.map((user) => {
-                    const StatusIcon = statusConfig[user.status].icon;
-                    return (
-                      <TableRow key={user.id}>
-                        <TableCell>
-                          <div>
-                            <div className="font-medium">{user.name}</div>
-                            <div className="text-sm text-gray-500">
-                              {user.email}
+              {isLoadingUsers ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-enterprise-navy" />
+                </div>
+              ) : usersLoadError ? (
+                <div className="py-6 space-y-3">
+                  <div className="text-sm text-red-700">{usersLoadError}</div>
+                  <div>
+                    <Button variant="outline" onClick={fetchUsers}>
+                      Retry
+                    </Button>
+                  </div>
+                </div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="py-10 text-center space-y-3">
+                  <div className="text-sm font-medium">No users found</div>
+                  <div className="text-sm text-muted-foreground">
+                    Try adjusting your filters or clear the search.
+                  </div>
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSearchTerm("");
+                        setRoleFilter("all");
+                        setStatusFilter("all");
+                      }}
+                    >
+                      Clear filters
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Last Login</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredUsers.map((user) => {
+                      const StatusIcon = statusConfig[user.status].icon;
+                      return (
+                        <TableRow key={user.id}>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">{user.name}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {user.email}
+                              </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={roleConfig[user.role].color}>
-                            {roleConfig[user.role].label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={statusConfig[user.status].color}>
-                            <StatusIcon className="w-3 h-3 mr-1" />
-                            {statusConfig[user.status].label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            {formatDate(user.lastLogin)}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">{user.createdAt}</div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="sm">
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            {user.status === "ACTIVE" ? (
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={roleConfig[user.role].color}>
+                              {roleConfig[user.role].label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={statusConfig[user.status].color}>
+                              <StatusIcon className="w-3 h-3 mr-1" />
+                              {statusConfig[user.status].label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              {formatDate(user.lastLogin)}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">{user.createdAt}</div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() =>
-                                  handleUpdateUserStatus(user.id, "SUSPENDED")
-                                }
+                                aria-label={`Edit ${user.name}`}
                               >
-                                <Lock className="w-4 h-4" />
+                                <Edit className="w-4 h-4" />
                               </Button>
-                            ) : (
+                              {user.status === "ACTIVE" ? (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleUpdateUserStatus(
+                                      user.id,
+                                      "SUSPENDED",
+                                    )
+                                  }
+                                  aria-label={`Suspend ${user.name}`}
+                                >
+                                  <Lock className="w-4 h-4" />
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleUpdateUserStatus(user.id, "ACTIVE")
+                                  }
+                                  aria-label={`Activate ${user.name}`}
+                                >
+                                  <Unlock className="w-4 h-4" />
+                                </Button>
+                              )}
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() =>
-                                  handleUpdateUserStatus(user.id, "ACTIVE")
+                                onClick={() => handleDeleteUser(user.id)}
+                                disabled={
+                                  user.role === "ADMIN" &&
+                                  users.filter((u) => u.role === "ADMIN")
+                                    .length <= 1
                                 }
+                                aria-label={`Delete ${user.name}`}
                               >
-                                <Unlock className="w-4 h-4" />
+                                <Trash2 className="w-4 h-4" />
                               </Button>
-                            )}
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteUser(user.id)}
-                              disabled={
-                                user.role === "ADMIN" &&
-                                users.filter((u) => u.role === "ADMIN")
-                                  .length <= 1
-                              }
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -662,46 +694,57 @@ const AdminSettingsPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {systemSettings.map((setting) => (
-                  <div
-                    key={setting.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                  >
-                    <div className="space-y-1">
-                      <div className="font-medium">
-                        {setting.key.replace(/_/g, " ").toUpperCase()}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {setting.description}
-                      </div>
-                      <Badge variant="outline">{setting.category}</Badge>
+                {systemSettings.length === 0 ? (
+                  <div className="py-10 text-center space-y-2">
+                    <div className="text-sm font-medium">
+                      No system settings available
                     </div>
-                    <div className="flex items-center gap-2">
-                      {setting.type === "boolean" ? (
-                        <Switch
-                          checked={setting.value as boolean}
-                          onCheckedChange={(checked) =>
-                            handleUpdateSetting(setting.id, checked)
-                          }
-                        />
-                      ) : (
-                        <Input
-                          type={setting.type}
-                          value={setting.value.toString()}
-                          onChange={(e) =>
-                            handleUpdateSetting(
-                              setting.id,
-                              setting.type === "number"
-                                ? parseInt(e.target.value)
-                                : e.target.value,
-                            )
-                          }
-                          className="w-32"
-                        />
-                      )}
+                    <div className="text-sm text-muted-foreground">
+                      Settings will appear here when configured.
                     </div>
                   </div>
-                ))}
+                ) : (
+                  systemSettings.map((setting) => (
+                    <div
+                      key={setting.id}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
+                      <div className="space-y-1">
+                        <div className="font-medium">
+                          {setting.key.replace(/_/g, " ").toUpperCase()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {setting.description}
+                        </div>
+                        <Badge variant="outline">{setting.category}</Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {setting.type === "boolean" ? (
+                          <Switch
+                            checked={setting.value as boolean}
+                            onCheckedChange={(checked) =>
+                              handleUpdateSetting(setting.id, checked)
+                            }
+                          />
+                        ) : (
+                          <Input
+                            type={setting.type}
+                            value={setting.value.toString()}
+                            onChange={(e) =>
+                              handleUpdateSetting(
+                                setting.id,
+                                setting.type === "number"
+                                  ? parseInt(e.target.value)
+                                  : e.target.value,
+                              )
+                            }
+                            className="w-32"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -721,41 +764,48 @@ const AdminSettingsPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Object.entries(roleConfig).map(([role, config]) => (
-                  <Card
-                    key={role}
-                    className="border-l-4 border-l-enterprise-navy"
-                  >
-                    <CardHeader>
-                      <CardTitle className="text-lg">{config.label}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="text-sm font-medium">Permissions:</div>
-                        <div className="flex flex-wrap gap-1">
-                          {/* @ts-ignore */}
-                          {getPermissionsForRole(role as User["role"]).map(
-                            (permission) => (
-                              <Badge
-                                key={permission}
-                                variant="outline"
-                                className="text-xs"
-                              >
-                                {permission}
-                              </Badge>
-                            ),
-                          )}
-                        </div>
-                        <div className="pt-2">
-                          <div className="text-sm text-gray-500">
-                            {users.filter((u) => u.role === role).length}{" "}
-                            user(s) with this role
+                {(Object.keys(roleConfig) as Array<User["role"]>).map(
+                  (role) => {
+                    const config = roleConfig[role];
+
+                    return (
+                      <Card
+                        key={role}
+                        className="border-l-4 border-l-enterprise-navy"
+                      >
+                        <CardHeader>
+                          <CardTitle className="text-lg">
+                            {config.label}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2">
+                            <div className="text-sm font-medium">
+                              Permissions:
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {getPermissionsForRole(role).map((permission) => (
+                                <Badge
+                                  key={permission}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {permission}
+                                </Badge>
+                              ))}
+                            </div>
+                            <div className="pt-2">
+                              <div className="text-sm text-muted-foreground">
+                                {users.filter((u) => u.role === role).length}{" "}
+                                user(s) with this role
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                        </CardContent>
+                      </Card>
+                    );
+                  },
+                )}
               </div>
             </CardContent>
           </Card>

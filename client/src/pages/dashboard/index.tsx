@@ -1,16 +1,12 @@
 import { useEffect } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/auth-store.js";
-import { Button } from "../components/ui/button.js";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card.js";
-import { apiRequest } from "../lib/api.js";
+import { useAuthStore } from "@/store/auth-store";
+import Button from "@/components/ui/Button";
+import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { apiRequest } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
-import { DashboardShell } from "../components/ui/layout/DashboardShell.js";
+import { DashboardShell } from "@/components/ui/layout/DashboardShell";
 
 type Report = {
   id: number;
@@ -251,8 +247,8 @@ export default function Dashboard() {
                   ))}
                 </ul>
               ) : (
-                <div className="p-6 text-center opacity-80">
-                  No reports found.
+                <div className="p-6">
+                  <EmptyState size="sm" title="No reports found" />
                 </div>
               )}
             </div>

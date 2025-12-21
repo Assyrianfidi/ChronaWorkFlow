@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useUserExperienceMode } from "@/components/adaptive/UserExperienceMode";
 import { usePerformance } from "@/components/adaptive/UI-Performance-Engine";
-import { useAuthStore } from "@/../../store/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 // Webhook Types
 interface WebhookEndpoint {
@@ -669,8 +669,8 @@ class WebhookEngine {
 
     switch (algorithm) {
       case "sha256":
-        hashBuffer = await crypto.subtle.digest(
-          "SHA-256",
+        hashBuffer = await crypto.subtle.sign(
+          "HMAC",
           await crypto.subtle.importKey(
             "raw",
             key,
@@ -678,11 +678,12 @@ class WebhookEngine {
             false,
             ["sign"],
           ),
+          data,
         );
         break;
       case "sha1":
-        hashBuffer = await crypto.subtle.digest(
-          "SHA-1",
+        hashBuffer = await crypto.subtle.sign(
+          "HMAC",
           await crypto.subtle.importKey(
             "raw",
             key,
@@ -690,14 +691,15 @@ class WebhookEngine {
             false,
             ["sign"],
           ),
+          data,
         );
         break;
       case "md5":
         // MD5 is not supported by Web Crypto API, fallback to simple hash
-        hashBuffer = encoder.encode(btoa(JSON.stringify(payload)));
+        hashBuffer = encoder.encode(btoa(JSON.stringify(payload))).buffer;
         break;
       default:
-        hashBuffer = data;
+        hashBuffer = data.buffer;
     }
 
     const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -1321,11 +1323,11 @@ export const useWebhookManager = (): WebhookManagerContextType => {
 export const withWebhookManager = <P extends object>(
   Component: React.ComponentType<P>,
 ) => {
-  return React.forwardRef<any, P>((props, ref) => (
+  return (props: P) => (
     <WebhookManager>
-      <Component {...props} ref={ref} />
+      <Component {...props} />
     </WebhookManager>
-  ));
+  );
 };
 
 // Utility Components

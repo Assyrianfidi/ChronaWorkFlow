@@ -4,10 +4,9 @@ declare global {
   }
 }
 
-import React, { useState } from "react";
 import * as React from "react";
 import { Outlet } from "react-router-dom";
-import { cn } from "@/../../lib/utils";
+import { cn } from "@/lib/utils";
 import { PrimaryNavigation } from "./PrimaryNavigation";
 import { TopBar } from "./TopBar";
 
@@ -72,7 +71,7 @@ const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(
     return (
       <div
         ref={ref}
-        className={cn("flex h-screen bg-gray-50", className)}
+        className={cn("flex h-screen bg-background", className)}
         {...props}
       >
         {/* Sidebar - Desktop */}
@@ -92,7 +91,7 @@ const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(
         {isMobile && mobileMenuOpen && (
           <>
             <div
-              className="fixed inset-0 bg-black/50 z-30"
+              className="fixed inset-0 bg-foreground/50 z-30"
               onClick={() => setMobileMenuOpen(false)}
             />
             <PrimaryNavigation
@@ -115,31 +114,31 @@ const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(
           />
 
           {/* Page Content */}
-          <main className="flex-1 overflow-auto p-6">
+          <main className="flex-1 overflow-auto p-6 bg-background">
             <Outlet />
           </main>
         </div>
 
         {/* KPI Quick Cards - Large Desktop Only */}
         {isLargeDesktop && !sidebarCollapsed && (
-          <div className="w-80 bg-white border-l border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <div className="w-80 bg-card text-card-foreground border-l border-border p-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               Quick Insights
             </h3>
             <div className="space-y-4">
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="text-2xl font-bold text-blue-600">$124,563</div>
-                <div className="text-sm text-blue-600">Monthly Revenue</div>
+              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="text-2xl font-bold text-primary">$124,563</div>
+                <div className="text-sm text-primary">Monthly Revenue</div>
               </div>
-              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                <div className="text-2xl font-bold text-green-600">$45,231</div>
-                <div className="text-sm text-green-600">
+              <div className="p-4 bg-secondary/10 rounded-lg border border-secondary/20">
+                <div className="text-2xl font-bold text-secondary">$45,231</div>
+                <div className="text-sm text-secondary">
                   Accounts Receivable
                 </div>
               </div>
-              <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                <div className="text-2xl font-bold text-amber-600">12</div>
-                <div className="text-sm text-amber-600">Pending Invoices</div>
+              <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
+                <div className="text-2xl font-bold text-accent">12</div>
+                <div className="text-sm text-accent">Pending Invoices</div>
               </div>
             </div>
           </div>

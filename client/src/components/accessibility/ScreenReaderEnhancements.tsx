@@ -96,10 +96,6 @@ export const ScreenReaderEnhancements: React.FC<{
 
       updateVoices();
       window.speechSynthesis.onvoiceschanged = updateVoices;
-
-      // Set up speech event listeners
-      window.speechSynthesis.onstart = () => setIsSpeaking(true);
-      window.speechSynthesis.onend = () => setIsSpeaking(false);
     }
   }, []);
 
@@ -125,6 +121,10 @@ export const ScreenReaderEnhancements: React.FC<{
 
       // Create utterance
       const utterance = new SpeechSynthesisUtterance(text);
+
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
 
       // Apply settings
       utterance.rate = settings.rate;
@@ -477,13 +477,18 @@ export const ScreenReaderControls: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Speech Rate: {settings.rate.toFixed(1)}
           </label>
-          <input
+          
+        <label htmlFor="input-7jd67oz56" className="sr-only">
+          Range
+        </label>
+        <input id="input-7jd67oz56"
             type="range"
             min="0.5"
             max="2.0"
             step="0.1"
             value={settings.rate}
             onChange={(e) =>
+      
               updateSettings({ rate: parseFloat(e.target.value) })
             }
             className="w-full"
@@ -495,13 +500,18 @@ export const ScreenReaderControls: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Speech Pitch: {settings.pitch.toFixed(1)}
           </label>
-          <input
+          
+        <label htmlFor="input-r1l8h3p0m" className="sr-only">
+          Range
+        </label>
+        <input id="input-r1l8h3p0m"
             type="range"
             min="0.5"
             max="2.0"
             step="0.1"
             value={settings.pitch}
             onChange={(e) =>
+      
               updateSettings({ pitch: parseFloat(e.target.value) })
             }
             className="w-full"
@@ -513,13 +523,18 @@ export const ScreenReaderControls: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Volume: {Math.round(settings.volume * 100)}%
           </label>
-          <input
+          
+        <label htmlFor="input-88iaryi3i" className="sr-only">
+          Range
+        </label>
+        <input id="input-88iaryi3i"
             type="range"
             min="0"
             max="1"
             step="0.1"
             value={settings.volume}
             onChange={(e) =>
+      
               updateSettings({ volume: parseFloat(e.target.value) })
             }
             className="w-full"

@@ -5,241 +5,48 @@ import {
   useUserExperienceMode,
 } from "./UserExperienceMode";
 
-// Demo component to show user experience mode features
 const UXModeDemo: React.FC = () => {
-  const { preferences, updatePreferences, resetPreferences } =
+  const { currentMode, customSettings, updateCustomSettings, resetToDefaults } =
     useUserExperienceMode();
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px" }}>
-      <h2>User Experience Mode Preferences</h2>
+    <div style={{ padding: "2rem", maxWidth: 800 }}>
+      <h2>User Experience Mode</h2>
+      <p>Current mode: {currentMode.name}</p>
 
-      <div style={{ marginBottom: "2rem" }}>
-        <h3>Display Preferences</h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "1rem",
-          }}
-        >
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.reduceAnimations}
-                onChange={(e) =>
-                  updatePreferences({ reduceAnimations: e.target.checked })
-                }
-              />
-              Reduce Animations
-            </label>
-          </div>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.highContrast}
-                onChange={(e) =>
-                  updatePreferences({ highContrast: e.target.checked })
-                }
-              />
-              High Contrast Mode
-            </label>
-          </div>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.largeText}
-                onChange={(e) =>
-                  updatePreferences({ largeText: e.target.checked })
-                }
-              />
-              Large Text
-            </label>
-          </div>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.simpleMode}
-                onChange={(e) =>
-                  updatePreferences({ simpleMode: e.target.checked })
-                }
-              />
-              Simple Mode
-            </label>
-          </div>
-        </div>
+      <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={customSettings.animations === "minimal"}
+            onChange={(e) =>
+              updateCustomSettings({
+                animations: e.target.checked ? "minimal" : "normal",
+              })
+            }
+          />
+          Minimal animations
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            checked={customSettings.accessibility === "high-contrast"}
+            onChange={(e) =>
+              updateCustomSettings({
+                accessibility: e.target.checked ? "high-contrast" : "standard",
+              })
+            }
+          />
+          High contrast
+        </label>
       </div>
 
-      <div style={{ marginBottom: "2rem" }}>
-        <h3>Interaction Preferences</h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "1rem",
-          }}
-        >
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.keyboardNavigation}
-                onChange={(e) =>
-                  updatePreferences({ keyboardNavigation: e.target.checked })
-                }
-              />
-              Keyboard Navigation
-            </label>
-          </div>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.screenReaderOptimized}
-                onChange={(e) =>
-                  updatePreferences({ screenReaderOptimized: e.target.checked })
-                }
-              />
-              Screen Reader Optimized
-            </label>
-          </div>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.voiceCommands}
-                onChange={(e) =>
-                  updatePreferences({ voiceCommands: e.target.checked })
-                }
-              />
-              Voice Commands
-            </label>
-          </div>
-        </div>
+      <div style={{ marginTop: "1rem" }}>
+        <button type="button" onClick={resetToDefaults}>
+          Reset
+        </button>
       </div>
-
-      <div style={{ marginBottom: "2rem" }}>
-        <h3>Content Preferences</h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "1rem",
-          }}
-        >
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.showTooltips}
-                onChange={(e) =>
-                  updatePreferences({ showTooltips: e.target.checked })
-                }
-              />
-              Show Tooltips
-            </label>
-          </div>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.showNotifications}
-                onChange={(e) =>
-                  updatePreferences({ showNotifications: e.target.checked })
-                }
-              />
-              Show Notifications
-            </label>
-          </div>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={preferences.showHelpText}
-                onChange={(e) =>
-                  updatePreferences({ showHelpText: e.target.checked })
-                }
-              />
-              Show Help Text
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ marginBottom: "2rem" }}>
-        <h3>Performance Preferences</h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "1rem",
-          }}
-        >
-          <div>
-            <label>
-              Data Quality:
-              <select
-                value={preferences.dataQuality}
-                onChange={(e) =>
-                  updatePreferences({ dataQuality: e.target.value as any })
-                }
-                style={{ marginLeft: "0.5rem" }}
-              >
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
-            </label>
-          </div>
-          <div>
-            <label>
-              Auto-refresh:
-              <select
-                value={preferences.autoRefresh}
-                onChange={(e) =>
-                  updatePreferences({ autoRefresh: e.target.value as any })
-                }
-                style={{ marginLeft: "0.5rem" }}
-              >
-                <option value="enabled">Enabled</option>
-                <option value="disabled">Disabled</option>
-                <option value="wifi-only">WiFi Only</option>
-              </select>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ marginBottom: "2rem" }}>
-        <h3>Current Preferences</h3>
-        <pre
-          style={{
-            backgroundColor: "#f0f0f0",
-            padding: "1rem",
-            borderRadius: "4px",
-            fontSize: "0.9rem",
-          }}
-        >
-          {JSON.stringify(preferences, null, 2)}
-        </pre>
-      </div>
-
-      <button
-        onClick={resetPreferences}
-        style={{
-          padding: "0.5rem 1rem",
-          backgroundColor: "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-        }}
-      >
-        Reset to Defaults
-      </button>
     </div>
   );
 };

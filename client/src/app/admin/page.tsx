@@ -1,29 +1,8 @@
-import { auth, authConfig } from "../lib/auth.js";
-import { prisma } from "../lib/prisma.js";
-import { redirect } from "next/navigation";
-import AdminDashboardClient from "./AdminDashboardClient.js";
+"use client";
 
-export default async function AdminDashboard() {
-  const session = await auth();
+import React from "react";
+import AdminDashboardClient from "./AdminDashboardClient";
 
-  // Redirect if not admin
-  if (!session || session.user?.role !== "ADMIN") {
-    redirect("/unauthorized");
-  }
-
-  // Fetch all users with their accounts
-  const users = await prisma.user.findMany({
-    include: {
-      accounts: {
-        select: {
-          provider: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  return <AdminDashboardClient users={users} />;
+export default function AdminDashboard() {
+  return <AdminDashboardClient users={[]} />;
 }

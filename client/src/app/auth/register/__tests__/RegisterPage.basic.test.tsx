@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import { vi } from "vitest";
-import RegisterPage from "../page.js";
+import RegisterPage from '../page';
 
 // Mock Next.js router
 vi.mock("next/navigation", () => ({

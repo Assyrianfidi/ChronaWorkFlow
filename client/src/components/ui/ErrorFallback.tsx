@@ -48,7 +48,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
           )}
 
           <EnterpriseButton
-            variant="outline"
+            variant="secondary"
             className="w-full"
             onClick={() => (window.location.href = "/dashboard")}
           >

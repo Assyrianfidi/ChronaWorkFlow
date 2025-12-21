@@ -1,4 +1,4 @@
-import LoginPage from "./LoginPage.js";
+import LoginPage from './LoginPage';
 
 export default function Page() {
   return <LoginPage />;

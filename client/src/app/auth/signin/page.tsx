@@ -1,5 +1,6 @@
+"use client";
+
 import React from "react";
-("use client");
 
 import { Button } from "@/components/components/ui/button";
 import {
@@ -11,11 +12,12 @@ import {
 } from "@/components/components/ui/card";
 import { Input } from "@/components/components/ui/input";
 import { Label } from "@/components/components/ui/label";
-import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function SignInPage() {
+  const { login } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -30,18 +32,8 @@ export default function SignInPage() {
     setError("");
 
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-        callbackUrl,
-      });
-
-      if (result?.error) {
-        setError("Invalid email or password");
-      } else {
-        router.push(callbackUrl);
-      }
+      await login(email, password);
+      router.push(callbackUrl);
     } catch (error) {
       setError("An error occurred. Please try again.");
     } finally {
@@ -52,7 +44,8 @@ export default function SignInPage() {
   const handleSocialSignIn = async (provider: string) => {
     setIsLoading(true);
     setError("");
-    await signIn(provider, { callbackUrl });
+    setError(`OAuth provider '${provider}' is not configured.`);
+    setIsLoading(false);
   };
 
   return (

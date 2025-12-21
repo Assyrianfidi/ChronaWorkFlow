@@ -1,48 +1,22 @@
-import { auth, authConfig } from "../lib/auth.js";
-import { prisma } from "../lib/prisma.js";
-import { redirect } from "next/navigation";
-import { signOut } from "next-auth/react";
+"use client";
 
-export default async function ProfilePage() {
-  const session = await auth();
+import React from "react";
+import { useAuthStore } from "@/store/auth-store";
 
-  if (!session) {
-    redirect("/auth/signin");
-  }
+export default function ProfilePage() {
+  const { isAuthenticated, user } = useAuthStore();
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: { accounts: true },
-  });
-
-  if (!user) {
-    await signOut({ redirect: false });
-    redirect("/auth/signin");
-  }
-
-  const hasPassword = user.accounts.some(
-    (account: any) => account.provider === "credentials",
-  );
-  const socialAccounts = user.accounts.filter(
-    (account: any) => account.provider !== "credentials",
-  );
-
-  async function unlinkAccount(provider: string) {
-    "use server";
-
-    if (user?.accounts.length <= 1) {
-      throw new Error("Cannot unlink the only account");
-    }
-
-    await prisma.account.deleteMany({
-      where: {
-        userId: user.id,
-        provider,
-      },
-    });
-
-    // Refresh the page to show updated accounts
-    redirect("/profile");
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6">Your Profile</h1>
+          <p className="text-sm text-muted-foreground">
+            Please sign in to view your profile.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -91,62 +65,10 @@ export default async function ProfilePage() {
                   Member Since
                 </dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {new Date(user.createdAt).toLocaleDateString()}
+                  Not available
                 </dd>
               </div>
             </dl>
-          </div>
-        </div>
-
-        <div className="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
-          <div className="px-4 py-5 sm:px-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Connected Accounts
-            </h3>
-            <p className="mt-1 max-w-2xl text-sm text-gray-500">
-              Manage your connected social accounts
-            </p>
-          </div>
-          <div className="border-t border-gray-200">
-            <ul className="divide-y divide-gray-200">
-              {socialAccounts.map((account: any) => (
-                <li key={account.provider} className="px-4 py-4 sm:px-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
-                        <span className="text-gray-500">
-                          {account.provider === "google"
-                            ? "G"
-                            : account.provider === "github"
-                              ? "GH"
-                              : account.provider[0].toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {account.provider.charAt(0).toUpperCase() +
-                            account.provider.slice(1)}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          Connected on{" "}
-                          {new Date(account.createdAt).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </div>
-                    {socialAccounts.length > 1 && (
-                      <form action={unlinkAccount.bind(null, account.provider)}>
-                        <button
-                          type="submit"
-                          className="text-sm font-medium text-red-600 hover:text-red-500"
-                        >
-                          Unlink
-                        </button>
-                      </form>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
 

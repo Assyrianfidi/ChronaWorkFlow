@@ -24,8 +24,8 @@ const Unauthorized: React.FC = () => {
 
         {/* Description */}
         <p className="text-gray-600 mb-6">
-          You don't have permission to access this page. Please contact your
-          administrator if you believe this is an error.
+          You don&apos;t have permission to access this page. Please contact
+          your administrator if you believe this is an error.
         </p>
 
         {/* Action Buttons */}
@@ -40,7 +40,7 @@ const Unauthorized: React.FC = () => {
           </EnterpriseButton>
 
           <Link to="/dashboard">
-            <EnterpriseButton variant="outline" className="w-full">
+            <EnterpriseButton variant="secondary" className="w-full">
               <Home className="w-4 h-4 mr-2" />
               Dashboard Home
             </EnterpriseButton>

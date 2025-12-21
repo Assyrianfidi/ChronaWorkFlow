@@ -18,7 +18,6 @@ import {
   Eye,
   EyeOff,
   Loader2,
-  Building2,
   Mail,
   Lock,
   ChevronDown,
@@ -71,6 +70,19 @@ const LoginPage: React.FC = () => {
       navigate("/dashboard");
     } catch (error) {
       setError("Invalid email or password. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setError("");
+    setIsLoading(true);
+    try {
+      await login("admin@accubooks.com", "admin123");
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Unable to start demo session. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -134,10 +146,10 @@ const LoginPage: React.FC = () => {
                 className="rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
               />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">
+            <h1 className="text-4xl font-bold text-foreground mb-2 tracking-tight">
               Welcome to AccuBooks
             </h1>
-            <p className="text-lg text-gray-600 font-normal">
+            <p className="text-lg text-muted-foreground font-normal">
               Sign in to manage your business finances
             </p>
           </div>
@@ -145,10 +157,10 @@ const LoginPage: React.FC = () => {
           {/* Authentication Card */}
           <Card className="glass-card shadow-2xl border-0 animate-scale-in">
             <CardHeader className="space-y-2 pb-6">
-              <CardTitle className="text-2xl font-bold text-center text-gray-900">
+              <CardTitle className="text-2xl font-bold text-center text-foreground">
                 Sign In
               </CardTitle>
-              <CardDescription className="text-center text-gray-600 text-base">
+              <CardDescription className="text-center text-muted-foreground text-base">
                 Enter your credentials to access your account
               </CardDescription>
             </CardHeader>
@@ -172,7 +184,7 @@ const LoginPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label
                     htmlFor="email"
-                    className="text-sm font-semibold text-gray-700"
+                    className="text-sm font-semibold text-foreground"
                   >
                     Email Address
                   </Label>
@@ -195,7 +207,7 @@ const LoginPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label
                     htmlFor="password"
-                    className="text-sm font-semibold text-gray-700"
+                    className="text-sm font-semibold text-foreground"
                   >
                     Password
                   </Label>
@@ -257,7 +269,7 @@ const LoginPage: React.FC = () => {
                   </Link>
                 </div>
               </CardContent>
-              <CardFooter className="flex flex-col space-y-4 pt-6">
+              <div className="flex flex-col gap-4">
                 <Button
                   type="submit"
                   className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-black"
@@ -273,8 +285,19 @@ const LoginPage: React.FC = () => {
                   )}
                 </Button>
 
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-12 text-base font-semibold"
+                  disabled={isLoading}
+                  onClick={handleDemoLogin}
+                >
+                  Continue as Demo
+                </Button>
+              </div>
+              <CardFooter className="flex flex-col space-y-4 pt-6">
                 <div className="text-center text-sm text-gray-600 font-medium">
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link
                     to="/register"
                     className="font-semibold text-primary-600 hover:text-primary-700 transition-colors duration-200 hover:underline"

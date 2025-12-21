@@ -82,7 +82,7 @@ export const enterpriseColors = {
     600: "#0284c7",
   },
 
-  // Semantic surfaces for 2099 enterprise shell
+  // Semantic surfaces for enterprise shell
   surface: {
     0: "#FFFFFF", // surface-0: base canvas
     1: "#F9FAFB", // surface-1: page background

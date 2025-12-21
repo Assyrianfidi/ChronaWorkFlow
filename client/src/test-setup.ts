@@ -1,6 +1,5 @@
 // Test setup file for Jest
 import "@testing-library/jest-dom";
-import { vi } from "vitest";
 
 // Mock IntersectionObserver
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
@@ -41,7 +40,7 @@ const localStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
 };
-global.localStorage = localStorageMock;
+global.localStorage = localStorageMock as unknown as Storage;
 
 // Mock sessionStorage
 const sessionStorageMock = {
@@ -50,7 +49,7 @@ const sessionStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
 };
-global.sessionStorage = sessionStorageMock;
+global.sessionStorage = sessionStorageMock as unknown as Storage;
 
 // Mock fetch
 global.fetch = vi.fn();
@@ -139,7 +138,6 @@ vi.mock("*.svg", () => ({
 }));
 
 // Mock environment variables
-process.env.NODE_ENV = "test";
 process.env.VITE_API_URL = "http://localhost:3001";
 process.env.VITE_ENABLE_ANALYTICS = "false";
 process.env.VITE_ENABLE_ERROR_REPORTING = "false";

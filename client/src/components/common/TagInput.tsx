@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useRef, KeyboardEvent, useEffect } from "react";
 import { X, Plus } from "lucide-react";
-import { cn } from "@/components/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface TagInputProps {
   tags: string[];
@@ -23,6 +23,10 @@ export function TagInput({
   const [inputValue, setInputValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const inputId = React.useMemo(
+    () => `tag-input-${Math.random().toString(36).slice(2)}`,
+    [],
+  );
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") {
@@ -97,19 +101,25 @@ export function TagInput({
       ))}
 
       {!isMaxTags && (
-        <input
-          ref={inputRef}
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setIsFocused(true)}
-          onBlur={handleBlur}
-          placeholder={tags.length === 0 ? placeholder : ""}
-          className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
-          disabled={disabled}
-          maxLength={20}
-        />
+        <>
+          <label htmlFor={inputId} className="sr-only">
+            Text
+          </label>
+          <input
+            id={inputId}
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setIsFocused(true)}
+            onBlur={handleBlur}
+            placeholder={tags.length === 0 ? placeholder : ""}
+            className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
+            disabled={disabled}
+            maxLength={20}
+          />
+        </>
       )}
 
       {isMaxTags && (

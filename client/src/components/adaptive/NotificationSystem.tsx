@@ -14,7 +14,7 @@ import React, {
 import { createPortal } from "react-dom";
 import { useUserExperienceMode } from "./UserExperienceMode";
 import { usePerformance } from "./UI-Performance-Engine";
-import { cn } from "@/../../lib/utils";
+import { cn } from "@/lib/utils";
 
 // Notification types
 export type NotificationType =
@@ -335,7 +335,7 @@ function NotificationItem({
       }
     },
     [
-      notification.action,
+      notification.actions,
       notification.id,
       notification.persistent,
       removeNotification,
@@ -349,6 +349,11 @@ function NotificationItem({
         ? "transition-none"
         : "transition-all duration-300";
 
+  const liveMode =
+    notification.type === "error" ? ("assertive" as const) : ("polite" as const);
+  const landmarkRole =
+    notification.type === "error" ? ("alert" as const) : ("status" as const);
+
   return (
     <div
       className={cn(
@@ -359,6 +364,9 @@ function NotificationItem({
         isHighPriority && "ring-2 ring-red-500 ring-opacity-50",
         notification.type === "loading" && "overflow-hidden",
       )}
+      role={landmarkRole}
+      aria-live={liveMode}
+      aria-atomic="true"
     >
       <div className="flex items-start gap-3">
         {/* Icon */}
@@ -383,11 +391,14 @@ function NotificationItem({
             </div>
             {!notification.persistent && (
               <button
+                type="button"
                 onClick={handleRemove}
                 className={cn(
                   "flex-shrink-0 p-1 rounded hover:bg-black hover:bg-opacity-10 transition-colors",
                   config.textColor,
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
+                aria-label="Dismiss notification"
               >
                 ✕
               </button>
@@ -399,6 +410,7 @@ function NotificationItem({
             <div className="flex gap-2 mt-3">
               {notification.actions.map((action, index) => (
                 <button
+                  type="button"
                   key={index}
                   onClick={() => handleAction(action)}
                   className={cn(
@@ -408,6 +420,7 @@ function NotificationItem({
                       : action.variant === "danger"
                         ? "bg-red-500 text-white hover:bg-red-600"
                         : "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   )}
                 >
                   {action.label}
@@ -544,13 +557,24 @@ export function Toast({
   ...props
 }: Omit<Notification, "id">) {
   const { addNotification } = useNotifications();
+  const propsRef = useRef(props);
 
   useEffect(() => {
-    const id = addNotification({ type, title, message, duration, ...props });
+    propsRef.current = props;
+  }, [props]);
+
+  useEffect(() => {
+    const id = addNotification({
+      type,
+      title,
+      message,
+      duration,
+      ...propsRef.current,
+    });
     return () => {
       // Cleanup if component unmounts
     };
-  }, [type, title, message, duration, addNotification, props]);
+  }, [type, title, message, duration, addNotification]);
 
   return null;
 }

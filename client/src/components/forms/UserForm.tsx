@@ -100,7 +100,7 @@ const UserForm: React.FC<UserFormProps> = ({
       <FormField label="Role" error={errors.role?.message} required>
         <select
           {...register("role")}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
           aria-label="User role"
           aria-invalid={errors.role ? "true" : "false"}
         >
@@ -133,7 +133,6 @@ const UserForm: React.FC<UserFormProps> = ({
         <Button
           type="submit"
           disabled={!isDirty || !isValid || isSubmitting}
-          loading={isSubmitting}
           aria-label={initialData ? "Update user" : "Create user"}
         >
           {isSubmitting

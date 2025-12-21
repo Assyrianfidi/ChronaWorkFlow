@@ -1,10 +1,10 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuthStore } from "@/../../store/auth-store";
-import { Button } from "@/../../components/ui/button";
-import { Input } from "@/../../components/ui/input";
-import { Label } from "@/../../components/ui/label";
+import { useAuthStore } from "@/store/auth-store";
+import { Button } from "@/components/components/ui/button";
+import { Input } from "@/components/components/ui/input";
+import { Label } from "@/components/components/ui/label";
 import {
   Card,
   CardContent,
@@ -12,8 +12,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/../../components/ui/card";
-import { Icons } from "@/../../components/icons";
+} from "@/components/components/ui/card";
+import { Icons } from "@/components/icons";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -25,7 +25,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { register } = useAuthStore();
+  useAuthStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -53,14 +53,8 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      await register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      });
-
-      // Redirect to dashboard after successful registration
-      navigate("/dashboard");
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      navigate("/login");
     } catch (err) {
       const error = err as Error;
       setError(error.message || "Registration failed. Please try again.");

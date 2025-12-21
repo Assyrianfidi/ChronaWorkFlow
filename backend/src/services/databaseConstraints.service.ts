@@ -2,9 +2,9 @@
 import { prisma } from "../utils/prisma";
 
 // Create a singleton instance for production
-let prismaInstance = null;
+let prismaInstance: any = null;
 
-function getPrismaInstance() {
+function getPrismaInstance(): any {
   if (!prismaInstance) {
     prismaInstance = prisma;
   }
@@ -21,7 +21,7 @@ class DatabaseConstraintsService {
    * Set the Prisma client instance (for testing)
    * @param {PrismaClient} prisma - The Prisma client instance
    */
-  static setPrismaInstance(prisma) {
+  static setPrismaInstance(prisma: any) {
     prismaInstance = prisma;
   }
   /**
@@ -31,7 +31,11 @@ class DatabaseConstraintsService {
    * @param {string} excludeId - ID to exclude from uniqueness check (for updates)
    * @returns {Object} - Validation result
    */
-  static async validateUniqueConstraints(model, data, excludeId = null) {
+  static async validateUniqueConstraints(
+    model: string,
+    data: any,
+    excludeId: any = null,
+  ) {
     const errors = [];
 
     try {
@@ -179,7 +183,7 @@ class DatabaseConstraintsService {
    * @param {Object} data - The data to validate
    * @returns {Object} - Validation result
    */
-  static async validateForeignKeyConstraints(model, data) {
+  static async validateForeignKeyConstraints(model: string, data: any) {
     const errors = [];
 
     try {
@@ -302,7 +306,7 @@ class DatabaseConstraintsService {
    * @param {string} action - The action (create, update, delete)
    * @returns {Object} - Validation result
    */
-  static async validateBusinessRules(model, data, action) {
+  static async validateBusinessRules(model: string, data: any, action: string) {
     const errors = [];
 
     try {
@@ -393,11 +397,11 @@ class DatabaseConstraintsService {
           // Validate double-entry accounting
           if (data.debits && data.credits) {
             const totalDebits = data.debits.reduce(
-              (sum, debit: any) => sum + Number(debit.amount),
+              (sum: number, debit: any) => sum + Number(debit.amount),
               0,
             );
             const totalCredits = data.credits.reduce(
-              (sum, credit: any) => sum + Number(credit.amount),
+              (sum: number, credit: any) => sum + Number(credit.amount),
               0,
             );
 
@@ -463,7 +467,12 @@ class DatabaseConstraintsService {
    * @param {string} excludeId - ID to exclude from uniqueness check (for updates)
    * @returns {Object} - Comprehensive validation result
    */
-  static async validate(model, data, action, excludeId = null) {
+  static async validate(
+    model: string,
+    data: any,
+    action: string,
+    excludeId: any = null,
+  ) {
     const results = await Promise.all([
       this.validateUniqueConstraints(model, data, excludeId),
       this.validateForeignKeyConstraints(model, data),

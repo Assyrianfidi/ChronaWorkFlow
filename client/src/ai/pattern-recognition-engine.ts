@@ -67,6 +67,9 @@ export interface UserBehaviorEvent {
 
 export interface WorkflowPattern {
   id: string;
+  name: string;
+  description: string;
+  confidence: number;
   steps: Array<{
     action: string;
     target: string;
@@ -75,6 +78,7 @@ export interface WorkflowPattern {
     success: boolean;
   }>;
   frequency: number;
+  lastSeen: Date;
   averageDuration: number;
   errorRate: number;
   optimizationOpportunities: string[];
@@ -411,6 +415,9 @@ export class AIPatternRecognitionEngine {
           // Create new workflow
           const newWorkflow: WorkflowPattern = {
             id: workflowId,
+            name: `Workflow: ${workflowId}`,
+            description: "Detected user workflow pattern",
+            confidence: 0.5,
             steps: [
               {
                 action: event1.type,
@@ -435,6 +442,7 @@ export class AIPatternRecognitionEngine {
               },
             ],
             frequency: 1,
+            lastSeen: event3.timestamp,
             averageDuration: 0,
             errorRate: 0,
             optimizationOpportunities: [],

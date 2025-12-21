@@ -26,15 +26,12 @@ import {
 } from "../components/ui/Table";
 import {
   TrendingUp,
-  TrendingDown,
   DollarSign,
   FileText,
   Users,
   Calendar,
   Download,
-  Filter,
   BarChart3,
-  PieChart,
   Activity,
   Target,
   ArrowUpRight,
@@ -108,10 +105,12 @@ const ReportsPage: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
   const [selectedReport, setSelectedReport] = useState("overview");
   const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   // Mock fetch report data
   const fetchReportData = async () => {
     setIsLoading(true);
+    setLoadError(null);
     try {
       console.log("📊 Fetching report data...");
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -120,6 +119,7 @@ const ReportsPage: React.FC = () => {
       setTopCustomers(mockTopCustomers);
     } catch (error) {
       console.error("Failed to fetch report data:", error);
+      setLoadError("Unable to load reports. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -209,6 +209,15 @@ const ReportsPage: React.FC = () => {
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-enterprise-navy"></div>
         </div>
+      ) : loadError ? (
+        <div className="py-10 text-center space-y-3">
+          <div className="text-sm text-red-700">{loadError}</div>
+          <div>
+            <Button variant="outline" onClick={fetchReportData}>
+              Retry
+            </Button>
+          </div>
+        </div>
       ) : (
         <>
           {/* Key Metrics */}
@@ -296,7 +305,7 @@ const ReportsPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {monthlyData.map((data, index) => (
+                  {monthlyData.map((data) => (
                     <div key={data.month} className="flex items-center gap-4">
                       <div className="w-12 text-sm font-medium">
                         {data.month}
@@ -347,7 +356,7 @@ const ReportsPage: React.FC = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {topCustomers.map((customer, index) => (
+                    {topCustomers.map((customer) => (
                       <TableRow key={customer.name}>
                         <TableCell>
                           <div>

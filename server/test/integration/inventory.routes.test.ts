@@ -1,12 +1,9 @@
 import request from 'supertest';
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
-import { app } from '../../app';
-import { prisma } from '../../prisma';
 import { createTestUser, getAuthToken } from '../test-utils';
 
-// Mock the Prisma client
-vi.mock('../../prisma', () => ({
-  prisma: {
+const { mockPrisma } = vi.hoisted(() => {
+  const mockPrisma = {
     inventory: {
       findMany: vi.fn(),
       findUnique: vi.fn(),
@@ -21,9 +18,18 @@ vi.mock('../../prisma', () => ({
     },
     user: {
       findUnique: vi.fn(),
+      create: vi.fn(),
+      deleteMany: vi.fn(),
     },
-  },
-}));
+  };
+
+  return { mockPrisma };
+});
+
+vi.mock('../../prisma', () => ({ prisma: mockPrisma }));
+
+let app: any;
+let prisma: any;
 
 describe('Inventory Routes', () => {
   let authToken: string;
@@ -36,6 +42,12 @@ describe('Inventory Routes', () => {
   };
 
   beforeAll(async () => {
+    const prismaMod = await import('../../prisma');
+    prisma = prismaMod.prisma;
+
+    const appMod = await import('../../app');
+    app = appMod.app ?? appMod.default;
+
     // Create a test user and get auth token
     await createTestUser(testUser);
     authToken = await getAuthToken(testUser.email, testUser.password);
@@ -54,8 +66,8 @@ describe('Inventory Routes', () => {
         { id: '2', name: 'Item 2', quantity: 20, tenantId: testUser.tenantId },
       ];
 
-      (prisma.inventory.findMany as jest.Mock).mockResolvedValue(mockItems);
-      (prisma.inventory.count as jest.Mock).mockResolvedValue(2);
+      (prisma.inventory.findMany as any).mockResolvedValue(mockItems);
+      (prisma.inventory.count as any).mockResolvedValue(2);
 
       const response = await request(app)
         .get('/api/inventory')
@@ -95,7 +107,8 @@ describe('Inventory Routes', () => {
         updatedAt: new Date().toISOString(),
       };
 
-      (prisma.inventory.create as jest.Mock).mockResolvedValue(createdItem);
+      (prisma.inventory.create as any).mockResolvedValue(createdItem);
+      (prisma.inventoryHistory.create as any).mockResolvedValue({ id: 'hist-1' });
 
       const response = await request(app)
         .post('/api/inventory')

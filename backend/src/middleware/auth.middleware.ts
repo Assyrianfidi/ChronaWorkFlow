@@ -2,11 +2,16 @@
 const jwt = require("jsonwebtoken");
 const { PrismaClientSingleton } = require('../lib/prisma');
 import { ApiError } from "./error.middleware";
+import { Request, Response, NextFunction } from 'express';
+import { verifyToken } from '@/utils/jwt';
+import { User } from '@/models/User';
+import { AuditService } from '@/services/AuditService';
+import { v4 as uuidv4 } from 'uuid';
 
 const prisma = PrismaClientSingleton.getInstance();
 
 // Protect routes
-export const protect = async (req: any, res: any, next: any) => {
+export const protect = async (req: Request, res: Response, next: NextFunction) => {
   let token;
 
   if (
@@ -43,19 +48,30 @@ export const protect = async (req: any, res: any, next: any) => {
     });
 
     if (!user || !user.isActive) {
+      // Log failed authentication
+      const correlationId = uuidv4();
+      await AuditService.logEvent(null, 'LOGIN_FAILURE', { error: 'User no longer exists or is inactive', token }, correlationId);
       return next(new ApiError(401, "User no longer exists or is inactive"));
     }
 
     req.user = user;
+    
+    // Log successful authentication
+    const correlationId = uuidv4();
+    await AuditService.logEvent(user.id, 'LOGIN_SUCCESS', { method: req.method, path: req.path }, correlationId);
+    
     next();
   } catch (err) {
+    // Log failed authentication
+    const correlationId = uuidv4();
+    await AuditService.logEvent(null, 'LOGIN_FAILURE', { error: err.message, token }, correlationId);
     return next(new ApiError(401, "Not authorized to access this route"));
   }
 };
 
 // Grant access to specific roles
 export const authorize = (...roles: any) => {
-  return (req: any, res: any, next: any) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     if (!roles.includes(req.user.role)) {
       return next(
         new ApiError(

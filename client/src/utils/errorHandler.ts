@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-import { useToast } from "../hooks/useToast.js";
+import { useToast } from "../hooks/useToast";
 
 export class AppError extends Error {
   constructor(
@@ -121,7 +121,7 @@ export const handleSuccess = (
 };
 
 export const handleRuntimeError = (error: Error) => {
-  if (process.env.NODE_ENV === 'production') {
+  if (import.meta.env.PROD) {
     console.error('Application error:', error.message);
     // Send error to monitoring service
   } else {
@@ -129,7 +129,7 @@ export const handleRuntimeError = (error: Error) => {
   }
 };
 
-if (process.env.NODE_ENV === 'production') {
+if (import.meta.env.PROD) {
   window.onerror = (message, source, lineno, colno, error) => {
     handleRuntimeError(error || new Error(message.toString()));
   };

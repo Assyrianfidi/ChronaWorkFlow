@@ -10,7 +10,7 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from "axios";
-import { useAuthStore } from "../../store/auth-store.js";
+import { useAuthStore } from "@/store/auth-store";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "import.meta.env.VITE_APP_URL/api";
@@ -122,7 +122,7 @@ export const apiRequest = {
 // Helper to get the current company ID
 export function getCurrentCompanyId(): string {
   const { user } = useAuthStore.getState();
-  return user?.companyId || "";
+  return user?.currentCompanyId ? String(user.currentCompanyId) : "";
 }
 
 // Export the axios instance for direct use if needed

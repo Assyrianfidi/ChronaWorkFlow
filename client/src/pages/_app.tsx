@@ -1,6 +1,6 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import { SessionProvider } from "../components/providers/SessionProvider.js";
+import { SessionProvider } from "../components/providers/SessionProvider";
 
 export default function App({
   Component,

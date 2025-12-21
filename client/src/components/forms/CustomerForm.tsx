@@ -185,7 +185,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
         <Button
           type="submit"
           disabled={!isDirty || !isValid || isSubmitting}
-          loading={isSubmitting}
           aria-label={initialData ? "Update customer" : "Create customer"}
         >
           {isSubmitting

@@ -1,4 +1,5 @@
 import React from "react";
+import { LoadingState } from '@/components/ui/LoadingState';
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import {
   UIPerformanceEngine,
@@ -6,7 +7,7 @@ import {
   LazyLoad,
   PerformanceMonitor,
   withPerformanceTracking,
-} from "../UI-Performance-Engine.js";
+} from '../UI-Performance-Engine';
 
 // Mock the adaptive layout hook
 jest.mock("../AdaptiveLayoutEngine", () => ({
@@ -37,7 +38,7 @@ Object.defineProperty(window, "performance", {
 });
 
 // Mock requestAnimationFrame
-global.requestAnimationFrame = jest.fn((cb) => setTimeout(cb, 16));
+global.requestAnimationFrame = jest.fn(() => 1 as any);
 global.cancelAnimationFrame = jest.fn();
 
 describe("UIPerformanceEngine", () => {
@@ -52,16 +53,22 @@ describe("UIPerformanceEngine", () => {
   });
 
   it("applies low performance mode class when conditions are met", async () => {
-    // Mock low FPS
-    jest.spyOn(window, "performance", "get").mockImplementation(
-      () =>
-        ({
-          now: jest.fn(() => Date.now()),
-          memory: {
-            usedJSHeapSize: 150000000, // 150MB - high memory
-          },
-        }) as any,
-    );
+    Object.defineProperty(window.performance, "memory", {
+      value: {
+        usedJSHeapSize: 150000000, // 150MB - high memory
+      },
+      configurable: true,
+    });
+
+    const setIntervalSpy = jest
+      .spyOn(global, "setInterval")
+      .mockImplementation(((cb: any) => {
+        cb();
+        return 1 as any;
+      }) as any);
+    const clearIntervalSpy = jest
+      .spyOn(global, "clearInterval")
+      .mockImplementation((() => undefined) as any);
 
     render(
       <UIPerformanceEngine>
@@ -70,9 +77,11 @@ describe("UIPerformanceEngine", () => {
     );
 
     await waitFor(() => {
-      const container = screen.getByText("Test Content").parentElement;
-      expect(container).toHaveClass("low-performance-mode");
+      expect(document.body).toHaveClass("low-performance-mode");
     });
+
+    setIntervalSpy.mockRestore();
+    clearIntervalSpy.mockRestore();
   });
 });
 
@@ -116,12 +125,12 @@ describe("LazyLoad", () => {
     })) as any;
 
     render(
-      <LazyLoad fallback={<div>Loading...</div>}>
+      <LazyLoad fallback={<LoadingState size="sm" />}>
         <div>Loaded Content</div>
       </LazyLoad>,
     );
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(screen.getByText(/Loading/i)).toBeInTheDocument();
     expect(screen.queryByText("Loaded Content")).not.toBeInTheDocument();
   });
 
@@ -140,7 +149,7 @@ describe("LazyLoad", () => {
     );
 
     expect(screen.getByText("Loaded Content")).toBeInTheDocument();
-    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument();
   });
 
   it("uses custom fallback when provided", () => {
@@ -372,7 +381,8 @@ describe("AdaptiveImage", () => {
   it("shows loading placeholder initially", () => {
     render(<AdaptiveImage src="test.jpg" alt="Test Image" />);
 
-    expect(screen.getByText("Failed to load image")).toBeInTheDocument();
+    const img = screen.getByRole("img");
+    expect(img).toBeInTheDocument();
   });
 
   it("uses simple loading in low performance mode", () => {

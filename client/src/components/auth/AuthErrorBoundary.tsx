@@ -5,14 +5,14 @@ declare global {
 }
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { Button } from "../components/ui/button.js";
+import { Button } from '../components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card.js";
+} from '../components/ui/card';
 import { AlertTriangle } from "lucide-react";
 
 interface Props {

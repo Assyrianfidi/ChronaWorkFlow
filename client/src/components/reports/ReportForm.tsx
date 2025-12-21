@@ -3,7 +3,6 @@ import { type ReactElement } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/components/ui/button";
-import { Form } from "@/components/components/ui/form";
 import { Input } from "@/components/components/ui/input";
 import { Label } from "@/components/components/ui/label";
 import { CardContent, CardFooter } from "@/components/components/ui/card";
@@ -15,12 +14,12 @@ import {
 } from "@/components/components/ui/popover";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "@/components/lib/utils";
+import { cn } from "@/lib/utils";
 import {
   reportFormSchema,
   type ReportFormInput,
   type ReportFormData,
-} from "@/components/lib/validations/schemas";
+} from "@/lib/validations/schemas";
 import { Textarea } from "@/components/components/ui/textarea";
 
 interface ReportFormProps {
@@ -77,11 +76,10 @@ export function ReportForm({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
         <CardContent className="space-y-4">
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 p-3 rounded-md text-sm">
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive dark:text-destructive-500 p-3 rounded-md text-sm">
               {error}
             </div>
           )}
@@ -97,7 +95,7 @@ export function ReportForm({
               className={errors.title ? "border-destructive" : ""}
             />
             {errors.title && (
-              <p className="text-sm font-medium text-destructive">
+              <p className="text-sm font-medium text-destructive dark:text-destructive-500">
                 {errors.title.message}
               </p>
             )}
@@ -122,7 +120,7 @@ export function ReportForm({
                 />
               </div>
               {errors.amount && (
-                <p className="text-sm font-medium text-destructive">
+                <p className="text-sm font-medium text-destructive dark:text-destructive-500">
                   {errors.amount.message}
                 </p>
               )}
@@ -162,7 +160,7 @@ export function ReportForm({
                 </PopoverContent>
               </Popover>
               {errors.date && (
-                <p className="text-sm font-medium text-destructive">
+                <p className="text-sm font-medium text-destructive dark:text-destructive-500">
                   {errors.date.message}
                 </p>
               )}
@@ -174,7 +172,7 @@ export function ReportForm({
             <Label htmlFor="category">Category *</Label>
             <select
               id="category"
-              className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${errors.category ? "border-destructive" : ""}`}
+              className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60 ${errors.category ? "border-destructive" : ""}`}
               {...register("category")}
               disabled={isLoading}
             >
@@ -186,7 +184,7 @@ export function ReportForm({
               ))}
             </select>
             {errors.category && (
-              <p className="text-sm font-medium text-destructive">
+              <p className="text-sm font-medium text-destructive dark:text-destructive-500">
                 {errors.category.message}
               </p>
             )}
@@ -203,7 +201,7 @@ export function ReportForm({
               className={`min-h-[100px] ${errors.description ? "border-destructive" : ""}`}
             />
             {errors.description && (
-              <p className="text-sm font-medium text-destructive">
+              <p className="text-sm font-medium text-destructive dark:text-destructive-500">
                 {errors.description.message}
               </p>
             )}
@@ -231,6 +229,5 @@ export function ReportForm({
           </Button>
         </CardFooter>
       </form>
-    </Form>
   );
 }

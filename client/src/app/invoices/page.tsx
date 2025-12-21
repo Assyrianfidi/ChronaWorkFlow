@@ -1,18 +1,15 @@
-import React from "react";
-("use client");
+"use client";
 
-import { MainLayout } from "../components/layout/MainLayout.js";
-import {
-  EnterpriseDataTable,
-  type Column,
-} from "../components/ui/EnterpriseDataTable.js";
-import { EnterpriseButton } from "../components/ui/EnterpriseButton.js";
-import {
-  Card,
+import React from "react";
+
+import { MainLayout } from "@/components/layout/MainLayout";
+import EnterpriseDataTable, { type Column } from "@/components/ui/EnterpriseDataTable";
+import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
+import Card, {
   CardContent,
   CardHeader,
   CardTitle,
-} from "../components/ui/card.js";
+} from "@/components/ui/card";
 import {
   FileText,
   Plus,
@@ -132,7 +129,6 @@ export default function InvoicesPage() {
       title: "Invoice ID",
       sortable: true,
       filterable: true,
-      width: "120px",
       render: (value) => (
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4 text-gray-400" />
@@ -267,7 +263,7 @@ export default function InvoicesPage() {
               columns={invoiceColumns}
               searchable={true}
               exportable={true}
-              pagination={true}
+              paginated={true}
               onRowClick={(row) => handleViewDetails(row)}
               emptyMessage="No invoices found"
             />
@@ -403,18 +399,18 @@ export default function InvoicesPage() {
                   {/* Actions */}
                   <div className="flex gap-3 pt-4 border-t">
                     <EnterpriseButton
-                      variant="outline"
+                      variant="secondary"
                       icon={<Edit className="h-4 w-4" />}
                       onClick={() => handleEditInvoice(selectedInvoice)}
                     >
                       Edit
                     </EnterpriseButton>
                     <EnterpriseButton
-                      variant="outline"
+                      variant="secondary"
                       icon={<Download className="h-4 w-4" />}
                       onClick={() => handleExportPDF(selectedInvoice)}
                     >
-                      Export PDF
+                      Download
                     </EnterpriseButton>
                     <EnterpriseButton
                       variant="secondary"
@@ -480,12 +476,17 @@ export default function InvoicesPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Invoice Number
                       </label>
-                      <input
+
+        <label htmlFor="input-l2ulzdwgx" className="sr-only">
+          Text
+        </label>
+        <input id="input-l2ulzdwgx"
                         type="text"
                         placeholder="INV-XXX"
                         defaultValue={selectedInvoice?.id || ""}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                       />
+      
                     </div>
                   </div>
 
@@ -495,21 +496,31 @@ export default function InvoicesPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Issue Date
                       </label>
-                      <input
+
+        <label htmlFor="input-jbpweclu2" className="sr-only">
+          Date
+        </label>
+        <input id="input-jbpweclu2"
                         type="date"
                         defaultValue={selectedInvoice?.issueDate || ""}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                       />
+      
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Due Date
                       </label>
-                      <input
+
+        <label htmlFor="input-turo6d0mm" className="sr-only">
+          Date
+        </label>
+        <input id="input-turo6d0mm"
                         type="date"
                         defaultValue={selectedInvoice?.dueDate || ""}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                       />
+      
                     </div>
                   </div>
 
@@ -518,7 +529,7 @@ export default function InvoicesPage() {
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-semibold text-primary">Line Items</h3>
                       <EnterpriseButton
-                        variant="outline"
+                        variant="secondary"
                         size="sm"
                         icon={<Plus className="h-4 w-4" />}
                       >
@@ -533,31 +544,51 @@ export default function InvoicesPage() {
                         ]
                       ).map((item: any, index: number) => (
                         <div key={index} className="grid grid-cols-4 gap-2">
-                          <input
+                          
+        <label htmlFor="input-akdo88zpo" className="sr-only">
+          Text
+        </label>
+        <input id="input-akdo88zpo"
                             type="text"
                             placeholder="Description"
                             defaultValue={item.description}
                             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                           />
-                          <input
+      
+                          
+        <label htmlFor="input-esbgaotz3" className="sr-only">
+          Number
+        </label>
+        <input id="input-esbgaotz3"
                             type="number"
                             placeholder="Qty"
                             defaultValue={item.quantity}
                             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                           />
-                          <input
+      
+                          
+        <label htmlFor="input-c2fdiaeqa" className="sr-only">
+          Number
+        </label>
+        <input id="input-c2fdiaeqa"
                             type="number"
                             placeholder="Rate"
                             defaultValue={item.rate}
                             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                           />
-                          <input
+      
+                          
+        <label htmlFor="input-t5f2r7cg7" className="sr-only">
+          Number
+        </label>
+        <input id="input-t5f2r7cg7"
                             type="number"
                             placeholder="Total"
                             defaultValue={item.total}
                             readOnly
                             className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50"
                           />
+      
                         </div>
                       ))}
                     </div>
@@ -584,11 +615,10 @@ export default function InvoicesPage() {
                   {/* Actions */}
                   <div className="flex gap-3 pt-4 border-t">
                     <EnterpriseButton
-                      variant="outline"
+                      variant="secondary"
                       className="flex-1"
                       onClick={() => {
                         setShowAddModal(false);
-                        setSelectedInvoice(null);
                       }}
                     >
                       Cancel

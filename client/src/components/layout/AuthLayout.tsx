@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { cn } from "@/../../lib/utils";
+import { cn } from "@/lib/utils";
 import { AccuBooksLogo } from "@/components/ui/AccuBooksLogo";
 
 interface AuthLayoutProps {
@@ -15,38 +15,31 @@ const AuthLayout = React.forwardRef<HTMLDivElement, AuthLayoutProps>(
       <div
         ref={ref}
         className={cn(
-          "min-h-screen flex items-center justify-center bg-gradient-to-br from-ocean-blue via-blue-600 to-deep-navy py-12 px-4 sm:px-6 lg:px-8",
+          "min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8",
           className,
         )}
         {...props}
       >
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-black/10">
-          <div
-            className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-        </div>
+        <div className="absolute inset-0 bg-foreground/10" />
 
         {/* Main Content */}
         <div className="relative w-full max-w-md">
           {/* Logo */}
           <div className="flex justify-center mb-8">
-            <AccuBooksLogo variant="icon" className="w-16 h-16 text-white" />
+            <AccuBooksLogo variant="icon" className="w-16 h-16 text-primary" />
           </div>
 
           {/* Auth Card */}
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8">
+          <div className="bg-card/95 text-card-foreground backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-border">
             {/* Header */}
             <div className="text-center mb-8">
               {title && (
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-3xl font-bold text-foreground mb-2">
                   {title}
                 </h2>
               )}
-              {subtitle && <p className="text-gray-600">{subtitle}</p>}
+              {subtitle && <p className="text-muted-foreground">{subtitle}</p>}
             </div>
 
             {/* Form Content */}
@@ -55,7 +48,7 @@ const AuthLayout = React.forwardRef<HTMLDivElement, AuthLayoutProps>(
 
           {/* Footer */}
           <div className="text-center mt-8">
-            <p className="text-white/80 text-sm">
+            <p className="text-muted-foreground text-sm">
               © 2025 AccuBooks. All rights reserved.
             </p>
           </div>

@@ -4,7 +4,8 @@ import { lazy, Suspense } from "react";
 import { AuthProvider } from "../contexts/AuthContext";
 import { AccountsProvider } from "../contexts/AccountsContext";
 import { TransactionsProvider } from "../contexts/TransactionsContext";
-import { ProtectedRoute } from "../components/ProtectedRoute";
+import ProtectedRoute from "../components/ProtectedRoute";
+import { LoadingState } from "@/components/ui/LoadingState";
 
 // Lazy load pages for better performance
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
@@ -15,8 +16,8 @@ const TransactionsPage = lazy(() => import("../pages/TransactionsPage"));
 
 // Loading component
 const LoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="text-gray-500">Loading...</div>
+  <div className="min-h-screen">
+    <LoadingState label="Loading…" />
   </div>
 );
 

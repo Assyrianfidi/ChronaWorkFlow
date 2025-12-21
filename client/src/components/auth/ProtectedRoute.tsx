@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect, ReactNode } from "react";
 import { useRouter } from "next/router";
-import { useAuthStore } from "@/components/store/auth";
+import { useAuthStore } from "@/store/auth-store";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -12,13 +12,11 @@ export const ProtectedRoute = ({
   children,
   requiredRole = [],
 }: ProtectedRouteProps) => {
-  const { isAuthenticated, user, isLoading, checkAuth } = useAuthStore();
+  const { isAuthenticated, user, isLoading } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    const verifyAuth = async () => {
-      await checkAuth();
-
+    const verifyAuth = () => {
       if (!isAuthenticated && !isLoading) {
         // Redirect to login if not authenticated
         router.push("/login");
@@ -35,7 +33,7 @@ export const ProtectedRoute = ({
     };
 
     verifyAuth();
-  }, [isAuthenticated, isLoading, checkAuth, router, requiredRole, user?.role]);
+  }, [isAuthenticated, isLoading, router, requiredRole, user?.role]);
 
   if (isLoading || (!isAuthenticated && !isLoading)) {
     // Show loading indicator or null while checking auth

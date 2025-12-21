@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 /**
  * KPI Animation Engine
  * Advanced animation system for real-time KPI updates and transitions
@@ -68,9 +68,19 @@ export class KPIAnimationEngine {
     config?: Partial<KPIAnimationConfig>,
   ): Promise<void> {
     return new Promise((resolve) => {
-      const animationConfig: KPIAnimationConfig = {
+      const mergedConfig = {
         ...this.globalConfig,
         ...config,
+      };
+
+      const animationConfig: KPIAnimationConfig = {
+        duration: mergedConfig.duration ?? 2000,
+        easing: (mergedConfig.easing as KPIAnimationConfig["easing"]) ?? "ease-out",
+        delay: mergedConfig.delay,
+        stagger: mergedConfig.stagger,
+        loop: mergedConfig.loop,
+        direction: mergedConfig.direction,
+        autoStart: mergedConfig.autoStart,
       };
 
       const state: KPIAnimationState = {
@@ -282,7 +292,7 @@ export class KPIAnimationEngine {
       const progressPercent = Math.min((value / kpiValue.target) * 100, 100);
 
       if (progressBar) {
-        progressBar.style.width = `${progressPercent}%`;
+        (progressBar as HTMLElement).style.width = `${progressPercent}%`;
       }
 
       if (progressText) {

@@ -1,74 +1,28 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../components/ui/avatar.js";
-import { Button } from "../components/ui/button.js";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu.js";
-import { LogOut, User } from "lucide-react";
-import Link from "next/link";
+import Button from "../ui/button";
+import { useAuthStore } from "@/store/auth-store";
 
 export function UserMenu() {
-  const { data: session } = useSession();
+  const { isAuthenticated, user, logout } = useAuthStore();
 
-  if (!session?.user) {
+  if (!isAuthenticated || !user) {
     return (
-      <Button asChild variant="ghost">
-        <Link href="/auth/signin">Sign In</Link>
+      <Button
+        variant="ghost"
+        onClick={() => (window.location.href = "/auth/signin")}
+      >
+        Sign In
       </Button>
     );
   }
 
-  const user = session.user;
-  const userInitial = user.name?.[0] || user.email?.[0] || "U";
-
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user.image || ""} alt={user.name || "User"} />
-            <AvatarFallback>{userInitial.toUpperCase()}</AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {user.name || "User"}
-            </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
-            </p>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/account" className="w-full cursor-pointer">
-            <User className="mr-2 h-4 w-4" />
-            <span>Account</span>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
-          onClick={() => signOut({ callbackUrl: "/auth/signin" })}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Sign out</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center gap-2">
+      <span className="text-sm text-muted-foreground">{user.name}</span>
+      <Button variant="ghost" onClick={logout}>
+        Sign out
+      </Button>
+    </div>
   );
 }

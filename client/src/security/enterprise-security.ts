@@ -80,7 +80,7 @@ export interface SecurityAlert {
   description: string;
   timestamp: Date;
   affectedUsers: string[];
-  actions: Array<{
+  actions?: Array<{
     type:
       | "lock_account"
       | "force_logout"
@@ -93,6 +93,10 @@ export interface SecurityAlert {
     executedBy?: string;
   }>;
   status: "active" | "investigating" | "resolved" | "false_positive";
+
+  resolved?: boolean;
+  resolvedBy?: string;
+  resolvedAt?: Date;
 }
 
 export interface Permission {
@@ -733,9 +737,10 @@ export class EnterpriseSecurity {
     alert: Omit<SecurityAlert, "id" | "timestamp" | "status">,
   ): void {
     const securityAlert: SecurityAlert = {
-      id: this.generateAlertId(),
+      id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date(),
       status: "active",
+      actions: alert.actions ?? [],
       ...alert,
     };
 

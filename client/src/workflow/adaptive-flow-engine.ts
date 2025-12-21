@@ -449,7 +449,7 @@ export class AdaptiveFlowEngine {
       conditions: [],
       actions: [
         {
-          type: "validate",
+          type: "custom",
           target: "invoice",
           parameters: { businessRules: true, dataIntegrity: true },
           async: false,
@@ -616,7 +616,7 @@ export class AdaptiveFlowEngine {
     return step.conditions.every((condition) => {
       switch (condition.type) {
         case "user_role":
-          return this.evaluateCondition(condition.userRole, context.userRole);
+          return this.evaluateCondition(condition.value, context.userRole);
         case "data_state":
           return this.evaluateCondition(
             condition.value,

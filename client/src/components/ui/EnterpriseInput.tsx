@@ -1,7 +1,6 @@
-import React, { useState } from "react";
 import * as React from "react";
 import { Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
-import { cn } from "@/../../lib/utils";
+import { cn } from "@/lib/utils";
 
 export interface EnterpriseInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -53,7 +52,13 @@ const EnterpriseInput = React.forwardRef<
 
     // Password strength calculation
     const calculatePasswordStrength = (password: string) => {
-      if (!password) return { score: 0, label: "Weak", color: "bg-red-500" };
+      if (!password)
+        return {
+          score: 0,
+          label: "Weak",
+          barClassName: "bg-destructive",
+          labelClassName: "text-destructive dark:text-destructive-500",
+        };
 
       let score = 0;
       if (password.length >= 8) score++;
@@ -62,16 +67,46 @@ const EnterpriseInput = React.forwardRef<
       if (/[0-9]/.test(password)) score++;
       if (/[^A-Za-z0-9]/.test(password)) score++;
 
-      const strengthLevels = [
-        { score: 0, label: "Weak", color: "bg-red-500" },
-        { score: 1, label: "Weak", color: "bg-red-500" },
-        { score: 2, label: "Fair", color: "bg-orange-500" },
-        { score: 3, label: "Good", color: "bg-yellow-500" },
-        { score: 4, label: "Strong", color: "bg-green-500" },
-        { score: 5, label: "Very Strong", color: "bg-green-600" },
+      const strengthConfig = [
+        {
+          score: 0,
+          label: "Very Weak",
+          barClassName: "bg-destructive",
+          labelClassName: "text-destructive dark:text-destructive-500",
+        },
+        {
+          score: 1,
+          label: "Weak",
+          barClassName: "bg-destructive",
+          labelClassName: "text-destructive dark:text-destructive-500",
+        },
+        {
+          score: 2,
+          label: "Fair",
+          barClassName: "bg-warning",
+          labelClassName: "text-warning-700 dark:text-warning",
+        },
+        {
+          score: 3,
+          label: "Good",
+          barClassName: "bg-warning",
+          labelClassName: "text-warning-700 dark:text-warning",
+        },
+        {
+          score: 4,
+          label: "Strong",
+          barClassName: "bg-success",
+          labelClassName: "text-success-700 dark:text-success",
+        },
+        {
+          score: 5,
+          label: "Very Strong",
+          barClassName: "bg-success",
+          labelClassName: "text-success-700 dark:text-success",
+        },
       ];
 
-      return strengthLevels[score] || strengthLevels[0];
+      return strengthConfig[score] || strengthConfig[0];
     };
 
     const passwordStrength =
@@ -91,7 +126,9 @@ const EnterpriseInput = React.forwardRef<
           <label
             className={cn(
               "block text-sm font-medium mb-2 transition-colors",
-              error ? "text-red-600" : "text-gray-700",
+              error
+                ? "text-destructive dark:text-destructive-500"
+                : "text-foreground",
             )}
           >
             {label}
@@ -103,10 +140,10 @@ const EnterpriseInput = React.forwardRef<
           {floatingLabel && label && (
             <label
               className={cn(
-                "absolute left-3 transition-all duration-200 bg-white px-1 pointer-events-none z-10",
+                "absolute left-3 transition-all duration-200 bg-background px-1 pointer-events-none z-10",
                 showFloatingLabel
-                  ? "text-xs -top-2 text-blue-600"
-                  : "text-sm top-3 text-gray-500",
+                  ? "text-xs -top-2 text-primary"
+                  : "text-sm top-3 text-muted-foreground",
               )}
             >
               {label}
@@ -115,26 +152,31 @@ const EnterpriseInput = React.forwardRef<
 
           {/* Left Icon */}
           {icon && iconPosition === "left" && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
               {icon}
             </div>
           )}
 
           {/* Input */}
+
+          <label htmlFor="input-dts1club6" className="sr-only">
+            Field
+          </label>
           <input
+            id="input-dts1club6"
             type={inputType}
             className={cn(
-              "w-full px-3 py-2 border rounded-lg transition-all duration-200",
-              "placeholder:text-gray-400",
-              "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
-              "disabled:bg-gray-50 disabled:text-gray-500",
+              "w-full px-3 py-2 border rounded-lg bg-background text-foreground transition-shadow",
+              "placeholder:text-muted-foreground",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background",
+              "disabled:cursor-not-allowed disabled:opacity-60",
               icon && iconPosition === "left" && "pl-10",
               icon && iconPosition === "right" && "pr-10",
               showPasswordToggle && "pr-10",
               floatingLabel && "pt-3",
               error
-                ? "border-red-500 focus:ring-red-500"
-                : "border-gray-300 hover:border-gray-400",
+                ? "border-destructive focus-visible:ring-destructive/30"
+                : "border-input hover:border-border",
               loading && "opacity-60",
               className,
             )}
@@ -158,7 +200,7 @@ const EnterpriseInput = React.forwardRef<
 
           {/* Right Icon */}
           {icon && iconPosition === "right" && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
               {icon}
             </div>
           )}
@@ -168,7 +210,7 @@ const EnterpriseInput = React.forwardRef<
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
             >
               {showPassword ? (
                 <EyeOff className="w-4 h-4" />
@@ -181,19 +223,19 @@ const EnterpriseInput = React.forwardRef<
           {/* Loading State */}
           {loading && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
             </div>
           )}
 
           {/* Status Icons */}
           {!loading && error && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-destructive dark:text-destructive-500">
               <AlertCircle className="w-4 h-4" />
             </div>
           )}
 
           {!loading && !error && hasValue && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-success-700 dark:text-success">
               <CheckCircle className="w-4 h-4" />
             </div>
           )}
@@ -203,21 +245,23 @@ const EnterpriseInput = React.forwardRef<
         {strengthMeter && type === "password" && hasValue && (
           <div className="mt-2">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs text-gray-500">Password Strength</span>
+              <span className="text-xs text-muted-foreground">
+                Password Strength
+              </span>
               <span
                 className={cn(
                   "text-xs font-medium",
-                  passwordStrength?.color.replace("bg-", "text-"),
+                  passwordStrength?.labelClassName,
                 )}
               >
                 {passwordStrength?.label}
               </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-1.5">
+            <div className="w-full bg-muted/40 rounded-full h-1.5">
               <div
                 className={cn(
                   "h-1.5 rounded-full transition-all duration-300",
-                  passwordStrength?.color,
+                  passwordStrength?.barClassName,
                 )}
                 style={{ width: `${(passwordStrength?.score || 0) * 20}%` }}
               />
@@ -230,7 +274,9 @@ const EnterpriseInput = React.forwardRef<
           <p
             className={cn(
               "text-xs mt-1",
-              error ? "text-red-600" : "text-gray-500",
+              error
+                ? "text-destructive dark:text-destructive-500"
+                : "text-muted-foreground",
             )}
           >
             {error || helperText}

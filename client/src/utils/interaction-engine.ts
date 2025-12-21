@@ -312,7 +312,8 @@ export class InteractionEngine {
   private handleScroll(e: Event): void {
     // Smooth scroll acceleration
     const scrollY = window.scrollY;
-    const scrollSpeed = Math.abs(e.deltaY || 0);
+    const wheelEvent = e as WheelEvent;
+    const scrollSpeed = Math.abs(wheelEvent.deltaY || 0);
 
     if (scrollSpeed > 0) {
       // Apply smooth scroll physics
@@ -390,7 +391,7 @@ export class InteractionEngine {
   private removeFocusRing(element: HTMLElement): void {
     const focusRing = element.querySelector(".interaction-focus-ring");
     if (focusRing) {
-      this.physicsEngine.animate(focusRing, {
+      this.physicsEngine.animate(focusRing as HTMLElement, {
         scale: 1.2,
         opacity: 0,
         duration: 200,

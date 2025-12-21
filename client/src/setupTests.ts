@@ -5,8 +5,6 @@ import { cleanup } from "@testing-library/react";
 // Mock browser APIs
 declare global {
   interface Window {
-    ResizeObserver: typeof ResizeObserver;
-    IntersectionObserver: typeof IntersectionObserver;
     matchMedia: (query: string) => MediaQueryList;
   }
 }

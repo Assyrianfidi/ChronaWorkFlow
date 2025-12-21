@@ -10,7 +10,7 @@ import { useAccessibility } from "./AccessibilityContext";
 // Voice command interfaces
 interface VoiceCommand {
   id: string;
-  phrase: string;
+  phrase: string | string[];
   action: string;
   parameters?: Record<string, any>;
   description: string;
@@ -32,7 +32,7 @@ interface VoiceCommandEngineContextType {
 
   // Command Processing
   recognizedCommands: VoiceCommand[];
-  executeCommand: (command: VoiceCommand) => Promise<void>;
+  executeCommand: (command: VoiceCommand, transcript?: string) => Promise<void>;
   addCustomCommand: (command: VoiceCommand) => void;
   removeCustomCommand: (commandId: string) => void;
 
@@ -246,7 +246,7 @@ export const VoiceCommandEngine: React.FC<{ children: React.ReactNode }> = ({
       }
 
       if (matchedCommand) {
-        await executeCommand(matchedCommand);
+        await executeCommand(matchedCommand, transcript);
       } else {
         announceToScreenReader(
           'Command not found. Say "help" for available commands.',
@@ -262,7 +262,7 @@ export const VoiceCommandEngine: React.FC<{ children: React.ReactNode }> = ({
 
   // Execute voice command
   const executeCommand = useCallback(
-    async (command: VoiceCommand) => {
+    async (command: VoiceCommand, transcript?: string) => {
       try {
         announceToScreenReader(`Executing: ${command.description}`);
 
@@ -331,7 +331,7 @@ export const VoiceCommandEngine: React.FC<{ children: React.ReactNode }> = ({
             ) as HTMLInputElement;
             if (searchInput) {
               searchInput.focus();
-              const searchTerm = transcript
+              const searchTerm = (transcript || "")
                 .replace(/search for|find|look for/gi, "")
                 .trim();
               searchInput.value = searchTerm;

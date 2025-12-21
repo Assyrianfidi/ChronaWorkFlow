@@ -80,7 +80,7 @@ export const reportSchema = z.object({
   type: z.enum(["financial", "sales", "inventory", "payroll", "custom"]),
   startDate: baseSchemas.requiredString,
   endDate: baseSchemas.requiredString,
-  parameters: z.record(z.any()).optional(),
+  parameters: z.record(z.string(), z.any()).optional(),
 });
 
 // Settings validation schema

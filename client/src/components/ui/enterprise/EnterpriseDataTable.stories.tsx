@@ -1,16 +1,16 @@
 import React from "react";
 import type { ChangeEvent } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import type {
-  ColumnDef,
-  ColumnFiltersState,
-  RowSelectionState,
-  SortingState,
-} from "@tanstack/react-table";
 
 import { EnterpriseDataTable } from "./EnterpriseDataTable";
-import { Input } from "@/../../input";
-import { Button } from "@/../../button";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+
+type ColumnDef<TData, TValue> = any;
+type ColumnFiltersState = any;
+type RowSelectionState = Record<string, boolean>;
+type SortingState = any;
+type TableState = any;
 
 interface User {
   id: string;
@@ -64,24 +64,31 @@ export const FiltersAndSorting: Story = {
           enableColumnFilters
           state={{ sorting, columnFilters, globalFilter }}
           onStateChange={(next) => {
-            if (next.sorting !== undefined)
-              setSorting(next.sorting as SortingState);
-            if (next.columnFilters !== undefined)
-              setColumnFilters(next.columnFilters as ColumnFiltersState);
-            if (next.globalFilter !== undefined)
-              setGlobalFilter(next.globalFilter as string);
+            const current: TableState = {
+              sorting,
+              columnFilters,
+              globalFilter,
+            };
+            const resolved: TableState =
+              typeof next === "function" ? next(current) : (next as TableState);
+
+            if (resolved.sorting !== undefined)
+              setSorting(resolved.sorting as SortingState);
+            if (resolved.columnFilters !== undefined)
+              setColumnFilters(resolved.columnFilters as ColumnFiltersState);
+            if (resolved.globalFilter !== undefined)
+              setGlobalFilter(resolved.globalFilter as string);
           }}
-          renderToolbar={({}, table) => (
-            <div className="flex items-center justify-between gap-4 rounded-xl bg-surface2 px-4 py-3 border border-border-gray shadow-soft">
+          renderToolbar={({ table }) => (
+            <div className="flex items-center justify-between gap-4 rounded-xl bg-muted/40 px-4 py-3 border border-border shadow-soft">
               <div className="flex items-center gap-2 flex-1">
-                <span className="text-sm text-black/70">Search</span>
+                <span className="text-sm text-muted-foreground">Search</span>
                 <Input
                   value={globalFilter}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setGlobalFilter(e.target.value)
                   }
-                  placeholder="Search users..."
-                  className="max-w-xs"
+                  className="max-w-xs rounded-lg border border-border bg-background text-foreground"
                 />
               </div>
               <Button
@@ -91,6 +98,7 @@ export const FiltersAndSorting: Story = {
                   setColumnFilters([]);
                   setGlobalFilter("");
                 }}
+                className="bg-background border border-border text-foreground rounded-lg shadow-soft hover:bg-muted hover:shadow-elevated transition-shadow duration-200"
               >
                 Reset filters
               </Button>
@@ -112,11 +120,11 @@ export const PaginationExample: Story = {
     const renderPaginationControls = (rowCount: number) => {
       const totalPages = Math.max(1, Math.ceil(rowCount / pagination.pageSize));
       return (
-        <div className="flex items-center justify-between bg-surface2 p-4 rounded-lg shadow-soft gap-2 mb-4">
+        <div className="flex items-center justify-between bg-muted/40 p-4 rounded-lg shadow-soft gap-2 mb-4">
           <div className="flex items-center gap-2">
             <span>Page Size:</span>
             <select
-              className="rounded-lg border border-border-gray bg-surface1 text-black/70 p-1"
+              className="rounded-lg border border-border bg-background text-foreground p-1"
               value={pagination.pageSize}
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 setPagination({
@@ -141,7 +149,7 @@ export const PaginationExample: Story = {
                   pageIndex: Math.max(0, prev.pageIndex - 1),
                 }))
               }
-              className="bg-surface1 border border-border-gray text-black/70 rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200"
+              className="bg-background border border-border text-foreground rounded-lg shadow-soft hover:bg-muted hover:shadow-elevated transition-shadow duration-200"
             >
               Prev
             </Button>
@@ -156,7 +164,7 @@ export const PaginationExample: Story = {
                   pageIndex: Math.min(totalPages - 1, prev.pageIndex + 1),
                 }))
               }
-              className="bg-surface1 border border-border-gray text-black/70 rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200"
+              className="bg-background border border-border text-foreground rounded-lg shadow-soft hover:bg-muted hover:shadow-elevated transition-shadow duration-200"
             >
               Next
             </Button>
@@ -193,19 +201,19 @@ export const RowSelectionAndActions: Story = {
     const selectedCount = Object.values(selectedRows).filter(Boolean).length;
 
     const renderToolbar = () => (
-      <div className="flex items-center justify-between bg-surface2 p-4 rounded-lg shadow-soft gap-2 mb-4">
+      <div className="flex items-center justify-between bg-muted/40 p-4 rounded-lg shadow-soft gap-2 mb-4">
         <span>{selectedCount} selected</span>
         <div className="flex gap-2">
           <Button
             disabled={selectedCount === 0}
             onClick={() => console.log("Bulk delete:", selectedRows)}
-            className="bg-surface1 border border-border-gray text-black/70 rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200"
+            className="bg-destructive text-destructive-foreground rounded-lg shadow-soft hover:bg-destructive/90 hover:shadow-elevated transition-shadow duration-200 disabled:opacity-60"
           >
             Delete Selected
           </Button>
           <Button
             onClick={() => setSelectedRows({})}
-            className="bg-surface1 border border-border-gray text-black/70 rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200"
+            className="bg-background border border-border text-foreground rounded-lg shadow-soft hover:bg-muted hover:shadow-elevated transition-shadow duration-200"
           >
             Reset Selection
           </Button>
@@ -218,11 +226,20 @@ export const RowSelectionAndActions: Story = {
         id: "select",
         header: () => <span>Select</span>,
         cell: ({ row }) => (
-          <input
-            type="checkbox"
-            checked={!!selectedRows[row.original.id]}
-            onChange={() => onRowSelect(row.original.id)}
-          />
+          <>
+            <label
+              htmlFor={`row-select-${row.original.id}`}
+              className="sr-only"
+            >
+              Checkbox
+            </label>
+            <input
+              id={`row-select-${row.original.id}`}
+              type="checkbox"
+              checked={!!selectedRows[row.original.id]}
+              onChange={() => onRowSelect(row.original.id)}
+            />
+          </>
         ),
       },
       ...columns,
@@ -233,14 +250,14 @@ export const RowSelectionAndActions: Story = {
           <div className="flex gap-2">
             <Button
               size="sm"
-              className="bg-surface1 border border-border-gray text-black/70 rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200"
+              className="bg-background border border-border text-foreground rounded-lg shadow-soft hover:bg-muted hover:shadow-elevated transition-shadow duration-200"
               onClick={() => console.log("Edit row:", row.original.id)}
             >
               Edit
             </Button>
             <Button
               size="sm"
-              className="bg-surface1 border border-border-gray text-black/70 rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200"
+              className="bg-background border border-border text-foreground rounded-lg shadow-soft hover:bg-muted hover:shadow-elevated transition-shadow duration-200"
               onClick={() => console.log("Delete row:", row.original.id)}
             >
               Delete
@@ -282,26 +299,26 @@ export const FullFeatureDemo: Story = {
     };
 
     const renderToolbar = () => (
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-4 bg-surface2 p-4 rounded-lg shadow-soft">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4 bg-muted/40 p-4 rounded-lg shadow-soft">
         <Input
           placeholder="Search..."
           value={globalFilter}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setGlobalFilter(e.target.value)
           }
-          className="w-48 rounded-lg border border-border-gray bg-surface1 text-black/70"
+          className="w-48 rounded-lg border border-border bg-background text-foreground"
         />
         <div className="flex items-center gap-2">
           <Button
             onClick={() => setGlobalFilter("")}
-            className="bg-surface1 border border-border-gray text-black/70 rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200"
+            className="bg-background border border-border text-foreground rounded-lg shadow-soft hover:bg-muted hover:shadow-elevated transition-shadow duration-200"
           >
             Reset Filters
           </Button>
           <Button
             onClick={handleDeleteSelected}
             disabled={!Object.values(rowSelection).some(Boolean)}
-            className="bg-red-600 text-white rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200 disabled:opacity-50"
+            className="bg-destructive text-destructive-foreground rounded-lg shadow-soft hover:bg-destructive/90 hover:shadow-elevated transition-shadow duration-200 disabled:opacity-60"
           >
             Delete Selected
           </Button>
@@ -335,25 +352,37 @@ export const FullFeatureDemo: Story = {
             {
               id: "select",
               header: ({ table }) => (
-                <input
-                  type="checkbox"
-                  checked={table.getIsAllPageRowsSelected?.() ?? false}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    table.toggleAllPageRowsSelected?.(e.target.checked)
-                  }
-                />
+                <>
+                  <label htmlFor="select-all-page-rows" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="select-all-page-rows"
+                    type="checkbox"
+                    checked={table.getIsAllPageRowsSelected?.() ?? false}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      table.toggleAllPageRowsSelected?.(e.target.checked)
+                    }
+                  />
+                </>
               ),
               cell: ({ row }) => (
-                <input
-                  type="checkbox"
-                  checked={rowSelection[row.id] ?? false}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setRowSelection((prev) => ({
-                      ...prev,
-                      [row.id]: e.target.checked,
-                    }))
-                  }
-                />
+                <>
+                  <label htmlFor={`row-selection-${row.id}`} className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id={`row-selection-${row.id}`}
+                    type="checkbox"
+                    checked={rowSelection[row.id] ?? false}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setRowSelection((prev) => ({
+                        ...prev,
+                        [row.id]: e.target.checked,
+                      }))
+                    }
+                  />
+                </>
               ),
             },
             ...columns,
@@ -363,7 +392,7 @@ export const FullFeatureDemo: Story = {
               cell: ({ row }) => (
                 <Button
                   size="sm"
-                  className="bg-surface1 border border-border-gray text-black/70 rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200"
+                  className="bg-background border border-border text-foreground rounded-lg shadow-soft hover:bg-muted hover:shadow-elevated transition-shadow duration-200"
                   onClick={() => alert(`Row action: ${row.original.name}`)}
                 >
                   Action
@@ -372,18 +401,12 @@ export const FullFeatureDemo: Story = {
             },
           ]}
           data={paginatedData}
-          state={{ rowSelection }}
-          onStateChange={(next) => {
-            if (next.rowSelection) {
-              setRowSelection(next.rowSelection as RowSelectionState);
-            }
-          }}
         />
-        <div className="flex items-center justify-between bg-surface2 p-4 rounded-lg shadow-soft gap-2 mt-4">
+        <div className="flex items-center justify-between bg-muted/40 p-4 rounded-lg shadow-soft gap-2 mt-4">
           <div className="flex items-center gap-2">
             <span>Page Size:</span>
             <select
-              className="rounded-lg border border-border-gray bg-surface1 text-black/70 p-1"
+              className="rounded-lg border border-border bg-background text-foreground p-1"
               value={pagination.pageSize}
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 setPagination({
@@ -408,7 +431,7 @@ export const FullFeatureDemo: Story = {
                   pageIndex: Math.max(0, prev.pageIndex - 1),
                 }))
               }
-              className="bg-surface1 border border-border-gray text-black/70 rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200"
+              className="bg-background border border-border text-foreground rounded-lg shadow-soft hover:bg-muted hover:shadow-elevated transition-shadow duration-200"
             >
               Prev
             </Button>
@@ -423,7 +446,7 @@ export const FullFeatureDemo: Story = {
                   pageIndex: Math.min(totalPages - 1, prev.pageIndex + 1),
                 }))
               }
-              className="bg-surface1 border border-border-gray text-black/70 rounded-lg shadow-soft hover:shadow-elevated transition-shadow duration-200"
+              className="bg-background border border-border text-foreground rounded-lg shadow-soft hover:bg-muted hover:shadow-elevated transition-shadow duration-200"
             >
               Next
             </Button>

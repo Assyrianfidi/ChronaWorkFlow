@@ -1,6 +1,6 @@
-import { Report, ReportFormData, ReportListResponse } from "../types/report.js";
-import api from "../lib/api.js";
-import { QueryParams } from "../types/common.js";
+import { Report, ReportFormData, ReportListResponse } from "@/types/report";
+import api from "@/lib/api";
+import { QueryParams } from "@/types/common";
 
 const REPORT_ENDPOINT = "/reports";
 

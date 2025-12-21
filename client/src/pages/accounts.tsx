@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState } from "react";
 import {
   EnterpriseButton,
   EnterpriseDataTable,
@@ -6,23 +6,22 @@ import {
 } from "@/components/components/ui";
 import {
   Plus,
-  Search,
-  Filter,
   Download,
-  Edit,
-  Trash2,
-  Eye,
-  Calculator,
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
   ArrowUpRight,
   ArrowDownRight,
+  Calculator,
+  DollarSign,
+  Eye,
+  Edit,
+  Trash2,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react";
-import { useAccounts } from "@/components/hooks/use-api";
-import { cn } from "@/components/lib/utils";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { useAccounts } from "@/hooks/use-api";
+import { cn } from "@/lib/utils";
 import { DashboardShell } from "@/components/components/ui/layout/DashboardShell";
-import type { Account, AccountType } from "@/components/types/accounts";
+import type { Account, AccountType } from "@/types/accounts";
 
 // Mock data for demonstration
 const mockAccounts: Account[] = [
@@ -94,9 +93,8 @@ const mockAccounts: Account[] = [
 ];
 
 export default function Accounts() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [, setSearchQuery] = useState("");
   const [selectedAccounts, setSelectedAccounts] = useState<Account[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
   const { data: accounts = mockAccounts, isLoading } =
     useAccounts("default-company-id");
 
@@ -264,15 +262,13 @@ export default function Accounts() {
     {
       label: "Export Selected",
       icon: <Download className="w-4 h-4" />,
-      onClick: (selectedAccounts: Account[]) =>
-        console.log("Export accounts:", selectedAccounts),
+      onClick: () => console.log("Export accounts:", selectedAccounts),
       variant: "secondary" as const,
     },
     {
       label: "Delete Selected",
       icon: <Trash2 className="w-4 h-4" />,
-      onClick: (selectedAccounts: Account[]) =>
-        console.log("Delete accounts:", selectedAccounts),
+      onClick: () => console.log("Delete accounts:", selectedAccounts),
       variant: "danger" as const,
     },
   ];
@@ -358,21 +354,19 @@ export default function Accounts() {
           onSearch={setSearchQuery}
           className="shadow-soft bg-surface1 rounded-xl"
           emptyState={
-            <div className="text-center py-12 bg-surface1 rounded-xl border border-border-gray">
-              <Calculator className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-default mb-2">
-                No accounts found
-              </h3>
-              <p className="text-muted mb-4">
-                Get started by creating your first account
-              </p>
-              <EnterpriseButton
-                variant="primary"
-                icon={<Plus className="w-4 h-4" />}
-              >
-                Create Account
-              </EnterpriseButton>
-            </div>
+            <EmptyState
+              title="No accounts found"
+              description="Get started by creating your first account"
+              icon={<Calculator className="h-5 w-5" />}
+              action={
+                <EnterpriseButton
+                  variant="primary"
+                  icon={<Plus className="w-4 h-4" />}
+                >
+                  Create Account
+                </EnterpriseButton>
+              }
+            />
           }
         />
       </div>

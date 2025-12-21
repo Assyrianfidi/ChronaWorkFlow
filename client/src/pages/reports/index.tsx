@@ -5,11 +5,9 @@ declare global {
 }
 
 import React from "react";
-import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "../store/auth-store.js";
-import { apiRequest } from "../lib/api.js";
-import { Button } from "../components/ui/button.js";
+import { apiRequest } from "@/lib/api";
+import Button from "@/components/ui/Button";
 import {
   Table,
   TableBody,
@@ -17,18 +15,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../components/ui/table.js";
+} from "@/components/ui/Table";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
-  Card,
+  default as Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card.js";
+} from "@/components/ui/Card";
 import { Plus, Pencil, Trash2, Download } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "../lib/utils.js";
-import { DashboardShell } from "../components/ui/layout/DashboardShell.js";
+import { cn } from "@/lib/utils";
+import { DashboardShell } from "@/components/ui/layout/DashboardShell";
 
 type Report = {
   id: number;
@@ -40,9 +39,7 @@ type Report = {
 };
 
 export default function ReportsPage() {
-  const { user } = useAuthStore();
   const queryClient = useQueryClient();
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   // Format currency helper
   const formatCurrency = (amount: number) => {
@@ -110,7 +107,7 @@ export default function ReportsPage() {
               View and manage your financial reports
             </p>
           </div>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Button onClick={() => {}}>
             <Plus className="mr-2 h-4 w-4" />
             New Report
           </Button>
@@ -147,8 +144,8 @@ export default function ReportsPage() {
                           className={cn(
                             "font-medium",
                             report.amount < 0
-                              ? "text-destructive"
-                              : "text-success",
+                              ? "text-destructive dark:text-destructive-500"
+                              : "text-success-700 dark:text-success",
                           )}
                         >
                           {formatCurrency(report.amount)}
@@ -179,11 +176,8 @@ export default function ReportsPage() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell
-                        colSpan={5}
-                        className="h-24 text-center text-muted"
-                      >
-                        No reports found
+                      <TableCell colSpan={5} className="px-4">
+                        <EmptyState size="sm" title="No reports found" />
                       </TableCell>
                     </TableRow>
                   )}

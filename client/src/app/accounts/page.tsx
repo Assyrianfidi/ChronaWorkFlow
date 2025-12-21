@@ -1,19 +1,20 @@
-import React from "react";
-("use client");
+"use client";
 
-import { MainLayout } from "../components/layout/MainLayout.js";
+import React from "react";
+
+import { MainLayout } from "@/components/layout/MainLayout";
 import {
   EnterpriseDataTable,
   type Column,
-} from "../components/ui/EnterpriseDataTable.js";
-import { EnterpriseButton } from "../components/ui/EnterpriseButton.js";
-import { EnterpriseInput } from "../components/ui/EnterpriseInput.js";
+} from "@/components/ui/EnterpriseDataTable";
+import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
+import { EnterpriseInput } from "@/components/ui/EnterpriseInput";
 import {
-  Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "../components/ui/card.js";
+} from "@/components/ui/Card";
+import Card from "@/components/ui/Card";
 import { Building2, Plus, Trash2, Edit, Eye } from "lucide-react";
 import { useState } from "react";
 
@@ -268,7 +269,7 @@ export default function AccountsPage() {
               columns={accountColumns}
               searchable={true}
               exportable={true}
-              pagination={true}
+              paginated={true}
               onRowClick={(row) => handleEditAccount(row)}
               emptyMessage="No accounts found matching your criteria"
             />
@@ -328,7 +329,7 @@ export default function AccountsPage() {
 
                 <div className="flex gap-3 mt-6">
                   <EnterpriseButton
-                    variant="outline"
+                    variant="secondary"
                     className="flex-1"
                     onClick={() => {
                       setShowAddModal(false);

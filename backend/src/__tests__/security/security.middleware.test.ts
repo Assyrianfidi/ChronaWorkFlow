@@ -31,6 +31,14 @@ describe("Security Middleware", () => {
     );
     app.post("/api/v1/accounts", (req, res) => res.json({ success: true }));
     app.post("/api/v1/transactions", (req, res) => res.json({ success: true }));
+
+    app.use((err: any, _req: any, res: any, _next: any) => {
+      const status =
+        err?.statusCode ??
+        err?.status ??
+        (err?.type === "entity.too.large" ? 413 : 500);
+      res.status(status).json({ message: err?.message ?? String(err) });
+    });
   });
 
   describe("Rate Limiting", () => {

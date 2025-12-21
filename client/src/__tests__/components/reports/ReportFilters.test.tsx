@@ -2,8 +2,8 @@ import {
   renderWithProviders as render,
   screen,
   waitFor,
-} from "../../test-utils.js";
-import { ReportFilters } from "../components/reports/ReportFilters.js";
+} from '../../test-utils';
+import { ReportFilters } from '../components/reports/ReportFilters';
 import userEvent from "@testing-library/user-event";
 
 describe("ReportFilters", () => {

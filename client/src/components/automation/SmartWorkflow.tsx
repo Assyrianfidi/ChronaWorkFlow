@@ -425,7 +425,7 @@ export const SmartWorkflow: React.FC<{
       };
 
       try {
-        const maybePromise = onWorkflowChange(newWorkflow as any);
+        const maybePromise: unknown = onWorkflowChange(newWorkflow as any);
 
         // Support both sync and async handlers. If the handler returns a Promise and it
         // rejects, keep the template library open so the user can correct the issue.
@@ -575,10 +575,15 @@ export const SmartWorkflow: React.FC<{
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Name</label>
-            <input
+            
+        <label htmlFor="input-ul4vvtyzp" className="sr-only">
+          Text
+        </label>
+        <input id="input-ul4vvtyzp"
               type="text"
               value={step.name}
               onChange={(e) =>
+      
                 handleStepUpdate(selectedStep, { name: e.target.value })
               }
               className="w-full p-2 border rounded"
@@ -625,10 +630,15 @@ export const SmartWorkflow: React.FC<{
             <div>
               <label className="block text-sm font-medium mb-1">
                 Assignee
-                <input
+                
+        <label htmlFor="input-4o421hh7q" className="sr-only">
+          Text
+        </label>
+        <input id="input-4o421hh7q"
                   type="text"
                   value={step.config.assignee || ""}
                   onChange={(e) =>
+      
                     handleStepUpdate(selectedStep, {
                       config: { ...step.config, assignee: e.target.value },
                     })
@@ -645,10 +655,15 @@ export const SmartWorkflow: React.FC<{
             <div>
               <label className="block text-sm font-medium mb-1">
                 Delay (minutes)
-                <input
+                
+        <label htmlFor="input-zj5ozgl89" className="sr-only">
+          Number
+        </label>
+        <input id="input-zj5ozgl89"
                   type="number"
                   value={step.config.delay || 0}
                   onChange={(e) =>
+      
                     handleStepUpdate(selectedStep, {
                       config: {
                         ...step.config,
@@ -671,10 +686,15 @@ export const SmartWorkflow: React.FC<{
               <div className="space-y-2">
                 {step.config.conditions?.map((condition, index) => (
                   <div key={index} className="flex gap-2">
-                    <input
+                    
+        <label htmlFor="input-9npikpu9z" className="sr-only">
+          Text
+        </label>
+        <input id="input-9npikpu9z"
                       type="text"
                       value={condition.field || ""}
-                      onChange={(e) => {
+                      onChange={(e) =>
+       {
                         const newConditions = [
                           ...(step.config.conditions || []),
                         ];
@@ -690,10 +710,15 @@ export const SmartWorkflow: React.FC<{
                       placeholder="Field"
                       disabled={readOnly}
                     />
-                    <input
+                    
+        <label htmlFor="input-agrvf8qtp" className="sr-only">
+          Text
+        </label>
+        <input id="input-agrvf8qtp"
                       type="text"
                       value={condition.value || ""}
-                      onChange={(e) => {
+                      onChange={(e) =>
+       {
                         const newConditions = [
                           ...(step.config.conditions || []),
                         ];

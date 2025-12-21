@@ -1,4 +1,4 @@
-import { ReportFormValues } from "../types/reportForm.js";
+import { ReportFormValues } from "@/types/reportForm";
 
 const API_BASE_URL = "/api/reports";
 

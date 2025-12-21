@@ -1,7 +1,12 @@
 import React from "react";
 import { useState, useCallback, useMemo } from "react";
 import { useAccounts } from "./use-api";
-import type { Account, AccountWithChildren } from "@/components/types/accounts";
+import type { Account } from "@/hooks/use-api";
+
+type AccountWithChildren = Account & {
+  children?: AccountWithChildren[];
+  isExpanded?: boolean;
+};
 
 interface UseAccountsTableProps {
   companyId?: string;

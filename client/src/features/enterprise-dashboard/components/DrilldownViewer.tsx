@@ -1,6 +1,6 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Button from "@/components/ui/button";
 import { ArrowLeft, Download, RefreshCw, Filter } from "lucide-react";
 import {
   LineChart,
@@ -17,7 +17,7 @@ import {
 
 interface DrilldownViewerProps {
   kpiId: string;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 // Mock data - in a real app, this would be fetched based on kpiId
@@ -62,22 +62,10 @@ export const DrilldownViewer: React.FC<DrilldownViewerProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          onClick={onBack}
-          className="text-blue-600 hover:bg-blue-50"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Dashboard
-        </Button>
         <div className="flex space-x-2">
           <Button variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
-          </Button>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export
           </Button>
         </div>
       </div>

@@ -86,7 +86,7 @@ export const login = async (
       userId: user.id,
       email: user.email,
       ip: req.ip,
-      userAgent: req.get("User-Agent"),
+      userAgent: req.get?.("User-Agent"),
       success: true,
       details: {
         loginMethod: "password",
@@ -128,7 +128,7 @@ export const login = async (
       userId: null,
       email: req.body?.email,
       ip: req.ip,
-      userAgent: req.get("User-Agent"),
+      userAgent: req.get?.("User-Agent"),
       success: false,
       details: {
         reason: (error as Error).message || "Invalid credentials",
@@ -181,7 +181,7 @@ export const register = async (
       userId: user.id,
       email: user.email,
       ip: req.ip,
-      userAgent: req.get("User-Agent"),
+      userAgent: req.get?.("User-Agent"),
       success: true,
       details: {
         role: user.role,
@@ -223,7 +223,7 @@ export const register = async (
       userId: null,
       email: req.body?.email,
       ip: req.ip,
-      userAgent: req.get("User-Agent"),
+      userAgent: req.get?.("User-Agent"),
       success: false,
       details: {
         reason: (error as Error).message || "Registration failed",
@@ -266,7 +266,11 @@ export const refreshToken = async (
       await RefreshTokenService.verifyRefreshToken(newRefreshToken);
 
     // Generate new access token
-    const tokens = generateAccessToken(user);
+    const tokens = await Promise.resolve(
+      (authService as any).generateAccessToken
+        ? (authService as any).generateAccessToken(user)
+        : generateAccessToken(user),
+    );
 
     // Set new refresh token as HTTP-only cookie
     setRefreshTokenCookie(res, newRefreshToken);
@@ -345,7 +349,7 @@ export const changePassword = async (
       userId: req.user.id,
       email: req.user.email || null,
       ip: req.ip,
-      userAgent: req.get("User-Agent"),
+      userAgent: req.get?.("User-Agent"),
       success: true,
       details: {
         timestamp: new Date(),
@@ -357,12 +361,14 @@ export const changePassword = async (
     res.status(StatusCodes.NO_CONTENT).send();
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new ApiError(
-        "Validation failed",
-        StatusCodes.BAD_REQUEST,
-        ErrorCodes.VALIDATION_ERROR,
-        true,
-        error.issues,
+      return next(
+        new ApiError(
+          "Validation failed",
+          StatusCodes.BAD_REQUEST,
+          ErrorCodes.VALIDATION_ERROR,
+          true,
+          error.issues,
+        ),
       );
     }
 
@@ -372,7 +378,7 @@ export const changePassword = async (
       userId: req.user?.id,
       email: req.user?.email || null,
       ip: req.ip,
-      userAgent: req.get("User-Agent"),
+      userAgent: req.get?.("User-Agent"),
       success: false,
       details: {
         reason: (error as Error).message || "Password change failed",
@@ -463,6 +469,15 @@ export const logout = async (
       );
     }
 
+    const token = (req as any).cookies?.refreshToken;
+    if (token) {
+      try {
+        await RefreshTokenService.invalidateRefreshToken(token);
+      } catch {
+        // Ignore token invalidation failures during logout
+      }
+    }
+
     // Clear refresh token cookie
     res.clearCookie("refreshToken", {
       httpOnly: true,
@@ -471,16 +486,46 @@ export const logout = async (
       path: "/",
     });
 
-    logger.info(`User logged out - User ID: ${req.user.id} from IP: ${req.ip}`);
+    logger.info(`User logged out from IP: ${req.ip}`);
 
-    res.status(StatusCodes.OK).json({
-      success: true,
-      message: "Logged out successfully",
-    });
+    res.status(StatusCodes.NO_CONTENT).send();
   } catch (error) {
     logger.error(
       `Logout failed for user ID: ${req.user?.id} from IP: ${req.ip}`,
     );
+    next(error);
+  }
+};
+
+export const logoutAll = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.user) {
+      throw new ApiError(
+        "Not authenticated",
+        StatusCodes.UNAUTHORIZED,
+        ErrorCodes.UNAUTHORIZED,
+      );
+    }
+
+    await RefreshTokenService.invalidateUserRefreshTokens(req.user.id);
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+    });
+
+    logger.info(
+      `User logged out from all sessions - User ID: ${req.user.id} from IP: ${req.ip}`,
+    );
+
+    res.status(StatusCodes.NO_CONTENT).send();
+  } catch (error) {
     next(error);
   }
 };

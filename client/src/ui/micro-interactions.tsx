@@ -24,8 +24,8 @@ import {
   useTransform,
   useAnimation,
 } from "framer-motion";
-import { useSuperAccessibility } from "@/components/accessibility/super-accessibility";
-import { useGPUAcceleration } from "@/components/performance/gpu-acceleration";
+import { useSuperAccessibility } from "@/accessibility/super-accessibility";
+import { useGPUAcceleration } from "@/performance/gpu-acceleration";
 
 // Micro-Interaction Types
 export type MicroInteractionType =
@@ -123,7 +123,7 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
   onAnimationComplete,
   config = {},
 }) => {
-  const { getMotionPreference } = useSuperAccessibility();
+  const { profile } = useSuperAccessibility();
   const { createAnimation } = useGPUAcceleration();
   const [isAnimating, setIsAnimating] = useState(false);
   const controls = useAnimation();
@@ -141,10 +141,17 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
     [animation, config],
   );
 
-  const motionPreference = useMemo(
-    () => getMotionPreference(),
-    [getMotionPreference],
-  );
+  const motionPreference = useMemo(() => {
+    const fromProfile =
+      profile?.preferences?.visualEnhancements?.motionReduction ?? false;
+
+    const fromMedia =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    return fromProfile || fromMedia ? "reduced" : "full";
+  }, [profile]);
 
   const getAnimationVariants = useCallback(() => {
     const variants: Record<AnimationPreset, any> = {
@@ -153,7 +160,8 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         animate: { scale: [1, 1.1, 0.9, 1] },
         transition: {
           duration: animationConfig.duration,
-          times: [0, 0.3, 0.6, 1],
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
         },
       },
       pulse: {
@@ -161,61 +169,99 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         animate: { scale: [1, 1.05, 1] },
         transition: {
           duration: animationConfig.duration,
-          repeat:
-            animationConfig.repeat === "infinite"
-              ? Infinity
-              : animationConfig.repeat,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+        },
+      },
+      fade: {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        transition: {
+          duration: animationConfig.duration,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+        },
+      },
+      scale: {
+        initial: { scale: 0.98 },
+        animate: { scale: 1 },
+        transition: {
+          duration: animationConfig.duration,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
         },
       },
       slide: {
         initial: { x: 0 },
-        animate: { x: [0, 10, -10, 0] },
-        transition: { duration: animationConfig.duration },
-      },
-      fade: {
-        initial: { opacity: 1 },
-        animate: { opacity: [1, 0.5, 1] },
-        transition: { duration: animationConfig.duration },
-      },
-      scale: {
-        initial: { scale: 1 },
-        animate: { scale: [1, 1.2, 1] },
-        transition: { duration: animationConfig.duration },
+        animate: { x: [0, 6, 0] },
+        transition: {
+          duration: animationConfig.duration,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+        },
       },
       rotate: {
         initial: { rotate: 0 },
-        animate: { rotate: 360 },
-        transition: { duration: animationConfig.duration },
+        animate: { rotate: [0, 5, -5, 0] },
+        transition: {
+          duration: animationConfig.duration,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+        },
       },
       flip: {
         initial: { rotateY: 0 },
-        animate: { rotateY: 360 },
-        transition: { duration: animationConfig.duration },
+        animate: { rotateY: [0, 180, 0] },
+        transition: {
+          duration: animationConfig.duration,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+        },
       },
       shake: {
         initial: { x: 0 },
-        animate: { x: [0, -5, 5, -5, 5, 0] },
-        transition: { duration: animationConfig.duration },
+        animate: { x: [0, -4, 4, -4, 4, 0] },
+        transition: {
+          duration: animationConfig.duration,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+        },
       },
       wiggle: {
         initial: { rotate: 0 },
-        animate: { rotate: [-3, 3, -3, 3, 0] },
-        transition: { duration: animationConfig.duration },
+        animate: { rotate: [0, 2, -2, 2, -2, 0] },
+        transition: {
+          duration: animationConfig.duration,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+        },
       },
       glow: {
-        initial: { boxShadow: "0 0 0 rgba(59, 130, 246, 0)" },
-        animate: { boxShadow: "0 0 20px rgba(59, 130, 246, 0.5)" },
-        transition: { duration: animationConfig.duration },
+        initial: { filter: "drop-shadow(0 0 0 rgba(0,0,0,0))" },
+        animate: { filter: ["drop-shadow(0 0 0 rgba(0,0,0,0))", "drop-shadow(0 0 10px rgba(99,102,241,0.6))", "drop-shadow(0 0 0 rgba(0,0,0,0))"] },
+        transition: {
+          duration: animationConfig.duration,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+        },
       },
       ripple: {
-        initial: { scale: 0, opacity: 1 },
-        animate: { scale: 2, opacity: 0 },
-        transition: { duration: animationConfig.duration },
+        initial: { scale: 1 },
+        animate: { scale: [1, 1.02, 1] },
+        transition: {
+          duration: animationConfig.duration,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+        },
       },
       morph: {
-        initial: { borderRadius: "8px" },
-        animate: { borderRadius: ["8px", "50%", "8px"] },
-        transition: { duration: animationConfig.duration },
+        initial: { borderRadius: "12px" },
+        animate: { borderRadius: ["12px", "9999px", "12px"] },
+        transition: {
+          duration: animationConfig.duration,
+          ease: animationConfig.easing,
+          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+        },
       },
     };
 

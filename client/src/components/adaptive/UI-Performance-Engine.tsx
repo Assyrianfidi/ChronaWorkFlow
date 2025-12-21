@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useAdaptiveLayout } from "./AdaptiveLayoutEngine";
 import { useUserExperienceMode } from "./UserExperienceMode";
+import { cn } from "@/lib/utils";
 
 // Performance monitoring types
 interface PerformanceMetrics {
@@ -84,7 +85,7 @@ export function UIPerformanceEngine({
   const frameCountRef = useRef(0);
   const lastFrameTimeRef = useRef(performance.now());
   const animationFrameRef = useRef<number>();
-  const observersRef = useRef<Map<string, IntersectionObserver>>(new Map());
+  const observersRef = useRef<Map<string, PerformanceObserver>>(new Map());
 
   // FPS monitoring
   const measureFPS = useCallback(() => {

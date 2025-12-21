@@ -7,9 +7,9 @@ declare global {
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import AdminDashboardClient from "../AdminDashboardClient.js";
+import AdminDashboardClient from '../AdminDashboardClient';
 import userEvent from "@testing-library/user-event";
-import { User } from "../types/user.js";
+import { User } from '../types/user';
 
 // Mock fetch
 const mockFetch = vi.fn();

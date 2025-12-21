@@ -144,11 +144,6 @@ export class MotionV3Engine {
     };
 
     window.addEventListener("mousemove", handleMouseMove);
-
-    // Clean up on unmount
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
   }
 
   // Quantum-curve path generation
@@ -315,7 +310,7 @@ export class MotionV3Engine {
   }
 
   // Parallax element registration
-  registerParallaxElement(element: HTMLElement, depth: number): void {
+  registerParallaxElement(element: HTMLElement, depth: number): () => void {
     const id = `parallax-${Date.now()}-${Math.random()}`;
     element.dataset.depth = depth.toString();
     this.parallaxElements.set(id, element);

@@ -74,7 +74,7 @@ const SidebarNavigation: React.FC = () => {
         ))}
 
         {/* Role-specific dashboards */}
-        {user?.role && user.role !== "User" && (
+        {user?.role && (
           <div className="mb-6">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
               Role Dashboards

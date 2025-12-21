@@ -3,11 +3,11 @@
  * Fully intelligent analytics cockpit with real-time KPIs, heatmaps, and predictive insights
  */
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAdaptiveUI } from "@/../../state/ui/UserExperienceMode";
-import { useAdvancedFeedback } from "@/../../hooks/useInteractiveFeedback";
-import { generateGlassmorphismCSS } from "@/../../design-system/glassmorphism";
+import { useAdaptiveUI } from "@/state/ui/UserExperienceMode";
+import { useAdvancedFeedback } from "@/hooks/useInteractiveFeedback";
+import { useGlassmorphismV3 } from "@/design-system/glassmorphism-v3";
 
 // Types
 interface KPIData {
@@ -243,12 +243,14 @@ interface AnimatedKPICardProps {
 const AnimatedKPICard: React.FC<AnimatedKPICardProps> = ({ data, config }) => {
   const [animatedValue, setAnimatedValue] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const { elementRef, triggerHover } = useAdvancedFeedback({
+  const { elementRef, triggerInteraction } = useAdvancedFeedback({
     visualFeedback: true,
     hapticFeedback: config.features.keyboardShortcuts,
     glow: true,
     parallax: true,
   });
+
+  useGlassmorphismV3();
 
   useEffect(() => {
     if (!data.animated) return;
@@ -324,11 +326,11 @@ const AnimatedKPICard: React.FC<AnimatedKPICardProps> = ({ data, config }) => {
       transition={{ duration: 0.5 }}
       onMouseEnter={() => {
         setIsHovered(true);
-        triggerHover("hover", true);
+        triggerInteraction("hover", true);
       }}
       onMouseLeave={() => {
         setIsHovered(false);
-        triggerHover("hover", false);
+        triggerInteraction("hover", false);
       }}
     >
       <div className="flex justify-between items-start mb-4">
@@ -726,7 +728,9 @@ const EnterpriseDashboard: React.FC = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        duration: 0.2,
+        ease: "easeOut",
+        staggerChildren: 0.05,
       },
     },
   };
@@ -737,7 +741,8 @@ const EnterpriseDashboard: React.FC = () => {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5,
+        duration: 0.2,
+        ease: "easeOut",
       },
     },
   };

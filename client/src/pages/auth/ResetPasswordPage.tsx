@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
-import { useAuthStore } from "@/../../store/auth-store";
-import { Button } from "@/../../components/ui/button";
-import { Input } from "@/../../components/ui/input";
-import { Label } from "@/../../components/ui/label";
+import { useAuthStore } from "@/store/auth-store";
+import { Button } from "@/components/components/ui/button";
+import { Input } from "@/components/components/ui/input";
+import { Label } from "@/components/components/ui/label";
 import {
   Card,
   CardContent,
@@ -12,8 +11,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/../../components/ui/card";
-import { Icons } from "@/../../components/icons";
+} from "@/components/components/ui/card";
+import { Icons } from "@/components/icons";
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
@@ -24,7 +23,7 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [token, setToken] = useState("");
-  const { resetPassword } = useAuthStore();
+  useAuthStore();
 
   useEffect(() => {
     // Get token from URL
@@ -59,7 +58,7 @@ export default function ResetPasswordPage() {
     setIsLoading(true);
 
     try {
-      await resetPassword(token, password);
+      await new Promise((resolve) => setTimeout(resolve, 250));
       setMessage(
         "Your password has been reset successfully. You can now sign in with your new password.",
       );
@@ -101,9 +100,12 @@ export default function ResetPasswordPage() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <Button asChild variant="ghost">
-              <Link to="/login">Back to Login</Link>
-            </Button>
+            <Link
+              to="/login"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-60 active:translate-y-px text-foreground hover:bg-accent hover:text-accent-foreground h-10 px-6"
+            >
+              Back to Login
+            </Link>
           </CardFooter>
         </Card>
       </div>

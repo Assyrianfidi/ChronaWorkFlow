@@ -50,6 +50,8 @@ export const authenticate = async (req, res, next) => {
   }
 };
 
+export const auth = authenticate;
+
 /**
  * Role-based authorization middleware
  * @param {...string} roles - Allowed roles
@@ -73,6 +75,8 @@ export const authorize = (...roles) => {
     next();
   };
 };
+
+export const authorizeRoles = (...roles) => authorize(...roles);
 
 /**
  * Middleware to check if user has admin or assistant manager role

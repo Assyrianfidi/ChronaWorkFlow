@@ -2,7 +2,7 @@
 
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-  preset: "ts-jest/presets/default-esm",
+  preset: "ts-jest",
   // Test environment configuration
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -10,13 +10,13 @@ module.exports = {
     '^@/services/(.*)$': '<rootDir>/src/services/$1',
     '^@/utils/(.*)$': '<rootDir>/src/utils/$1',
     '^@/types/(.*)$': '<rootDir>/src/types/$1',
-    '^@/config/(.*)$': '<rootDir>/src/config/$1'
+    '^@/config/(.*)$': '<rootDir>/src/config/$1',
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   testRunner: "jest-circus/runner",
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.(ts|tsx|js)',
     '<rootDir>/src/**/?(*.)(spec|test).(ts|tsx|js)',
-    "**/__tests__/**/*.test.ts", 
+    "**/__tests__/**/*.test.ts",
     "**/__tests__/**/*.test.js"
   ],
   testEnvironment: 'node',
@@ -34,25 +34,15 @@ module.exports = {
   coverageDirectory: "coverage",
   testTimeout: 30000, // 30 second timeout
   // Module configuration
-  moduleFileExtensions: ["js", "json", "jsx", "ts", "tsx", "node", "mjs"],
+  moduleFileExtensions: ["ts", "tsx", "js", "json", "jsx", "node", "mjs"],
   modulePathIgnorePatterns: ["<rootDir>/dist/"],
   // Setup files
   setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup.ts"],
   // Transform configuration
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.json' }],
     '^.+\\.jsx?$': 'babel-jest',
-  },
-  // Global test configuration
-  globals: {
-    "ts-jest": {
-      useESM: true,
-      isolatedModules: true,
-      tsconfig: "tsconfig.json",
-    },
   },
   // Verbose output
   verbose: true,
-  // Run in band (one at a time)
-  runInBand: true,
 };

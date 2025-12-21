@@ -7,18 +7,15 @@ import { ApiError } from '../../utils/error';
 // Mock the Prisma client
 vi.mock('../../prisma', () => ({
   prisma: {
-    inventory: {
+    inventoryItem: {
       findMany: vi.fn(),
+      findFirst: vi.fn(),
       findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
       updateMany: vi.fn(),
       delete: vi.fn(),
       count: vi.fn(),
-    },
-    inventoryHistory: {
-      create: vi.fn(),
-      findMany: vi.fn(),
     },
   },
 }));
@@ -56,8 +53,8 @@ describe('Inventory Controller', () => {
         { id: '2', name: 'Item 2', quantity: 20, tenantId: 'tenant123' },
       ];
 
-      (prisma.inventory.findMany as jest.Mock).mockResolvedValue(mockItems);
-      (prisma.inventory.count as jest.Mock).mockResolvedValue(2);
+      (prisma.inventoryItem.findMany as any).mockResolvedValue(mockItems);
+      (prisma.inventoryItem.count as any).mockResolvedValue(2);
 
       mockRequest.query = {
         page: '1',
@@ -72,11 +69,11 @@ describe('Inventory Controller', () => {
         mockNext
       );
 
-      expect(prisma.inventory.findMany).toHaveBeenCalledWith({
+      expect(prisma.inventoryItem.findMany).toHaveBeenCalledWith({
         where: { tenantId: 'tenant123', deletedAt: null },
+        orderBy: { name: 'asc' },
         skip: 0,
         take: 10,
-        orderBy: { name: 'asc' },
       });
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -100,7 +97,7 @@ describe('Inventory Controller', () => {
         tenantId: 'tenant123',
       };
 
-      (prisma.inventory.findUnique as jest.Mock).mockResolvedValue(mockItem);
+      (prisma.inventoryItem.findFirst as any).mockResolvedValue(mockItem);
       mockRequest.params = { id: '1' };
 
       await inventoryController.getInventoryItem(
@@ -109,8 +106,8 @@ describe('Inventory Controller', () => {
         mockNext
       );
 
-      expect(prisma.inventory.findUnique).toHaveBeenCalledWith({
-        where: { id: '1', tenantId: 'tenant123' },
+      expect(prisma.inventoryItem.findFirst).toHaveBeenCalledWith({
+        where: { id: '1', tenantId: 'tenant123', deletedAt: null },
       });
       expect(mockResponse.json).toHaveBeenCalledWith({
         success: true,
@@ -119,7 +116,7 @@ describe('Inventory Controller', () => {
     });
 
     it('should return 404 if item not found', async () => {
-      (prisma.inventory.findUnique as jest.Mock).mockResolvedValue(null);
+      (prisma.inventoryItem.findFirst as any).mockResolvedValue(null);
       mockRequest.params = { id: 'nonexistent' };
 
       await inventoryController.getInventoryItem(

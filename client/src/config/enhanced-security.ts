@@ -55,7 +55,6 @@ export const ENHANCED_SECURITY_CONFIG = {
 
   // Enhanced Authentication
   AUTH: {
-    jwtSecret: process.env.VITE_JWT_SECRET,
     jwtExpiresIn: "1h",
     refreshTokenExpiresIn: "7d",
     bcryptRounds: 12,

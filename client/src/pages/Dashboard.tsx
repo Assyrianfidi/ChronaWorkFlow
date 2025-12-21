@@ -1,11 +1,8 @@
-import React from "react";
+import * as React from "react";
+import { LoadingState } from "@/components/ui/LoadingState";
 import { MainLayout } from "../components/layout/MainLayout";
 import { useAuth } from "../contexts/AuthContext";
-import {
-  KPICard,
-  MetricCard,
-  StatusCard,
-} from "../components/ui/EnterpriseCards";
+import { KPICard } from "../components/ui/EnterpriseCards";
 import {
   Card,
   CardContent,
@@ -13,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/EnterpriseCards";
-import { LoadingSpinner } from "../components/ui/EnterpriseLoading";
 import {
   LayoutDashboard,
   TrendingUp,
@@ -22,12 +18,8 @@ import {
   FileText,
   CreditCard,
   BarChart3,
-  ArrowUpRight,
-  ArrowDownRight,
-  Minus,
   Activity,
   Target,
-  Zap,
   Shield,
 } from "lucide-react";
 
@@ -281,20 +273,8 @@ const Dashboard: React.FC = () => {
   if (isLoading) {
     return (
       <MainLayout user={user}>
-        <div className="space-y-6">
-          <div className="h-8 w-64 rounded-xl bg-surface2 animate-pulse shadow-soft"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div
-                key={index}
-                className="h-32 rounded-2xl bg-surface2 animate-pulse shadow-soft border border-border-gray"
-              ></div>
-            ))}
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 h-64 rounded-2xl bg-surface2 animate-pulse shadow-soft border border-border-gray"></div>
-            <div className="h-64 rounded-2xl bg-surface2 animate-pulse shadow-soft border border-border-gray"></div>
-          </div>
+        <div className="p-6">
+          <LoadingState size="sm" />
         </div>
       </MainLayout>
     );
@@ -302,208 +282,97 @@ const Dashboard: React.FC = () => {
 
   return (
     <MainLayout user={user}>
-      <div className="space-y-6 animate-fade-in">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              Welcome back, {user?.name}
-              <Zap className="w-6 h-6 text-primary-500" />
-            </h1>
-            <p className="text-gray-600 mt-1">
-              Here's what's happening with your{" "}
-              {user?.role === "admin"
-                ? "system"
-                : user?.role === "accountant"
-                  ? "accounting"
-                  : "business"}{" "}
-              today.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <StatusCard
-              status="online"
-              title="System Status"
-              description="All systems operational"
-            />
-          </div>
+      <div className="p-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <LayoutDashboard
+            className="h-6 w-6 text-primary-600"
+            aria-hidden="true"
+          />
+          <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
         </div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {kpis.map((kpi, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {kpis.map((kpi) => (
             <KPICard
-              key={index}
+              key={kpi.title}
               title={kpi.title}
               value={kpi.value}
               change={kpi.change}
               icon={kpi.icon}
               description={kpi.description}
-              loading={isLoading}
             />
           ))}
         </div>
 
-        {/* Quick Actions & Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Quick Actions */}
-          <Card className="lg:col-span-2 bg-surface1 shadow-soft rounded-2xl border border-border-gray">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="w-5 h-5 text-primary-600" />
-                Quick Actions
-              </CardTitle>
-              <CardDescription>
-                Common tasks and shortcuts for your workflow
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {quickActions.map((action, index) => {
-                  const Icon = action.icon;
-                  return (
-                    <button
-                      key={index}
-                      className={cn(
-                        "group flex items-center gap-3 p-4 rounded-xl bg-surface2 hover:bg-surface1 transition-all duration-200 shadow-soft hover:shadow-elevated hover:-translate-y-[1px]",
-                        "border border-border-gray",
-                        action.color === "primary" &&
-                          "hover:border-primary-300 hover:bg-primary-50",
-                        action.color === "success" &&
-                          "hover:border-success-300 hover:bg-success-50",
-                        action.color === "warning" &&
-                          "hover:border-warning-300 hover:bg-warning-50",
-                        action.color === "error" &&
-                          "hover:border-error-300 hover:bg-error-50",
-                        action.color === "info" &&
-                          "hover:border-info-300 hover:bg-info-50",
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "w-10 h-10 rounded-lg flex items-center justify-center",
-                          action.color === "primary" &&
-                            "bg-primary-100 text-primary-600 group-hover:bg-primary-200",
-                          action.color === "success" &&
-                            "bg-success-100 text-success-600 group-hover:bg-success-200",
-                          action.color === "warning" &&
-                            "bg-warning-100 text-warning-600 group-hover:bg-warning-200",
-                          action.color === "error" &&
-                            "bg-error-100 text-error-600 group-hover:bg-error-200",
-                          action.color === "info" &&
-                            "bg-info-100 text-info-600 group-hover:bg-info-200",
-                        )}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <div className="text-left">
-                        <p className="font-medium text-gray-900">
-                          {action.label}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {action.description}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* System Status */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="w-5 h-5 text-primary-600" />
-                System Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <MetricCard
-                title="Performance"
-                metrics={[
-                  {
-                    label: "API Response",
-                    value: "124ms",
-                    color: "text-success-600",
-                  },
-                  {
-                    label: "Database",
-                    value: "99.9%",
-                    color: "text-success-600",
-                  },
-                  { label: "Storage", value: "67%", color: "text-warning-600" },
-                ]}
-                size="sm"
-              />
-              <StatusCard
-                status="online"
-                title="Last Backup"
-                description="2 hours ago"
-                metrics={[
-                  { label: "Size", value: "2.3 GB" },
-                  { label: "Duration", value: "4 min" },
-                ]}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Recent Activity */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="w-5 h-5 text-primary-600" />
-              Recent Activity
-            </CardTitle>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Common tasks based on your role</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {quickActions.map((action) => (
+                <button
+                  key={action.label}
+                  type="button"
+                  className="flex items-start gap-3 rounded-lg border border-border-gray bg-surface1 p-4 text-left shadow-soft hover:shadow-elevated transition-shadow duration-200"
+                  aria-label={action.label}
+                >
+                  <action.icon
+                    className="h-5 w-5 text-primary-600"
+                    aria-hidden="true"
+                  />
+                  <div>
+                    <div className="font-medium text-gray-900">
+                      {action.label}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {action.description}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
             <CardDescription>
-              Latest updates and important events
+              Latest events across your workspace
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentActivity.map((activity) => {
-                const Icon = getActivityIcon(activity.type);
+            <div className="space-y-3">
+              {recentActivity.map((item) => {
+                const Icon = getActivityIcon(item.type);
                 return (
                   <div
-                    key={activity.id}
-                    className="flex items-center justify-between p-4 rounded-xl border border-border-gray bg-surface2 hover:bg-surface1 transition-colors shadow-soft hover:shadow-elevated hover:-translate-y-[1px]"
+                    key={item.id}
+                    className="flex items-start justify-between gap-4 rounded-lg border border-border-gray bg-surface1 p-4"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-start gap-3">
                       <div
-                        className={cn(
-                          "w-10 h-10 rounded-full flex items-center justify-center",
-                          getActivityColor(activity.status),
-                        )}
+                        className={`mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-full ${getActivityColor(item.status)}`}
+                        aria-hidden="true"
                       >
-                        <Icon className="w-5 h-5" />
+                        <Icon className="h-4 w-4" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">
-                          {activity.title}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {activity.description}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {activity.time}
-                        </p>
+                        <div className="font-medium text-gray-900">
+                          {item.title}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {item.description}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {item.time}
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <span
-                        className={cn(
-                          "text-sm font-semibold",
-                          activity.status === "success" && "text-success-600",
-                          activity.status === "warning" && "text-warning-600",
-                          activity.status === "error" && "text-error-600",
-                          activity.status === "info" && "text-primary-600",
-                        )}
-                      >
-                        {activity.amount}
-                      </span>
+                    <div className="text-sm font-medium text-gray-900">
+                      {item.amount}
                     </div>
                   </div>
                 );
@@ -517,3 +386,4 @@ const Dashboard: React.FC = () => {
 };
 
 export { Dashboard };
+export default Dashboard;

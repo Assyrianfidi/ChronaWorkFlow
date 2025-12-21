@@ -4,10 +4,7 @@
  */
 
 import React, { useEffect, useState, useMemo } from "react";
-import {
-  UIAdaptationConfig,
-  TaskType,
-} from "@/../../state/ui/UserExperienceMode";
+import { UIAdaptationConfig, TaskType } from "@/state/ui/UserExperienceMode";
 
 interface AdaptiveLayoutProps {
   children: React.ReactNode;
@@ -262,7 +259,6 @@ export const AdaptiveSection: React.FC<AdaptiveSectionProps> = ({
 interface AdaptivePanelProps {
   position: "left" | "center" | "right";
   children: React.ReactNode;
-  collapsible?: boolean;
   defaultWidth?: string;
   className?: string;
 }
@@ -270,11 +266,10 @@ interface AdaptivePanelProps {
 export const AdaptivePanel: React.FC<AdaptivePanelProps> = ({
   position,
   children,
-  collapsible = false,
   defaultWidth,
   className = "",
 }) => {
-  const { config, layoutConfig } = useAdaptiveLayout();
+  const { config } = useAdaptiveLayout();
 
   if (!config.features.multiPanelLayout && position !== "center") {
     return null;

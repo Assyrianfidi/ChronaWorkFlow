@@ -195,7 +195,7 @@ export class SuperAccessibilityEngine {
   private visualEnhancer: VisualEnhancer;
   private assistanceEngine: AssistanceEngine;
   private metricsCollector: AccessibilityMetricsCollector;
-  private isActive: boolean = false;
+  private active: boolean = false;
   private adaptationHistory: Array<{
     timestamp: Date;
     type: string;
@@ -797,13 +797,13 @@ export class SuperAccessibilityEngine {
 
   // Public API methods
   public enableSuperAccessibility(): void {
-    this.isActive = true;
+    this.active = true;
     this.applyCurrentConfig();
     this.announceAccessibilityEnabled();
   }
 
   public disableSuperAccessibility(): void {
-    this.isActive = false;
+    this.active = false;
     this.removeAccessibilityEnhancements();
     this.announceAccessibilityDisabled();
   }
@@ -941,7 +941,7 @@ export class SuperAccessibilityEngine {
   public updateConfig(newConfig: Partial<SuperAccessibilityConfig>): void {
     this.config = { ...this.config, ...newConfig };
 
-    if (this.isActive) {
+    if (this.active) {
       this.applyCurrentConfig();
     }
 
@@ -1016,13 +1016,17 @@ export class SuperAccessibilityEngine {
   public getCurrentConfig(): SuperAccessibilityConfig {
     return { ...this.config };
   }
+
+  public isActive(): boolean {
+    return this.active;
+  }
 }
 
 // Supporting classes
 class VoiceInterfaceManager {
   private recognition: SpeechRecognition | null = null;
   private synthesis: SpeechSynthesis;
-  private isActive: boolean = false;
+  private active: boolean = false;
 
   constructor(private config: SuperAccessibilityConfig["voiceInterface"]) {
     this.synthesis = window.speechSynthesis;
@@ -1061,7 +1065,7 @@ class VoiceInterfaceManager {
   }
 
   private handleSpeechEnd(): void {
-    if (this.config.continuousListening && this.isActive) {
+    if (this.config.continuousListening && this.active) {
       this.recognition?.start();
     }
   }
@@ -1088,7 +1092,7 @@ class VoiceInterfaceManager {
   private async executeVoiceCommand(
     command: VoiceCommand,
     transcript: string,
-  ): void {
+  ): Promise<void> {
     try {
       switch (command.action.type) {
         case "navigate":
@@ -1194,7 +1198,7 @@ class VoiceInterfaceManager {
       // Try to find element by text content
       const elements = Array.from(
         document.querySelectorAll('button, a, [role="button"]'),
-      );
+      ) as HTMLElement[];
       return (
         elements.find((el) =>
           el.textContent?.toLowerCase().includes(value.toLowerCase()),
@@ -1240,14 +1244,14 @@ class VoiceInterfaceManager {
   }
 
   public enable(): void {
-    this.isActive = true;
+    this.active = true;
     if (this.recognition) {
       this.recognition.start();
     }
   }
 
   public disable(): void {
-    this.isActive = false;
+    this.active = false;
     if (this.recognition) {
       this.recognition.stop();
     }
@@ -1255,7 +1259,7 @@ class VoiceInterfaceManager {
   }
 
   public isActive(): boolean {
-    return this.isActive;
+    return this.active;
   }
 
   public enhanceVoiceInterface(): void {
@@ -1480,10 +1484,7 @@ class MotorSupportManager {
     // Improve focus indicators
     const style = document.createElement("style");
     style.textContent = `
-      .motor-keyboard-enhanced *:focus {
-        outline: 3px solid #007bff !important;
-        outline-offset: 2px !important;
-      }
+      .motor-keyboard-enhanced *focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:outline-none
     `;
     document.head.appendChild(style);
   }
@@ -1584,11 +1585,7 @@ class VisualEnhancer {
     // Apply enhanced focus styles
     const style = document.createElement("style");
     style.textContent = `
-      .visual-enhanced-focus *:focus {
-        outline: 4px solid #007bff !important;
-        outline-offset: 3px !important;
-        background-color: #e3f2fd !important;
-      }
+      .visual-enhanced-focus *focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 focus:outline-none
     `;
     document.head.appendChild(style);
   }
@@ -1754,6 +1751,32 @@ export function useSuperAccessibility() {
     enableVoiceInterface: engine.enableVoiceInterface.bind(engine),
     disableVoiceInterface: engine.disableVoiceInterface.bind(engine),
     speak: engine.speak.bind(engine),
+
+    announceToScreenReader: engine.speak.bind(engine),
+    createLiveRegion: (options?: {
+      politeness?: "polite" | "assertive";
+      atomic?: boolean;
+      relevant?: string;
+    }) => {
+      if (typeof document === "undefined") return null;
+
+      const region = document.createElement("div");
+      region.setAttribute("aria-live", options?.politeness ?? "polite");
+      region.setAttribute("aria-atomic", String(options?.atomic ?? true));
+      if (options?.relevant) region.setAttribute("aria-relevant", options.relevant);
+
+      region.style.position = "absolute";
+      region.style.width = "1px";
+      region.style.height = "1px";
+      region.style.margin = "-1px";
+      region.style.border = "0";
+      region.style.padding = "0";
+      region.style.clip = "rect(0 0 0 0)";
+      region.style.overflow = "hidden";
+
+      document.body.appendChild(region);
+      return region;
+    },
   };
 }
 

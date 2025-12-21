@@ -18,7 +18,7 @@ class SecureLogger {
   private logLevel: LogLevel;
 
   constructor() {
-    this.isProduction = process.env.NODE_ENV === "production";
+    this.isProduction = import.meta.env.PROD;
     this.logLevel = SECURITY_CONFIG.LOGGING.level as LogLevel;
   }
 

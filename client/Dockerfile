@@ -2,6 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Create a non-root user for running the app
+RUN addgroup -S app && adduser -S -G app app
+
 # Install system dependencies
 RUN apk add --no-cache git=2.40.1-r0 curl=8.2.0-r0
 
@@ -31,6 +34,14 @@ RUN npm run build -- --skip-ts-check || npm run build
 
 # Use a lightweight server for production
 RUN npm install -g serve@14.2.1
+
+# Ensure the runtime files are owned by the non-root user
+RUN chown -R app:app /app
+
+USER app
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD curl -fsS http://127.0.0.1:${PORT:-3000}/ >/dev/null || exit 1
 
 # Start the production server
 CMD ["serve", "-s", "dist", "-l", "3000"]

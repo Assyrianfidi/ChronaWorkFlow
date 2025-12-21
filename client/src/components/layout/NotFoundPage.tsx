@@ -8,7 +8,7 @@ declare global {
 
 import { Link } from "react-router-dom";
 import { Home, Search, ArrowLeft } from "lucide-react";
-import { cn } from "@/../../lib/utils";
+import { cn } from "@/lib/utils";
 import { AccuBooksLogo } from "@/components/ui/AccuBooksLogo";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
 
@@ -22,7 +22,7 @@ const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
       <div
         ref={ref}
         className={cn(
-          "min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8",
+          "min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8",
           className,
         )}
         {...props}
@@ -32,19 +32,19 @@ const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
           <div className="flex justify-center mb-8">
             <AccuBooksLogo
               variant="monogram"
-              className="w-16 h-16 text-ocean-blue"
+              className="w-16 h-16 text-primary"
             />
           </div>
 
           {/* Error Content */}
           <div className="mb-8">
-            <h1 className="text-9xl font-bold text-gray-200 mb-4">404</h1>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h1 className="text-9xl font-bold text-muted-foreground/30 mb-4">404</h1>
+            <h2 className="text-3xl font-bold text-foreground mb-4">
               Page Not Found
             </h2>
-            <p className="text-gray-600 mb-8">
-              The page you're looking for doesn't exist or has been moved. Let's
-              get you back on track.
+            <p className="text-muted-foreground mb-8">
+              The page you&apos;re looking for doesn&apos;t exist or has been
+              moved. Let&apos;s get you back on track.
             </p>
           </div>
 
@@ -83,24 +83,24 @@ const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
           </div>
 
           {/* Help Section */}
-          <div className="mt-12 p-6 bg-white rounded-lg border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="mt-12 p-6 bg-card text-card-foreground rounded-lg border border-border">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               Need Help?
             </h3>
-            <p className="text-gray-600 text-sm mb-4">
+            <p className="text-muted-foreground text-sm mb-4">
               If you believe this is an error, please contact our support team.
             </p>
             <div className="flex justify-center gap-4">
               <a
                 href="mailto:support@accubooks.com"
-                className="text-ocean-blue hover:text-ocean-blue/80 text-sm font-medium"
+                className="text-primary hover:text-primary/80 text-sm font-medium"
               >
                 Email Support
               </a>
-              <span className="text-gray-400">•</span>
+              <span className="text-muted-foreground">•</span>
               <a
                 href="/help"
-                className="text-ocean-blue hover:text-ocean-blue/80 text-sm font-medium"
+                className="text-primary hover:text-primary/80 text-sm font-medium"
               >
                 Help Center
               </a>

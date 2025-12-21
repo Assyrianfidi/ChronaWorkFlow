@@ -6,7 +6,7 @@ declare global {
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { VisualModeEngine, useVisualMode } from "../VisualModeEngine.js";
+import { VisualModeEngine, useVisualMode } from '../VisualModeEngine';
 import React from "react";
 
 // Mock localStorage and matchMedia globally

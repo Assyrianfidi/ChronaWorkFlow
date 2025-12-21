@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-import { ReportForm } from "./ReportForm.js";
-import type { ReportFormProps } from "./types.js";
+import ReportForm from "./ReportForm";
+import type { ReportFormProps } from "./types";
 
 // Mock react-hook-form for Storybook
 const mockForm = {
@@ -32,10 +32,10 @@ const meta: Meta<typeof ReportForm> = {
   ],
   argTypes: {
     onSubmit: { action: "submitted" },
-    onCancel: { action: "cancelled" },
-    initialValues: { control: "object" },
-    isSubmitting: { control: "boolean" },
-    submitLabel: { control: "text" },
+    initialData: { control: "object" },
+    loading: { control: "boolean" },
+    error: { control: "text" },
+    success: { control: "text" },
   },
 };
 

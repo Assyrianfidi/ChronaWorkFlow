@@ -1,14 +1,14 @@
-import React from "react";
-("use client");
+"use client";
 
-import { MainLayout } from "../components/layout/MainLayout.js";
-import { EnterpriseButton } from "../components/ui/EnterpriseButton.js";
-import {
-  Card,
+import React from "react";
+
+import { MainLayout } from "@/components/layout/MainLayout";
+import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
+import Card, {
   CardContent,
   CardHeader,
   CardTitle,
-} from "../components/ui/card.js";
+} from "@/components/ui/card";
 import {
   TrendingUp,
   TrendingDown,
@@ -154,7 +154,7 @@ export default function ReportsPage() {
                 </select>
 
                 <EnterpriseButton
-                  variant="outline"
+                  variant="secondary"
                   icon={<Filter className="h-4 w-4" />}
                 >
                   Advanced Filters
@@ -162,7 +162,7 @@ export default function ReportsPage() {
 
                 <div className="flex gap-1">
                   <EnterpriseButton
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     icon={<Download className="h-4 w-4" />}
                     onClick={() => handleExport("pdf")}
@@ -170,7 +170,7 @@ export default function ReportsPage() {
                     PDF
                   </EnterpriseButton>
                   <EnterpriseButton
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     icon={<Download className="h-4 w-4" />}
                     onClick={() => handleExport("excel")}

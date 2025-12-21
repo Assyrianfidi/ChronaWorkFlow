@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from "react";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   Table,
   TableBody,
@@ -16,7 +18,7 @@ import {
   ChevronRight,
   MoreHorizontal,
 } from "lucide-react";
-import { InventoryItem, InventoryStatus } from "@/components/types/inventory";
+import { InventoryItem, InventoryStatus } from "@/types/inventory";
 
 interface InventoryTableProps {
   items: InventoryItem[];
@@ -107,13 +109,13 @@ export function InventoryTable({
           {isLoading ? (
             <TableRow>
               <TableCell colSpan={7} className="text-center py-8">
-                Loading inventory items...
+                <LoadingState label="Loading inventory items…" size="sm" />
               </TableCell>
             </TableRow>
           ) : items.length === 0 ? (
             <TableRow>
               <TableCell colSpan={7} className="text-center py-8">
-                No inventory items found
+                <EmptyState size="sm" title="No inventory items found" />
               </TableCell>
             </TableRow>
           ) : (

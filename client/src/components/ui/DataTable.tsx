@@ -1,11 +1,6 @@
-declare global {
-  interface Window {
-    [key: string]: any;
-  }
-}
-
-import React, { useState } from "react";
 import * as React from "react";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   ChevronUp,
   ChevronDown,
@@ -14,13 +9,15 @@ import {
   Download,
   MoreHorizontal,
 } from "lucide-react";
-import { Button } from "./button";
-import { Input } from "./input";
-import { cn } from "@/../../lib/utils";
+import Button from "./Button";
+import Input from "./Input";
+import { cn } from "@/lib/utils";
 
 interface Column<T> {
-  key: keyof T;
-  title: string;
+  key: keyof T | string;
+  title?: string;
+  header?: string;
+  label?: string;
   sortable?: boolean;
   filterable?: boolean;
   render?: (value: any, row: T) => React.ReactNode;
@@ -31,12 +28,24 @@ interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
   loading?: boolean;
+  filterable?: boolean;
+  sortable?: boolean;
   searchable?: boolean;
   exportable?: boolean;
+  selectable?: boolean;
+  paginated?: boolean;
+  actions?: any;
+  bulkActions?: any;
+  exportOptions?: any;
+  onSelectionChange?: (rows: T[]) => void;
+  onSearch?: (query: string) => void;
+  emptyState?: React.ReactNode;
   className?: string;
   onRowClick?: (row: T) => void;
   emptyMessage?: string;
   pageSize?: number;
+  getRowId?: (row: T, index: number) => string;
+  selectedRowId?: string;
 }
 
 interface SortConfig {
@@ -55,10 +64,14 @@ function DataTable<T>({
   loading = false,
   searchable = true,
   exportable = true,
+  onSearch,
+  emptyState,
   className,
   onRowClick,
   emptyMessage = "No data available",
   pageSize = 10,
+  getRowId,
+  selectedRowId,
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [sortConfig, setSortConfig] = React.useState<SortConfig | null>(null);
@@ -66,8 +79,14 @@ function DataTable<T>({
   const [currentPage, setCurrentPage] = React.useState(1);
   const [showFilters, setShowFilters] = React.useState(false);
 
+  const getColumnLabel = React.useCallback(
+    (column: Column<T>) =>
+      column.title ?? column.header ?? column.label ?? String(column.key),
+    [],
+  );
+
   // Handle sorting
-  const handleSort = (key: keyof T) => {
+  const handleSort = (key: keyof T | string) => {
     let direction: "asc" | "desc" = "asc";
     if (
       sortConfig &&
@@ -87,7 +106,7 @@ function DataTable<T>({
     if (searchTerm) {
       filtered = filtered.filter((row) =>
         columns.some((column) => {
-          const value = row[column.key];
+          const value = (row as any)[column.key as any];
           return (
             value &&
             value.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -99,7 +118,7 @@ function DataTable<T>({
     // Apply column filters
     filters.forEach((filter) => {
       filtered = filtered.filter((row) => {
-        const value = row[filter.key as keyof T];
+        const value = (row as any)[filter.key as any];
         return (
           value &&
           value.toString().toLowerCase().includes(filter.value.toLowerCase())
@@ -110,8 +129,8 @@ function DataTable<T>({
     // Apply sorting
     if (sortConfig) {
       filtered.sort((a, b) => {
-        const aValue = a[sortConfig.key as keyof T];
-        const bValue = b[sortConfig.key as keyof T];
+        const aValue = (a as any)[sortConfig.key];
+        const bValue = (b as any)[sortConfig.key];
 
         if (aValue === null || aValue === undefined) return 1;
         if (bValue === null || bValue === undefined) return -1;
@@ -124,6 +143,10 @@ function DataTable<T>({
     return filtered;
   }, [data, searchTerm, filters, sortConfig, columns]);
 
+  React.useEffect(() => {
+    if (onSearch) onSearch(searchTerm);
+  }, [onSearch, searchTerm]);
+
   // Pagination
   const totalPages = Math.ceil(filteredData.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
@@ -132,12 +155,17 @@ function DataTable<T>({
   // Export functionality
   const handleExport = () => {
     const csv = [
-      columns.map((col) => col.title).join(","),
+      columns.map((col) => getColumnLabel(col)).join(","),
       ...filteredData.map((row) =>
         columns
           .map((col) => {
-            const value = row[col.key];
-            return col.render ? col.render(value, row) : value;
+            const value = (row as any)[col.key as any];
+            const rendered = col.render ? col.render(value, row) : value;
+            if (rendered === null || rendered === undefined) return "";
+            if (typeof rendered === "string" || typeof rendered === "number") {
+              return String(rendered);
+            }
+            return "";
           })
           .join(","),
       ),
@@ -154,15 +182,8 @@ function DataTable<T>({
 
   if (loading) {
     return (
-      <div className="w-full p-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-4 bg-gray-200 rounded w-1/4" />
-          <div className="space-y-2">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-12 bg-gray-200 rounded" />
-            ))}
-          </div>
-        </div>
+      <div className="w-full">
+        <LoadingState label="Loading…" />
       </div>
     );
   }
@@ -173,7 +194,7 @@ function DataTable<T>({
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         {searchable && (
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Search..."
               value={searchTerm}
@@ -211,17 +232,17 @@ function DataTable<T>({
 
       {/* Filters */}
       {showFilters && columns.some((col) => col.filterable) && (
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+        <div className="mb-6 p-4 bg-muted/20 rounded-lg border border-border">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {columns
               .filter((col) => col.filterable)
               .map((column) => (
                 <div key={column.key as string}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {column.title}
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    {getColumnLabel(column)}
                   </label>
                   <Input
-                    placeholder={`Filter ${column.title}...`}
+                    placeholder={`Filter ${getColumnLabel(column)}...`}
                     value={
                       filters.find((f) => f.key === column.key)?.value || ""
                     }
@@ -245,32 +266,42 @@ function DataTable<T>({
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-card text-card-foreground rounded-lg border border-border overflow-hidden shadow-soft">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-muted/20 border-b border-border">
               <tr>
                 {columns.map((column) => (
                   <th
                     key={column.key as string}
                     className={cn(
-                      "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
-                      column.sortable && "cursor-pointer hover:bg-gray-100",
+                      "px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider",
                       column.className,
                     )}
-                    onClick={() => column.sortable && handleSort(column.key)}
+                    aria-sort={
+                      sortConfig?.key === (column.key as string)
+                        ? sortConfig.direction === "asc"
+                          ? "ascending"
+                          : "descending"
+                        : "none"
+                    }
                   >
-                    <div className="flex items-center gap-1">
-                      {column.title}
-                      {column.sortable && (
-                        <div className="flex flex-col">
+                    {column.sortable ? (
+                      <button
+                        type="button"
+                        className="w-full flex items-center gap-1 hover:bg-muted/30 rounded-sm -mx-2 px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
+                        onClick={() => handleSort(column.key)}
+                        aria-label={`Sort by ${getColumnLabel(column)}`}
+                      >
+                        <span>{getColumnLabel(column)}</span>
+                        <span aria-hidden="true" className="flex flex-col">
                           <ChevronUp
                             className={cn(
                               "h-3 w-3",
                               sortConfig?.key === column.key &&
                                 sortConfig.direction === "asc"
                                 ? "text-primary"
-                                : "text-gray-400",
+                                : "text-muted-foreground",
                             )}
                           />
                           <ChevronDown
@@ -279,59 +310,91 @@ function DataTable<T>({
                               sortConfig?.key === column.key &&
                                 sortConfig.direction === "desc"
                                 ? "text-primary"
-                                : "text-gray-400",
+                                : "text-muted-foreground",
                             )}
                           />
-                        </div>
-                      )}
-                    </div>
+                        </span>
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-1">{getColumnLabel(column)}</div>
+                    )}
                   </th>
                 ))}
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-card divide-y divide-border">
               {paginatedData.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={columns.length + 1}
-                    className="px-6 py-12 text-center text-gray-500"
-                  >
-                    {emptyMessage}
+                  <td colSpan={columns.length + 1} className="px-6">
+                    {emptyState ?? (
+                      <EmptyState title={emptyMessage} size="sm" />
+                    )}
                   </td>
                 </tr>
               ) : (
-                paginatedData.map((row, index) => (
-                  <tr
-                    key={index}
-                    className={cn(
-                      "hover:bg-gray-50 transition-colors",
-                      onRowClick && "cursor-pointer",
-                    )}
-                    onClick={() => onRowClick?.(row)}
-                  >
-                    {columns.map((column) => (
-                      <td
-                        key={column.key as string}
+                paginatedData.map((row, index) =>
+                  (() => {
+                    const rowId =
+                      getRowId?.(row, startIndex + index) ??
+                      String(startIndex + index);
+                    const isClickable = !!onRowClick;
+                    const isSelected = selectedRowId
+                      ? rowId === selectedRowId
+                      : false;
+                    return (
+                      <tr
+                        key={rowId}
                         className={cn(
-                          "px-6 py-4 whitespace-nowrap text-sm text-gray-900",
-                          column.className,
+                          "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background",
+                          (startIndex + index) % 2 === 1 && "bg-muted/10",
+                          "hover:bg-muted/20",
+                          isClickable && "cursor-pointer",
+                          isSelected && "bg-muted/30",
                         )}
+                        onClick={() => onRowClick?.(row)}
+                        onKeyDown={(e) => {
+                          if (!isClickable) return;
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            onRowClick?.(row);
+                          }
+                        }}
+                        tabIndex={isClickable ? 0 : undefined}
+                        aria-selected={isSelected || undefined}
                       >
-                        {column.render
-                          ? column.render(row[column.key], row)
-                          : String(row[column.key])}
-                      </td>
-                    ))}
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </td>
-                  </tr>
-                ))
+                        {columns.map((column) => (
+                          <td
+                            key={column.key as string}
+                            className={cn(
+                              "px-6 py-4 whitespace-nowrap text-sm text-foreground",
+                              column.className,
+                            )}
+                          >
+                            {column.render
+                              ? column.render(
+                                  (row as any)[column.key as any],
+                                  row,
+                                )
+                              : String((row as any)[column.key as any])}
+                          </td>
+                        ))}
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            aria-label="Row actions"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })(),
+                )
               )}
             </tbody>
           </table>
@@ -341,27 +404,31 @@ function DataTable<T>({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-6">
-          <div className="text-sm text-gray-700">
+          <div className="text-sm text-muted-foreground">
             Showing {startIndex + 1} to{" "}
             {Math.min(startIndex + pageSize, filteredData.length)} of{" "}
             {filteredData.length} results
           </div>
           <div className="flex gap-2">
             <Button
+              type="button"
               variant="outline"
               size="sm"
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
+              aria-label="Previous page"
             >
               Previous
             </Button>
             <Button
+              type="button"
               variant="outline"
               size="sm"
               onClick={() =>
                 setCurrentPage(Math.min(totalPages, currentPage + 1))
               }
               disabled={currentPage === totalPages}
+              aria-label="Next page"
             >
               Next
             </Button>

@@ -18,7 +18,7 @@ const InputWithIcon = React.forwardRef<HTMLInputElement, InputWithIconProps>(
     return (
       <div className="relative">
         {iconPosition === "left" && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none">
             {icon}
           </div>
         )}
@@ -29,7 +29,7 @@ const InputWithIcon = React.forwardRef<HTMLInputElement, InputWithIconProps>(
           {...props}
         />
         {iconPosition === "right" && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none">
             {icon}
           </div>
         )}

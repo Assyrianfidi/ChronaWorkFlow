@@ -7,7 +7,7 @@ declare global {
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useUserExperienceMode } from "@/components/adaptive/UserExperienceMode";
 import { usePerformance } from "@/components/adaptive/UI-Performance-Engine";
-import { useAuthStore } from "@/../../store/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 // Integration Types
 interface ThirdPartyIntegration {
@@ -539,7 +539,7 @@ class ThirdPartyIntegrationEngine {
     // Generate PKCE if supported
     if (adapter.supportsPKCE()) {
       flow.codeVerifier = this.generateCodeVerifier();
-      flow.codeChallenge = this.generateCodeChallenge(flow.codeVerifier);
+      flow.codeChallenge = await this.generateCodeChallenge(flow.codeVerifier);
     }
 
     this.oauthFlows.set(flow.id, flow);

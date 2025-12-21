@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
+import { Role } from "@prisma/client";
 
 // Mock all dependencies before importing auth controller
 const mockAuthService = {
@@ -10,36 +10,83 @@ const mockAuthService = {
   changePassword: jest.fn(),
 };
 
+jest.mock("../services/auth.service", () => ({
+  authService: mockAuthService,
+  generateAccessToken: mockAuthService.generateAccessToken,
+}));
+
 const mockRefreshTokenService = {
   createRefreshToken: jest.fn(),
   rotateRefreshToken: jest.fn(),
   verifyRefreshToken: jest.fn(),
   invalidateRefreshToken: jest.fn(),
   invalidateUserRefreshTokens: jest.fn(),
-  getRefreshTokenExpiry: jest.fn(() => 30),
+  getRefreshTokenExpiry: jest.fn(),
 };
+
+jest.mock("../services/refreshToken.service", () => ({
+  RefreshTokenService: mockRefreshTokenService,
+}));
 
 const mockLogger = {
   info: jest.fn(),
   error: jest.fn(),
 };
 
-const mockApiError = jest.fn();
-
-jest.mock("../services/auth.service", () => ({
-  authService: mockAuthService,
-}));
-
-jest.mock("../services/refreshToken.service.ts", () => ({
-  RefreshTokenService: mockRefreshTokenService,
-}));
-
-jest.mock("../utils/logger.ts", () => ({
+jest.mock("../utils/logger", () => ({
   logger: mockLogger,
 }));
 
-jest.mock("../utils/errors", () => ({
-  ApiError: mockApiError,
+const mockAuditLoggerService = {
+  logAuthEvent: jest.fn(),
+};
+
+jest.mock("../services/auditLogger.service", () => ({
+  __esModule: true,
+  default: mockAuditLoggerService,
+}));
+
+const prismaMocks = {
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
+      update: jest.fn(),
+    },
+  },
+};
+
+jest.mock("../utils/prisma", () => prismaMocks);
+
+const ErrorCodes = {
+  VALIDATION_ERROR: "VALIDATION_ERROR",
+  UNAUTHORIZED: "UNAUTHORIZED",
+} as const;
+
+class ApiError extends Error {
+  statusCode: number;
+  code: string;
+  isOperational: boolean;
+  details: any;
+
+  constructor(
+    message: string,
+    statusCode: number = 500,
+    code: string = "INTERNAL_ERROR",
+    isOperational: boolean = true,
+    details?: any,
+  ) {
+    super(message);
+    this.statusCode = statusCode;
+    this.code = code;
+    this.isOperational = isOperational;
+    this.details = details;
+    this.name = "ApiError";
+  }
+}
+
+jest.mock("../utils/errorHandler", () => ({
+  ApiError,
+  ErrorCodes,
 }));
 
 jest.mock("../middleware/errorHandler", () => ({}));
@@ -67,12 +114,17 @@ describe("Auth Controller - Unit Tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    // jest.config has resetMocks:true; re-apply default behaviors
+    mockRefreshTokenService.getRefreshTokenExpiry.mockReturnValue(30);
+    mockAuditLoggerService.logAuthEvent.mockResolvedValue(undefined);
+
     // Setup mock request/response
     mockRequest = {
       body: {},
       cookies: {},
       ip: "127.0.0.1",
-      user: { id: 1, role: "USER" as const },
+      get: jest.fn(),
+      user: { id: 1, role: Role.USER } as any,
     };
 
     mockResponse = {
@@ -388,7 +440,7 @@ describe("Auth Controller - Unit Tests", () => {
 
   describe("logoutAll", () => {
     it("should logout user from all sessions", async () => {
-      mockRequest.user = { id: 1, role: "USER" as const };
+      mockRequest.user = { id: 1, role: Role.USER } as any;
 
       mockRefreshTokenService.invalidateUserRefreshTokens.mockResolvedValue(
         undefined,
@@ -440,7 +492,7 @@ describe("Auth Controller - Unit Tests", () => {
 
   describe("changePassword", () => {
     it("should change password and invalidate all refresh tokens", async () => {
-      mockRequest.user = { id: 1, role: "USER" as const };
+      mockRequest.user = { id: 1, role: Role.USER } as any;
       mockRequest.body = {
         currentPassword: "oldpassword",
         newPassword: "newpassword123",
@@ -501,7 +553,7 @@ describe("Auth Controller - Unit Tests", () => {
     });
 
     it("should validate password format", async () => {
-      mockRequest.user = { id: 1, role: "USER" as const };
+      mockRequest.user = { id: 1, role: Role.USER } as any;
       mockRequest.body = {
         currentPassword: "oldpassword",
         newPassword: "weak", // Too short

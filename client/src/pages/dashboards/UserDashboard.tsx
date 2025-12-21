@@ -12,6 +12,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardShell } from "../../components/ui/layout/DashboardShell";
+import {
+  getDemoUserActivity,
+  getDemoUserStats,
+  isDemoModeEnabled,
+} from "@/lib/demo";
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "elevated" | "outlined" | "glass";
@@ -22,7 +27,7 @@ const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-2xl border border-border-gray bg-surface2 shadow-soft transition-transform transition-shadow duration-150",
+        "rounded-2xl border border-border bg-card text-card-foreground shadow-soft transition-transform transition-shadow duration-150",
         {
           "hover:-translate-y-[1px] hover:shadow-elevated":
             variant === "default",
@@ -30,7 +35,7 @@ const EnterpriseCard = React.forwardRef<HTMLDivElement, EnterpriseCardProps>(
             variant === "elevated",
           "border-2 hover:-translate-y-[2px] hover:shadow-elevated":
             variant === "outlined",
-          "bg-surface2/90 backdrop-blur-sm hover:-translate-y-[1px] hover:shadow-elevated":
+          "bg-card/90 backdrop-blur-sm hover:-translate-y-[1px] hover:shadow-elevated":
             variant === "glass",
         },
         className,
@@ -61,20 +66,22 @@ const UserDashboard: React.FC = () => {
   const { user } = useAuth();
 
   // Fetch user stats
-  const {
-    data: stats,
-    error: statsError,
-    isLoading: statsLoading,
-  } = useSWR<UserStats>("/api/dashboard/user-stats", async (url: string) => {
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) throw new Error("Failed to fetch user stats");
-    return response.json();
-  });
+  const { data: stats, isLoading: statsLoading } = useSWR<UserStats>(
+    "/api/dashboard/user-stats",
+    async (url: string) => {
+      if (isDemoModeEnabled()) {
+        return getDemoUserStats() as any;
+      }
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch user stats");
+      return response.json();
+    },
+  );
 
   // Fetch user activity
   const {
@@ -84,6 +91,9 @@ const UserDashboard: React.FC = () => {
   } = useSWR<UserActivity[]>(
     "/api/dashboard/user-activity",
     async (url: string) => {
+      if (isDemoModeEnabled()) {
+        return getDemoUserActivity() as any;
+      }
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -128,7 +138,7 @@ const UserDashboard: React.FC = () => {
       change: "Active",
       changeType: "increase" as const,
       icon: Clock,
-      color: "text-purple-600",
+      color: "text-muted-foreground",
     },
   ];
 
@@ -136,7 +146,7 @@ const UserDashboard: React.FC = () => {
     <DashboardShell>
       <div className="container mx-auto max-w-7xl px-6 py-6 space-y-6">
         {/* Personal Overview Header */}
-        <header className="bg-surface1 border border-border-gray rounded-2xl shadow-soft px-6 py-5 flex items-center justify-between gap-4">
+        <header className="bg-card border border-border rounded-2xl shadow-soft px-6 py-5 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
               My Dashboard
@@ -149,15 +159,15 @@ const UserDashboard: React.FC = () => {
           <div className="flex items-center gap-3">
             {statsLoading ? (
               <div className="flex items-center gap-3 animate-pulse">
-                <div className="w-10 h-10 rounded-full bg-surface2" />
+                <div className="w-10 h-10 rounded-full bg-muted" />
                 <div className="space-y-1">
-                  <div className="h-3 w-24 bg-surface2 rounded" />
-                  <div className="h-2 w-16 bg-surface2 rounded" />
+                  <div className="h-3 w-24 bg-muted rounded" />
+                  <div className="h-2 w-16 bg-muted rounded" />
                 </div>
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center text-white text-sm font-semibold">
+                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-semibold">
                   {user?.name?.charAt(0) || "U"}
                 </div>
                 <div className="text-xs md:text-sm opacity-80 text-right">
@@ -175,11 +185,11 @@ const UserDashboard: React.FC = () => {
             ? [0, 1, 2, 3].map((key) => (
                 <div
                   key={key}
-                  className="bg-surface2 border border-border-gray rounded-2xl shadow-soft p-6 animate-pulse flex flex-col gap-3"
+                  className="bg-card border border-border rounded-2xl shadow-soft p-6 animate-pulse flex flex-col gap-3"
                 >
-                  <div className="h-4 w-24 bg-surface1 rounded" />
-                  <div className="h-7 w-20 bg-surface1 rounded" />
-                  <div className="h-3 w-16 bg-surface1 rounded" />
+                  <div className="h-4 w-24 bg-muted rounded" />
+                  <div className="h-7 w-20 bg-muted rounded" />
+                  <div className="h-3 w-16 bg-muted rounded" />
                 </div>
               ))
             : metrics.map((metric, index) => (
@@ -214,12 +224,12 @@ const UserDashboard: React.FC = () => {
                     {[0, 1, 2, 3].map((key) => (
                       <div
                         key={key}
-                        className="flex items-start gap-3 bg-surface2 border border-border-gray rounded-xl p-3 animate-pulse shadow-soft"
+                        className="flex items-start gap-3 bg-muted border border-border rounded-xl p-3 animate-pulse shadow-soft"
                       >
-                        <div className="w-8 h-8 rounded-full bg-surface1" />
+                        <div className="w-8 h-8 rounded-full bg-background" />
                         <div className="flex-1 space-y-2">
-                          <div className="h-3 w-48 bg-surface1 rounded" />
-                          <div className="h-2 w-28 bg-surface1 rounded" />
+                          <div className="h-3 w-48 bg-background rounded" />
+                          <div className="h-2 w-28 bg-background rounded" />
                         </div>
                       </div>
                     ))}
@@ -258,18 +268,18 @@ const UserDashboard: React.FC = () => {
                   {[0, 1, 2].map((key) => (
                     <div
                       key={key}
-                      className="bg-surface2 border border-border-gray rounded-xl p-4 animate-pulse shadow-soft flex flex-col gap-2"
+                      className="bg-muted border border-border rounded-xl p-4 animate-pulse shadow-soft flex flex-col gap-2"
                     >
-                      <div className="h-3 w-40 bg-surface1 rounded" />
-                      <div className="h-2 w-24 bg-surface1 rounded" />
+                      <div className="h-3 w-40 bg-background rounded" />
+                      <div className="h-2 w-24 bg-background rounded" />
                     </div>
                   ))}
                 </div>
               ) : stats?.notificationsCount ? (
                 <div className="space-y-2">
-                  <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex items-start justify-between gap-3">
+                  <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white">
+                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
                         <Bell className="w-4 h-4" />
                       </div>
                       <div>
@@ -291,7 +301,7 @@ const UserDashboard: React.FC = () => {
                 </div>
               ) : (
                 <div className="text-center py-6 opacity-70">
-                  You're all caught up. No new notifications.
+                  You&apos;re all caught up. No new notifications.
                 </div>
               )}
             </EnterpriseCard>
@@ -305,7 +315,7 @@ const UserDashboard: React.FC = () => {
                 Profile Summary
               </h2>
               <div className="text-center">
-                <div className="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto mb-3">
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-xl font-bold mx-auto mb-3">
                   {user?.name?.charAt(0) || "U"}
                 </div>
                 <div className="font-medium">{user?.name}</div>
@@ -322,19 +332,19 @@ const UserDashboard: React.FC = () => {
                 Quick Actions
               </h2>
               <div className="space-y-2">
-                <button className="w-full px-4 py-2 text-left text-sm rounded-xl border border-border-gray bg-surface1 shadow-soft hover:-translate-y-[2px] hover:shadow-elevated transition-transform transition-shadow duration-150 flex items-center gap-3">
+                <button className="w-full px-4 py-2 text-left text-sm rounded-xl border border-border bg-card shadow-soft hover:bg-muted hover:-translate-y-[2px] hover:shadow-elevated transition-transform transition-shadow duration-150 flex items-center gap-3">
                   <User className="w-4 h-4" />
                   <span>Update Profile</span>
                 </button>
-                <button className="w-full px-4 py-2 text-left text-sm rounded-xl border border-border-gray bg-surface1 shadow-soft hover:-translate-y-[2px] hover:shadow-elevated transition-transform transition-shadow duration-150 flex items-center gap-3">
+                <button className="w-full px-4 py-2 text-left text-sm rounded-xl border border-border bg-card shadow-soft hover:bg-muted hover:-translate-y-[2px] hover:shadow-elevated transition-transform transition-shadow duration-150 flex items-center gap-3">
                   <FileText className="w-4 h-4" />
                   <span>Submit Report</span>
                 </button>
-                <button className="w-full px-4 py-2 text-left text-sm rounded-xl border border-border-gray bg-surface1 shadow-soft hover:-translate-y-[2px] hover:shadow-elevated transition-transform transition-shadow duration-150 flex items-center gap-3">
+                <button className="w-full px-4 py-2 text-left text-sm rounded-xl border border-border bg-card shadow-soft hover:bg-muted hover:-translate-y-[2px] hover:shadow-elevated transition-transform transition-shadow duration-150 flex items-center gap-3">
                   <Calendar className="w-4 h-4" />
                   <span>View Tasks</span>
                 </button>
-                <button className="w-full px-4 py-2 text-left text-sm rounded-xl border border-border-gray bg-surface1 shadow-soft hover:-translate-y-[2px] hover:shadow-elevated transition-transform transition-shadow duration-150 flex items-center gap-3">
+                <button className="w-full px-4 py-2 text-left text-sm rounded-xl border border-border bg-card shadow-soft hover:bg-muted hover:-translate-y-[2px] hover:shadow-elevated transition-transform transition-shadow duration-150 flex items-center gap-3">
                   <Bell className="w-4 h-4" />
                   <span>Notification Preferences</span>
                 </button>
@@ -357,21 +367,21 @@ const UserDashboard: React.FC = () => {
             </div>
             {/* Simple tokenized summary tiles instead of raw boxes to avoid logic changes */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+              <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1">
                 <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                   Due Today
                 </span>
                 <span className="text-2xl font-semibold">3</span>
                 <span className="text-xs opacity-70">Tasks to complete</span>
               </div>
-              <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+              <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1">
                 <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                   This Week
                 </span>
                 <span className="text-2xl font-semibold">7</span>
                 <span className="text-xs opacity-70">Upcoming tasks</span>
               </div>
-              <div className="bg-surface1 border border-border-gray rounded-xl shadow-soft p-4 flex flex-col gap-1">
+              <div className="bg-card border border-border rounded-xl shadow-soft p-4 flex flex-col gap-1">
                 <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                   Completed
                 </span>

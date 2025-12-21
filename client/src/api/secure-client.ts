@@ -1,10 +1,15 @@
 // Secure API client with comprehensive security measures
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
 import { securityConfig, apiConfig } from "@/config/env";
 import { sanitizeInput, generateCSRFToken } from "@/security/utils";
 
 // Secure request interceptor
-const secureRequestInterceptor = (config: AxiosRequestConfig) => {
+const secureRequestInterceptor = (config: InternalAxiosRequestConfig) => {
   // Sanitize input data
   if (config.data && typeof config.data === "object") {
     config.data = sanitizeRequestData(config.data);
@@ -17,20 +22,20 @@ const secureRequestInterceptor = (config: AxiosRequestConfig) => {
   ) {
     const csrfToken = getCSRFToken();
     if (csrfToken) {
-      config.headers = {
-        ...config.headers,
-        "X-CSRF-Token": csrfToken,
-      };
+      const headers: any = config.headers ?? {};
+      headers["X-CSRF-Token"] = csrfToken;
+      config.headers = headers;
     }
   }
 
   // Add security headers
-  config.headers = {
-    ...config.headers,
-    "X-Requested-With": "XMLHttpRequest",
-    "Cache-Control": "no-cache",
-    Pragma: "no-cache",
-  };
+  {
+    const headers: any = config.headers ?? {};
+    headers["X-Requested-With"] = "XMLHttpRequest";
+    headers["Cache-Control"] = "no-cache";
+    headers.Pragma = "no-cache";
+    config.headers = headers;
+  }
 
   return config;
 };

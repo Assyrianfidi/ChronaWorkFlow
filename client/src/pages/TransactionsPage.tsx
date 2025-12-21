@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useTransactions } from "../contexts/TransactionsContext";
 import Button from "../components/ui/Button";
 import { DashboardShell } from "../components/ui/layout/DashboardShell";
@@ -458,15 +460,16 @@ const TransactionsPage: React.FC = () => {
 
           <div className="bg-surface1 shadow-soft overflow-hidden sm:rounded-md border border-border-gray">
             {state.isLoading ? (
-              <div className="px-4 py-8 text-center">
-                <div className="text-gray-500">Loading transactions...</div>
+              <div className="px-4">
+                <LoadingState label="Loading transactions…" size="sm" />
               </div>
             ) : state.transactions.length === 0 ? (
-              <div className="px-4 py-8 text-center">
-                <div className="text-gray-500">
-                  No transactions found. Create your first transaction to get
-                  started.
-                </div>
+              <div className="px-4">
+                <EmptyState
+                  size="sm"
+                  title="No transactions found"
+                  description="Create your first transaction to get started."
+                />
               </div>
             ) : (
               <ul className="divide-y divide-gray-200">

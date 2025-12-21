@@ -224,6 +224,12 @@ route("/api/v1/invoices", "./routes/invoices");
 route("/api/v1/payments", "./routes/payments");
 route("/api/v1/features", "./routes/feature.routes");
 
+// AI and GTM Routes
+route("/api/ai", "./routes/ai.routes");
+route("/api/migration", "./routes/migration.routes");
+route("/api/trial", "./routes/trial.routes");
+route("/api/pricing", "./routes/pricing.routes");
+
 // API Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 

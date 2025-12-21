@@ -1,5 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.js";
+import Alert, { AlertDescription, AlertTitle } from "@/components/ui/Alert";
 import { AlertCircle } from "lucide-react";
 
 interface Props {

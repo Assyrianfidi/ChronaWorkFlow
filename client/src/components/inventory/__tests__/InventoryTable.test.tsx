@@ -9,9 +9,9 @@ import {
 import "@testing-library/jest-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { mockInventoryItems } from "../__tests__/test-data/inventory.js";
-import { InventoryTable } from "../components/inventory/InventoryTable.js";
-import { InventoryItem } from "../types/inventory.js";
+import { mockInventoryItems } from '../__tests__/test-data/inventory';
+import { InventoryTable } from '../components/inventory/InventoryTable';
+import { InventoryItem } from '../types/inventory';
 
 // Mock the virtualized components
 vi.mock("@tanstack/react-virtual", () => ({

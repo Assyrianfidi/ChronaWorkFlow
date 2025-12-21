@@ -1,11 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useReducer,
-  useEffect,
-  ReactNode,
-} from "react";
-import { transactionsApi } from "../api.js";
+import React, { createContext, useContext, useReducer, ReactNode } from "react";
+import { transactionsApi } from "../api";
 
 // Types
 export interface TransactionLine {

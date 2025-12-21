@@ -5,9 +5,9 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/../../components/ui/card";
-import { apiRequest } from "@/../../lib/api";
-import { Bar, Line, Pie } from "react-chartjs-2";
+} from "@/components/components/ui/card";
+import { apiRequest } from "@/lib/api";
+import { Line, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,10 +18,8 @@ import {
   Title,
   Tooltip,
   Legend,
-  ChartData,
-  ChartOptions,
 } from "chart.js";
-import { formatCurrency } from "@/../../lib/formatters";
+import { formatCurrency } from "@/lib/formatters";
 
 // Register ChartJS components
 ChartJS.register(
@@ -40,14 +38,6 @@ interface DashboardData {
   expenses: number;
   profit: number;
   invoicesDue: number;
-}
-
-interface Transaction {
-  id: number;
-  name: string;
-  date: string;
-  amount: number;
-  type: "income" | "expense";
 }
 
 interface KPICardProps {

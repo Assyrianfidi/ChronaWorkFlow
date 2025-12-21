@@ -4,14 +4,12 @@ import { logger } from '../utils/logger';
 // Initialize Stripe with API key from environment
 let stripe: Stripe | null = null;
 
-// Only initialize Stripe if we have an API key and we're not in development mode
-if (process.env.NODE_ENV !== 'development' && process.env.STRIPE_SECRET_KEY) {
+// Initialize Stripe whenever an API key is available (test keys are valid in development)
+if (process.env.STRIPE_SECRET_KEY) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
     apiVersion: '2025-09-30.clover',
   });
-  logger.info('Stripe initialized in production mode');
-} else if (process.env.NODE_ENV === 'development') {
-  logger.warn('Stripe is running in development mode - payments will be mocked');
+  logger.info('Stripe initialized');
 }
 
 export interface StripePaymentIntent {
@@ -55,16 +53,6 @@ export class StripeService {
     name?: string;
     metadata?: Record<string, string>;
   }): Promise<StripeCustomer> {
-    if (process.env.NODE_ENV === 'development' && !process.env.STRIPE_SECRET_KEY) {
-      // Return a mock customer in development
-      return {
-        id: 'cus_mock_' + Math.random().toString(36).substring(2, 11),
-        email: data.email,
-        name: data.name,
-        metadata: data.metadata,
-      };
-    }
-
     const stripe = this.ensureStripeInitialized();
     try {
       const customer = await stripe.customers.create(data);
@@ -82,11 +70,6 @@ export class StripeService {
   }
 
   async getCustomer(customerId: string): Promise<StripeCustomer | null> {
-    if (process.env.NODE_ENV === 'development' && !process.env.STRIPE_SECRET_KEY) {
-      // Return null in development
-      return null;
-    }
-
     const stripe = this.ensureStripeInitialized();
     try {
       const customer = await stripe.customers.retrieve(customerId);
@@ -113,18 +96,6 @@ export class StripeService {
     description?: string;
     receipt_email?: string;
   }): Promise<StripePaymentIntent> {
-    if (process.env.NODE_ENV === 'development' && !process.env.STRIPE_SECRET_KEY) {
-      // Return a mock payment intent in development
-      return {
-        id: 'pi_mock_' + Math.random().toString(36).substring(2, 15),
-        client_secret: 'pi_mock_secret_' + Math.random().toString(36).substring(2, 22),
-        amount: data.amount,
-        currency: data.currency || 'usd',
-        status: 'succeeded',
-        metadata: data.metadata || {},
-      };
-    }
-
     const stripe = this.ensureStripeInitialized();
     try {
       const paymentIntent = await stripe.paymentIntents.create({
@@ -155,6 +126,7 @@ export class StripeService {
   }
 
   async retrievePaymentIntent(paymentIntentId: string): Promise<StripePaymentIntent | null> {
+    const stripe = this.ensureStripeInitialized();
     try {
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
       return {
@@ -172,6 +144,7 @@ export class StripeService {
   }
 
   async confirmPaymentIntent(paymentIntentId: string): Promise<StripePaymentIntent | null> {
+    const stripe = this.ensureStripeInitialized();
     try {
       const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId);
       return {
@@ -196,6 +169,7 @@ export class StripeService {
     description?: string;
     metadata?: Record<string, string>;
   }): Promise<{ id: string; invoice_pdf?: string; hosted_invoice_url?: string }> {
+    const stripe = this.ensureStripeInitialized();
     try {
       const invoice = await stripe.invoices.create({
         customer: data.customerId,
@@ -229,6 +203,7 @@ export class StripeService {
   }
 
   async sendInvoice(invoiceId: string): Promise<void> {
+    const stripe = this.ensureStripeInitialized();
     try {
       await stripe.invoices.sendInvoice(invoiceId);
       logger.info(`Stripe invoice sent: ${invoiceId}`);
@@ -240,12 +215,52 @@ export class StripeService {
 
   // Webhook handling
   async constructEvent(payload: Buffer, signature: string, webhookSecret: string): Promise<StripeWebhookEvent> {
+    const stripe = this.ensureStripeInitialized();
     try {
       return stripe.webhooks.constructEvent(payload, signature, webhookSecret);
     } catch (error) {
       logger.error('Failed to construct webhook event:', error);
       throw new Error(`Webhook event construction failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+  }
+
+  async createCheckoutSession(data: {
+    customerId: string;
+    priceId: string;
+    successUrl: string;
+    cancelUrl: string;
+    metadata?: Record<string, string>;
+    subscriptionMetadata?: Record<string, string>;
+  }): Promise<{ id: string; url: string | null }> {
+    const stripe = this.ensureStripeInitialized();
+
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      customer: data.customerId,
+      line_items: [{ price: data.priceId, quantity: 1 }],
+      success_url: data.successUrl,
+      cancel_url: data.cancelUrl,
+      metadata: data.metadata,
+      subscription_data: {
+        metadata: data.subscriptionMetadata,
+      },
+    });
+
+    return { id: session.id, url: session.url };
+  }
+
+  async retrieveSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
+    const stripe = this.ensureStripeInitialized();
+    return stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ['default_payment_method', 'items.data.price'],
+    });
+  }
+
+  async retrieveInvoice(invoiceId: string): Promise<Stripe.Invoice> {
+    const stripe = this.ensureStripeInitialized();
+    return stripe.invoices.retrieve(invoiceId, {
+      expand: ['payment_intent', 'charge', 'subscription'],
+    });
   }
 
   async handleWebhookEvent(event: StripeWebhookEvent): Promise<void> {
@@ -318,6 +333,7 @@ export class StripeService {
 
   // Utility methods
   async getBalance(): Promise<{ available: number; pending: number }> {
+    const stripe = this.ensureStripeInitialized();
     try {
       const balance = await stripe.balance.retrieve();
       return {
@@ -331,6 +347,7 @@ export class StripeService {
   }
 
   async refundPayment(paymentIntentId: string, amount?: number): Promise<void> {
+    const stripe = this.ensureStripeInitialized();
     try {
       await stripe.refunds.create({
         payment_intent: paymentIntentId,
@@ -345,6 +362,7 @@ export class StripeService {
 
   // Health check
   async healthCheck(): Promise<{ status: string; error?: string }> {
+    const stripe = this.ensureStripeInitialized();
     try {
       await stripe.balance.retrieve();
       return { status: 'healthy' };

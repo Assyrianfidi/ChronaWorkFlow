@@ -1,39 +1,23 @@
-import React, { useState } from "react";
-("use client");
+"use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDebounce } from "use-debounce";
 import {
   useInventoryItems,
   useInventoryStats,
-  useCreateInventoryItem,
-  useUpdateInventoryItem,
-  useDeleteInventoryItem,
-  useBulkUpdateInventoryItems,
-  useExportInventory,
   type InventoryQueryOptions,
-} from "@/components/hooks/use-inventory";
+} from "@/hooks/use-inventory";
 type SortDirection = "asc" | "desc";
-import type {
-  InventoryItem,
-  InventoryStats,
-  InventoryStatus,
-  InventoryResponse,
-  InventoryFilterOptions,
-  BulkUpdatePayload,
-  ExportOptions,
-} from "@/components/types/inventory";
+import type { InventoryStatus } from "@/types/inventory";
 import { Button } from "@/components/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/components/ui/card";
 import { Input } from "@/components/components/ui/input";
-import { Badge } from "@/components/components/ui/badge";
 import {
   Plus,
   Search,
@@ -42,16 +26,8 @@ import {
   TrendingUp,
   X,
   Filter,
-  ArrowUpDown,
-  MoreHorizontal,
-  ChevronDown,
-  ChevronRight,
-  Download,
-  FileText,
-  FileSpreadsheet,
-  FileType2,
 } from "lucide-react";
-import { InventoryTable } from "@/components/components/inventory/InventoryTable";
+import { InventoryTable } from "@/components/inventory/InventoryTable";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,35 +35,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuGroup,
 } from "@/components/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/components/ui/checkbox";
 import { Label } from "@/components/components/ui/label";
-import { toast } from "@/components/components/ui/use-toast";
 import { DashboardShell } from "@/components/components/ui/layout/DashboardShell";
-
-// Utility functions for inventory calculations
-const getLowStockItems = (items: InventoryItem[]): InventoryItem[] =>
-  items.filter(
-    (item) =>
-      item.quantityOnHand > 0 &&
-      item.quantityOnHand <= (item.reorderPoint || 0),
-  );
-
-const getOutOfStockItems = (items: InventoryItem[]): InventoryItem[] =>
-  items.filter((item) => item.quantityOnHand <= 0);
-
-const getInventoryValue = (items: InventoryItem[]): number =>
-  items.reduce(
-    (sum, item) => sum + item.quantityOnHand * (item.unitCost || 0),
-    0,
-  );
-
-const getInventoryStatus = (item: InventoryItem): InventoryStatus => {
-  if (item.quantityOnHand <= 0) return "out_of_stock";
-  if (item.quantityOnHand <= (item.reorderPoint || 0)) return "low_stock";
-  return "in_stock";
-};
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -103,12 +54,12 @@ export default function InventoryPage() {
   });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const debouncedSearch = useDebounce(filters.searchTerm, 300);
+  const [debouncedSearchTerm] = useDebounce(filters.searchTerm, 300);
 
   // Query options for inventory items
   const queryOptions: InventoryQueryOptions = useMemo(
     () => ({
-      search: filters.searchTerm,
+      search: debouncedSearchTerm,
       categories: filters.selectedCategory ? [filters.selectedCategory] : [],
       status: filters.statusFilter,
       sortBy: filters.sortBy,
@@ -116,7 +67,7 @@ export default function InventoryPage() {
       page: filters.page,
       pageSize: DEFAULT_PAGE_SIZE,
     }),
-    [filters],
+    [filters, debouncedSearchTerm],
   );
 
   // Stats query options
@@ -133,12 +84,8 @@ export default function InventoryPage() {
   );
 
   // Fetch inventory data using hooks
-  const {
-    data: inventoryItems = [],
-    isLoading: isLoadingItems,
-    isError: itemsError,
-    refetch: refetchItems,
-  } = useInventoryItems(queryOptions);
+  const { data: inventoryItems = [], isLoading: isLoadingItems } =
+    useInventoryItems(queryOptions);
 
   // Fetch inventory stats using hooks
   const {
@@ -150,52 +97,13 @@ export default function InventoryPage() {
       categories: [],
       lastUpdated: new Date().toISOString(),
     },
-    isLoading: isLoadingStats,
-    isError: statsError,
   } = useInventoryStats(statsQueryOptions);
 
-  // Calculate derived data
-  const totalValue = useMemo(
-    () =>
-      inventoryItems.reduce(
-        (sum: number, item: InventoryItem) =>
-          sum + item.quantityOnHand * item.unitCost,
-        0,
-      ),
-    [inventoryItems],
-  );
-
-  const lowStockItems = useMemo(
-    () =>
-      inventoryItems.filter(
-        (item: InventoryItem) => item.quantityOnHand < item.reorderPoint,
-      ),
-    [inventoryItems],
-  );
-
-  const outOfStockItems = useMemo(
-    () =>
-      inventoryItems.filter((item: InventoryItem) => item.quantityOnHand === 0),
-    [inventoryItems],
-  );
-
-  // Event handlers
-  const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters((prev) => ({ ...prev, searchTerm: e.target.value }));
-  }, []);
-
-  const handleStatusChange = useCallback(
-    (status: InventoryStatus | undefined) => {
-      setFilters((prev) => ({ ...prev, statusFilter: status }));
-    },
-    [],
-  );
-
-  const handleSort = useCallback((column: string) => {
+  const handleSort = useCallback((column: string, order: SortDirection) => {
     setFilters((prev) => ({
       ...prev,
       sortBy: column,
-      sortOrder: prev.sortOrder === "asc" ? "desc" : "asc",
+      sortOrder: order,
     }));
   }, []);
 
@@ -221,42 +129,6 @@ export default function InventoryPage() {
     },
     [inventoryItems],
   );
-
-  const handleToggleRow = useCallback((id: string) => {
-    setExpandedRows((prev) => {
-      const newExpanded = new Set(prev);
-      if (newExpanded.has(id)) {
-        newExpanded.delete(id);
-      } else {
-        newExpanded.add(id);
-      }
-      return newExpanded;
-    });
-  }, []);
-
-  const handleToggleSelection = useCallback((id: string) => {
-    setSelectedIds((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  }, []);
-
-  const handlePageChange = useCallback((newPage: number) => {
-    setFilters((prev) => ({ ...prev, page: newPage }));
-  }, []);
-
-  const handleCategoryChange = useCallback((category: string | undefined) => {
-    setFilters((prev) => ({ ...prev, selectedCategory: category }));
-  }, []);
-
-  const handleAdjustStock = useCallback((item: any) => {
-    console.log("Adjust stock for:", item);
-  }, []);
 
   // Toggle row expansion
   const toggleRowExpand = useCallback((id: string) => {
@@ -527,7 +399,7 @@ export default function InventoryPage() {
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="text-destructive"
+                  className="text-destructive dark:text-destructive-500"
                   onSelect={() => {
                     setFilters((prev) => ({
                       ...prev,
@@ -571,7 +443,7 @@ export default function InventoryPage() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    className="text-destructive"
+                    className="text-destructive dark:text-destructive-500"
                     onSelect={() => handleBulkAction("delete")}
                   >
                     Delete
@@ -589,20 +461,11 @@ export default function InventoryPage() {
               items={inventoryItems}
               isLoading={isLoadingItems}
               selectedItems={Array.from(selectedIds)}
-              onSelectItem={(id: string, selected: boolean) =>
-                handleToggleSelection(id)
-              }
-              onSelectAll={(selected: boolean) =>
-                selected
-                  ? inventoryItems.forEach((item: any) =>
-                      selectedIds.add(item.id),
-                    )
-                  : selectedIds.clear()
-              }
+              expandedItems={Array.from(expandedRows)}
+              onSelectItem={handleSelectItem}
+              onSelectAll={handleSelectAll}
               onToggleExpand={toggleRowExpand}
-              onSort={(field: string, order: "asc" | "desc") =>
-                handleSort(field)
-              }
+              onSort={handleSort}
               onEdit={(item: any) => console.log("Edit item:", item)}
               onDelete={(item: any) => console.log("Delete item:", item)}
             />

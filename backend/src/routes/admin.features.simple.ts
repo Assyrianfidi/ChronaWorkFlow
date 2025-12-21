@@ -134,7 +134,7 @@ router.patch(
     body("overrides").isObject().withMessage("overrides must be an object"),
   ],
   handleValidationErrors,
-  (req, res) => {
+  (req: express.Request, res: express.Response) => {
     const { userId } = req.params;
     const { overrides } = req.body as { overrides: Record<string, boolean> };
 

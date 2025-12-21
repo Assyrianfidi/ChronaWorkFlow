@@ -1,5 +1,5 @@
 import { UseFormSetError } from "react-hook-form";
-import { toast } from "../components/ui/use-toast.js";
+import { toast } from "@/components/ui/use-toast";
 
 type FormError = {
   message: string;

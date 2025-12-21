@@ -1,8 +1,9 @@
 module.exports = {
   root: true,
   env: {
+    browser: true,
+    es2022: true,
     node: true,
-    es2021: true,
   },
   extends: [
     'eslint:recommended',
@@ -12,7 +13,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project: './tsconfig.json',
+    project: true,
   },
   plugins: ['@typescript-eslint'],
   rules: {
@@ -21,5 +22,5 @@ module.exports = {
     '@typescript-eslint/ban-ts-comment': 'warn',
     '@typescript-eslint/no-floating-promises': 'warn',
   },
-  ignorePatterns: ['dist/**', 'node_modules/**'],
+  ignorePatterns: ['dist/', 'node_modules/', '**/*.js'],
 };

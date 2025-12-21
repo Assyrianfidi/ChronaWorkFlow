@@ -11,8 +11,8 @@ import React, {
   useCallback,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAdaptiveUI } from "@/../../state/ui/UserExperienceMode";
-import { useAdvancedFeedback } from "@/../../hooks/useInteractiveFeedback";
+import { useAdaptiveUI } from "@/state/ui/UserExperienceMode";
+import { useAdvancedFeedback } from "@/hooks/useInteractiveFeedback";
 
 // Types
 export interface NavigationItem {
@@ -306,7 +306,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     },
   });
 
-  const { elementRef, triggerClick, setInteractionEnabled } =
+  const { elementRef, triggerInteraction, setInteractionEnabled } =
     useAdvancedFeedback({
       visualFeedback: true,
       hapticFeedback: uiConfig.features.keyboardShortcuts,
@@ -314,6 +314,10 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       glow: true,
       parallax: true,
     });
+
+  const triggerClick = useCallback(() => {
+    triggerInteraction("click");
+  }, [triggerInteraction]);
 
   // Managers
   const [keyboardManager] = useState(() => new KeyboardShortcutManager());
@@ -564,12 +568,17 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           transition={{ delay: 0.2 }}
         >
           <div className="search-container">
-            <input
+            
+        <label htmlFor="input-cuch3ussa" className="sr-only">
+          Text
+        </label>
+        <input id="input-cuch3ussa"
               ref={searchInputRef}
               type="text"
               placeholder="Search navigation..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) =>
+       setSearchQuery(e.target.value)}
               onFocus={() => setShowSearch(true)}
               onBlur={() => {
                 if (!searchQuery) setShowSearch(false);
@@ -647,7 +656,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           border-right: 1px solid rgba(255, 255, 255, 0.1);
           display: flex;
           flex-direction: column;
-          transition: width ${config.animationDuration}ms ease;
+          transition-colors duration-200;
         }
 
         .sidebar-header {
@@ -671,13 +680,11 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           font-size: 1.2rem;
           cursor: pointer;
           padding: 0.5rem;
-          border-radius: 0.5rem;
-          transition: background 0.2s;
+          rounded-0;
+          transition-colors duration-200;
         }
 
-        .collapse-toggle:hover {
-          background: rgba(255, 255, 255, 0.1);
-        }
+        .collapse-togglehover:bg-rgba(255, 255, 255, 0.1)
 
         .sidebar-search {
           padding: 1rem;
@@ -693,7 +700,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           padding: 0.75rem 1rem;
           background: rgba(255, 255, 255, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 0.5rem;
+          rounded-0;
           color: white;
           font-size: 0.875rem;
         }
@@ -714,7 +721,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
         .search-shortcut kbd {
           background: rgba(255, 255, 255, 0.2);
           padding: 0.125rem 0.25rem;
-          border-radius: 0.25rem;
+          rounded-0;
           font-size: 0.625rem;
           color: white;
         }
@@ -746,14 +753,12 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           position: relative;
           margin-bottom: 0.25rem;
           padding: 0.75rem;
-          border-radius: 0.5rem;
+          rounded-0;
           cursor: pointer;
-          transition: all 0.2s;
+          transition-colors duration-200;
         }
 
-        .navigation-item:hover {
-          background: rgba(255, 255, 255, 0.1);
-        }
+        .navigation-itemhover:bg-rgba(255, 255, 255, 0.1)
 
         .navigation-item.active {
           background: rgba(59, 130, 246, 0.2);
@@ -795,7 +800,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           color: white;
           font-size: 0.625rem;
           padding: 0.125rem 0.375rem;
-          border-radius: 0.25rem;
+          rounded-0;
           font-weight: 600;
         }
 
@@ -820,7 +825,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           color: white;
           font-size: 0.75rem;
           padding: 0.125rem 0.5rem;
-          border-radius: 1rem;
+          rounded-0;
           font-weight: 600;
           min-width: 1.5rem;
           text-align: center;
@@ -832,8 +837,8 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           color: rgba(255, 255, 255, 0.6);
           cursor: pointer;
           padding: 0.25rem;
-          border-radius: 0.25rem;
-          transition: all 0.2s;
+          rounded-0;
+          transition-colors duration-200;
         }
 
         .favorite-button:hover {
@@ -850,7 +855,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           color: rgba(255, 255, 255, 0.6);
           cursor: pointer;
           padding: 0.25rem;
-          transition: transform 0.2s;
+          transition-colors duration-200;
         }
 
         .expand-button.expanded {
@@ -862,7 +867,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           color: rgba(255, 255, 255, 0.4);
           background: rgba(255, 255, 255, 0.1);
           padding: 0.125rem 0.375rem;
-          border-radius: 0.25rem;
+          rounded-0;
         }
 
         .navigation-children {
@@ -896,16 +901,13 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           padding: 0.5rem;
           background: rgba(255, 255, 255, 0.05);
           border: none;
-          border-radius: 0.375rem;
+          rounded-0;
           color: rgba(255, 255, 255, 0.8);
           cursor: pointer;
-          transition: all 0.2s;
+          transition-colors duration-200;
         }
 
-        .recent-item:hover {
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-        }
+        .recent-itemhover:bg-rgba(255, 255, 255, 0.1)
 
         .recent-item span {
           font-size: 0.875rem;

@@ -1,4 +1,4 @@
-// Mock Prisma client first
+// Mock Prisma client first (must be hoisted for vi.mock)
 const mockPrisma = {
   account: {
     findMany: jest.fn(),
@@ -13,24 +13,21 @@ jest.mock("../utils/prisma", () => ({
   prisma: mockPrisma,
 }));
 
-jest.mock("../utils/errors", () => ({
-  ApiError: jest.fn().mockImplementation((statusCode, message) => {
-    const error = new Error(message);
-    error.statusCode = statusCode;
-    error.name = "ApiError";
-    return error;
-  }),
-}));
-
-import { accountsService } from "../modules/accounts/accounts.service";
-import { accountsController } from "../modules/accounts/accounts.controller";
 import { Request, Response, NextFunction } from "express";
 import { Decimal } from "@prisma/client/runtime/library";
+
+let accountsService: typeof import("../modules/accounts/accounts.service").accountsService;
+let accountsController: typeof import("../modules/accounts/accounts.controller").accountsController;
 
 describe("Accounts Module", () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let nextFunction: NextFunction;
+
+  beforeAll(async () => {
+    ({ accountsService } = await import("../modules/accounts/accounts.service"));
+    ({ accountsController } = await import("../modules/accounts/accounts.controller"));
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -140,14 +137,11 @@ describe("Accounts Module", () => {
       });
 
       it("should throw error for NaN amount", async () => {
-        // Temporarily restore the original prisma to test service logic
-        const { prisma: originalPrisma } = jest.requireActual('../utils/prisma');
-        jest.doMock('../utils/prisma', () => ({ prisma: originalPrisma }));
-        
-        // Import fresh service instance
-        const { accountsService: freshService } = require('../modules/accounts/accounts.service');
-        
-        await expect(freshService.adjustBalance("1", NaN)).rejects.toThrow("amount must be a number");
+        await expect(accountsService.adjustBalance("1", NaN)).rejects.toThrow(
+          "amount must be a number",
+        );
+
+        expect(mockPrisma.account.update).not.toHaveBeenCalled();
       });
     });
   });

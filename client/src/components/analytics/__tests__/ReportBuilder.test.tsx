@@ -1,8 +1,8 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import { ReportBuilder } from "../ReportBuilder.js";
-import { AnalyticsEngine } from "../AnalyticsEngine.js";
+import { ReportBuilder } from '../ReportBuilder';
+import { AnalyticsEngine } from '../AnalyticsEngine';
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({

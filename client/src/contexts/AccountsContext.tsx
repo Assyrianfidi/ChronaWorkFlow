@@ -1,11 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useReducer,
-  useEffect,
-  ReactNode,
-} from "react";
-import { accountsApi } from "../api.js";
+import React, { createContext, useContext, useReducer, ReactNode } from "react";
+import { accountsApi } from "../api";
 
 // Types
 export interface Account {

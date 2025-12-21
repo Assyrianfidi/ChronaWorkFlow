@@ -180,7 +180,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       <FormField label="Status" error={errors.status?.message} required>
         <select
           {...register("status")}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
           aria-label="Invoice status"
           aria-invalid={errors.status ? "true" : "false"}
         >
@@ -199,7 +199,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
         <textarea
           {...register("notes")}
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-input bg-background rounded-md shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
           placeholder="Enter any additional notes..."
           aria-label="Invoice notes"
         />
@@ -209,7 +209,6 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
         <Button
           type="submit"
           disabled={!isDirty || !isValid || isSubmitting}
-          loading={isSubmitting}
           aria-label={initialData ? "Update invoice" : "Create invoice"}
         >
           {isSubmitting

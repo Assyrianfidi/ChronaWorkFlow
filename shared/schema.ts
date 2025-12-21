@@ -8,11 +8,16 @@ export const employeeStatusEnum = pgEnum('employee_status', ['active', 'on_leave
 export const payFrequencyEnum = pgEnum('pay_frequency', ['weekly', 'bi-weekly', 'semi-monthly', 'monthly']);
 export const payRunStatusEnum = pgEnum('pay_run_status', ['draft', 'pending_approval', 'approved', 'processing', 'completed', 'cancelled']);
 export const taxFormStatusEnum = pgEnum('tax_form_status', ['draft', 'generated', 'filed', 'accepted', 'rejected', 'amended']);
-export const roleEnum = pgEnum('role', ['admin', 'user', 'accountant', 'manager']);
+export const roleEnum = pgEnum('role', ['owner', 'admin', 'user', 'accountant', 'manager']);
 export const accountTypeEnum = pgEnum('account_type', ['asset', 'liability', 'equity', 'revenue', 'expense']);
 export const transactionTypeEnum = pgEnum('transaction_type', ['invoice', 'payment', 'expense', 'transfer', 'adjustment', 'journal_entry']);
 export const invoiceStatusEnum = pgEnum('invoice_status', ['draft', 'sent', 'viewed', 'paid', 'overdue', 'cancelled']);
 export const paymentMethodEnum = pgEnum('payment_method', ['cash', 'check', 'credit_card', 'bank_transfer', 'other']);
+export const planIntervalEnum = pgEnum('plan_interval', ['month', 'year']);
+export const subscriptionStatusEnum = pgEnum('subscription_status', ['trialing', 'active', 'past_due', 'canceled', 'paused']);
+export const billingInvoiceStatusEnum = pgEnum('billing_invoice_status', ['draft', 'open', 'paid', 'uncollectible', 'void']);
+export const billingPaymentStatusEnum = pgEnum('billing_payment_status', ['requires_payment_method', 'requires_action', 'processing', 'succeeded', 'failed', 'canceled']);
+export const usageMetricTypeEnum = pgEnum('usage_metric_type', ['api_calls', 'ai_tokens', 'invoices_created', 'users_count']);
 
 // Employees table
 export const employees = pgTable("employees", {
@@ -290,6 +295,7 @@ export const companies = pgTable("companies", {
   taxId: text("tax_id"),
   fiscalYearEnd: text("fiscal_year_end").default("12-31"),
   currency: text("currency").default("USD").notNull(),
+  stripeCustomerId: text("stripe_customer_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -725,8 +731,8 @@ export const backupJobs = pgTable("backup_jobs", {
 // Audit Logs (immutable)
 export const auditLogs = pgTable("audit_logs", {
   id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
-  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
-  userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+  companyId: varchar("company_id", { length: 36 }).references(() => companies.id),
+  userId: varchar("user_id", { length: 36 }).references(() => users.id),
   action: text("action").notNull(),
   entityType: text("entity_type").notNull(),
   entityId: varchar("entity_id", { length: 36 }).notNull(),
@@ -735,6 +741,160 @@ export const auditLogs = pgTable("audit_logs", {
   userAgent: text("user_agent"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const stripeWebhookEvents = pgTable("stripe_webhook_events", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  stripeEventId: text("stripe_event_id").notNull(),
+  eventType: text("event_type").notNull(),
+  receivedAt: timestamp("received_at").defaultNow().notNull(),
+  status: text("status").default("processing").notNull(),
+  processedAt: timestamp("processed_at"),
+  error: text("error"),
+}, (table) => ({
+  uniqueStripeEventId: uniqueIndex("unique_stripe_event_id").on(table.stripeEventId),
+}));
+
+export const aiPricingConfig = pgTable("ai_pricing_config", {
+  id: text("id").primaryKey(),
+  pricePer1kTokensCents: integer("price_per_1k_tokens_cents").default(40).notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const companyAiSettings = pgTable("company_ai_settings", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  aiEnabled: boolean("ai_enabled").default(true).notNull(),
+  bonusTokens: integer("bonus_tokens").default(0).notNull(),
+  pricePer1kTokensCentsOverride: integer("price_per_1k_tokens_cents_override"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueCompanyAiSettings: uniqueIndex("unique_company_ai_settings").on(table.companyId),
+}));
+
+export const plans = pgTable("plans", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  code: text("code").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  isActive: boolean("is_active").default(true).notNull(),
+  priceCents: integer("price_cents").notNull(),
+  currency: text("currency").default("USD").notNull(),
+  billingInterval: planIntervalEnum("billing_interval").default("month").notNull(),
+  stripeProductId: text("stripe_product_id"),
+  stripePriceId: text("stripe_price_id"),
+  includedUsers: integer("included_users").default(1).notNull(),
+  includedInvoices: integer("included_invoices").default(50).notNull(),
+  includedAiTokens: integer("included_ai_tokens").default(0).notNull(),
+  includedApiCalls: integer("included_api_calls").default(0).notNull(),
+  maxUsers: integer("max_users"),
+  maxInvoices: integer("max_invoices"),
+  maxAiTokens: integer("max_ai_tokens"),
+  maxApiCalls: integer("max_api_calls"),
+  allowApiAccess: boolean("allow_api_access").default(false).notNull(),
+  allowAuditExports: boolean("allow_audit_exports").default(false).notNull(),
+  allowAdvancedAnalytics: boolean("allow_advanced_analytics").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at"),
+}, (table) => ({
+  uniquePlanCodeInterval: uniqueIndex("unique_plan_code_interval").on(table.code, table.billingInterval),
+}));
+
+export const subscriptions = pgTable("subscriptions", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  planId: varchar("plan_id", { length: 36 }).notNull().references(() => plans.id),
+  status: subscriptionStatusEnum("status").notNull(),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false).notNull(),
+  currentPeriodStart: timestamp("current_period_start"),
+  currentPeriodEnd: timestamp("current_period_end"),
+  trialStart: timestamp("trial_start"),
+  trialEnd: timestamp("trial_end"),
+  canceledAt: timestamp("canceled_at"),
+  pastDueSince: timestamp("past_due_since"),
+  suspendedAt: timestamp("suspended_at"),
+  ownerGrantedFree: boolean("owner_granted_free").default(false).notNull(),
+  ownerNotes: text("owner_notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at"),
+}, (table) => ({
+  uniqueStripeSubscriptionId: uniqueIndex("unique_stripe_subscription_id").on(table.stripeSubscriptionId),
+}));
+
+export const billingInvoices = pgTable("billing_invoices", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  subscriptionId: varchar("subscription_id", { length: 36 }).references(() => subscriptions.id),
+  stripeInvoiceId: text("stripe_invoice_id"),
+  status: billingInvoiceStatusEnum("status").notNull(),
+  currency: text("currency").default("USD").notNull(),
+  amountDueCents: integer("amount_due_cents").default(0).notNull(),
+  amountPaidCents: integer("amount_paid_cents").default(0).notNull(),
+  hostedInvoiceUrl: text("hosted_invoice_url"),
+  invoicePdfUrl: text("invoice_pdf_url"),
+  invoicePeriodStart: timestamp("invoice_period_start"),
+  invoicePeriodEnd: timestamp("invoice_period_end"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at"),
+}, (table) => ({
+  uniqueStripeInvoiceId: uniqueIndex("unique_stripe_invoice_id").on(table.stripeInvoiceId),
+}));
+
+export const billingPayments = pgTable("billing_payments", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  billingInvoiceId: varchar("billing_invoice_id", { length: 36 }).references(() => billingInvoices.id),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  stripeChargeId: text("stripe_charge_id"),
+  status: billingPaymentStatusEnum("status").notNull(),
+  amountCents: integer("amount_cents").default(0).notNull(),
+  currency: text("currency").default("USD").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at"),
+}, (table) => ({
+  uniqueStripePaymentIntentId: uniqueIndex("unique_stripe_payment_intent_id").on(table.stripePaymentIntentId),
+}));
+
+export const usageMetrics = pgTable("usage_metrics", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  subscriptionId: varchar("subscription_id", { length: 36 }).references(() => subscriptions.id),
+  metricType: usageMetricTypeEnum("metric_type").notNull(),
+  billingPeriodStart: timestamp("billing_period_start").notNull(),
+  billingPeriodEnd: timestamp("billing_period_end").notNull(),
+  quantity: numeric("quantity", { precision: 20, scale: 0 }).default("0").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueMetricPeriod: uniqueIndex("unique_usage_metric_period").on(
+    table.companyId,
+    table.metricType,
+    table.billingPeriodStart,
+    table.billingPeriodEnd,
+  ),
+}));
+
+export const aiUsageLogs = pgTable("ai_usage_logs", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  userId: varchar("user_id", { length: 36 }).references(() => users.id),
+  feature: text("feature").notNull(),
+  model: text("model"),
+  promptTokens: integer("prompt_tokens").default(0).notNull(),
+  completionTokens: integer("completion_tokens").default(0).notNull(),
+  totalTokens: integer("total_tokens").default(0).notNull(),
+  providerCostCents: integer("provider_cost_cents").default(0).notNull(),
+  billedCents: integer("billed_cents").default(0).notNull(),
+  requestId: text("request_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueAiRequestId: uniqueIndex("unique_ai_usage_request_id").on(table.requestId),
+}));
 
 // Relations for Payroll Module
 export const employeesRelations = relations(employees, ({ one, many }) => ({
@@ -1382,5 +1542,86 @@ export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
   createdAt: true
 });
 
+export const insertStripeWebhookEventSchema = createInsertSchema(stripeWebhookEvents).omit({
+  id: true,
+  receivedAt: true,
+  processedAt: true
+});
+
+export const insertAiPricingConfigSchema = createInsertSchema(aiPricingConfig).omit({
+  updatedAt: true
+});
+
+export const insertCompanyAiSettingsSchema = createInsertSchema(companyAiSettings).omit({
+  id: true,
+  updatedAt: true
+});
+
+export const insertPlanSchema = createInsertSchema(plans).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  deletedAt: true
+});
+
+export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  deletedAt: true
+});
+
+export const insertBillingInvoiceSchema = createInsertSchema(billingInvoices).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  deletedAt: true
+});
+
+export const insertBillingPaymentSchema = createInsertSchema(billingPayments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  deletedAt: true
+});
+
+export const insertUsageMetricSchema = createInsertSchema(usageMetrics).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertAiUsageLogSchema = createInsertSchema(aiUsageLogs).omit({
+  id: true,
+  createdAt: true
+});
+
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+
+export type StripeWebhookEvent = typeof stripeWebhookEvents.$inferSelect;
+export type InsertStripeWebhookEvent = z.infer<typeof insertStripeWebhookEventSchema>;
+
+export type AiPricingConfig = typeof aiPricingConfig.$inferSelect;
+export type InsertAiPricingConfig = z.infer<typeof insertAiPricingConfigSchema>;
+
+export type CompanyAiSettings = typeof companyAiSettings.$inferSelect;
+export type InsertCompanyAiSettings = z.infer<typeof insertCompanyAiSettingsSchema>;
+
+export type Plan = typeof plans.$inferSelect;
+export type InsertPlan = z.infer<typeof insertPlanSchema>;
+
+export type Subscription = typeof subscriptions.$inferSelect;
+export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
+
+export type BillingInvoice = typeof billingInvoices.$inferSelect;
+export type InsertBillingInvoice = z.infer<typeof insertBillingInvoiceSchema>;
+
+export type BillingPayment = typeof billingPayments.$inferSelect;
+export type InsertBillingPayment = z.infer<typeof insertBillingPaymentSchema>;
+
+export type UsageMetric = typeof usageMetrics.$inferSelect;
+export type InsertUsageMetric = z.infer<typeof insertUsageMetricSchema>;
+
+export type AiUsageLog = typeof aiUsageLogs.$inferSelect;
+export type InsertAiUsageLog = z.infer<typeof insertAiUsageLogSchema>;

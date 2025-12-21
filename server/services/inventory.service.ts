@@ -1,12 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma, PrismaClient } from '../prisma';
 import { z } from 'zod';
 import { inventoryItemSchema } from '../types/inventory.types';
+import { ApiError } from '../utils/error';
 
 export class InventoryService {
   private prisma: PrismaClient;
 
-  constructor() {
-    this.prisma = new PrismaClient();
+  constructor(prismaClient: PrismaClient = prisma) {
+    this.prisma = prismaClient;
   }
 
   async createInventoryItem(
@@ -23,7 +24,7 @@ export class InventoryService {
     });
 
     if (existingItem) {
-      throw new Error('An item with this SKU already exists');
+      throw new ApiError(400, 'An item with this SKU already exists');
     }
 
     // Create the inventory item
@@ -50,7 +51,7 @@ export class InventoryService {
     });
 
     if (!existingItem) {
-      throw new Error('Inventory item not found');
+      throw new ApiError(404, 'Inventory item not found');
     }
 
     // Validate and prepare update data
@@ -83,7 +84,7 @@ export class InventoryService {
     });
 
     if (!existingItem) {
-      throw new Error('Inventory item not found');
+      throw new ApiError(404, 'Inventory item not found');
     }
 
     // Soft delete the item
@@ -107,7 +108,7 @@ export class InventoryService {
     });
 
     if (!item) {
-      throw new Error('Inventory item not found');
+      throw new ApiError(404, 'Inventory item not found');
     }
 
     return item;
@@ -202,12 +203,12 @@ export class InventoryService {
     });
 
     if (!existingItem) {
-      throw new Error('Inventory item not found');
+      throw new ApiError(404, 'Inventory item not found');
     }
 
     const newQuantity = existingItem.quantity + adjustment;
     if (newQuantity < 0) {
-      throw new Error('Insufficient inventory');
+      throw new ApiError(400, 'Insufficient inventory');
     }
 
     // Update the item quantity

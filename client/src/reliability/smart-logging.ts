@@ -823,6 +823,15 @@ export class SmartLoggingEngine {
   }
 
   private handleAnomalyDetected(pattern: AnomalyPattern, anomaly: any): void {
+    const alertSeverity =
+      pattern.severity === "critical"
+        ? "critical"
+        : pattern.severity === "high"
+          ? "error"
+          : pattern.severity === "medium"
+            ? "warning"
+            : "info";
+
     this.log("warn", `Anomaly detected: ${pattern.name}`, "anomaly", {
       patternId: pattern.id,
       severity: pattern.severity,
@@ -833,7 +842,7 @@ export class SmartLoggingEngine {
     if (this.config.alerts.enabled) {
       this.alertManager.createAlert({
         type: "anomaly",
-        severity: pattern.severity,
+        severity: alertSeverity,
         title: `Anomaly: ${pattern.name}`,
         message: pattern.description,
         data: { pattern, anomaly },

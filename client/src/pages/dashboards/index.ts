@@ -1,7 +1,7 @@
 // Dashboard exports
-export { default as AdminDashboard } from "./AdminDashboard.js";
-export { default as ManagerDashboard } from "./ManagerDashboard.js";
-export { default as AccountantDashboard } from "./AccountantDashboard.js";
-export { default as UserDashboard } from "./UserDashboard.js";
-export { default as AuditorDashboard } from "./AuditorDashboard.js";
-export { default as InventoryDashboard } from "./InventoryDashboard.js";
+export { default as AdminDashboard } from "./AdminDashboard";
+export { default as ManagerDashboard } from "./ManagerDashboard";
+export { default as AccountantDashboard } from "./AccountantDashboard";
+export { default as UserDashboard } from "./UserDashboard";
+export { default as AuditorDashboard } from "./AuditorDashboard";
+export { default as InventoryDashboard } from "./InventoryDashboard";

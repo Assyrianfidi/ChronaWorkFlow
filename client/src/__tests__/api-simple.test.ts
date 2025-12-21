@@ -18,7 +18,7 @@ vi.mock("axios", async (importOriginal) => {
 });
 
 // Import api after mocking
-import { authApi } from "../api.js";
+import { authApi } from '../api';
 
 describe("API Simple Tests", () => {
   beforeEach(() => {

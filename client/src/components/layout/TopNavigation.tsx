@@ -4,12 +4,12 @@ declare global {
   }
 }
 
-import React, { useState } from "react";
 import * as React from "react";
 import { Search, Bell, Settings, User, Menu, X, Moon, Sun } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
 import { EnterpriseInput } from "@/components/ui/EnterpriseInput";
-import { cn } from "@/../../lib/utils";
+import { cn } from "@/lib/utils";
 
 interface TopNavigationProps {
   onSidebarToggle?: () => void;
@@ -23,6 +23,76 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
     const [showUserMenu, setShowUserMenu] = React.useState(false);
     const [showNotifications, setShowNotifications] = React.useState(false);
     const [darkMode, setDarkMode] = React.useState(false);
+
+    const notificationsButtonRef = React.useRef<HTMLButtonElement>(null);
+    const notificationsMenuRef = React.useRef<HTMLDivElement>(null);
+    const userMenuButtonRef = React.useRef<HTMLButtonElement>(null);
+    const userMenuRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+      if (!showNotifications && !showUserMenu) return;
+
+      const onPointerDown = (e: MouseEvent | TouchEvent) => {
+        const target = e.target as Node | null;
+        if (!target) return;
+
+        if (
+          showNotifications &&
+          !notificationsButtonRef.current?.contains(target) &&
+          !notificationsMenuRef.current?.contains(target)
+        ) {
+          setShowNotifications(false);
+        }
+
+        if (
+          showUserMenu &&
+          !userMenuButtonRef.current?.contains(target) &&
+          !userMenuRef.current?.contains(target)
+        ) {
+          setShowUserMenu(false);
+        }
+      };
+
+      const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key !== "Escape") return;
+        if (showNotifications) {
+          setShowNotifications(false);
+          notificationsButtonRef.current?.focus();
+          return;
+        }
+        if (showUserMenu) {
+          setShowUserMenu(false);
+          userMenuButtonRef.current?.focus();
+        }
+      };
+
+      document.addEventListener("mousedown", onPointerDown);
+      document.addEventListener("touchstart", onPointerDown);
+      document.addEventListener("keydown", onKeyDown);
+      return () => {
+        document.removeEventListener("mousedown", onPointerDown);
+        document.removeEventListener("touchstart", onPointerDown);
+        document.removeEventListener("keydown", onKeyDown);
+      };
+    }, [showNotifications, showUserMenu]);
+
+    React.useEffect(() => {
+      if (!showNotifications) return;
+      requestAnimationFrame(() => {
+        notificationsMenuRef.current
+          ?.querySelector<HTMLElement>("button,[href],[tabindex]:not([tabindex='-1'])")
+          ?.focus();
+      });
+    }, [showNotifications]);
+
+    React.useEffect(() => {
+      if (!showUserMenu) return;
+      requestAnimationFrame(() => {
+        userMenuRef.current
+          ?.querySelector<HTMLElement>("button,[href],[tabindex]:not([tabindex='-1'])")
+          ?.focus();
+      });
+    }, [showUserMenu]);
 
     React.useEffect(() => {
       // Check for saved theme preference or default to light mode
@@ -103,7 +173,7 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
       <header
         ref={ref}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 bg-primary text-white shadow-lg",
+          "fixed top-0 left-0 right-0 z-50 bg-primary text-primary-foreground shadow-lg",
           className,
         )}
       >
@@ -114,7 +184,7 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
               variant="ghost"
               size="sm"
               onClick={onSidebarToggle}
-              className="text-white hover:bg-white/10"
+              className="text-primary-foreground hover:bg-primary-foreground/10"
               icon={
                 sidebarOpen ? (
                   <X className="h-5 w-5" />
@@ -126,7 +196,7 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
 
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">A</span>
+                <span className="text-accent-foreground font-bold text-sm">A</span>
               </div>
               <h1 className="text-xl font-bold">AccuBooks</h1>
             </div>
@@ -135,12 +205,12 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="flex-1 max-w-xl mx-8">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-foreground/70 h-4 w-4" />
               <EnterpriseInput
                 placeholder="Search transactions, customers, invoices..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-white/10 border-white/20 text-white placeholder-white/60 focus:bg-white/20 focus:border-white/40"
+                className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60 focus:bg-primary-foreground/15 focus:border-primary-foreground/30"
                 icon={<Search className="h-4 w-4" />}
                 iconPosition="left"
               />
@@ -154,7 +224,7 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
               variant="ghost"
               size="sm"
               onClick={toggleDarkMode}
-              className="text-white hover:bg-white/10"
+              className="text-primary-foreground hover:bg-primary-foreground/10"
               icon={
                 darkMode ? (
                   <Sun className="h-5 w-5" />
@@ -167,69 +237,84 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
             {/* Notifications */}
             <div className="relative">
               <EnterpriseButton
+                ref={notificationsButtonRef}
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="text-white hover:bg-white/10 relative"
+                className="text-primary-foreground hover:bg-primary-foreground/10 relative"
                 icon={<Bell className="h-5 w-5" />}
+                aria-label="Notifications"
+                aria-haspopup="menu"
+                aria-expanded={showNotifications}
+                aria-controls="topnav-notifications-menu"
               />
               {notifications.filter((n) => !n.read).length > 0 && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-danger rounded-full border-2 border-primary" />
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full border-2 border-primary"
+                />
               )}
 
               {/* Notifications Dropdown */}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-surface border border-gray-200 rounded-lg shadow-xl z-50">
-                  <div className="p-4 border-b border-gray-200">
-                    <h3 className="font-semibold text-primary">
+                <div
+                  ref={notificationsMenuRef}
+                  id="topnav-notifications-menu"
+                  role="menu"
+                  aria-label="Notifications"
+                  className="absolute right-0 mt-2 w-80 bg-popover text-popover-foreground border border-border rounded-lg shadow-xl z-50"
+                >
+                  <div className="p-4 border-b border-border">
+                    <h3 className="font-semibold text-foreground">
                       Notifications
                     </h3>
                   </div>
                   <div className="max-h-96 overflow-y-auto">
                     {notifications.length === 0 ? (
-                      <div className="p-4 text-center text-gray-500">
-                        No notifications
-                      </div>
+                      <EmptyState size="sm" title="No notifications" />
                     ) : (
                       notifications.map((notification) => (
-                        <div
+                        <button
                           key={notification.id}
+                          type="button"
                           className={cn(
-                            "p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer",
-                            !notification.read && "bg-blue-50",
+                            "w-full text-left p-4 border-b border-border hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background",
+                            !notification.read && "bg-accent/10",
                           )}
+                          role="menuitem"
+                          aria-label={`${notification.title}. ${notification.message}. ${notification.time}.`}
                         >
                           <div className="flex items-start gap-3">
                             <div
+                              aria-hidden="true"
                               className={cn(
                                 "w-2 h-2 rounded-full mt-2",
-                                notification.read ? "bg-gray-300" : "bg-accent",
+                                notification.read ? "bg-muted-foreground/40" : "bg-accent",
                               )}
                             />
                             <div className="flex-1">
-                              <h4 className="font-medium text-primary text-sm">
+                              <h4 className="font-medium text-foreground text-sm">
                                 {notification.title}
                               </h4>
-                              <p className="text-xs text-gray-600 mt-1">
+                              <p className="text-xs text-muted-foreground mt-1">
                                 {notification.message}
                               </p>
-                              <p className="text-xs text-gray-400 mt-2">
+                              <p className="text-xs text-muted-foreground mt-2">
                                 {notification.time}
                               </p>
                             </div>
                           </div>
-                        </div>
+                        </button>
                       ))
                     )}
                   </div>
-                  <div className="p-3 border-t border-gray-200">
+                  <div className="p-3 border-t border-border">
                     <EnterpriseButton
                       variant="ghost"
                       size="sm"
                       className="w-full text-secondary"
                       onClick={() => setShowNotifications(false)}
                     >
-                      {/* @ts-ignore */}
                       Mark all as read
                     </EnterpriseButton>
                   </div>
@@ -240,30 +325,43 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
             {/* User Menu */}
             <div className="relative">
               <EnterpriseButton
+                ref={userMenuButtonRef}
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="text-white hover:bg-white/10 flex items-center gap-2"
+                className="text-primary-foreground hover:bg-primary-foreground/10 flex items-center gap-2"
+                aria-label="User menu"
+                aria-haspopup="menu"
+                aria-expanded={showUserMenu}
+                aria-controls="topnav-user-menu"
               >
                 <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4 text-white" />
+                  <User className="h-4 w-4 text-accent-foreground" />
                 </div>
                 <span className="hidden md:block text-sm">Admin User</span>
               </EnterpriseButton>
 
               {/* User Dropdown */}
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-surface border border-gray-200 rounded-lg shadow-xl z-50">
-                  <div className="p-3 border-b border-gray-200">
-                    <p className="font-medium text-primary">Admin User</p>
-                    <p className="text-xs text-gray-500">admin@accubooks.com</p>
+                <div
+                  ref={userMenuRef}
+                  id="topnav-user-menu"
+                  role="menu"
+                  aria-label="User menu"
+                  className="absolute right-0 mt-2 w-48 bg-popover text-popover-foreground border border-border rounded-lg shadow-xl z-50"
+                >
+                  <div className="p-3 border-b border-border">
+                    <p className="font-medium text-foreground">Admin User</p>
+                    <p className="text-xs text-muted-foreground">admin@accubooks.com</p>
                   </div>
                   <div className="py-2">
                     {userMenuItems.map((item, index) => (
                       <button
                         key={index}
+                        type="button"
                         onClick={item.action}
-                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-3"
+                        className="w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
+                        role="menuitem"
                       >
                         {item.icon}
                         {item.label}

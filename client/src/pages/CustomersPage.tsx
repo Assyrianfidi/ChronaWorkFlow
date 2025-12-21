@@ -138,7 +138,7 @@ const CustomersPage: React.FC = () => {
   const [filteredCustomers, setFilteredCustomers] =
     useState<Customer[]>(mockCustomers);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter] = useState<string>("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 

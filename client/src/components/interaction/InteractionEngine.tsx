@@ -571,7 +571,8 @@ class GestureManager {
 export function InteractionEngine({ children }: { children: React.ReactNode }) {
   const { currentMode } = useUserExperienceMode();
   const { isLowPerformanceMode } = usePerformance();
-  const { reducedMotion } = useAccessibility();
+  const { config: accessibilityConfig } = useAccessibility();
+  const reducedMotion = accessibilityConfig.reducedMotion;
 
   const [config, setConfig] = useState<InteractionConfig>(defaultConfig);
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -941,7 +942,9 @@ export function PhysicsAnimation({
   friction = 26,
   disabled = false,
 }: {
-  children: React.ReactNode;
+  children:
+    | React.ReactNode
+    | ((args: { animate: (targetStyle: React.CSSProperties) => void }) => React.ReactNode);
   mass?: number;
   tension?: number;
   friction?: number;
@@ -967,7 +970,7 @@ export function PhysicsAnimation({
       // Simplified spring animation - in production, use a proper physics library
       setStyle({
         ...targetStyle,
-        transition: `transform ${config.animations.duration}ms ${config.animations.easing}`,
+        transition: "all 200ms ease",
       });
     },
     [disabled, config.animations, mass, tension, friction],

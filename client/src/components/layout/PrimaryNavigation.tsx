@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/../../lib/utils";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Receipt,
@@ -76,23 +76,23 @@ const PrimaryNavigation = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex flex-col bg-white border-r border-gray-200 transition-all duration-300",
+        "flex flex-col bg-background border-r border-border transition-all duration-300",
         collapsed ? "w-16" : "w-64",
         className,
       )}
       {...props}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+      <div className="flex items-center justify-between p-4 border-b border-border">
         {!collapsed && <AccuBooksLogo variant="icon" className="w-8 h-8" />}
         <button
           onClick={onToggleCollapse}
-          className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-1 rounded-lg hover:bg-muted transition-colors"
         >
           {collapsed ? (
-            <ChevronRight className="w-4 h-4 text-gray-600" />
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
           ) : (
-            <ChevronLeft className="w-4 h-4 text-gray-600" />
+            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
           )}
         </button>
       </div>
@@ -110,8 +110,8 @@ const PrimaryNavigation = React.forwardRef<
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
                 isActive
-                  ? "bg-ocean-blue text-white shadow-sm"
-                  : "text-gray-700 hover:bg-gray-100 hover:text-ocean-blue",
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 collapsed && "justify-center",
               )}
             >
@@ -124,8 +124,8 @@ const PrimaryNavigation = React.forwardRef<
                       className={cn(
                         "ml-auto text-xs px-2 py-1 rounded-full",
                         isActive
-                          ? "bg-white/20 text-white"
-                          : "bg-gray-200 text-gray-700",
+                          ? "bg-primary-foreground/20 text-primary-foreground"
+                          : "bg-muted text-foreground",
                       )}
                     >
                       {item.badge}
@@ -139,9 +139,9 @@ const PrimaryNavigation = React.forwardRef<
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-border">
         {!collapsed && (
-          <div className="text-xs text-gray-500 text-center">
+          <div className="text-xs text-muted-foreground text-center">
             AccuBooks v1.0.0
           </div>
         )}

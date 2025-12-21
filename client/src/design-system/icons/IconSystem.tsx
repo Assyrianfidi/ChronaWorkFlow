@@ -218,6 +218,8 @@ const Icon = memo<IconProps>(
     badge,
     gradient,
   }) => {
+    const numericSize = typeof size === "number" ? size : Number(size) || 24;
+
     const iconPath = useMemo(() => {
       const icon = iconDefinitions[name];
       if (!icon) {
@@ -323,9 +325,9 @@ const Icon = memo<IconProps>(
               background: "#ef4444",
               color: "white",
               borderRadius: "50%",
-              width: Math.min(16, size / 2),
-              height: Math.min(16, size / 2),
-              fontSize: Math.min(10, size / 4),
+              width: Math.min(16, numericSize / 2),
+              height: Math.min(16, numericSize / 2),
+              fontSize: Math.min(10, numericSize / 4),
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

@@ -16,8 +16,9 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAdvancedFeedback } from "@/../../hooks/useInteractiveFeedback";
+import { useAdvancedFeedback } from "@/hooks/useInteractiveFeedback";
 
 // Types
 export interface CommandItem {
@@ -242,7 +243,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  const { elementRef, triggerClick } = useAdvancedFeedback({
+  const { elementRef, triggerInteraction } = useAdvancedFeedback({
     visualFeedback: true,
     hapticFeedback: true,
     soundFeedback: false,
@@ -378,7 +379,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
         window.location.href = selectedItem.href;
       }
 
-      triggerClick();
+      triggerInteraction("click");
       onClose();
     } catch (error) {
       console.error("Error executing command:", error);
@@ -390,7 +391,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
     selectedIndex,
     isExecuting,
     searchEngine,
-    triggerClick,
+    triggerInteraction,
     onClose,
   ]);
 
@@ -447,12 +448,17 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
         {/* Search Input */}
         <div className="command-palette-search">
           <div className="search-icon">🔍</div>
-          <input
+          
+        <label htmlFor="input-i8eq8qs0n" className="sr-only">
+          Text
+        </label>
+        <input id="input-i8eq8qs0n"
             ref={inputRef}
             type="text"
             placeholder={defaultConfig.placeholder}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) =>
+       setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             className="search-input"
           />
@@ -575,9 +581,14 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
           {filteredItems.length === 0 && (
             <div className="no-results">
               <div className="no-results-icon">🔍</div>
-              <div className="no-results-text">
-                No results found for "{searchQuery}"
-              </div>
+              <EmptyState
+                size="sm"
+                title={
+                  searchQuery
+                    ? `No results found for "${searchQuery}"`
+                    : "No results found"
+                }
+              />
               <div className="no-results-hint">
                 Try different keywords or check spelling
               </div>
@@ -617,8 +628,8 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
           background: rgba(15, 23, 42, 0.95);
           backdrop-filter: blur(20px);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 1rem;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+          rounded-0;
+          shadow-md;
           overflow: hidden;
           display: flex;
           flex-direction: column;
@@ -660,7 +671,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
         .search-shortcuts kbd {
           background: rgba(255, 255, 255, 0.1);
           padding: 0.125rem 0.375rem;
-          border-radius: 0.25rem;
+          rounded-0;
           border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -676,15 +687,13 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
           border: 1px solid rgba(255, 255, 255, 0.1);
           color: rgba(255, 255, 255, 0.8);
           padding: 0.375rem 0.75rem;
-          border-radius: 0.5rem;
+          rounded-0;
           font-size: 0.875rem;
           cursor: pointer;
-          transition: all 0.2s;
+          transition-colors duration-200;
         }
 
-        .category-button:hover {
-          background: rgba(255, 255, 255, 0.1);
-        }
+        .category-buttonhover:bg-rgba(255, 255, 255, 0.1)
 
         .category-button.active {
           background: rgba(59, 130, 246, 0.2);
@@ -848,7 +857,7 @@ const CommandItemComponent: React.FC<CommandItemComponentProps> = ({
         .command-item {
           padding: 0.75rem 1rem;
           cursor: pointer;
-          transition: all 0.2s;
+          transition-colors duration-200;
           border-left: 3px solid transparent;
         }
 
@@ -901,7 +910,7 @@ const CommandItemComponent: React.FC<CommandItemComponentProps> = ({
           color: #10b981;
           font-size: 0.625rem;
           padding: 0.125rem 0.375rem;
-          border-radius: 0.25rem;
+          rounded-0;
           font-weight: 600;
         }
 
@@ -925,7 +934,7 @@ const CommandItemComponent: React.FC<CommandItemComponentProps> = ({
         .command-shortcuts kbd {
           background: rgba(255, 255, 255, 0.1);
           padding: 0.125rem 0.375rem;
-          border-radius: 0.25rem;
+          rounded-0;
           font-size: 0.625rem;
           color: rgba(255, 255, 255, 0.8);
           border: 1px solid rgba(255, 255, 255, 0.2);
@@ -937,8 +946,8 @@ const CommandItemComponent: React.FC<CommandItemComponentProps> = ({
           color: rgba(255, 255, 255, 0.4);
           cursor: pointer;
           padding: 0.25rem;
-          border-radius: 0.25rem;
-          transition: all 0.2s;
+          rounded-0;
+          transition-colors duration-200;
         }
 
         .favorite-button:hover {

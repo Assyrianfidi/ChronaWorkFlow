@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { useUserExperienceMode } from "@/components/adaptive/UserExperienceMode";
 import { usePerformance } from "@/components/adaptive/UI-Performance-Engine";
-import { useAuthStore } from "@/../../store/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 // Analytics Types
 interface AnalyticsMetric {
@@ -21,7 +21,7 @@ interface AnalyticsMetric {
   category: "financial" | "operational" | "user" | "system";
 }
 
-interface AnalyticsReport {
+export interface AnalyticsReport {
   id: string;
   name: string;
   type: "summary" | "detailed" | "comparative" | "forecast";
@@ -34,11 +34,11 @@ interface AnalyticsReport {
   filters: ReportFilter[];
 }
 
-interface ReportFilter {
+export interface ReportFilter {
   field: string;
   operator: "equals" | "contains" | "greater" | "less" | "between";
   value: any;
-  label: string;
+  label?: string;
 }
 
 interface DataVisualization {
@@ -71,16 +71,19 @@ interface AnalyticsDashboard {
   lastUpdated: number;
 }
 
-interface BusinessInsight {
+export interface BusinessInsight {
   id: string;
   type: "trend" | "anomaly" | "opportunity" | "risk";
   title: string;
   description: string;
-  impact: "low" | "medium" | "high";
-  confidence: number;
+  severity?: "low" | "medium" | "high";
+  impact?: "low" | "medium" | "high";
+  confidence?: number;
+  data?: unknown;
+  createdAt?: number;
+  metrics?: string[];
   recommendations: string[];
-  data: any;
-  createdAt: number;
+  timestamp?: number;
 }
 
 // Analytics Context
@@ -208,28 +211,34 @@ class AnalyticsDataProcessor {
         type: "trend",
         title: "Revenue Growth Trend",
         description: "Revenue has increased by 15% over the last month",
+        severity: "low",
         impact: "high",
         confidence: 0.85,
+        metrics: [],
         recommendations: [
           "Continue current marketing strategies",
           "Invest in high-performing channels",
         ],
         data: { trend: "up", percentage: 15 },
         createdAt: Date.now(),
+        timestamp: Date.now(),
       },
       {
         id: "insight-2",
         type: "anomaly",
         title: "Unusual User Activity",
         description: "Detected spike in user registrations",
+        severity: "medium",
         impact: "medium",
         confidence: 0.72,
+        metrics: [],
         recommendations: [
           "Investigate source of traffic",
           "Prepare for increased load",
         ],
         data: { spike: 300, baseline: 100 },
         createdAt: Date.now(),
+        timestamp: Date.now(),
       },
     ];
   }

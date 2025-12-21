@@ -33,7 +33,7 @@ export function useInventoryFilters({
   const searchParams = useSearchParams();
 
   // Initialize state from URL search params or props
-  const getInitialState = useCallback(() => {
+  const getInitialState = React.useCallback(() => {
     const params = new URLSearchParams(searchParams?.toString());
     const categoryParam = params.get("category");
 
@@ -42,8 +42,17 @@ export function useInventoryFilters({
       selectedCategory: Array.isArray(categoryParam)
         ? categoryParam[0]
         : categoryParam || initialFilters.categoryId || "",
-      statusFilter:
-        (params.get("status") as InventoryStatus) || initialFilters.status,
+      statusFilter: (() => {
+        const statusParam = params.get("status") as InventoryStatus | null;
+        const initialStatus = initialFilters.status as
+          | InventoryStatus
+          | InventoryStatus[]
+          | undefined;
+        return (
+          statusParam ||
+          (Array.isArray(initialStatus) ? initialStatus[0] : initialStatus)
+        );
+      })(),
       quantityRange: {
         min: params.has("minQty")
           ? Number(params.get("minQty"))

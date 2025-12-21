@@ -1,5 +1,6 @@
 import { ApiError, ErrorCodes } from "../../utils/errorHandler.js";
 import { logger } from "../../utils/logger.js";
+import { LoggingBridge } from "../../utils/loggingBridge";
 
 /**
  * Anti-fraud detection system
@@ -688,6 +689,24 @@ export class FraudMonitoringService {
   private static async triggerCriticalAlert(alert: FraudAlert): Promise<void> {
     // In a real system, this would send notifications to security team
     console.error("CRITICAL FRAUD ALERT:", alert);
+
+    try {
+      await LoggingBridge.logSystemEvent({
+        type: "ERROR",
+        message: "CRITICAL_FRAUD_ALERT",
+        details: {
+          alertId: alert.id,
+          userId: alert.userId,
+          accountId: alert.accountId,
+          alertType: alert.alertType,
+          severity: alert.severity,
+          confidence: alert.confidence,
+          action: alert.action,
+        },
+      });
+    } catch {
+      // swallow
+    }
 
     logger.error("Critical fraud alert", {
       alertId: alert.id,

@@ -1,4 +1,3 @@
-import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -16,38 +15,7 @@ const isProtectedRoute = (pathname: string, routes: string[]): boolean => {
 };
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
-  const { pathname } = request.nextUrl;
-
-  // Allow public routes
-  if (publicRoutes.some((route) => pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
-
-  // Check if user is authenticated
-  if (!token) {
-    const url = new URL("/auth/signin", request.url);
-    url.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(url);
-  }
-
-  // Check admin routes
-  if (isProtectedRoute(pathname, adminRoutes)) {
-    if (token.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/unauthorized", request.url));
-    }
-  }
-
-  // Add user role to request headers for server components
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-user-role", token.role as string);
-  requestHeaders.set("x-user-id", token.sub as string);
-
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  return NextResponse.next();
 }
 
 export const config = {

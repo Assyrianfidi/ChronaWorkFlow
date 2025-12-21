@@ -5,6 +5,7 @@ declare global {
 }
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { LoadingState } from '@/components/ui/LoadingState';
 
 // Accessibility monitoring interfaces
 interface AccessibilityRule {
@@ -141,7 +142,7 @@ const ACCESSIBILITY_RULES: AccessibilityRule[] = [
     check: (element) => {
       const text = element.textContent?.trim();
       const ariaLabel = element.getAttribute("aria-label");
-      return !!(text && text.length > 2) || ariaLabel;
+      return !!((text && text.length > 2) || ariaLabel);
     },
     fix: (element) =>
       element.setAttribute("aria-label", "Link description needed"),
@@ -747,7 +748,12 @@ export const AccessibilityMonitorDashboard: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Scan Interval: {scanInterval / 1000}s
             </label>
+
+            <label htmlFor="input-7ej8j8o3w" className="sr-only">
+              Range
+            </label>
             <input
+              id="input-7ej8j8o3w"
               type="range"
               min="1000"
               max="30000"
@@ -848,10 +854,7 @@ export const AccessibilityMonitorDashboard: React.FC = () => {
       {/* Status Indicator */}
       {isMonitoring && (
         <div className="fixed bottom-4 right-4 p-3 bg-green-500 text-white rounded-full shadow-lg">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium">Monitoring</span>
-          </div>
+          <LoadingState size="sm" />
         </div>
       )}
     </div>

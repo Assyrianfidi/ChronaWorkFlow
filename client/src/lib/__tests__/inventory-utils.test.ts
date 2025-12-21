@@ -1,4 +1,4 @@
-import type { InventoryItem, InventoryStatus } from "../types/inventory.js";
+import type { InventoryItem, InventoryStatus } from '../types/inventory';
 import {
   getInventoryStatus,
   getInventoryValue,
@@ -6,7 +6,7 @@ import {
   getOutOfStockItems,
   formatCurrency,
   formatDate,
-} from "../inventory-utils.js";
+} from '../inventory-utils';
 
 // Mock inventory items for testing
 const mockInventoryItems: InventoryItem[] = [

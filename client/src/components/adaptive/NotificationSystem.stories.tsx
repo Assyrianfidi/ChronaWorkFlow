@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { NotificationSystem } from "./NotificationSystem.js";
+import { NotificationSystem } from './NotificationSystem';
 
 const meta: Meta<typeof NotificationSystem> = {
   title: "Adaptive/NotificationSystem",

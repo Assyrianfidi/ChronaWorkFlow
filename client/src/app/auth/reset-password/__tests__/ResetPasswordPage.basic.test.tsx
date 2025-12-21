@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { vi } from "vitest";
-import ResetPasswordPage from "../page.js";
+import ResetPasswordPage from '../page';
 
 // Mock Next.js router
 vi.mock("next/navigation", () => ({

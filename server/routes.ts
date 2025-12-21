@@ -1,8 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { db } from "./db";
+import * as sharedSchema from "../shared/schema";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { and, eq, inArray, sql } from "drizzle-orm";
+
 import {
   getJobQueues,
   getQueueJobs,
@@ -17,7 +21,7 @@ import {
   scheduleNotification,
 } from "./routes/jobs";
 
-import { handleStripeWebhook, createPaymentIntent, getPaymentIntent, createStripeInvoice, sendInvoice, refundPayment, getBalance, stripeHealthCheck } from "./routes/stripe";
+import { handleStripeWebhook, createCheckoutSession, createPaymentIntent, getPaymentIntent, createStripeInvoice, sendInvoice, refundPayment, getBalance, stripeHealthCheck } from "./routes/stripe";
 import { healthCheck } from "./routes/health";
 
 import {
@@ -32,7 +36,31 @@ import {
   plaidHealthCheck,
 } from "./routes/plaid";
 
+import { enforceBillingStatus, enforcePlanLimits, enforcePlanLimitsMiddleware } from "./middleware/billing-enforcement";
+
 const JWT_SECRET = process.env.SESSION_SECRET || "dev-secret-change-in-production";
+const OWNER_EMAIL = process.env.OWNER_EMAIL?.toLowerCase();
+
+function isOwnerEmail(email?: string | null) {
+  if (!OWNER_EMAIL) return false;
+  if (!email) return false;
+  return email.toLowerCase() === OWNER_EMAIL;
+}
+
+function requireOwner(req: any, res: any, next: any) {
+  if (!req.user) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  const role = typeof req.user.role === "string" ? req.user.role : "";
+  const email = typeof req.user.email === "string" ? req.user.email : undefined;
+
+  if (role === "owner" || isOwnerEmail(email)) {
+    return next();
+  }
+
+  return res.status(403).json({ error: "Owner access required" });
+}
 
 // Middleware to verify JWT token
 function authenticateToken(req: any, res: any, next: any) {
@@ -50,6 +78,540 @@ function authenticateToken(req: any, res: any, next: any) {
     req.user = user;
     next();
   });
+}
+
+function registerOwnerAiAuditRoutes(app: Express) {
+  app.get("/api/owner/ai/pricing", authenticateToken, requireOwner, async (_req, res) => {
+    try {
+      const [row] = await db
+        .select()
+        .from(sharedSchema.aiPricingConfig)
+        .where(eq(sharedSchema.aiPricingConfig.id, "default"));
+
+      if (!row) {
+        const [created] = await db
+          .insert(sharedSchema.aiPricingConfig)
+          .values({ id: "default", pricePer1kTokensCents: 40, updatedAt: new Date() })
+          .returning();
+        return res.json(created);
+      }
+
+      res.json(row);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/owner/ai/pricing", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const nextPrice = typeof (req.body?.pricePer1kTokensCents) === "number" ? req.body.pricePer1kTokensCents : undefined;
+      if (typeof nextPrice !== "number" || !Number.isFinite(nextPrice) || nextPrice < 0) {
+        return res.status(400).json({ error: "pricePer1kTokensCents must be a non-negative number" });
+      }
+
+      const [existing] = await db
+        .select()
+        .from(sharedSchema.aiPricingConfig)
+        .where(eq(sharedSchema.aiPricingConfig.id, "default"));
+
+      const [updated] = existing
+        ? await db
+            .update(sharedSchema.aiPricingConfig)
+            .set({ pricePer1kTokensCents: nextPrice, updatedAt: new Date() })
+            .where(eq(sharedSchema.aiPricingConfig.id, "default"))
+            .returning()
+        : await db
+            .insert(sharedSchema.aiPricingConfig)
+            .values({ id: "default", pricePer1kTokensCents: nextPrice, updatedAt: new Date() })
+            .returning();
+
+      await storage.createAuditLog({
+        companyId: null,
+        userId: req.user?.id ?? null,
+        action: "ai.pricing.update",
+        entityType: "ai_pricing_config",
+        entityId: "default",
+        changes: JSON.stringify({ before: existing ?? null, after: updated }),
+      });
+
+      res.json(updated);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/owner/ai/company/:companyId", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const companyId = req.params.companyId;
+      const [row] = await db
+        .select()
+        .from(sharedSchema.companyAiSettings)
+        .where(eq(sharedSchema.companyAiSettings.companyId, companyId));
+      res.json(row ?? null);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/owner/ai/company/:companyId", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const companyId = req.params.companyId;
+      const body = sharedSchema.insertCompanyAiSettingsSchema.partial().parse(req.body);
+
+      const [existing] = await db
+        .select()
+        .from(sharedSchema.companyAiSettings)
+        .where(eq(sharedSchema.companyAiSettings.companyId, companyId));
+
+      const now = new Date();
+      const [updated] = existing
+        ? await db
+            .update(sharedSchema.companyAiSettings)
+            .set({ ...body, updatedAt: now })
+            .where(eq(sharedSchema.companyAiSettings.id, existing.id))
+            .returning()
+        : await db
+            .insert(sharedSchema.companyAiSettings)
+            .values({
+              companyId,
+              aiEnabled: body.aiEnabled ?? true,
+              bonusTokens: body.bonusTokens ?? 0,
+              pricePer1kTokensCentsOverride: body.pricePer1kTokensCentsOverride ?? null,
+              updatedAt: now,
+            } as any)
+            .returning();
+
+      await storage.createAuditLog({
+        companyId,
+        userId: req.user?.id ?? null,
+        action: "ai.company_settings.update",
+        entityType: "company_ai_settings",
+        entityId: updated.id,
+        changes: JSON.stringify({ before: existing ?? null, after: updated }),
+      });
+
+      res.json(updated);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/owner/audit-logs", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const from = typeof req.query.from === "string" ? new Date(req.query.from) : null;
+      const to = typeof req.query.to === "string" ? new Date(req.query.to) : null;
+      const companyId = typeof req.query.companyId === "string" ? req.query.companyId : null;
+      const entityType = typeof req.query.entityType === "string" ? req.query.entityType : null;
+      const actorUserId = typeof req.query.actorUserId === "string" ? req.query.actorUserId : null;
+
+      const whereParts: any[] = [];
+      if (companyId) whereParts.push(eq(sharedSchema.auditLogs.companyId, companyId));
+      if (entityType) whereParts.push(eq(sharedSchema.auditLogs.entityType, entityType));
+      if (actorUserId) whereParts.push(eq(sharedSchema.auditLogs.userId, actorUserId));
+      if (from) whereParts.push(sql`${sharedSchema.auditLogs.createdAt} >= ${from}`);
+      if (to) whereParts.push(sql`${sharedSchema.auditLogs.createdAt} <= ${to}`);
+
+      const rows = await db
+        .select({
+          audit: sharedSchema.auditLogs,
+          company: sharedSchema.companies,
+          user: sharedSchema.users,
+        })
+        .from(sharedSchema.auditLogs)
+        .leftJoin(sharedSchema.companies, eq(sharedSchema.auditLogs.companyId, sharedSchema.companies.id))
+        .leftJoin(sharedSchema.users, eq(sharedSchema.auditLogs.userId, sharedSchema.users.id))
+        .where(whereParts.length ? and(...whereParts) : undefined)
+        .orderBy(sql`${sharedSchema.auditLogs.createdAt} desc`)
+        .limit(500);
+
+      res.json(rows);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  function csvEscape(value: any) {
+    const s = value === null || value === undefined ? "" : String(value);
+    if (s.includes(",") || s.includes("\n") || s.includes("\"") || s.includes("\r")) {
+      return `"${s.replace(/\"/g, '""')}"`;
+    }
+    return s;
+  }
+
+  async function streamCsv(res: any, filename: string, header: string[], rows: any[][]) {
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment; filename=\"${filename}\"`);
+    res.write(`${header.map(csvEscape).join(",")}\n`);
+    for (const row of rows) {
+      res.write(`${row.map(csvEscape).join(",")}\n`);
+    }
+    res.end();
+  }
+
+  app.get("/api/owner/reports/subscriptions.csv", authenticateToken, requireOwner, async (_req, res) => {
+    try {
+      const rows = await db
+        .select({
+          companyId: sharedSchema.companies.id,
+          companyName: sharedSchema.companies.name,
+          subscriptionId: sharedSchema.subscriptions.id,
+          status: sharedSchema.subscriptions.status,
+          planCode: sharedSchema.plans.code,
+          interval: sharedSchema.plans.billingInterval,
+          priceCents: sharedSchema.plans.priceCents,
+          stripeCustomerId: sharedSchema.companies.stripeCustomerId,
+          stripeSubscriptionId: sharedSchema.subscriptions.stripeSubscriptionId,
+          currentPeriodEnd: sharedSchema.subscriptions.currentPeriodEnd,
+          pastDueSince: sharedSchema.subscriptions.pastDueSince,
+        })
+        .from(sharedSchema.subscriptions)
+        .innerJoin(sharedSchema.companies, eq(sharedSchema.subscriptions.companyId, sharedSchema.companies.id))
+        .innerJoin(sharedSchema.plans, eq(sharedSchema.subscriptions.planId, sharedSchema.plans.id))
+        .where(sql`${sharedSchema.subscriptions.deletedAt} is null`)
+        .orderBy(sql`${sharedSchema.subscriptions.createdAt} desc`)
+        .limit(5000);
+
+      await streamCsv(
+        res,
+        "subscriptions.csv",
+        [
+          "companyId",
+          "companyName",
+          "subscriptionId",
+          "status",
+          "planCode",
+          "billingInterval",
+          "priceCents",
+          "stripeCustomerId",
+          "stripeSubscriptionId",
+          "currentPeriodEnd",
+          "pastDueSince",
+        ],
+        rows.map((r) => [
+          r.companyId,
+          r.companyName,
+          r.subscriptionId,
+          r.status,
+          r.planCode,
+          r.interval,
+          r.priceCents,
+          r.stripeCustomerId,
+          r.stripeSubscriptionId,
+          r.currentPeriodEnd?.toISOString?.() ?? r.currentPeriodEnd,
+          r.pastDueSince?.toISOString?.() ?? r.pastDueSince,
+        ]),
+      );
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/owner/reports/payments.csv", authenticateToken, requireOwner, async (_req, res) => {
+    try {
+      const rows = await db
+        .select({
+          companyId: sharedSchema.companies.id,
+          companyName: sharedSchema.companies.name,
+          billingPaymentId: sharedSchema.billingPayments.id,
+          status: sharedSchema.billingPayments.status,
+          amountCents: sharedSchema.billingPayments.amountCents,
+          currency: sharedSchema.billingPayments.currency,
+          stripePaymentIntentId: sharedSchema.billingPayments.stripePaymentIntentId,
+          createdAt: sharedSchema.billingPayments.createdAt,
+        })
+        .from(sharedSchema.billingPayments)
+        .innerJoin(sharedSchema.companies, eq(sharedSchema.billingPayments.companyId, sharedSchema.companies.id))
+        .where(sql`${sharedSchema.billingPayments.deletedAt} is null`)
+        .orderBy(sql`${sharedSchema.billingPayments.createdAt} desc`)
+        .limit(10000);
+
+      await streamCsv(
+        res,
+        "payments.csv",
+        [
+          "companyId",
+          "companyName",
+          "billingPaymentId",
+          "status",
+          "amountCents",
+          "currency",
+          "stripePaymentIntentId",
+          "createdAt",
+        ],
+        rows.map((r) => [
+          r.companyId,
+          r.companyName,
+          r.billingPaymentId,
+          r.status,
+          r.amountCents,
+          r.currency,
+          r.stripePaymentIntentId,
+          r.createdAt?.toISOString?.() ?? r.createdAt,
+        ]),
+      );
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/owner/reports/ai-usage.csv", authenticateToken, requireOwner, async (_req, res) => {
+    try {
+      const rows = await db
+        .select({
+          companyId: sharedSchema.aiUsageLogs.companyId,
+          userId: sharedSchema.aiUsageLogs.userId,
+          feature: sharedSchema.aiUsageLogs.feature,
+          model: sharedSchema.aiUsageLogs.model,
+          promptTokens: sharedSchema.aiUsageLogs.promptTokens,
+          completionTokens: sharedSchema.aiUsageLogs.completionTokens,
+          totalTokens: sharedSchema.aiUsageLogs.totalTokens,
+          providerCostCents: sharedSchema.aiUsageLogs.providerCostCents,
+          billedCents: sharedSchema.aiUsageLogs.billedCents,
+          requestId: sharedSchema.aiUsageLogs.requestId,
+          createdAt: sharedSchema.aiUsageLogs.createdAt,
+        })
+        .from(sharedSchema.aiUsageLogs)
+        .orderBy(sql`${sharedSchema.aiUsageLogs.createdAt} desc`)
+        .limit(20000);
+
+      await streamCsv(
+        res,
+        "ai-usage.csv",
+        [
+          "companyId",
+          "userId",
+          "feature",
+          "model",
+          "promptTokens",
+          "completionTokens",
+          "totalTokens",
+          "providerCostCents",
+          "billedCents",
+          "requestId",
+          "createdAt",
+        ],
+        rows.map((r) => [
+          r.companyId,
+          r.userId,
+          r.feature,
+          r.model,
+          r.promptTokens,
+          r.completionTokens,
+          r.totalTokens,
+          r.providerCostCents,
+          r.billedCents,
+          r.requestId,
+          r.createdAt?.toISOString?.() ?? r.createdAt,
+        ]),
+      );
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/owner/reports/revenue.csv", authenticateToken, requireOwner, async (_req, res) => {
+    try {
+      const rows = await db
+        .select({
+          companyId: sharedSchema.billingInvoices.companyId,
+          billingInvoiceId: sharedSchema.billingInvoices.id,
+          status: sharedSchema.billingInvoices.status,
+          currency: sharedSchema.billingInvoices.currency,
+          amountDueCents: sharedSchema.billingInvoices.amountDueCents,
+          amountPaidCents: sharedSchema.billingInvoices.amountPaidCents,
+          stripeInvoiceId: sharedSchema.billingInvoices.stripeInvoiceId,
+          invoicePeriodStart: sharedSchema.billingInvoices.invoicePeriodStart,
+          invoicePeriodEnd: sharedSchema.billingInvoices.invoicePeriodEnd,
+          createdAt: sharedSchema.billingInvoices.createdAt,
+        })
+        .from(sharedSchema.billingInvoices)
+        .where(sql`${sharedSchema.billingInvoices.deletedAt} is null`)
+        .orderBy(sql`${sharedSchema.billingInvoices.createdAt} desc`)
+        .limit(20000);
+
+      await streamCsv(
+        res,
+        "revenue.csv",
+        [
+          "companyId",
+          "billingInvoiceId",
+          "status",
+          "currency",
+          "amountDueCents",
+          "amountPaidCents",
+          "stripeInvoiceId",
+          "invoicePeriodStart",
+          "invoicePeriodEnd",
+          "createdAt",
+        ],
+        rows.map((r) => [
+          r.companyId,
+          r.billingInvoiceId,
+          r.status,
+          r.currency,
+          r.amountDueCents,
+          r.amountPaidCents,
+          r.stripeInvoiceId,
+          r.invoicePeriodStart?.toISOString?.() ?? r.invoicePeriodStart,
+          r.invoicePeriodEnd?.toISOString?.() ?? r.invoicePeriodEnd,
+          r.createdAt?.toISOString?.() ?? r.createdAt,
+        ]),
+      );
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  function estimateTokens(input: string): number {
+    const normalized = (input ?? "").trim();
+    if (!normalized) return 0;
+    const words = normalized.split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.round(words * 1.3));
+  }
+
+  app.post(
+    "/api/ai/assistant",
+    authenticateToken,
+    enforceBillingStatus(),
+    async (req: any, res) => {
+      try {
+        const companyId = req.user?.currentCompanyId as string | undefined;
+        if (!companyId) {
+          return res.status(400).json({ error: "currentCompanyId is required" });
+        }
+
+        const requestId = typeof req.body?.requestId === "string" ? req.body.requestId : null;
+        if (!requestId) {
+          return res.status(400).json({ error: "requestId is required" });
+        }
+
+        const feature = typeof req.body?.feature === "string" ? req.body.feature : "assistant";
+        const prompt = typeof req.body?.prompt === "string" ? req.body.prompt : "";
+        const model = typeof req.body?.model === "string" ? req.body.model : "internal";
+
+        const [existing] = await db
+          .select()
+          .from(sharedSchema.aiUsageLogs)
+          .where(eq(sharedSchema.aiUsageLogs.requestId, requestId));
+        if (existing) {
+          return res.json({
+            requestId,
+            response: { message: "Request already processed" },
+            usage: {
+              promptTokens: existing.promptTokens,
+              completionTokens: existing.completionTokens,
+              totalTokens: existing.totalTokens,
+              billedCents: existing.billedCents,
+              providerCostCents: existing.providerCostCents,
+            },
+          });
+        }
+
+        const promptTokens = estimateTokens(prompt);
+        const completionTokens = estimateTokens("ok");
+        const totalTokens = promptTokens + completionTokens;
+
+        const planLimitCheck = await enforcePlanLimits(companyId, "ai_request", { aiTokens: totalTokens });
+        if (!(planLimitCheck as any).allowed) {
+          return res.status(402).json({
+            error: "Plan limit exceeded",
+            code: (planLimitCheck as any).reason,
+            details: (planLimitCheck as any).details,
+            warnings: (planLimitCheck as any).warnings ?? [],
+          });
+        }
+
+        const [subRow] = await db
+          .select({ subscription: sharedSchema.subscriptions, plan: sharedSchema.plans })
+          .from(sharedSchema.subscriptions)
+          .innerJoin(sharedSchema.plans, eq(sharedSchema.subscriptions.planId, sharedSchema.plans.id))
+          .where(
+            and(
+              eq(sharedSchema.subscriptions.companyId, companyId),
+              sql`${sharedSchema.subscriptions.deletedAt} is null`,
+              sql`${sharedSchema.plans.deletedAt} is null`,
+            ),
+          )
+          .orderBy(sql`${sharedSchema.subscriptions.createdAt} desc`)
+          .limit(1);
+
+        const plan = subRow?.plan;
+        const included = plan?.includedAiTokens ?? 0;
+
+        const [companySettings] = await db
+          .select()
+          .from(sharedSchema.companyAiSettings)
+          .where(eq(sharedSchema.companyAiSettings.companyId, companyId));
+
+        if (companySettings && companySettings.aiEnabled === false) {
+          return res.status(403).json({ error: "AI is disabled for this company" });
+        }
+
+        const bonusTokens = companySettings?.bonusTokens ?? 0;
+
+        const [pricing] = await db
+          .select()
+          .from(sharedSchema.aiPricingConfig)
+          .where(eq(sharedSchema.aiPricingConfig.id, "default"));
+        const basePrice = pricing?.pricePer1kTokensCents ?? 40;
+        const pricePer1k = companySettings?.pricePer1kTokensCentsOverride ?? basePrice;
+
+        const now = new Date();
+        const periodStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+        const [{ usedTokensRaw }] = await db
+          .select({ usedTokensRaw: sql<string>`coalesce(sum(${sharedSchema.aiUsageLogs.totalTokens}), 0)` })
+          .from(sharedSchema.aiUsageLogs)
+          .where(and(eq(sharedSchema.aiUsageLogs.companyId, companyId), sql`${sharedSchema.aiUsageLogs.createdAt} >= ${periodStart}`));
+        const usedTokens = Number.parseInt(usedTokensRaw ?? "0", 10);
+
+        const includedTotal = included + bonusTokens;
+        const overageBefore = Math.max(0, usedTokens - includedTotal);
+        const overageAfter = Math.max(0, usedTokens + totalTokens - includedTotal);
+        const overageDelta = Math.max(0, overageAfter - overageBefore);
+        const billedCents = Math.ceil((overageDelta * pricePer1k) / 1000);
+
+        const [created] = await db
+          .insert(sharedSchema.aiUsageLogs)
+          .values({
+            companyId,
+            userId: req.user?.id ?? null,
+            feature,
+            model,
+            promptTokens,
+            completionTokens,
+            totalTokens,
+            providerCostCents: 0,
+            billedCents,
+            requestId,
+            createdAt: now,
+          } as any)
+          .returning();
+
+        await storage.createAuditLog({
+          companyId,
+          userId: req.user?.id ?? null,
+          action: "ai.request",
+          entityType: "ai_usage_log",
+          entityId: created.id,
+          changes: JSON.stringify({ requestId, feature, totalTokens, billedCents }),
+        });
+
+        res.json({
+          requestId,
+          response: { message: "ok" },
+          usage: {
+            promptTokens,
+            completionTokens,
+            totalTokens,
+            billedCents,
+            providerCostCents: 0,
+          },
+        });
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    },
+  );
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -77,9 +639,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         role: "admin", // First user is admin
       });
 
+      const effectiveRole = isOwnerEmail(email) ? "owner" : user.role;
+
       // Generate token
       const token = jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
+        { id: user.id, email: user.email, role: effectiveRole, currentCompanyId: user.currentCompanyId },
         JWT_SECRET,
         { expiresIn: "7d" }
       );
@@ -89,7 +653,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: user.id, 
           username: user.username, 
           email: user.email, 
-          role: user.role,
+          role: effectiveRole,
           currentCompanyId: user.currentCompanyId 
         },
         token,
@@ -117,8 +681,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Generate token
+      const effectiveRole = isOwnerEmail(email) ? "owner" : user.role;
       const token = jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
+        { id: user.id, email: user.email, role: effectiveRole, currentCompanyId: user.currentCompanyId },
         JWT_SECRET,
         { expiresIn: "7d" }
       );
@@ -128,7 +693,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: user.id, 
           username: user.username, 
           email: user.email, 
-          role: user.role,
+          role: effectiveRole,
           currentCompanyId: user.currentCompanyId 
         },
         token,
@@ -136,6 +701,290 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Login error:", error);
       res.status(500).json({ error: "Login failed: " + error.message });
+    }
+  });
+
+  registerOwnerAiAuditRoutes(app);
+
+  app.get("/api/owner/overview", authenticateToken, requireOwner, async (_req, res) => {
+    try {
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+      const [{ count: companiesCountRaw }] = await db
+        .select({ count: sql<string>`count(*)` })
+        .from(sharedSchema.companies);
+      const [{ count: usersCountRaw }] = await db
+        .select({ count: sql<string>`count(*)` })
+        .from(sharedSchema.users);
+
+      const totalCompanies = Number.parseInt(companiesCountRaw ?? "0", 10);
+      const totalUsers = Number.parseInt(usersCountRaw ?? "0", 10);
+
+      const activeStatuses = ["active", "trialing"] as const;
+      const subscriptionRows = await db
+        .select({
+          status: sharedSchema.subscriptions.status,
+          planCode: sharedSchema.plans.code,
+          priceCents: sharedSchema.plans.priceCents,
+          interval: sharedSchema.plans.billingInterval,
+        })
+        .from(sharedSchema.subscriptions)
+        .innerJoin(
+          sharedSchema.plans,
+          eq(sharedSchema.subscriptions.planId, sharedSchema.plans.id),
+        )
+        .where(
+          and(
+            inArray(sharedSchema.subscriptions.status, activeStatuses as any),
+            sql`${sharedSchema.subscriptions.deletedAt} is null`,
+            sql`${sharedSchema.plans.deletedAt} is null`,
+            eq(sharedSchema.plans.isActive, true),
+          ),
+        );
+
+      const activeSubscriptionsByTier: Record<string, number> = {};
+      let mrrCents = 0;
+
+      for (const row of subscriptionRows) {
+        const tier = row.planCode || "UNKNOWN";
+        activeSubscriptionsByTier[tier] = (activeSubscriptionsByTier[tier] ?? 0) + 1;
+
+        if (row.status === "active") {
+          if (row.interval === "year") {
+            mrrCents += Math.round((row.priceCents ?? 0) / 12);
+          } else {
+            mrrCents += row.priceCents ?? 0;
+          }
+        }
+      }
+
+      const arrCents = mrrCents * 12;
+
+      const [{ count: canceledLast30Raw }] = await db
+        .select({ count: sql<string>`count(*)` })
+        .from(sharedSchema.subscriptions)
+        .where(
+          and(
+            eq(sharedSchema.subscriptions.status, "canceled" as any),
+            sql`${sharedSchema.subscriptions.deletedAt} is null`,
+            sql`${sharedSchema.subscriptions.canceledAt} is not null`,
+            sql`${sharedSchema.subscriptions.canceledAt} >= ${thirtyDaysAgo}`,
+          ),
+        );
+
+      const canceledLast30 = Number.parseInt(canceledLast30Raw ?? "0", 10);
+      const activeNow = subscriptionRows.filter((r) => r.status === "active").length;
+      const churnRate = activeNow + canceledLast30 > 0 ? canceledLast30 / (activeNow + canceledLast30) : 0;
+
+      const [{ count: trialsStartedRaw }] = await db
+        .select({ count: sql<string>`count(*)` })
+        .from(sharedSchema.subscriptions)
+        .where(
+          and(
+            sql`${sharedSchema.subscriptions.deletedAt} is null`,
+            sql`${sharedSchema.subscriptions.trialStart} is not null`,
+            sql`${sharedSchema.subscriptions.trialStart} >= ${thirtyDaysAgo}`,
+          ),
+        );
+      const [{ count: trialsConvertedRaw }] = await db
+        .select({ count: sql<string>`count(*)` })
+        .from(sharedSchema.subscriptions)
+        .where(
+          and(
+            eq(sharedSchema.subscriptions.status, "active" as any),
+            sql`${sharedSchema.subscriptions.deletedAt} is null`,
+            sql`${sharedSchema.subscriptions.trialStart} is not null`,
+            sql`${sharedSchema.subscriptions.trialStart} >= ${thirtyDaysAgo}`,
+          ),
+        );
+
+      const trialsStarted = Number.parseInt(trialsStartedRaw ?? "0", 10);
+      const trialsConverted = Number.parseInt(trialsConvertedRaw ?? "0", 10);
+      const trialToPaidConversion = trialsStarted > 0 ? trialsConverted / trialsStarted : 0;
+
+      const [{ aiRevenueCentsRaw }] = await db
+        .select({ aiRevenueCentsRaw: sql<string>`coalesce(sum(${sharedSchema.aiUsageLogs.billedCents}), 0)` })
+        .from(sharedSchema.aiUsageLogs)
+        .where(sql`${sharedSchema.aiUsageLogs.createdAt} >= ${thirtyDaysAgo}`);
+      const aiUsageRevenueCents = Number.parseInt(aiRevenueCentsRaw ?? "0", 10);
+
+      const [{ failedPaymentsRaw }] = await db
+        .select({ failedPaymentsRaw: sql<string>`count(*)` })
+        .from(sharedSchema.billingPayments)
+        .where(
+          and(
+            eq(sharedSchema.billingPayments.status, "failed" as any),
+            sql`${sharedSchema.billingPayments.deletedAt} is null`,
+            sql`${sharedSchema.billingPayments.createdAt} >= ${thirtyDaysAgo}`,
+          ),
+        );
+      const failedPayments = Number.parseInt(failedPaymentsRaw ?? "0", 10);
+
+      res.json({
+        totalCompanies,
+        totalUsers,
+        activeSubscriptionsByTier,
+        mrr: mrrCents / 100,
+        arr: arrCents / 100,
+        churnRate,
+        trialToPaidConversion,
+        aiUsageRevenue: aiUsageRevenueCents / 100,
+        failedPayments,
+        systemHealth: {
+          api: "healthy",
+          db: "healthy",
+          workers: "unknown",
+        },
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/owner/plans", authenticateToken, requireOwner, async (_req, res) => {
+    try {
+      const plans = await db
+        .select()
+        .from(sharedSchema.plans)
+        .where(sql`${sharedSchema.plans.deletedAt} is null`);
+      res.json(plans);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/owner/plans", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const parsed = sharedSchema.insertPlanSchema.parse(req.body);
+      const [plan] = await db
+        .insert(sharedSchema.plans)
+        .values({ ...parsed, createdAt: new Date(), updatedAt: new Date() })
+        .returning();
+
+      await storage.createAuditLog({
+        companyId: null,
+        userId: req.user?.id ?? null,
+        action: "plan.create",
+        entityType: "plan",
+        entityId: plan.id,
+        changes: JSON.stringify({ after: plan }),
+      });
+
+      res.status(201).json(plan);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.delete("/api/owner/plans/:id", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const planId = req.params.id;
+      const [existing] = await db
+        .select()
+        .from(sharedSchema.plans)
+        .where(and(eq(sharedSchema.plans.id, planId), sql`${sharedSchema.plans.deletedAt} is null`));
+      if (!existing) {
+        return res.status(404).json({ error: "Plan not found" });
+      }
+
+      const [updated] = await db
+        .update(sharedSchema.plans)
+        .set({ isActive: false, deletedAt: new Date(), updatedAt: new Date() })
+        .where(eq(sharedSchema.plans.id, planId))
+        .returning();
+
+      await storage.createAuditLog({
+        companyId: null,
+        userId: req.user?.id ?? null,
+        action: "plan.delete",
+        entityType: "plan",
+        entityId: planId,
+        changes: JSON.stringify({ before: existing, after: updated }),
+      });
+
+      res.status(204).send();
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/owner/subscriptions", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const status = typeof req.query.status === "string" ? req.query.status : undefined;
+
+      const whereParts: any[] = [sql`${sharedSchema.subscriptions.deletedAt} is null`];
+      if (status) {
+        whereParts.push(eq(sharedSchema.subscriptions.status, status as any));
+      }
+
+      const rows = await db
+        .select({
+          subscription: sharedSchema.subscriptions,
+          company: sharedSchema.companies,
+          plan: sharedSchema.plans,
+        })
+        .from(sharedSchema.subscriptions)
+        .innerJoin(
+          sharedSchema.companies,
+          eq(sharedSchema.subscriptions.companyId, sharedSchema.companies.id),
+        )
+        .innerJoin(
+          sharedSchema.plans,
+          eq(sharedSchema.subscriptions.planId, sharedSchema.plans.id),
+        )
+        .where(and(...whereParts));
+
+      res.json(rows);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.patch("/api/owner/subscriptions/:id", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const subscriptionId = req.params.id;
+      const updates = sharedSchema.insertSubscriptionSchema
+        .partial()
+        .pick({
+          status: true,
+          cancelAtPeriodEnd: true,
+          ownerGrantedFree: true,
+          ownerNotes: true,
+        })
+        .parse(req.body);
+
+      const [existing] = await db
+        .select()
+        .from(sharedSchema.subscriptions)
+        .where(
+          and(
+            eq(sharedSchema.subscriptions.id, subscriptionId),
+            sql`${sharedSchema.subscriptions.deletedAt} is null`,
+          ),
+        );
+      if (!existing) {
+        return res.status(404).json({ error: "Subscription not found" });
+      }
+
+      const [updated] = await db
+        .update(sharedSchema.subscriptions)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(sharedSchema.subscriptions.id, subscriptionId))
+        .returning();
+
+      await storage.createAuditLog({
+        companyId: existing.companyId,
+        userId: req.user?.id ?? null,
+        action: "subscription.override",
+        entityType: "subscription",
+        entityId: subscriptionId,
+        changes: JSON.stringify({ before: existing, after: updated }),
+      });
+
+      res.json(updated);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
     }
   });
 
@@ -210,7 +1059,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/customers", authenticateToken, async (req, res) => {
+  app.post("/api/customers", authenticateToken, enforceBillingStatus(), async (req, res) => {
     try {
       const customer = await storage.createCustomer(req.body);
       res.status(201).json(customer);
@@ -219,7 +1068,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/customers/:id", authenticateToken, async (req, res) => {
+  app.patch("/api/customers/:id", authenticateToken, enforceBillingStatus(), async (req, res) => {
     try {
       const customer = await storage.updateCustomer(req.params.id, req.body);
       if (!customer) {
@@ -246,7 +1095,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/vendors", authenticateToken, async (req, res) => {
+  app.post("/api/vendors", authenticateToken, enforceBillingStatus(), async (req, res) => {
     try {
       const vendor = await storage.createVendor(req.body);
       res.status(201).json(vendor);
@@ -280,7 +1129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/transactions", authenticateToken, async (req, res) => {
+  app.post("/api/transactions", authenticateToken, enforceBillingStatus(), async (req, res) => {
     try {
       const { transaction, lines } = req.body;
 
@@ -309,7 +1158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/transactions/:id/void", authenticateToken, async (req, res) => {
+  app.post("/api/transactions/:id/void", authenticateToken, enforceBillingStatus(), async (req, res) => {
     try {
       await storage.voidTransaction(req.params.id, (req as any).user.id);
       res.json({ success: true });
@@ -345,7 +1194,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/invoices", authenticateToken, async (req, res) => {
+  app.post(
+    "/api/invoices",
+    authenticateToken,
+    enforceBillingStatus(),
+    enforcePlanLimitsMiddleware("create_invoice"),
+    async (req, res) => {
     try {
       const { invoice, items } = req.body;
 
@@ -370,11 +1224,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
-  });
+    },
+  );
 
   // ==================== PAYMENTS ====================
 
-  app.post("/api/payments", authenticateToken, async (req, res) => {
+  app.post("/api/payments", authenticateToken, enforceBillingStatus(), async (req, res) => {
     try {
       const paymentData = {
         ...req.body,
@@ -930,7 +1785,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ==================== STRIPE INTEGRATION ====================
 
+  // Billing checkout (authenticated)
+  app.post("/api/billing/checkout", authenticateToken, createCheckoutSession);
+
   // Stripe webhooks (no authentication required)
+  app.post("/api/webhooks/stripe", handleStripeWebhook);
+  // Backward-compatible legacy path
   app.post("/api/stripe/webhooks", handleStripeWebhook);
 
   // Stripe payment processing

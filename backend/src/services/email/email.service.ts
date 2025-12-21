@@ -18,7 +18,7 @@ export interface EmailData {
 }
 
 export class EmailService {
-  private transporter: nodemailer.Transporter;
+  private transporter!: nodemailer.Transporter;
 
   constructor() {
     this.setupTransporter();

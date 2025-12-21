@@ -34,12 +34,27 @@ export const formatValidationErrors = (
 // Real-time validation for form fields
 export const validateField = <T extends z.ZodSchema>(
   schema: T,
-  fieldName: keyof z.infer<T>,
+  fieldName: string,
   value: unknown,
 ): string | null => {
   try {
-    const fieldSchema = schema.shape[fieldName as string] as z.ZodTypeAny;
-    const result = fieldSchema.safeParse(value);
+    if (schema instanceof z.ZodObject) {
+      const shape = schema.shape;
+      const fieldSchema = (shape as Record<string, z.ZodTypeAny>)[
+        fieldName
+      ];
+      if (!fieldSchema) return "Invalid field";
+
+      const result = fieldSchema.safeParse(value);
+
+      if (result.success) {
+        return null;
+      }
+
+      return result.error.issues[0]?.message || "Invalid value";
+    }
+
+    const result = schema.safeParse({ [fieldName]: value });
 
     if (result.success) {
       return null;

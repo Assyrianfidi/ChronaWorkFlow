@@ -6,7 +6,7 @@ declare global {
 
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import ErrorBoundary from "../components/ErrorBoundary.js";
+import ErrorBoundary from '../components/ErrorBoundary';
 
 // Mock console.error to avoid test output noise
 const originalError = console.error;

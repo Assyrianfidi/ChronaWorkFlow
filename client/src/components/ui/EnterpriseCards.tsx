@@ -1,5 +1,6 @@
-import React from "react";
-import { cn } from "@/../../lib/utils";
+import * as React from "react";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const cardVariants = cva(
@@ -131,44 +132,16 @@ export const KPICard: React.FC<KPICardProps> = ({
   size = "default",
   loading = false,
 }) => {
-  const getVariantClasses = () => {
-    switch (variant) {
-      case "success":
-        return "border-success-200 bg-success-50";
-      case "warning":
-        return "border-warning-200 bg-warning-50";
-      case "error":
-        return "border-error-200 bg-error-50";
-      default:
-        return "border-gray-200 bg-white";
-    }
-  };
+  const trend = change?.trend;
+  const trendIcon = trend === "up" ? "▲" : trend === "down" ? "▼" : "—";
+  const trendClass =
+    trend === "up"
+      ? "text-success-600"
+      : trend === "down"
+        ? "text-error-600"
+        : "text-gray-600";
 
-  const getTrendColor = (trend: "up" | "down" | "neutral") => {
-    switch (trend) {
-      case "up":
-        return "text-success-600";
-      case "down":
-        return "text-error-600";
-      default:
-        return "text-gray-600";
-    }
-  };
-
-  const getIconBg = () => {
-    switch (variant) {
-      case "success":
-        return "bg-success-100 text-success-600";
-      case "warning":
-        return "bg-warning-100 text-warning-600";
-      case "error":
-        return "bg-error-100 text-error-600";
-      default:
-        return "bg-primary-100 text-primary-600";
-    }
-  };
-
-  const sizeClasses = {
+  const sizeClasses: Record<NonNullable<KPICardProps["size"]>, string> = {
     sm: "p-4",
     default: "p-6",
     lg: "p-8",
@@ -176,194 +149,64 @@ export const KPICard: React.FC<KPICardProps> = ({
 
   if (loading) {
     return (
-      <div
-        className={cn(
-          "rounded-xl border border-gray-200 bg-white p-6 shadow-card",
-          sizeClasses[size],
-        )}
-      >
-        <div className="animate-pulse space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="h-4 bg-gray-200 rounded w-24"></div>
-            <div className="h-8 bg-gray-200 rounded w-8"></div>
-          </div>
-          <div className="h-8 bg-gray-200 rounded w-32"></div>
-          <div className="h-4 bg-gray-200 rounded w-16"></div>
-        </div>
-      </div>
+      <Card className={cn(sizeClasses[size])} aria-busy="true">
+        <CardContent>
+          <LoadingState size="sm" />
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <Card className={cn(getVariantClasses(), sizeClasses[size])}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p
-            className={cn(
-              "text-2xl font-bold text-gray-900 mt-1",
-              size === "lg" && "text-3xl",
+    <Card
+      className={cn(
+        sizeClasses[size],
+        variant === "success" && "border-success-200 bg-success-50",
+        variant === "warning" && "border-warning-200 bg-warning-50",
+        variant === "error" && "border-error-200 bg-error-50",
+      )}
+    >
+      <CardHeader>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <CardTitle className="text-sm font-medium text-gray-700">
+              {title}
+            </CardTitle>
+            {description && (
+              <CardDescription className="mt-1">{description}</CardDescription>
             )}
-          >
-            {value}
-          </p>
-
-          {change && (
-            <div className="flex items-center gap-2 mt-2">
-              <span
-                className={cn(
-                  "text-sm font-medium",
-                  getTrendColor(change.trend),
-                )}
-              >
-                {change.value}
-              </span>
-            </div>
-          )}
-
-          {description && (
-            <p className="text-xs text-gray-500 mt-2">{description}</p>
-          )}
-        </div>
-
-        {Icon && (
-          <div
-            className={cn(
-              "w-12 h-12 rounded-lg flex items-center justify-center",
-              getIconBg(),
-            )}
-          >
-            <Icon className="w-6 h-6" />
           </div>
-        )}
-      </div>
-    </Card>
-  );
-};
-
-// Metric Card Component
-interface MetricCardProps {
-  title: string;
-  metrics: Array<{
-    label: string;
-    value: string | number;
-    color?: string;
-  }>;
-  size?: "sm" | "default" | "lg";
-}
-
-export const MetricCard: React.FC<MetricCardProps> = ({
-  title,
-  metrics,
-  size = "default",
-}) => {
-  const sizeClasses = {
-    sm: "p-4",
-    default: "p-6",
-    lg: "p-8",
-  };
-
-  return (
-    <Card className={sizeClasses[size]}>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
-      <div className="space-y-3">
-        {metrics.map((metric, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">{metric.label}</span>
-            <span
-              className={cn(
-                "text-sm font-semibold",
-                metric.color || "text-gray-900",
-              )}
+          {Icon && (
+            <div
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-primary-100 text-primary-600"
+              aria-hidden="true"
             >
-              {metric.value}
-            </span>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-};
-
-// Status Card Component
-interface StatusCardProps {
-  status: "online" | "offline" | "warning" | "error";
-  title: string;
-  description?: string;
-  metrics?: Array<{
-    label: string;
-    value: string | number;
-  }>;
-}
-
-export const StatusCard: React.FC<StatusCardProps> = ({
-  status,
-  title,
-  description,
-  metrics,
-}) => {
-  const getStatusConfig = () => {
-    switch (status) {
-      case "online":
-        return {
-          bgColor: "bg-success-50",
-          borderColor: "border-success-200",
-          textColor: "text-success-700",
-          dotColor: "bg-success-500",
-        };
-      case "offline":
-        return {
-          bgColor: "bg-gray-50",
-          borderColor: "border-gray-200",
-          textColor: "text-gray-700",
-          dotColor: "bg-gray-500",
-        };
-      case "warning":
-        return {
-          bgColor: "bg-warning-50",
-          borderColor: "border-warning-200",
-          textColor: "text-warning-700",
-          dotColor: "bg-warning-500",
-        };
-      case "error":
-        return {
-          bgColor: "bg-error-50",
-          borderColor: "border-error-200",
-          textColor: "text-error-700",
-          dotColor: "bg-error-500",
-        };
-    }
-  };
-
-  const config = getStatusConfig();
-
-  return (
-    <Card className={cn(config.bgColor, config.borderColor)}>
-      <div className="flex items-start gap-3">
-        <div className={cn("w-3 h-3 rounded-full mt-1", config.dotColor)} />
-        <div className="flex-1">
-          <h3 className={cn("font-semibold", config.textColor)}>{title}</h3>
-          {description && (
-            <p className="text-sm text-gray-600 mt-1">{description}</p>
-          )}
-
-          {metrics && (
-            <div className="mt-4 space-y-2">
-              {metrics.map((metric, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">{metric.label}</span>
-                  <span className="text-sm font-semibold text-gray-900">
-                    {metric.value}
-                  </span>
-                </div>
-              ))}
+              <Icon className="h-5 w-5" />
             </div>
           )}
         </div>
-      </div>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-end justify-between gap-3">
+          <div className="text-2xl font-semibold text-gray-900">{value}</div>
+          {change && (
+            <div className={cn("text-sm font-medium", trendClass)}>
+              <span aria-hidden="true">{trendIcon}</span> {change.value}
+            </div>
+          )}
+        </div>
+      </CardContent>
     </Card>
   );
 };
 
-export { CardHeader, CardTitle, CardDescription, CardContent, CardFooter };
+export {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+};
+
 export default Card;

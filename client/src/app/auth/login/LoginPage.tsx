@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { useAuthStore } from "../store/auth-store.js";
+import { useAuthStore } from '../store/auth-store';
 import { cn } from "@/lib/utils";
 
 // Form validation schema

@@ -4,12 +4,11 @@ declare global {
   }
 }
 
-import React, { useState } from "react";
-("use client");
+"use client";
 
+import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useAuthStore } from "@/components/store/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 import { Loader2, ShieldAlert } from "lucide-react";
 import { AuthErrorBoundary } from "./AuthErrorBoundary";
 
@@ -59,26 +58,12 @@ export function AuthGuard({
   // Get auth state from the store
   const {
     isAuthenticated,
-    checkAuth,
     isLoading: isAuthLoading,
   } = useAuthStore();
 
   useEffect(() => {
-    const checkAuthentication = async () => {
-      try {
-        await checkAuth();
-      } catch (err) {
-        console.error("Auth check failed:", err);
-        setError(
-          err instanceof Error ? err : new Error("Authentication check failed"),
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuthentication();
-  }, [checkAuth]);
+    setIsLoading(isAuthLoading);
+  }, [isAuthLoading]);
 
   useEffect(() => {
     // Only redirect if we're not already on a public path

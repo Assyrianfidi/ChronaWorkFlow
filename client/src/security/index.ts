@@ -72,10 +72,6 @@ export {
   securityMiddleware,
 } from "@/security/middleware";
 
-// Security types
-export type { EnvConfig } from "@/config/env";
-export type { LogEntry } from "@/utils/logger";
-
 // Security constants
 export const SECURITY_HEADERS = {
   "X-Frame-Options": "DENY",
@@ -96,49 +92,4 @@ export const CSP_DIRECTIVES = {
   "frame-ancestors": ["'none'"],
   "base-uri": ["'self'"],
   "form-action": ["'self'"],
-};
-
-export default {
-  // Utilities
-  sanitizeHTML,
-  sanitizeInput,
-  escapeHtml,
-  generateCSRFToken,
-  validateCSRFToken,
-  maskEmail,
-  maskPhone,
-  maskSSN,
-  maskCreditCard,
-  isValidURL,
-  sanitizeFileName,
-
-  // Configuration
-  SECURITY_CONFIG,
-  ENHANCED_SECURITY_CONFIG,
-  config,
-  securityConfig,
-
-  // Logging
-  logger,
-  log,
-
-  // API
-  apiClient,
-  secureApi,
-  rateLimitedApi,
-
-  // Components
-  SecureHTML,
-  SecureInput,
-  SecureForm,
-  SecureLink,
-  SecureImage,
-  CookieConsent,
-
-  // Middleware
-  securityMiddleware,
-
-  // Constants
-  SECURITY_HEADERS,
-  CSP_DIRECTIVES,
 };

@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-import React, { useState } from "react";
+import * as React from "react";
 /**
  * Interactive Feedback Hook
  * React hook for managing advanced micro-interactions and feedback
@@ -13,7 +13,7 @@ import React, { useState } from "react";
 import { useEffect, useRef, useCallback } from "react";
 import InteractionEngine, {
   InteractionConfig,
-} from "@/components/utils/interaction-engine";
+} from "@/utils/interaction-engine";
 
 interface UseInteractiveFeedbackOptions {
   hapticFeedback?: boolean;
@@ -302,7 +302,7 @@ export const useAdvancedFeedback = (
 
 // Hook for managing global interaction settings
 export const useInteractionSettings = () => {
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = React.useState({
     hapticFeedback: false,
     soundFeedback: false,
     visualFeedback: true,

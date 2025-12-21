@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useAccounts } from "@/components/contexts/AccountsContext";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { useAccounts } from "@/contexts/AccountsContext";
 import { Button } from "@/components/components/ui/button";
 import { DashboardShell } from "@/components/components/ui/layout/DashboardShell";
 
 const AccountsPage: React.FC = () => {
-  const {
-    state,
-    fetchAccounts,
-    createAccount,
-    updateAccount,
-    adjustBalance,
-    clearError,
-  } = useAccounts();
+  const { state, fetchAccounts, createAccount, adjustBalance, clearError } =
+    useAccounts();
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     code: "",
     name: "",
@@ -237,14 +232,16 @@ const AccountsPage: React.FC = () => {
 
           <div className="bg-surface1 shadow-soft overflow-hidden sm:rounded-md border border-border-gray">
             {state.isLoading ? (
-              <div className="px-4 py-8 text-center">
-                <div className="text-gray-500">Loading accounts...</div>
+              <div className="px-4">
+                <LoadingState label="Loading accounts…" size="sm" />
               </div>
             ) : state.accounts.length === 0 ? (
-              <div className="px-4 py-8 text-center">
-                <div className="text-gray-500">
-                  No accounts found. Create your first account to get started.
-                </div>
+              <div className="px-4">
+                <EmptyState
+                  size="sm"
+                  title="No accounts found"
+                  description="Create your first account to get started."
+                />
               </div>
             ) : (
               <ul className="divide-y divide-gray-200">

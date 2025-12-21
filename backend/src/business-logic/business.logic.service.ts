@@ -1,4 +1,5 @@
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import type { PrismaClient } from "@prisma/client";
+import { prisma } from '../lib/prisma';
 import {
   DomainValidator,
   ValidationRules,

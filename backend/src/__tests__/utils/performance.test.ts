@@ -1,12 +1,4 @@
 import {
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-  jest,
-} from "@jest/globals";
-import {
   CacheEngine,
   CacheInvalidator,
   CacheMiddleware,
@@ -18,14 +10,10 @@ import {
   LoadTester,
   DatabaseMonitor,
 } from "../../utils/performanceMonitor";
-import { LoggingBridge } from "../../utils/loggingBridge";
-
-// Mock dependencies
-jest.mock("../../utils/loggingBridge");
-const mockLoggingBridge = LoggingBridge as jest.Mocked<typeof LoggingBridge>;
 
 describe("Performance Layer Tests", () => {
   beforeEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 
@@ -116,12 +104,14 @@ describe("Performance Layer Tests", () => {
       };
 
       // Apply decorator
-      CacheMiddleware.cacheResponse(300)(target, "expensiveMethod", {
+      const descriptor = {
         value: target.expensiveMethod,
         writable: true,
         enumerable: true,
         configurable: true,
-      });
+      } as PropertyDescriptor;
+      CacheMiddleware.cacheResponse(300)(target, "expensiveMethod", descriptor);
+      Object.defineProperty(target, "expensiveMethod", descriptor);
 
       const getSpy = jest.spyOn(CacheEngine, "get").mockResolvedValue(null);
       const setSpy = jest.spyOn(CacheEngine, "set").mockResolvedValue();
@@ -142,12 +132,14 @@ describe("Performance Layer Tests", () => {
         expensiveMethod: jest.fn().mockResolvedValue("result"),
       };
 
-      CacheMiddleware.cacheResponse(300)(target, "expensiveMethod", {
+      const descriptor = {
         value: target.expensiveMethod,
         writable: true,
         enumerable: true,
         configurable: true,
-      });
+      } as PropertyDescriptor;
+      CacheMiddleware.cacheResponse(300)(target, "expensiveMethod", descriptor);
+      Object.defineProperty(target, "expensiveMethod", descriptor);
 
       const getSpy = jest
         .spyOn(CacheEngine, "get")
@@ -162,19 +154,11 @@ describe("Performance Layer Tests", () => {
     });
 
     it("should check rate limits correctly", async () => {
-      const checkRateLimitSpy = jest.spyOn(CacheEngine, "checkRateLimit");
-
-      checkRateLimitSpy.mockResolvedValue({
-        allowed: true,
-        remaining: 5,
-        resetTime: Date.now() + 60000,
-      });
-
       const result = await CacheMiddleware.checkRateLimit("user123", 10, 60);
 
       expect(result.allowed).toBe(true);
-      expect(result.remaining).toBe(5);
-      expect(checkRateLimitSpy).toHaveBeenCalledWith("user123", 10, 60);
+      expect(result.remaining).toBe(9);
+      expect(typeof result.resetTime).toBe("number");
     });
   });
 
@@ -431,7 +415,7 @@ describe("Performance Layer Tests", () => {
   describe("LoadTester", () => {
     it("should run concurrent requests", async () => {
       // Mock fetch
-      global.fetch = jest.fn().mockResolvedValue({
+      (global as any).fetch = jest.fn().mockResolvedValue({
         status: 200,
       });
 
@@ -451,7 +435,7 @@ describe("Performance Layer Tests", () => {
 
     it("should handle errors in concurrent requests", async () => {
       // Mock fetch to throw error
-      global.fetch = jest.fn().mockRejectedValue(new Error("Network error"));
+      (global as any).fetch = jest.fn().mockRejectedValue(new Error("Network error"));
 
       const result = await LoadTester.runConcurrentRequests(
         "https://api.example.com/test",
@@ -466,7 +450,7 @@ describe("Performance Layer Tests", () => {
     });
 
     it("should run stress test", async () => {
-      global.fetch = jest.fn().mockResolvedValue({
+      (global as any).fetch = jest.fn().mockResolvedValue({
         status: 200,
       });
 
@@ -544,3 +528,5 @@ describe("Performance Layer Tests", () => {
     });
   });
 });
+
+export {};

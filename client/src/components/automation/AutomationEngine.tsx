@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useUserExperienceMode } from "@/components/adaptive/UserExperienceMode";
 import { usePerformance } from "@/components/adaptive/UI-Performance-Engine";
-import { useAuthStore } from "@/../../store/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 
 // Automation Types
 interface AutomationRule {
@@ -392,6 +392,10 @@ class AIAutomationEngine {
 
     // Simple expression evaluation - in production, use a proper expression parser
     try {
+      if (import.meta.env.PROD) {
+        return false;
+      }
+
       const expression = condition.config.expression.replace(
         /\$\{([^}]+)\}/g,
         (match, path) => {
@@ -543,6 +547,10 @@ class AIAutomationEngine {
     const script = action.config.script;
     if (!script) {
       throw new Error("Script required for script action");
+    }
+
+    if (import.meta.env.PROD) {
+      throw new Error("Script actions are disabled in production");
     }
 
     // Execute script - in production, use a secure sandbox
@@ -767,9 +775,11 @@ export const AutomationEngine: React.FC<{ children: React.ReactNode }> = ({
         trigger: {
           type: "threshold",
           config: {
-            metric: "error_rate",
-            operator: "greater",
-            value: 5,
+            threshold: {
+              metric: "error_rate",
+              operator: "greater",
+              value: 5,
+            },
           },
         },
         conditions: [

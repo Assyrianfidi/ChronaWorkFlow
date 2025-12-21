@@ -1,18 +1,16 @@
-import React from "react";
-import { useState } from "react";
-import { useEmployees, useCreateEmployee } from "../hooks/use-api.js";
-import { Button } from "../components/ui/button.js";
-import {
-  Card,
+import React, { useState } from "react";
+import { useEmployees } from "@/hooks/use-api";
+import { Button } from "@/components/components/ui/button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import Card, {
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card.js";
-import { Input } from "../components/ui/input.js";
-import { Label } from "../components/ui/label.js";
-import { Badge } from "../components/ui/badge.js";
-import { Plus, Search, Filter } from "lucide-react";
+} from "@/components/ui/Card";
+import Input from "@/components/ui/Input";
+import Badge from "@/components/ui/Badge";
+import { Plus, Search } from "lucide-react";
 
 interface Employee {
   id: string;
@@ -30,7 +28,6 @@ interface Employee {
 
 export default function PayrollPage() {
   const { data: employees = [], isLoading, error } = useEmployees();
-  const createEmployee = useCreateEmployee();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
@@ -141,7 +138,7 @@ export default function PayrollPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              This Month's Payroll
+              This Month&apos;s Payroll
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -172,7 +169,7 @@ export default function PayrollPage() {
         <CardHeader>
           <CardTitle>Employees</CardTitle>
           <CardDescription>
-            Manage your company's employees and their payroll information
+            Manage your company&apos;s employees and their payroll information
           </CardDescription>
 
           {/* Filters */}
@@ -252,9 +249,10 @@ export default function PayrollPage() {
               ))}
 
               {filteredEmployees.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  No employees found matching your criteria.
-                </div>
+                <EmptyState
+                  size="sm"
+                  title="No employees found matching your criteria."
+                />
               )}
             </div>
           )}

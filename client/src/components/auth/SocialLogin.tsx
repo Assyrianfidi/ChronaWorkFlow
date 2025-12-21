@@ -1,11 +1,10 @@
-import { Button } from "../ui/button.js";
-import { Icons } from "../icons.js";
-import { signIn } from "next-auth/react";
+import Button from "../ui/button";
+import { Icons } from "../icons";
 
 export function SocialLogin() {
   const handleSocialLogin = async (provider: "google" | "github") => {
     try {
-      await signIn(provider, { callbackUrl: "/dashboard" });
+      console.warn("Social login is not configured in this project.", provider);
     } catch (error) {
       console.error("Social login error:", error);
     }

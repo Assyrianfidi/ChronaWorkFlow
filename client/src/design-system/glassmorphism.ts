@@ -113,7 +113,7 @@ export const generateGlassmorphismCSS = (
     backdrop-filter: blur(${config.blur}px);
     -webkit-backdrop-filter: blur(${config.blur}px);
     border: 1px solid rgba(255, 255, 255, ${config.borderOpacity});
-    box-shadow: ${tier.shadow};
+    shadow-md;
     transform: scale(${tier.scale});
     position: relative;
     
@@ -145,7 +145,7 @@ export const generateGlassmorphismCSS = (
       );
       border-radius: inherit;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition-colors duration-200;
       pointer-events: none;
     }
     

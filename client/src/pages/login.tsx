@@ -10,12 +10,9 @@ import {
   CardTitle,
 } from "@/components/components/ui/card";
 import { Wallet } from "lucide-react";
-import { useToast } from "@/components/hooks/use-toast";
-import { useAuthStore } from "@/components/store/auth-store";
-import {
-  loginSchema,
-  type LoginFormData,
-} from "@/components/lib/validations/schemas";
+import { useToast } from "@/hooks/use-toast";
+import { useAuthStore } from "@/store/auth-store";
+import { loginSchema, type LoginFormData } from "@/lib/validations/schemas";
 import {
   useForm,
   type UseFormReturn,
@@ -85,7 +82,7 @@ const LoginForm = ({ methods, onSubmit }: LoginFormProps): ReactElement => (
     <CardFooter className="flex flex-col gap-4">
       <Button
         type="submit"
-        className="w-full text-black"
+        className="w-full"
         disabled={methods.formState.isSubmitting}
         data-testid="button-login"
       >
@@ -93,7 +90,7 @@ const LoginForm = ({ methods, onSubmit }: LoginFormProps): ReactElement => (
       </Button>
 
       <p className="text-sm text-center text-muted-foreground">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <a
           href="/register"
           className="text-primary hover:underline"
@@ -109,7 +106,7 @@ const LoginForm = ({ methods, onSubmit }: LoginFormProps): ReactElement => (
 export default function Login() {
   const { login } = useAuthStore();
   const { toast } = useToast();
-  const [_, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const methods = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {

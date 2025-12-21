@@ -14,7 +14,7 @@ const reportSchema = z.object({
   type: z.enum(["financial", "sales", "inventory", "payroll", "custom"]),
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
-  parameters: z.record(z.any()).optional(),
+  parameters: z.record(z.string(), z.any()).optional(),
 });
 
 type ReportFormData = z.infer<typeof reportSchema>;
@@ -91,7 +91,7 @@ const ReportForm: React.FC<ReportFormProps> = ({
       <FormField label="Report Type" error={errors.type?.message} required>
         <select
           {...register("type")}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
           aria-label="Report type"
           aria-invalid={errors.type ? "true" : "false"}
         >
@@ -128,14 +128,18 @@ const ReportForm: React.FC<ReportFormProps> = ({
       </div>
 
       <FormField
-        label="Additional Parameters"
-        error={errors.parameters?.message}
+        label="Parameters (JSON)"
+        error={
+          typeof errors.parameters?.message === "string"
+            ? errors.parameters.message
+            : ""
+        }
         description="JSON format for additional report parameters"
       >
         <textarea
           {...register("parameters")}
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-3 py-2 border border-input bg-background rounded-md shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background"
           placeholder='{"key": "value"}'
           aria-label="Report parameters"
         />
@@ -144,15 +148,10 @@ const ReportForm: React.FC<ReportFormProps> = ({
       <FormActions>
         <Button
           type="submit"
-          disabled={!isDirty || !isValid || isSubmitting}
-          loading={isSubmitting}
-          aria-label={initialData ? "Update report" : "Generate report"}
+          disabled={loading || isSubmitting || !isDirty || !isValid}
+          aria-label="Submit report"
         >
-          {isSubmitting
-            ? "Generating..."
-            : initialData
-              ? "Update Report"
-              : "Generate Report"}
+          {isSubmitting ? "Generating..." : initialData ? "Update" : "Generate"}
         </Button>
 
         <Button

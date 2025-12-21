@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import * as React from "react";
 import {
   BarChart3,
@@ -13,18 +12,18 @@ import {
   PieChart,
 } from "lucide-react";
 import {
-  AccountsBalanceCard,
-  RevenueCard,
-  ExpensesCard,
-  PendingInvoicesCard,
+  RevenueKPI,
+  ExpensesKPI,
+  InvoicesKPI,
+  TransactionsKPI,
 } from "@/components/ui/EnterpriseKPICard";
 import {
   EnterpriseDataTable,
   type Column,
 } from "@/components/ui/EnterpriseDataTable";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/../../lib/utils";
+import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface EnterpriseDashboardNewProps {
   className?: string;
@@ -92,10 +91,9 @@ const EnterpriseDashboardNew = React.forwardRef<
       title: "Date",
       sortable: true,
       filterable: true,
-      width: "120px",
       render: (value) => (
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-gray-400" />
+          <Calendar className="h-4 w-4 text-muted-foreground" />
           <span>{value}</span>
         </div>
       ),
@@ -114,16 +112,16 @@ const EnterpriseDashboardNew = React.forwardRef<
       filterable: true,
       render: (value) => {
         const typeColors = {
-          Invoice: "bg-blue-100 text-blue-800",
-          Expense: "bg-red-100 text-red-800",
-          Payment: "bg-green-100 text-green-800",
+          Invoice: "bg-primary/10 text-primary",
+          Expense: "bg-destructive/10 text-destructive dark:text-destructive-500",
+          Payment: "bg-success/10 text-success-700 dark:text-success",
         };
         return (
           <span
             className={cn(
               "px-2 py-1 rounded-full text-xs font-medium",
               typeColors[value as keyof typeof typeColors] ||
-                "bg-gray-100 text-gray-800",
+                "bg-muted text-foreground",
             )}
           >
             {value}
@@ -139,7 +137,9 @@ const EnterpriseDashboardNew = React.forwardRef<
         <div
           className={cn(
             "font-semibold",
-            row.type === "Expense" ? "text-danger" : "text-success",
+            row.type === "Expense"
+              ? "text-destructive dark:text-destructive-500"
+              : "text-success-700 dark:text-success",
           )}
         >
           {row.type === "Expense" ? "-" : "+"}
@@ -154,17 +154,17 @@ const EnterpriseDashboardNew = React.forwardRef<
       filterable: true,
       render: (value) => {
         const statusColors = {
-          Paid: "bg-green-100 text-green-800",
-          Pending: "bg-yellow-100 text-yellow-800",
-          Overdue: "bg-red-100 text-red-800",
-          Completed: "bg-blue-100 text-blue-800",
+          Paid: "bg-success/10 text-success-700 dark:text-success",
+          Pending: "bg-warning/10 text-warning-700 dark:text-warning",
+          Overdue: "bg-destructive/10 text-destructive dark:text-destructive-500",
+          Completed: "bg-primary/10 text-primary",
         };
         return (
           <span
             className={cn(
               "px-2 py-1 rounded-full text-xs font-medium",
               statusColors[value as keyof typeof statusColors] ||
-                "bg-gray-100 text-gray-800",
+                "bg-muted text-foreground",
             )}
           >
             {value}
@@ -177,7 +177,9 @@ const EnterpriseDashboardNew = React.forwardRef<
       title: "Category",
       sortable: true,
       filterable: true,
-      render: (value) => <span className="text-sm text-gray-600">{value}</span>,
+      render: (value) => (
+        <span className="text-sm text-muted-foreground">{value}</span>
+      ),
     },
   ];
 
@@ -221,10 +223,10 @@ const EnterpriseDashboardNew = React.forwardRef<
       { account: "Payroll Account", volume: 28 },
     ],
     expenses: [
-      { category: "Operations", amount: 35, color: "#3B82F6" },
-      { category: "Marketing", amount: 25, color: "#10B981" },
-      { category: "Payroll", amount: 30, color: "#F59E0B" },
-      { category: "Utilities", amount: 10, color: "#EF4444" },
+      { category: "Operations", amount: 35 },
+      { category: "Marketing", amount: 25 },
+      { category: "Payroll", amount: 30 },
+      { category: "Utilities", amount: 10 },
     ],
   };
 
@@ -237,7 +239,7 @@ const EnterpriseDashboardNew = React.forwardRef<
             <h1 className="text-3xl font-bold text-primary mb-2">
               Dashboard Overview
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Welcome back! Here's what's happening with your business today.
             </p>
           </div>
@@ -246,7 +248,7 @@ const EnterpriseDashboardNew = React.forwardRef<
             <select
               value={selectedPeriod}
               onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
+              className="px-4 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <option value="week">This Week</option>
               <option value="month">This Month</option>
@@ -255,7 +257,7 @@ const EnterpriseDashboardNew = React.forwardRef<
             </select>
 
             <EnterpriseButton
-              variant="outline"
+              variant="secondary"
               size="sm"
               icon={<Filter className="h-4 w-4" />}
             >
@@ -267,10 +269,10 @@ const EnterpriseDashboardNew = React.forwardRef<
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <AccountsBalanceCard value="$124,563" change={12.5} />
-        <RevenueCard value="$67,000" change={8.2} />
-        <ExpensesCard value="$40,000" change={-3.1} />
-        <PendingInvoicesCard value="3" change={-25} />
+        <RevenueKPI value={67000} change={8.2} />
+        <ExpensesKPI value={40000} change={-3.1} />
+        <InvoicesKPI value={3} change={-25} />
+        <TransactionsKPI value={45} change={12.5} />
       </div>
 
       {/* Charts Section */}
@@ -284,14 +286,14 @@ const EnterpriseDashboardNew = React.forwardRef<
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+            <div className="h-64 flex items-center justify-center bg-muted rounded-lg border-2 border-dashed border-border">
               <div className="text-center">
-                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">Line Chart</p>
-                <p className="text-sm text-gray-400">
+                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                <p className="text-muted-foreground">Line Chart</p>
+                <p className="text-sm text-muted-foreground">
                   Revenue vs Expenses over time
                 </p>
-                <div className="mt-4 space-y-1 text-xs text-gray-500">
+                <div className="mt-4 space-y-1 text-xs text-muted-foreground">
                   {chartData.revenue.slice(0, 3).map((item, index) => (
                     <div key={index}>
                       {item.month}: Revenue ${item.revenue.toLocaleString()} |
@@ -313,14 +315,14 @@ const EnterpriseDashboardNew = React.forwardRef<
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+            <div className="h-64 flex items-center justify-center bg-muted rounded-lg border-2 border-dashed border-border">
               <div className="text-center">
-                <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500">Bar Chart</p>
-                <p className="text-sm text-gray-400">
+                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                <p className="text-muted-foreground">Bar Chart</p>
+                <p className="text-sm text-muted-foreground">
                   Transaction volume per account
                 </p>
-                <div className="mt-4 space-y-1 text-xs text-gray-500">
+                <div className="mt-4 space-y-1 text-xs text-muted-foreground">
                   {chartData.transactions.map((item, index) => (
                     <div key={index}>
                       {item.account}: {item.volume} transactions
@@ -344,21 +346,18 @@ const EnterpriseDashboardNew = React.forwardRef<
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+            <div className="h-64 flex items-center justify-center bg-muted rounded-lg border-2 border-dashed border-border">
               <div className="text-center">
-                <div className="w-24 h-24 mx-auto mb-2 rounded-full border-8 border-gray-200 border-t-blue-500 border-r-green-500 border-b-yellow-500 border-l-red-500" />
-                <p className="text-gray-500">Pie Chart</p>
-                <p className="text-sm text-gray-400">Expense by category</p>
-                <div className="mt-4 space-y-1 text-xs text-gray-500">
+                <div className="w-24 h-24 mx-auto mb-2 rounded-full border-8 border-border" />
+                <p className="text-muted-foreground">Pie Chart</p>
+                <p className="text-sm text-muted-foreground">Expense by category</p>
+                <div className="mt-4 space-y-1 text-xs text-muted-foreground">
                   {chartData.expenses.map((item, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-center gap-2"
                     >
-                      <div
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: item.color }}
-                      />
+                      <div className="w-2 h-2 rounded-full bg-muted-foreground" />
                       {item.category}: {item.amount}%
                     </div>
                   ))}
@@ -375,7 +374,7 @@ const EnterpriseDashboardNew = React.forwardRef<
               <FileText className="h-5 w-5" />
               Recent Activity
             </CardTitle>
-            <EnterpriseButton variant="outline" size="sm">
+            <EnterpriseButton variant="secondary" size="sm">
               View All
             </EnterpriseButton>
           </CardHeader>
@@ -385,8 +384,7 @@ const EnterpriseDashboardNew = React.forwardRef<
               columns={transactionColumns}
               searchable={false}
               exportable={true}
-              pagination={false}
-              height="300px"
+              paginated={false}
               onRowClick={(row) => console.log("Transaction clicked:", row)}
             />
           </CardContent>
@@ -408,29 +406,30 @@ const EnterpriseDashboardNew = React.forwardRef<
                 key={notification.id}
                 className={cn(
                   "flex items-start gap-3 p-3 rounded-lg border",
-                  notification.type === "error" && "bg-red-50 border-red-200",
+                  notification.type === "error" &&
+                    "bg-destructive/10 border-destructive/20",
                   notification.type === "warning" &&
-                    "bg-yellow-50 border-yellow-200",
+                    "bg-warning/10 border-warning/20",
                   notification.type === "success" &&
-                    "bg-green-50 border-green-200",
+                    "bg-success/10 border-success/20",
                 )}
               >
                 <div
                   className={cn(
                     "w-2 h-2 rounded-full mt-2",
-                    notification.type === "error" && "bg-red-500",
-                    notification.type === "warning" && "bg-yellow-500",
-                    notification.type === "success" && "bg-green-500",
+                    notification.type === "error" && "bg-destructive",
+                    notification.type === "warning" && "bg-warning",
+                    notification.type === "success" && "bg-success",
                   )}
                 />
                 <div className="flex-1">
-                  <h4 className="font-medium text-sm text-gray-900">
+                  <h4 className="font-medium text-sm text-foreground">
                     {notification.title}
                   </h4>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {notification.message}
                   </p>
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     {notification.time}
                   </p>
                 </div>

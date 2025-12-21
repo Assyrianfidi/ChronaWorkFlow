@@ -8,7 +8,7 @@ import EnterpriseSecurity, {
   SecurityAlert,
   SecurityEvent,
   UserSession,
-} from "@/../../security/enterprise-security";
+} from "@/security/enterprise-security";
 
 interface SecurityDashboardProps {
   security: EnterpriseSecurity;
@@ -515,17 +515,15 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
         .export-button {
           padding: 0.75rem 1.5rem;
           border: 1px solid #ddd;
-          border-radius: 6px;
+          rounded-2;
           background: white;
           cursor: pointer;
           font-weight: 600;
-          transition: all 0.2s;
+          transition-colors duration-200;
         }
 
         .refresh-button:hover,
-        .export-button:hover {
-          background: #f0f0f0;
-        }
+        .export-buttonhover:bg-#f0f0f0
 
         .metrics-grid {
           display: grid;
@@ -536,9 +534,9 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
 
         .metric-card {
           background: white;
-          border-radius: 8px;
+          rounded-2;
           padding: 1.5rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          shadow-md;
           display: flex;
           align-items: center;
           gap: 1rem;
@@ -574,8 +572,8 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
 
         .content-section {
           background: white;
-          border-radius: 8px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          rounded-2;
+          shadow-md;
           overflow: hidden;
         }
 
@@ -605,7 +603,7 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           color: #666;
           background: #f0f0f0;
           padding: 0.25rem 0.75rem;
-          border-radius: 12px;
+          rounded-3;
         }
 
         .alerts-list,
@@ -638,12 +636,10 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           padding: 1.5rem;
           border-bottom: 1px solid #eee;
           cursor: pointer;
-          transition: background 0.2s;
+          transition-colors duration-200;
         }
 
-        .alert-item:hover {
-          background: #f8f9fa;
-        }
+        .alert-itemhover:bg-#f8f9fa
 
         .alert-item:last-child {
           border-bottom: none;
@@ -665,7 +661,7 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           font-size: 0.75rem;
           font-weight: 600;
           padding: 0.25rem 0.5rem;
-          border-radius: 4px;
+          rounded-1;
         }
 
         .alert-description {
@@ -688,12 +684,10 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           padding: 1rem 1.5rem;
           border-bottom: 1px solid #eee;
           cursor: pointer;
-          transition: background 0.2s;
+          transition-colors duration-200;
         }
 
-        .event-item:hover {
-          background: #f8f9fa;
-        }
+        .event-itemhover:bg-#f8f9fa
 
         .event-item:last-child {
           border-bottom: none;
@@ -726,7 +720,7 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           font-size: 0.625rem;
           font-weight: 600;
           padding: 0.125rem 0.375rem;
-          border-radius: 3px;
+          rounded-1;
         }
 
         .session-item {
@@ -769,15 +763,13 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           background: #dc3545;
           color: white;
           border: none;
-          border-radius: 4px;
+          rounded-1;
           font-size: 0.875rem;
           cursor: pointer;
-          transition: background 0.2s;
+          transition-colors duration-200;
         }
 
-        .terminate-button:hover {
-          background: #c82333;
-        }
+        .terminate-buttonhover:bg-#c82333
 
         /* Modal Styles */
         .modal-overlay {
@@ -795,12 +787,12 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
 
         .modal-content {
           background: white;
-          border-radius: 8px;
+          rounded-2;
           width: 90%;
           max-width: 600px;
           max-height: 80vh;
           overflow: hidden;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+          shadow-md;
         }
 
         .modal-header {
@@ -825,12 +817,10 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           cursor: pointer;
           color: #666;
           padding: 0.25rem;
-          border-radius: 4px;
+          rounded-1;
         }
 
-        .close-button:hover {
-          background: #e9ecef;
-        }
+        .close-buttonhover:bg-#e9ecef
 
         .modal-body {
           padding: 1.5rem;
@@ -900,7 +890,7 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           align-items: center;
           padding: 0.75rem;
           background: #f8f9fa;
-          border-radius: 6px;
+          rounded-2;
         }
 
         .action-description {
@@ -912,7 +902,7 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           font-size: 0.75rem;
           font-weight: 600;
           padding: 0.25rem 0.5rem;
-          border-radius: 4px;
+          rounded-1;
         }
 
         .action-status.executed {
@@ -966,10 +956,10 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
         .cancel-button {
           padding: 0.75rem 1.5rem;
           border: 1px solid #ddd;
-          border-radius: 6px;
+          rounded-2;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.2s;
+          transition-colors duration-200;
         }
 
         .resolve-button {
@@ -993,9 +983,7 @@ const SecurityDashboard: React.FC<SecurityDashboardProps> = ({
           color: #666;
         }
 
-        .cancel-button:hover {
-          background: #f0f0f0;
-        }
+        .cancel-buttonhover:bg-#f0f0f0
 
         /* Severity Color Classes */
         .text-blue-600 {

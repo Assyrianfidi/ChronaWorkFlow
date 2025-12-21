@@ -84,7 +84,7 @@ const ValidatedInput: React.FC<ValidatedInputProps> = ({
       {label && (
         <label
           htmlFor={name}
-          className="block text-sm font-medium text-gray-700"
+          className="block text-sm font-medium text-foreground"
         >
           {label}
         </label>
@@ -95,8 +95,8 @@ const ValidatedInput: React.FC<ValidatedInputProps> = ({
           id={name}
           name={name}
           className={cn(
-            showError && "border-red-500 focus:ring-red-500",
-            showSuccess && "border-green-500 focus:ring-green-500",
+            showError && "border-destructive",
+            showSuccess && "border-success",
             className,
           )}
           onChange={handleChange}
@@ -110,7 +110,7 @@ const ValidatedInput: React.FC<ValidatedInputProps> = ({
         {showSuccess && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <svg
-              className="h-5 w-5 text-green-500"
+              className="h-5 w-5 text-success-700 dark:text-success"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -126,7 +126,7 @@ const ValidatedInput: React.FC<ValidatedInputProps> = ({
         {showError && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
             <svg
-              className="h-5 w-5 text-red-500"
+              className="h-5 w-5 text-destructive dark:text-destructive-500"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -141,7 +141,11 @@ const ValidatedInput: React.FC<ValidatedInputProps> = ({
       </div>
 
       {showError && (
-        <p id={`${name}-error`} className="text-sm text-red-600" role="alert">
+        <p
+          id={`${name}-error`}
+          className="text-sm text-destructive dark:text-destructive-500"
+          role="alert"
+        >
           {displayError}
         </p>
       )}
@@ -246,11 +250,11 @@ const EnhancedForm: React.FC<EnhancedFormProps> = ({
     <div className={cn("space-y-6", className)}>
       {/* Progress indicator */}
       {showProgress && (
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-muted rounded-full h-2">
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            className="bg-primary h-2 rounded-full transition-all duration-300"
             style={{
-              width: `${(Object.keys(fieldValidations).length / Object.keys(schema.shape).length) * 100}%`,
+              width: `${(Object.keys(fieldValidations).length / Math.max(Object.keys((schema as any)?.shape || {}).length, 1)) * 100}%`,
             }}
           />
         </div>
@@ -258,14 +262,18 @@ const EnhancedForm: React.FC<EnhancedFormProps> = ({
 
       {/* Error and success messages */}
       {submitError && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{submitError}</p>
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-md">
+          <p className="text-sm text-destructive dark:text-destructive-500">
+            {submitError}
+          </p>
         </div>
       )}
 
       {submitSuccess && (
-        <div className="p-4 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-sm text-green-600">{submitSuccess}</p>
+        <div className="p-4 bg-success/10 border border-success/20 rounded-md">
+          <p className="text-sm text-success-700 dark:text-success">
+            {submitSuccess}
+          </p>
         </div>
       )}
 
@@ -290,7 +298,6 @@ const EnhancedForm: React.FC<EnhancedFormProps> = ({
           <Button
             type="submit"
             disabled={!canSubmit || isSubmitting}
-            loading={isSubmitting}
           >
             {isSubmitting ? "Submitting..." : "Submit"}
           </Button>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useAdaptiveLayout } from "./AdaptiveLayoutEngine";
 import { useUserExperienceMode } from "./UserExperienceMode";
-import { cn } from "@/../../lib/utils";
+import { cn } from "@/lib/utils";
+export { withPerformanceTracking } from "./UI-Performance-Engine";
 
 // Dashboard Widget Types
 export interface DashboardWidget {
@@ -17,7 +18,7 @@ export interface DashboardWidget {
   isResizable?: boolean;
 }
 
-interface DashboardLayout {
+export interface DashboardLayout {
   id: string;
   name: string;
   widgets: DashboardWidget[];
@@ -266,7 +267,7 @@ function DashboardWidgetComponent({
 }
 
 // Widget Type Components
-function ChartWidget({ data, config }: { data: any; config?: any }) {
+export function ChartWidget({ data, config }: { data: any; config?: any }) {
   return (
     <div className="chart-widget h-48 flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded">
       <div className="text-center">
@@ -282,7 +283,7 @@ function ChartWidget({ data, config }: { data: any; config?: any }) {
   );
 }
 
-function MetricWidget({ data, config }: { data: any; config?: any }) {
+export function MetricWidget({ data, config }: { data: any; config?: any }) {
   const value = data?.value || 0;
   const label = data?.label || "Metric";
   const change = data?.change || 0;
@@ -312,7 +313,7 @@ function MetricWidget({ data, config }: { data: any; config?: any }) {
   );
 }
 
-function TableWidget({ data, config }: { data: any; config?: any }) {
+export function TableWidget({ data, config }: { data: any; config?: any }) {
   const rows = data?.rows || [];
   const columns = data?.columns || [];
 
@@ -353,7 +354,7 @@ function TableWidget({ data, config }: { data: any; config?: any }) {
   );
 }
 
-function ListWidget({ data, config }: { data: any; config?: any }) {
+export function ListWidget({ data, config }: { data: any; config?: any }) {
   const items = data?.items || [];
 
   return (
@@ -375,7 +376,7 @@ function ListWidget({ data, config }: { data: any; config?: any }) {
   );
 }
 
-function CalendarWidget({ data, config }: { data: any; config?: any }) {
+export function CalendarWidget({ data, config }: { data: any; config?: any }) {
   return (
     <div className="calendar-widget h-48 flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded">
       <div className="text-center">

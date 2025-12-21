@@ -99,7 +99,7 @@ export interface GPUCapabilities {
 export interface GPUAnimation {
   id: string;
   type: "transform" | "opacity" | "color" | "texture" | "custom";
-  target: HTMLElement | CanvasElement;
+  target: HTMLElement | HTMLCanvasElement;
   properties: AnimationProperty[];
   duration: number;
   easing: string;
@@ -285,6 +285,24 @@ export class GPUAccelerationEngine {
         textureOptimization: true,
         shaderOptimization: true,
       },
+      parallelProcessing: {
+        enabled: true,
+        useWebWorkers: true,
+        useOffscreenCanvas: false,
+        maxWorkers: 4,
+        workerPoolSize: 2,
+        taskDistribution: "load-balanced",
+        sharedArrayBuffer: false,
+      },
+      performanceMonitoring: {
+        enabled: true,
+        trackFrameTime: true,
+        trackMemoryUsage: true,
+        trackGPUUtilization: true,
+        trackDrawCalls: true,
+        trackTextureMemory: true,
+        realTimeMetrics: false,
+      },
     };
   }
 
@@ -313,7 +331,9 @@ export class GPUAccelerationEngine {
 
   private detectGPUCapabilities(): GPUCapabilities {
     const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+    const gl =
+      canvas.getContext("webgl2") ||
+      (canvas.getContext("webgl") as WebGLRenderingContext | null);
 
     if (!gl) {
       return this.getFallbackCapabilities();
@@ -331,7 +351,10 @@ export class GPUAccelerationEngine {
         gl.MAX_FRAGMENT_UNIFORM_VECTORS,
       ),
       maxVaryingVectors: gl.getParameter(gl.MAX_VARYING_VECTORS),
-      maxDrawBuffers: gl.getParameter(gl.MAX_DRAW_BUFFERS),
+      maxDrawBuffers:
+        "MAX_DRAW_BUFFERS" in gl
+          ? gl.getParameter((gl as WebGL2RenderingContext).MAX_DRAW_BUFFERS)
+          : 1,
       vendor: debugInfo
         ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL)
         : "Unknown",
@@ -354,8 +377,16 @@ export class GPUAccelerationEngine {
       maxVertexTextureImageUnits: gl.getParameter(
         gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS,
       ),
-      max3DTextureSize: gl.getParameter(gl.MAX_3D_TEXTURE_SIZE) || 0,
-      maxArrayTextureLayers: gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS) || 0,
+      max3DTextureSize:
+        "MAX_3D_TEXTURE_SIZE" in gl
+          ? gl.getParameter((gl as WebGL2RenderingContext).MAX_3D_TEXTURE_SIZE)
+          : 0,
+      maxArrayTextureLayers:
+        "MAX_ARRAY_TEXTURE_LAYERS" in gl
+          ? gl.getParameter(
+              (gl as WebGL2RenderingContext).MAX_ARRAY_TEXTURE_LAYERS,
+            )
+          : 0,
     };
   }
 
@@ -640,6 +671,8 @@ export class GPUAccelerationEngine {
   private render(deltaTime: number): void {
     const startTime = performance.now();
 
+    const targetFrameTime = 1000 / (this.config.gpuAnimations.frameRate || 60);
+
     // Update performance metrics
     this.metrics.frameTime = deltaTime;
     this.metrics.frameRate = 1000 / deltaTime;
@@ -686,7 +719,7 @@ export class GPUAccelerationEngine {
     const context = canvas.getContext(
       this.config.webglRendering.contextType,
       contextOptions,
-    );
+    ) as WebGLRenderingContext | WebGL2RenderingContext | null;
 
     if (!context) {
       throw new Error("Failed to create WebGL context");
@@ -934,7 +967,7 @@ export class GPUAccelerationEngine {
 
   // Public API: Animation methods
   public createAnimation(
-    target: HTMLElement | CanvasElement,
+    target: HTMLElement | HTMLCanvasElement,
     properties: AnimationProperty[],
     options: AnimationOptions = {},
   ): GPUAnimation {

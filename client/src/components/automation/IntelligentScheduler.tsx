@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useAutomation } from "./AutomationEngine";
 import { useAnalytics } from "@/components/analytics/AnalyticsEngine";
 
@@ -90,7 +90,7 @@ interface ScheduleOptimization {
 }
 
 // Intelligent Scheduler Engine
-class IntelligentScheduler {
+class IntelligentSchedulerEngine {
   private tasks: Map<string, ScheduleTask> = new Map();
   private queue: ScheduleTask[] = [];
   private running: Map<string, TaskExecution> = new Map();
@@ -98,7 +98,7 @@ class IntelligentScheduler {
   private resourceMonitor: ResourceMonitor;
   private optimizer: ScheduleOptimizer;
   private learningEngine: ScheduleLearningEngine;
-  private scheduler: NodeJS.Timeout | null = null;
+  private scheduler: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
     this.resourceMonitor = new ResourceMonitor();
@@ -733,12 +733,12 @@ export const IntelligentScheduler: React.FC<{
   );
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
 
-  const schedulerRef = useRef<IntelligentScheduler>();
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const schedulerRef = useRef<IntelligentSchedulerEngine>();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Initialize scheduler
   useEffect(() => {
-    schedulerRef.current = new IntelligentScheduler();
+    schedulerRef.current = new IntelligentSchedulerEngine();
     initializeDefaultTasks();
 
     // Update metrics periodically
@@ -825,7 +825,7 @@ export const IntelligentScheduler: React.FC<{
         schedule: {
           type: "adaptive" as const,
           adaptive: {
-            optimizeFor: "performance",
+            optimizeFor: "performance" as const,
             learningEnabled: true,
             constraints: {
               maxConcurrentTasks: 5,

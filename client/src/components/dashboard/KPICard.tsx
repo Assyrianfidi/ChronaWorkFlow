@@ -7,8 +7,8 @@ import {
   FileText,
   CreditCard,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/../../lib/utils";
+import Card, { CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface KPICardProps {
   title: string;
@@ -37,28 +37,20 @@ const KPICard = React.forwardRef<HTMLDivElement, KPICardProps>(
   ) => {
     const colorClasses = {
       primary: {
-        bg: "bg-gradient-to-br from-blue-500 to-blue-600",
-        text: "text-white",
-        icon: "text-blue-100",
-        change: "text-blue-100",
+        accentBg: "bg-primary/10",
+        accentText: "text-primary",
       },
       success: {
-        bg: "bg-gradient-to-br from-green-500 to-green-600",
-        text: "text-white",
-        icon: "text-green-100",
-        change: "text-green-100",
+        accentBg: "bg-success/10",
+        accentText: "text-success-700 dark:text-success",
       },
       warning: {
-        bg: "bg-gradient-to-br from-amber-500 to-amber-600",
-        text: "text-white",
-        icon: "text-amber-100",
-        change: "text-amber-100",
+        accentBg: "bg-warning/10",
+        accentText: "text-warning-700 dark:text-warning",
       },
       error: {
-        bg: "bg-gradient-to-br from-red-500 to-red-600",
-        text: "text-white",
-        icon: "text-red-100",
-        change: "text-red-100",
+        accentBg: "bg-destructive/10",
+        accentText: "text-destructive dark:text-destructive-500",
       },
     };
 
@@ -71,36 +63,35 @@ const KPICard = React.forwardRef<HTMLDivElement, KPICardProps>(
       <Card
         ref={ref}
         className={cn(
-          "relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1",
-          currentColor.bg,
+          "relative overflow-hidden bg-card text-card-foreground border border-border shadow-soft hover:shadow-elevated transition-all duration-300 hover:-translate-y-1",
           className,
         )}
       >
         {/* Decorative background element */}
-        <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 rounded-full bg-white/10 backdrop-blur-sm" />
+        <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 rounded-full bg-foreground/5" />
 
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className={cn("text-sm font-medium mb-1", currentColor.icon)}>
+              <p className={cn("text-sm font-medium mb-1", currentColor.accentText)}>
                 {title}
               </p>
-              <div className={cn("text-3xl font-bold mb-2", currentColor.text)}>
+              <div className="text-3xl font-bold mb-2 text-foreground">
                 {value}
               </div>
 
               {change !== undefined && (
                 <div className="flex items-center gap-1">
                   {TrendIcon && (
-                    <TrendIcon className={cn("h-4 w-4", currentColor.change)} />
+                    <TrendIcon className={cn("h-4 w-4", currentColor.accentText)} />
                   )}
                   <span
-                    className={cn("text-sm font-medium", currentColor.change)}
+                    className={cn("text-sm font-medium", currentColor.accentText)}
                   >
                     {changeType === "increase" ? "+" : "-"}
                     {Math.abs(change)}%
                   </span>
-                  <span className={cn("text-xs", currentColor.icon)}>
+                  <span className="text-xs text-muted-foreground">
                     from last month
                   </span>
                 </div>
@@ -110,8 +101,9 @@ const KPICard = React.forwardRef<HTMLDivElement, KPICardProps>(
             {icon && (
               <div
                 className={cn(
-                  "p-3 rounded-xl bg-white/20 backdrop-blur-sm",
-                  currentColor.icon,
+                  "p-3 rounded-xl",
+                  currentColor.accentBg,
+                  currentColor.accentText,
                 )}
               >
                 {icon}

@@ -1,9 +1,52 @@
-import React, { useState, useCallback } from "react";
-import { cn } from "@/../../lib/utils";
+import * as React from "react";
+import { cn } from "@/lib/utils";
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from "lucide-react";
 
 // Toast Types
 export type ToastType = "success" | "error" | "warning" | "info";
+
+export type ToastVariant =
+  | "default"
+  | "destructive"
+  | "success"
+  | "warning"
+  | "info";
+
+type ToastInput = {
+  title: string;
+  description?: string;
+  variant?: ToastVariant;
+  duration?: number;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+};
+
+let enqueueToast:
+  | ((toast: Omit<ToastProps, "id" | "type"> & { type: ToastType }) => void)
+  | null = null;
+
+export function toast({
+  title,
+  description,
+  variant = "default",
+  duration,
+  action,
+}: ToastInput) {
+  const type: ToastType =
+    variant === "destructive"
+      ? "error"
+      : variant === "success"
+        ? "success"
+        : variant === "warning"
+          ? "warning"
+          : variant === "info"
+            ? "info"
+            : "success";
+
+  enqueueToast?.({ type, title, description, duration, action });
+}
 
 export interface ToastProps {
   id: string;
@@ -42,7 +85,7 @@ export const useToast = () => {
 export const useToastActions = () => {
   const { addToast } = useToast();
 
-  const success = useCallback(
+  const success = React.useCallback(
     (
       title: string,
       description?: string,
@@ -53,7 +96,7 @@ export const useToastActions = () => {
     [addToast],
   );
 
-  const error = useCallback(
+  const error = React.useCallback(
     (
       title: string,
       description?: string,
@@ -64,7 +107,7 @@ export const useToastActions = () => {
     [addToast],
   );
 
-  const warning = useCallback(
+  const warning = React.useCallback(
     (
       title: string,
       description?: string,
@@ -75,7 +118,7 @@ export const useToastActions = () => {
     [addToast],
   );
 
-  const info = useCallback(
+  const info = React.useCallback(
     (
       title: string,
       description?: string,
@@ -93,13 +136,13 @@ export const useToastActions = () => {
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [toasts, setToasts] = useState<ToastProps[]>([]);
+  const [toasts, setToasts] = React.useState<ToastProps[]>([]);
 
-  const removeToast = useCallback((id: string) => {
+  const removeToast = React.useCallback((id: string) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const addToast = useCallback(
+  const addToast = React.useCallback(
     (toast: Omit<ToastProps, "id">) => {
       const id = Math.random().toString(36).substr(2, 9);
       const newToast: ToastProps = { ...toast, id };
@@ -116,7 +159,16 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     [removeToast],
   );
 
-  const clearAll = useCallback(() => {
+  React.useEffect(() => {
+    enqueueToast = (t) => {
+      addToast({ ...t, type: t.type });
+    };
+    return () => {
+      enqueueToast = null;
+    };
+  }, [addToast]);
+
+  const clearAll = React.useCallback(() => {
     setToasts([]);
   }, []);
 
@@ -153,8 +205,8 @@ const Toast: React.FC<ToastProps> = ({
   action,
   onDismiss,
 }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isLeaving, setIsLeaving] = useState(false);
+  const [isVisible, setIsVisible] = React.useState(false);
+  const [isLeaving, setIsLeaving] = React.useState(false);
 
   React.useEffect(() => {
     // Enter animation
@@ -172,39 +224,39 @@ const Toast: React.FC<ToastProps> = ({
     switch (type) {
       case "success":
         return {
-          bgColor: "bg-success-50",
-          borderColor: "border-success-200",
+          bgColor: "bg-success/10",
+          borderColor: "border-success/25",
           icon: CheckCircle,
-          iconColor: "text-success-600",
-          titleColor: "text-success-900",
-          descriptionColor: "text-success-700",
+          iconColor: "text-success-700 dark:text-success",
+          titleColor: "text-foreground",
+          descriptionColor: "text-muted-foreground",
         };
       case "error":
         return {
-          bgColor: "bg-error-50",
-          borderColor: "border-error-200",
+          bgColor: "bg-destructive/10",
+          borderColor: "border-destructive/25",
           icon: AlertCircle,
-          iconColor: "text-error-600",
-          titleColor: "text-error-900",
-          descriptionColor: "text-error-700",
+          iconColor: "text-destructive dark:text-destructive-500",
+          titleColor: "text-foreground",
+          descriptionColor: "text-muted-foreground",
         };
       case "warning":
         return {
-          bgColor: "bg-warning-50",
-          borderColor: "border-warning-200",
+          bgColor: "bg-warning/10",
+          borderColor: "border-warning/25",
           icon: AlertTriangle,
-          iconColor: "text-warning-600",
-          titleColor: "text-warning-900",
-          descriptionColor: "text-warning-700",
+          iconColor: "text-warning-700 dark:text-warning",
+          titleColor: "text-foreground",
+          descriptionColor: "text-muted-foreground",
         };
       case "info":
         return {
-          bgColor: "bg-info-50",
-          borderColor: "border-info-200",
+          bgColor: "bg-info/10",
+          borderColor: "border-info/25",
           icon: Info,
-          iconColor: "text-info-600",
-          titleColor: "text-info-900",
-          descriptionColor: "text-info-700",
+          iconColor: "text-info",
+          titleColor: "text-foreground",
+          descriptionColor: "text-muted-foreground",
         };
     }
   };
@@ -215,7 +267,7 @@ const Toast: React.FC<ToastProps> = ({
   return (
     <div
       className={cn(
-        "flex items-start gap-3 p-4 rounded-lg border shadow-lg transition-all duration-200",
+        "flex items-start gap-3 p-4 rounded-lg border shadow-elevated transition-all duration-200",
         config.bgColor,
         config.borderColor,
         isVisible && !isLeaving && "animate-slide-in-from-right",
@@ -252,9 +304,10 @@ const Toast: React.FC<ToastProps> = ({
       <button
         onClick={handleDismiss}
         className={cn(
-          "flex-shrink-0 p-1 rounded-md hover:bg-black/10 transition-colors",
-          config.descriptionColor,
+          "flex-shrink-0 p-1 rounded-md hover:bg-muted/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "text-muted-foreground",
         )}
+        aria-label="Button button"
       >
         <X className="w-4 h-4" />
       </button>
@@ -278,7 +331,7 @@ export const ToastAction: React.FC<ToastActionProps> = ({
     <button
       onClick={onClick}
       className={cn(
-        "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-60",
         variant === "destructive"
           ? "bg-error-100 text-error-700 hover:bg-error-200"
           : "bg-primary-100 text-primary-700 hover:bg-primary-200",
@@ -296,6 +349,7 @@ export const ToastClose: React.FC<{ onClick: () => void }> = ({ onClick }) => {
     <button
       onClick={onClick}
       className="absolute right-2 top-2 rounded-md p-1 text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500"
+      aria-label="Button button"
     >
       <X className="h-4 w-4" />
     </button>

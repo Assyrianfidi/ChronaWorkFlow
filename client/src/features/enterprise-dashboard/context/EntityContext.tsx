@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-interface Entity {
+export interface Entity {
   id: string;
   name: string;
   type: "company" | "department" | "team";

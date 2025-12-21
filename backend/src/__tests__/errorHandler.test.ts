@@ -17,8 +17,11 @@ describe("Error Handler Middleware", () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let nextFunction: NextFunction;
+  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
     mockRequest = {
       originalUrl: "/test",
       ip: "127.0.0.1",
@@ -32,6 +35,7 @@ describe("Error Handler Middleware", () => {
   });
 
   afterEach(() => {
+    consoleErrorSpy.mockRestore();
     jest.clearAllMocks();
   });
 
@@ -144,6 +148,7 @@ describe("Error Handler Middleware", () => {
       expect(mockLogger.error).toHaveBeenCalledWith(
         `${(error as any).statusCode || 500} - ${error.message} - ${mockRequest.originalUrl} - ${mockRequest.method} - ${mockRequest.ip}`,
       );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(error.stack);
     });
   });
 

@@ -1,23 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuthStore } from "@/../../store/auth-store";
-import { Button } from "@/../../components/ui/button";
-import { Input } from "@/../../components/ui/input";
-import { InputWithIcon } from "@/../../components/ui/input-with-icon";
-import { Label } from "@/../../components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/../../components/ui/card";
-import { Alert, AlertDescription } from "@/../../components/ui/alert";
-import { Mail, Lock, Eye, EyeOff, Building2 } from "lucide-react";
-import Logo from "@/../../assets/AccubooksEnterprise_Logo16_.jpg";
-
-const tokens = require("../../design-system/tokens.json");
+import { useAuthStore } from "@/store/auth-store";
+import { Button } from "@/components/components/ui/button";
+import { InputWithIcon } from "@/components/ui/InputWithIcon";
+import { Label } from "@/components/components/ui/label";
+import { Card, CardContent } from "@/components/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/Alert";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import Logo from "@/assets/AccubooksEnterprise_Logo16_.jpg";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -321,10 +311,15 @@ export default function LoginPage() {
 
                 <div className="flex items-center justify-between">
                   <label className="flex items-center space-x-2 cursor-pointer">
+                    <label htmlFor="input-eoc1c4m68" className="sr-only">
+                      Checkbox
+                    </label>
                     <input
+                      id="input-eoc1c4m68"
                       type="checkbox"
                       className="rounded border-gray-300 text-primary focus:ring-primary"
                     />
+
                     <span className={`text-sm ${classes.mutedText}`}>
                       Remember me
                     </span>
@@ -344,7 +339,7 @@ export default function LoginPage() {
                 </Button>
 
                 <div className={`text-center text-sm ${classes.mutedText}`}>
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link to="/register" className={classes.link}>
                     Sign up
                   </Link>

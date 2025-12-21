@@ -367,7 +367,7 @@ export class RealTimeAccessibilityMonitor {
     this.setupEventListeners();
 
     // Start monitoring
-    this.startMonitoring();
+    this.startMonitoringInternal();
 
     // Load existing data
     this.loadExistingData();
@@ -482,7 +482,7 @@ export class RealTimeAccessibilityMonitor {
     }
   }
 
-  private startMonitoring(): void {
+  private startMonitoringInternal(): void {
     this.isActive = true;
 
     // Start periodic checks
@@ -669,7 +669,7 @@ export class RealTimeAccessibilityMonitor {
       color: white;
       border: none;
       padding: 10px 15px;
-      border-radius: 5px;
+      rounded-1;
       cursor: pointer;
       font-size: 14px;
     `;
@@ -702,7 +702,7 @@ export class RealTimeAccessibilityMonitor {
     content.style.cssText = `
       background: white;
       padding: 30px;
-      border-radius: 10px;
+      rounded-3;
       max-width: 500px;
       width: 90%;
       max-height: 80vh;
@@ -740,8 +740,8 @@ export class RealTimeAccessibilityMonitor {
           <input type="text" id="issue-element" style="width: 100%; padding: 5px;" placeholder="Click element to identify">
         </div>
         <div style="display: flex; gap: 10px;">
-          <button type="submit" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Submit</button>
-          <button type="button" id="cancel-report" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Cancel</button>
+          <button type="submit" style="background: #007bff; color: white; border: none; padding: 10px 20px; rounded-1; cursor: pointer;">Submit</button>
+          <button type="button" id="cancel-report" style="background: #6c757d; color: white; border: none; padding: 10px 20px; rounded-1; cursor: pointer;">Cancel</button>
         </div>
       </form>
     `;
@@ -799,6 +799,7 @@ export class RealTimeAccessibilityMonitor {
       title: `User reported: ${formData.get("issue-type")}`,
       description: formData.get("issue-description") as string,
       selector: formData.get("issue-element") as string,
+      context: {},
       userImpact: "medium",
       businessImpact: "medium",
       status: "open",
@@ -860,6 +861,7 @@ export class RealTimeAccessibilityMonitor {
       description: violation.message,
       element: violation.element,
       selector: this.getElementSelector(violation.element),
+      context: {},
       userImpact: this.mapSeverityToImpact(violation.severity),
       businessImpact: this.mapSeverityToImpact(violation.severity),
       status: "open",
@@ -1081,9 +1083,11 @@ export class RealTimeAccessibilityMonitor {
   private testNonTextContent(element: HTMLElement): WCAGTestResult {
     const violations: WCAGViolation[] = [];
 
+    const img = element.tagName === "IMG" ? (element as HTMLImageElement) : null;
+
     if (
-      element.tagName === "IMG" &&
-      !element.alt &&
+      img &&
+      !img.alt &&
       !element.getAttribute("aria-label")
     ) {
       violations.push({
@@ -1139,9 +1143,11 @@ export class RealTimeAccessibilityMonitor {
   private testKeyboardAccess(element: HTMLElement): WCAGTestResult {
     const violations: WCAGViolation[] = [];
 
+    const anchor = element.tagName === "A" ? (element as HTMLAnchorElement) : null;
+
     if (
-      element.tagName === "A" &&
-      !element.href &&
+      anchor &&
+      !anchor.href &&
       !element.getAttribute("role")
     ) {
       violations.push({
@@ -1239,10 +1245,12 @@ export class RealTimeAccessibilityMonitor {
 
   // Auto-fix functions
   private fixNonTextContent(element: HTMLElement): void {
-    if (element.tagName === "IMG" && !element.alt) {
-      const src = element.getAttribute("src") || "";
+    if (element.tagName === "IMG") {
+      const img = element as HTMLImageElement;
+      if (img.alt) return;
+      const src = img.getAttribute("src") || "";
       const alt = src.split("/").pop()?.split(".")[0] || "Image";
-      element.alt = alt;
+      img.alt = alt;
     }
   }
 
@@ -1254,7 +1262,9 @@ export class RealTimeAccessibilityMonitor {
   }
 
   private fixKeyboardAccess(element: HTMLElement): void {
-    if (element.tagName === "A" && !element.href) {
+    if (element.tagName === "A") {
+      const anchor = element as HTMLAnchorElement;
+      if (anchor.href) return;
       element.setAttribute("role", "button");
       element.tabIndex = 0;
     }
@@ -1336,7 +1346,7 @@ export class RealTimeAccessibilityMonitor {
 
   // Public API methods
   public startMonitoring(): void {
-    this.startMonitoring();
+    this.startMonitoringInternal();
   }
 
   public stopMonitoring(): void {

@@ -10,7 +10,6 @@ import {
   useMutation,
   useQueryClient,
   UseQueryOptions,
-  useQueryClient as useReactQueryClient,
   UseMutationOptions,
   UseMutationResult,
   QueryKey,
@@ -18,14 +17,14 @@ import {
   QueryFilters,
   keepPreviousData,
 } from "@tanstack/react-query";
-import { reportService } from "@/components/services/reportService";
+import { reportService } from "@/services/reportService";
 import {
   Report,
   ReportFormData,
   ReportListResponse,
-} from "@/components/types/report";
-import { QueryParams } from "@/components/types/common";
-import { useToast } from "@/components/components/ui/use-toast";
+} from "@/types/report";
+import { QueryParams } from "@/types/common";
+import { useToast } from "@/hooks/use-toast";
 
 const REPORT_QUERY_KEYS = {
   all: ["reports"],

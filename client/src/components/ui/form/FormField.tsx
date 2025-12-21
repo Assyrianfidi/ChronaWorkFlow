@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormContext, RegisterOptions } from "react-hook-form";
-import { cn } from "../lib/utils.js";
+import { cn } from "@/lib/utils";
 
 type FormFieldProps = {
   name: string;
@@ -32,13 +32,13 @@ export function FormField({
       {label && (
         <label
           htmlFor={name}
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="block text-sm font-medium text-foreground"
         >
           {label}
         </label>
       )}
       {description && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <p className="text-xs text-muted-foreground">
           {description}
         </p>
       )}
@@ -51,7 +51,7 @@ export function FormField({
         })}
       </div>
       {errorMessage && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+        <p className="mt-1 text-sm text-destructive">
           {errorMessage}
         </p>
       )}

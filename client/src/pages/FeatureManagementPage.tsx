@@ -97,8 +97,7 @@ const FeatureManagementPage: React.FC = () => {
   const invalidateFeatures = useInvalidateFeatures();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [features, setFeatures] =
-    useState<FeatureCatalogItem[]>(FEATURE_CATALOG);
+  const [features] = useState<FeatureCatalogItem[]>(FEATURE_CATALOG);
   const [featureState, setFeatureState] = useState<
     Record<string, FeatureListItem>
   >({});
@@ -108,11 +107,6 @@ const FeatureManagementPage: React.FC = () => {
 
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [query, setQuery] = useState<string>("");
-
-  const selectedUser = useMemo(() => {
-    if (selectedUserId == null) return undefined;
-    return users.find((u) => u.id === selectedUserId);
-  }, [users, selectedUserId]);
 
   const filteredFeatures = useMemo(() => {
     const q = query.trim().toLowerCase();

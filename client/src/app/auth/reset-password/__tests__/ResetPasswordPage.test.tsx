@@ -1,8 +1,8 @@
 import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useAuthStore } from "../store/auth-store.js";
-import ResetPasswordPage from "../page.js";
+import { useAuthStore } from '../store/auth-store';
+import ResetPasswordPage from '../page';
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({

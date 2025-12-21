@@ -3,14 +3,24 @@ import { QueryClient } from "@tanstack/react-query";
 
 // Production-optimized React Query configuration
 export const createQueryClient = (): QueryClient => {
+  const staleTime = parseInt(
+    (import.meta.env.VITE_REACT_QUERY_STALE_TIME as string | undefined) ||
+      "300000",
+  ); // 5 minutes
+
+  const gcTime = parseInt(
+    (import.meta.env.VITE_REACT_QUERY_CACHE_TIME as string | undefined) ||
+      "900000",
+  ); // 15 minutes
+
   return new QueryClient({
     defaultOptions: {
       queries: {
         // Stale time - how long data is considered fresh
-        staleTime: parseInt(process.env.REACT_QUERY_STALE_TIME || "300000"), // 5 minutes
+        staleTime,
 
         // Cache time - how long unused data stays in cache
-        gcTime: parseInt(process.env.REACT_QUERY_CACHE_TIME || "900000"), // 15 minutes
+        gcTime,
 
         // Retry configuration for failed requests
         retry: (failureCount, error: any) => {
@@ -158,7 +168,7 @@ export const cacheInvalidation = {
 export const queryClientConfig = {
   // Enable devtools in development
   devtools:
-    process.env.NODE_ENV === import.meta.env.MODE
+    import.meta.env.DEV
       ? {
           initialIsOpen: false,
         }

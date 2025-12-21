@@ -1,5 +1,6 @@
 import React from "react";
-import { DashboardShell } from "../../components/ui/layout/DashboardShell.js";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { DashboardShell } from "../../components/ui/layout/DashboardShell";
 
 const InventoryPage: React.FC = () => {
   return (
@@ -29,7 +30,7 @@ const InventoryPage: React.FC = () => {
             </button>
           </div>
           <div className="mt-4 rounded-xl bg-surface1 border border-border-gray p-4 shadow-soft">
-            <p className="text-muted">No inventory items found</p>
+            <EmptyState size="sm" title="No inventory items found" />
           </div>
         </div>
       </div>

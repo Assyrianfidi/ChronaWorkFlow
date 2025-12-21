@@ -1,4 +1,4 @@
-import type { InventoryItem, InventoryStatus } from "../types/inventory.js";
+import type { InventoryItem, InventoryStatus } from "../types/inventory";
 
 export const getInventoryStatus = (item: InventoryItem): InventoryStatus => {
   if (item.quantityOnHand <= 0) return "out_of_stock";

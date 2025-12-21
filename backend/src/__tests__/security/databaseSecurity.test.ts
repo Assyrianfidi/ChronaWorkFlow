@@ -6,7 +6,7 @@ import {
   validateDatabaseConstraints,
   validateSensitiveFieldAccess,
   filterSensitiveResponseData,
-} from "../../middleware/security/databaseSecurity.middleware.js";
+} from "../../middleware/security/databaseSecurity.middleware";
 
 // Mock Prisma Client
 jest.mock("@prisma/client", () => ({
@@ -49,18 +49,18 @@ jest.mock("@prisma/client", () => ({
 // Mock roles constants
 jest.mock("../../constants/roles", () => ({
   ROLES: {
-    ADMIN: "admin",
-    MANAGER: "manager",
-    USER: "user",
-    AUDITOR: "auditor",
-    INVENTORY_MANAGER: "inventory_manager",
+    ADMIN: "ADMIN",
+    MANAGER: "MANAGER",
+    USER: "USER",
+    AUDITOR: "AUDITOR",
+    INVENTORY_MANAGER: "INVENTORY_MANAGER",
   },
   ROLES_HIERARCHY: {
-    admin: 4,
-    manager: 3,
-    auditor: 2,
-    inventory_manager: 2,
-    user: 1,
+    ADMIN: 4,
+    MANAGER: 3,
+    AUDITOR: 2,
+    INVENTORY_MANAGER: 2,
+    USER: 1,
   },
 }));
 
@@ -393,9 +393,9 @@ describe("Database Security Middleware", () => {
     app.use(express.json());
 
     // Mock authentication middleware
-    const mockAuth = (req, res, next) => {
+    const mockAuth = (req: any, res: any, next: any) => {
       if (req.headers.authorization) {
-        req.user = { id: 1, role: "admin", currentCompanyId: "company1" };
+        req.user = { id: 1, role: "ADMIN", currentCompanyId: "company1" };
       }
       next();
     };
@@ -463,7 +463,7 @@ describe("Database Constraints Service", () => {
   const { PrismaClient } = require("@prisma/client");
   let mockPrisma: any;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
     mockPrisma = new PrismaClient();
 
@@ -486,15 +486,17 @@ describe("Database Constraints Service", () => {
     };
 
     // Inject the mock Prisma client
-    const DatabaseConstraintsService =
-      require("../../services/databaseConstraints.service.js").default;
+    const { default: DatabaseConstraintsService } = await import(
+      "../../services/databaseConstraints.service"
+    );
     DatabaseConstraintsService.setPrismaInstance(mockPrisma);
   });
 
   describe("Unique Constraint Validation", () => {
     it("should detect duplicate emails", async () => {
-      const DatabaseConstraintsService =
-        require("../../services/databaseConstraints.service.js").default;
+      const { default: DatabaseConstraintsService } = await import(
+        "../../services/databaseConstraints.service"
+      );
 
       // Mock the Prisma client methods
       mockPrisma.user.findFirst = jest
@@ -511,8 +513,9 @@ describe("Database Constraints Service", () => {
     });
 
     it("should detect duplicate account codes in same company", async () => {
-      const DatabaseConstraintsService =
-        require("../../services/databaseConstraints.service.js").default;
+      const { default: DatabaseConstraintsService } = await import(
+        "../../services/databaseConstraints.service"
+      );
 
       mockPrisma.account.findFirst = jest
         .fn()
@@ -533,8 +536,9 @@ describe("Database Constraints Service", () => {
     });
 
     it("should allow duplicate account codes in different companies", async () => {
-      const DatabaseConstraintsService =
-        require("../../services/databaseConstraints.service.js").default;
+      const { default: DatabaseConstraintsService } = await import(
+        "../../services/databaseConstraints.service"
+      );
 
       mockPrisma.account.findFirst = jest.fn().mockResolvedValue(null);
 
@@ -553,8 +557,9 @@ describe("Database Constraints Service", () => {
 
   describe("Foreign Key Constraint Validation", () => {
     it("should detect invalid parent account", async () => {
-      const DatabaseConstraintsService =
-        require("../../services/databaseConstraints.service.js").default;
+      const { default: DatabaseConstraintsService } = await import(
+        "../../services/databaseConstraints.service"
+      );
 
       mockPrisma.account.findUnique = jest.fn().mockResolvedValue(null);
 
@@ -572,8 +577,9 @@ describe("Database Constraints Service", () => {
     });
 
     it("should detect parent account from different company", async () => {
-      const DatabaseConstraintsService =
-        require("../../services/databaseConstraints.service.js").default;
+      const { default: DatabaseConstraintsService } = await import(
+        "../../services/databaseConstraints.service"
+      );
 
       mockPrisma.account.findUnique = jest.fn().mockResolvedValue({
         id: "parent-id",
@@ -598,8 +604,9 @@ describe("Database Constraints Service", () => {
 
   describe("Business Rules Validation", () => {
     it("should prevent self-referencing account hierarchy", async () => {
-      const DatabaseConstraintsService =
-        require("../../services/databaseConstraints.service.js").default;
+      const { default: DatabaseConstraintsService } = await import(
+        "../../services/databaseConstraints.service"
+      );
 
       const result = await DatabaseConstraintsService.validateBusinessRules(
         "Account",
@@ -615,8 +622,9 @@ describe("Database Constraints Service", () => {
     });
 
     it("should enforce password strength requirements", async () => {
-      const DatabaseConstraintsService =
-        require("../../services/databaseConstraints.service.js").default;
+      const { default: DatabaseConstraintsService } = await import(
+        "../../services/databaseConstraints.service"
+      );
 
       const result = await DatabaseConstraintsService.validateBusinessRules(
         "User",
@@ -633,8 +641,9 @@ describe("Database Constraints Service", () => {
     });
 
     it("should prevent negative inventory quantities", async () => {
-      const DatabaseConstraintsService =
-        require("../../services/databaseConstraints.service.js").default;
+      const { default: DatabaseConstraintsService } = await import(
+        "../../services/databaseConstraints.service"
+      );
 
       const result = await DatabaseConstraintsService.validateBusinessRules(
         "InventoryItem",
@@ -649,8 +658,9 @@ describe("Database Constraints Service", () => {
     });
 
     it("should enforce selling price >= cost price", async () => {
-      const DatabaseConstraintsService =
-        require("../../services/databaseConstraints.service.js").default;
+      const { default: DatabaseConstraintsService } = await import(
+        "../../services/databaseConstraints.service"
+      );
 
       const result = await DatabaseConstraintsService.validateBusinessRules(
         "InventoryItem",
@@ -676,8 +686,9 @@ describe("Database Constraints Service", () => {
         .mockResolvedValue({ id: 1, email: "test@example.com" });
       mockPrisma.account.findUnique = jest.fn().mockResolvedValue(null);
 
-      const DatabaseConstraintsService =
-        require("../../services/databaseConstraints.service.js").default;
+      const { default: DatabaseConstraintsService } = await import(
+        "../../services/databaseConstraints.service"
+      );
       const result = await DatabaseConstraintsService.validate(
         "User",
         {

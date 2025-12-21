@@ -281,10 +281,15 @@ export const ReportBuilder: React.FC<ReportBuilderProps> = ({
             key={metric.id}
             className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50"
           >
-            <input
+            
+        <label htmlFor="input-tfejtwwkd" className="sr-only">
+          Checkbox
+        </label>
+        <input id="input-tfejtwwkd"
               type="checkbox"
               checked={selectedMetrics.includes(metric.id)}
-              onChange={() => handleMetricToggle(metric.id)}
+              onChange={() =>
+       handleMetricToggle(metric.id)}
               className="mr-3"
             />
             <div>
@@ -340,10 +345,15 @@ export const ReportBuilder: React.FC<ReportBuilderProps> = ({
             </div>
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1">Value</label>
-              <input
+              
+        <label htmlFor="input-ofdepv684" className="sr-only">
+          Text
+        </label>
+        <input id="input-ofdepv684"
                 type="text"
                 value={filter.value}
                 onChange={(e) =>
+      
                   handleFilterUpdate(index, "value", e.target.value)
                 }
                 className="w-full p-2 border rounded"
@@ -373,10 +383,15 @@ export const ReportBuilder: React.FC<ReportBuilderProps> = ({
       <h3 className="text-lg font-semibold">Report Configuration</h3>
       <div>
         <label className="block text-sm font-medium mb-1">Report Name</label>
-        <input
+        
+        <label htmlFor="input-8dlcwim50" className="sr-only">
+          Text
+        </label>
+        <input id="input-8dlcwim50"
           type="text"
           value={reportName}
-          onChange={(e) => setReportName(e.target.value)}
+          onChange={(e) =>
+       setReportName(e.target.value)}
           className="w-full p-2 border rounded"
           placeholder="Enter report name"
         />
