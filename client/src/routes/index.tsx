@@ -17,6 +17,13 @@ const CustomersPage = lazy(() => import("../pages/CustomersPage"));
 const TransactionsPage = lazy(() => import("../pages/TransactionsPage"));
 const InventoryPage = lazy(() => import("../pages/InventoryPage"));
 const ReportsPage = lazy(() => import("../pages/ReportsPage"));
+const EntitiesPage = lazy(() => import("../pages/EntitiesPage"));
+const AICFOCopilotPage = lazy(() => import("../pages/AICFOCopilotPage"));
+const CashFlowForecastPage = lazy(() => import("../pages/CashFlowForecastPage"));
+const AIAssistantPage = lazy(() => import("../pages/AIAssistantPage"));
+const QuickBooksMigrationPage = lazy(
+  () => import("../pages/QuickBooksMigrationPage"),
+);
 const AdminSettingsPage = lazy(() => import("../pages/AdminSettingsPage"));
 const AuditLogsPage = lazy(() => import("../pages/AuditLogsPage"));
 const NotificationsPage = lazy(() => import("../pages/NotificationsPage"));
@@ -36,6 +43,7 @@ const OwnerSubscriptionsPage = lazy(
 const OwnerPlaceholderPage = lazy(
   () => import("../pages/owner/OwnerPlaceholderPage"),
 );
+const NewFeaturePage = lazy(() => import("../pages/NewFeaturePage"));
 
 const router = createBrowserRouter([
   {
@@ -166,6 +174,66 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/entities",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+        <MainLayout>
+          <SuspenseWrapper>
+            <EntitiesPage />
+          </SuspenseWrapper>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/ai/copilot",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+        <MainLayout>
+          <SuspenseWrapper>
+            <AICFOCopilotPage />
+          </SuspenseWrapper>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/ai/forecast",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+        <MainLayout>
+          <SuspenseWrapper>
+            <CashFlowForecastPage />
+          </SuspenseWrapper>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/ai/assistant",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+        <MainLayout>
+          <SuspenseWrapper>
+            <AIAssistantPage />
+          </SuspenseWrapper>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/migration/quickbooks",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+        <MainLayout>
+          <SuspenseWrapper>
+            <QuickBooksMigrationPage />
+          </SuspenseWrapper>
+        </MainLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
     path: "/notifications",
     element: (
       <ProtectedRoute>
@@ -244,6 +312,18 @@ const router = createBrowserRouter([
         <MainLayout>
           <SuspenseWrapper>
             <ProfilePage />
+          </SuspenseWrapper>
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/new-feature",
+    element: (
+      <ProtectedRoute>
+        <MainLayout>
+          <SuspenseWrapper>
+            <NewFeaturePage />
           </SuspenseWrapper>
         </MainLayout>
       </ProtectedRoute>
