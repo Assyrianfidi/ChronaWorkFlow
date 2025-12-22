@@ -77,14 +77,14 @@ export default function ReportsPage() {
     description: string,
     data: any,
   ) => (
-    <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+    <div className="h-64 flex items-center justify-center bg-muted rounded-lg border-2 border-dashed border-border">
       <div className="text-center">
-        <div className="w-16 h-16 mx-auto mb-3 bg-gray-200 rounded-lg flex items-center justify-center">
-          <BarChart3 className="h-8 w-8 text-gray-400" />
+        <div className="w-16 h-16 mx-auto mb-3 bg-muted rounded-lg flex items-center justify-center">
+          <BarChart3 className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h4 className="font-medium text-gray-700 mb-1">{title}</h4>
-        <p className="text-sm text-gray-500 mb-3">{description}</p>
-        <div className="space-y-1 text-xs text-gray-400 max-w-xs mx-auto">
+        <h4 className="font-medium text-muted-foreground mb-1">{title}</h4>
+        <p className="text-sm text-muted-foreground mb-3">{description}</p>
+        <div className="space-y-1 text-xs text-muted-foreground max-w-xs mx-auto">
           {Array.isArray(data) &&
             data.slice(0, 3).map((item, index) => (
               <div key={index}>
@@ -102,12 +102,12 @@ export default function ReportsPage() {
     description: string,
     data: any,
   ) => (
-    <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+    <div className="h-64 flex items-center justify-center bg-muted rounded-lg border-2 border-dashed border-border">
       <div className="text-center">
-        <div className="w-16 h-16 mx-auto mb-3 rounded-full border-8 border-gray-200 border-t-blue-500 border-r-green-500 border-b-yellow-500 border-l-red-500" />
-        <h4 className="font-medium text-gray-700 mb-1">{title}</h4>
-        <p className="text-sm text-gray-500 mb-3">{description}</p>
-        <div className="space-y-1 text-xs text-gray-400 max-w-xs mx-auto">
+        <div className="w-16 h-16 mx-auto mb-3 rounded-full border-8 border-border border-t-blue-500 border-r-green-500 border-b-yellow-500 border-l-red-500" />
+        <h4 className="font-medium text-muted-foreground mb-1">{title}</h4>
+        <p className="text-sm text-muted-foreground mb-3">{description}</p>
+        <div className="space-y-1 text-xs text-muted-foreground max-w-xs mx-auto">
           {Array.isArray(data) &&
             data.slice(0, 3).map((item, index) => (
               <div
@@ -125,19 +125,19 @@ export default function ReportsPage() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 bg-muted">
         {/* Page Header */}
         <div>
-          <h1 className="text-3xl font-bold text-primary mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Reports & Analytics
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Comprehensive financial insights and business analytics
           </p>
         </div>
 
         {/* Report Controls */}
-        <Card>
+        <Card className="bg-card">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Report Controls</CardTitle>
@@ -145,7 +145,7 @@ export default function ReportsPage() {
                 <select
                   value={selectedPeriod}
                   onChange={(e) => setSelectedPeriod(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
+                  className="px-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <option value="month">This Month</option>
                   <option value="quarter">This Quarter</option>
@@ -187,86 +187,86 @@ export default function ReportsPage() {
         {selectedReport === "overview" && (
           <div className="space-y-6">
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
-                <CardContent className="p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 bg-card">
+              <Card className="bg-card">
+                <CardContent className="p-6 bg-card">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                      <TrendingUp className="h-6 w-6 text-green-600" />
+                    <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                      <TrendingUp className="h-6 w-6 text-success" />
                     </div>
-                    <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                    <span className="text-xs text-success bg-success/10 px-2 py-1 rounded-full">
                       +12.5%
                     </span>
                   </div>
-                  <h3 className="text-2xl font-bold text-primary mb-1">
+                  <h3 className="text-2xl font-bold text-foreground mb-1">
                     $328,000
                   </h3>
-                  <p className="text-sm text-gray-600">Total Revenue</p>
+                  <p className="text-sm text-muted-foreground">Total Revenue</p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardContent className="p-6">
+              <Card className="bg-card">
+                <CardContent className="p-6 bg-card">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                      <TrendingDown className="h-6 w-6 text-red-600" />
+                    <div className="w-12 h-12 bg-destructive/10 rounded-lg flex items-center justify-center">
+                      <TrendingDown className="h-6 w-6 text-destructive" />
                     </div>
-                    <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                    <span className="text-xs text-destructive bg-destructive/10 px-2 py-1 rounded-full">
                       -8.3%
                     </span>
                   </div>
-                  <h3 className="text-2xl font-bold text-primary mb-1">
+                  <h3 className="text-2xl font-bold text-foreground mb-1">
                     $214,000
                   </h3>
-                  <p className="text-sm text-gray-600">Total Expenses</p>
+                  <p className="text-sm text-muted-foreground">Total Expenses</p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardContent className="p-6">
+              <Card className="bg-card">
+                <CardContent className="p-6 bg-card">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <DollarSign className="h-6 w-6 text-blue-600" />
+                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <DollarSign className="h-6 w-6 text-primary" />
                     </div>
-                    <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                    <span className="text-xs text-primary bg-primary/10 px-2 py-1 rounded-full">
                       +18.2%
                     </span>
                   </div>
-                  <h3 className="text-2xl font-bold text-primary mb-1">
+                  <h3 className="text-2xl font-bold text-foreground mb-1">
                     $114,000
                   </h3>
-                  <p className="text-sm text-gray-600">Net Profit</p>
+                  <p className="text-sm text-muted-foreground">Net Profit</p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardContent className="p-6">
+              <Card className="bg-card">
+                <CardContent className="p-6 bg-card">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <Users className="h-6 w-6 text-purple-600" />
+                    <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
+                      <Users className="h-6 w-6 text-secondary" />
                     </div>
-                    <span className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
+                    <span className="text-xs text-secondary bg-secondary/10 px-2 py-1 rounded-full">
                       +5.7%
                     </span>
                   </div>
-                  <h3 className="text-2xl font-bold text-primary mb-1">
+                  <h3 className="text-2xl font-bold text-foreground mb-1">
                     1,848
                   </h3>
-                  <p className="text-sm text-gray-600">Total Transactions</p>
+                  <p className="text-sm text-muted-foreground">Total Transactions</p>
                 </CardContent>
               </Card>
             </div>
 
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5" />
                     Revenue vs Expenses
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="bg-card">
                   {renderChartPlaceholder(
                     "Revenue vs Expenses Trend",
                     "Monthly comparison of revenue and expenses",
@@ -275,14 +275,14 @@ export default function ReportsPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <PieChart className="h-5 w-5" />
                     Profit Margins by Department
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="bg-card">
                   {renderPieChartPlaceholder(
                     "Department Profit Margins",
                     "Profit margin percentage by department",
@@ -293,14 +293,14 @@ export default function ReportsPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5" />
                     Transaction Volume
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="bg-card">
                   {renderChartPlaceholder(
                     "Transaction Volume Analysis",
                     "Number of transactions and total amount per month",
@@ -309,14 +309,14 @@ export default function ReportsPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
                     Cash Flow Summary
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="bg-card">
                   {renderChartPlaceholder(
                     "Cash Flow Analysis",
                     "Monthly cash flow in and out",
@@ -331,11 +331,11 @@ export default function ReportsPage() {
         {/* Accounts Receivable Aging */}
         {selectedReport === "receivables" && (
           <div className="space-y-6">
-            <Card>
+            <Card className="bg-card">
               <CardHeader>
                 <CardTitle>Accounts Receivable Aging</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="bg-card">
                 <div className="space-y-4">
                   {/* Aging Summary */}
                   <div className="grid grid-cols-4 gap-4">
@@ -372,25 +372,25 @@ export default function ReportsPage() {
                   </div>
 
                   {/* Detailed Table */}
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="border border-border rounded-lg overflow-hidden">
                     <table className="w-full">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-muted">
                         <tr>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                             Customer
                           </th>
-                          <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-2 text-right text-xs font-medium text-muted-foreground uppercase">
                             Amount
                           </th>
-                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-2 text-center text-xs font-medium text-muted-foreground uppercase">
                             Days
                           </th>
-                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-2 text-center text-xs font-medium text-muted-foreground uppercase">
                             Status
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200">
+                      <tbody className="divide-y divide-border">
                         {reportsData.accountsReceivable.map((item, index) => (
                           <tr key={index}>
                             <td className="px-4 py-3 text-sm font-medium">
@@ -427,11 +427,11 @@ export default function ReportsPage() {
         {/* Accounts Payable Aging */}
         {selectedReport === "payables" && (
           <div className="space-y-6">
-            <Card>
+            <Card className="bg-card">
               <CardHeader>
                 <CardTitle>Accounts Payable Aging</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="bg-card">
                 <div className="space-y-4">
                   {/* Aging Summary */}
                   <div className="grid grid-cols-4 gap-4">
@@ -468,25 +468,25 @@ export default function ReportsPage() {
                   </div>
 
                   {/* Detailed Table */}
-                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="border border-border rounded-lg overflow-hidden">
                     <table className="w-full">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-muted">
                         <tr>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
                             Vendor
                           </th>
-                          <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-2 text-right text-xs font-medium text-muted-foreground uppercase">
                             Amount
                           </th>
-                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-2 text-center text-xs font-medium text-muted-foreground uppercase">
                             Days
                           </th>
-                          <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                          <th className="px-4 py-2 text-center text-xs font-medium text-muted-foreground uppercase">
                             Status
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200">
+                      <tbody className="divide-y divide-border">
                         {reportsData.accountsPayable.map((item, index) => (
                           <tr key={index}>
                             <td className="px-4 py-3 text-sm font-medium">
