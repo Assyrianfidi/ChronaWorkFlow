@@ -94,21 +94,21 @@ export const CashFlowForecast: React.FC = () => {
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
-      case 'low': return 'text-green-500 bg-green-100 dark:bg-green-900/30';
-      case 'medium': return 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30';
-      case 'high': return 'text-orange-500 bg-orange-100 dark:bg-orange-900/30';
-      case 'critical': return 'text-red-500 bg-red-100 dark:bg-red-900/30';
-      default: return 'text-gray-500 bg-gray-100 dark:bg-gray-900/30';
+      case 'low': return 'bg-secondary text-secondary-foreground';
+      case 'medium': return 'bg-accent text-accent-foreground';
+      case 'high': return 'bg-destructive/10 text-destructive';
+      case 'critical': return 'bg-destructive text-destructive-foreground';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
   const getInsightIcon = (type: string) => {
     switch (type) {
-      case 'warning': return <AlertTriangle className="w-5 h-5 text-amber-500" />;
-      case 'opportunity': return <TrendingUp className="w-5 h-5 text-green-500" />;
-      case 'trend': return <TrendingDown className="w-5 h-5 text-blue-500" />;
-      case 'action': return <ArrowRight className="w-5 h-5 text-purple-500" />;
-      default: return <Info className="w-5 h-5 text-gray-500" />;
+      case 'warning': return <AlertTriangle className="w-5 h-5 text-destructive" />;
+      case 'opportunity': return <TrendingUp className="w-5 h-5 text-primary" />;
+      case 'trend': return <TrendingDown className="w-5 h-5 text-muted-foreground" />;
+      case 'action': return <ArrowRight className="w-5 h-5 text-primary" />;
+      default: return <Info className="w-5 h-5 text-muted-foreground" />;
     }
   };
 
@@ -130,9 +130,9 @@ export const CashFlowForecast: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6">
+      <div className="rounded-xl border border-border bg-card shadow-soft p-6">
         <div className="flex items-center justify-center h-64">
-          <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
+          <RefreshCw className="w-8 h-8 text-primary animate-spin" />
         </div>
       </div>
     );
@@ -140,13 +140,13 @@ export const CashFlowForecast: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6">
+      <div className="rounded-xl border border-border bg-card shadow-soft p-6">
         <div className="flex flex-col items-center justify-center h-64 text-center">
-          <XCircle className="w-12 h-12 text-red-500 mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">{error}</p>
+          <XCircle className="w-12 h-12 text-destructive mb-4" />
+          <p className="text-muted-foreground">{error}</p>
           <button
             onClick={fetchForecast}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="mt-4 px-4 py-2 rounded-lg bg-primary text-primary-foreground shadow-soft hover:bg-primary/90"
           >
             Try Again
           </button>
@@ -163,13 +163,13 @@ export const CashFlowForecast: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6">
+      <div className="rounded-xl border border-border bg-card shadow-soft p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-bold text-foreground">
               Cash Flow Forecast
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
+            <p className="text-muted-foreground text-sm">
               AI-powered {selectedPeriod}-day prediction
             </p>
           </div>
@@ -180,8 +180,8 @@ export const CashFlowForecast: React.FC = () => {
                 onClick={() => setSelectedPeriod(period as 7 | 14 | 30)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   selectedPeriod === period
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
               >
                 {period}D
@@ -189,7 +189,7 @@ export const CashFlowForecast: React.FC = () => {
             ))}
             <button
               onClick={fetchForecast}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="p-2 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -198,32 +198,32 @@ export const CashFlowForecast: React.FC = () => {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mb-1">
+          <div className="bg-muted rounded-lg p-4">
+            <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
               <DollarSign className="w-4 h-4" />
               Current Cash
             </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="text-2xl font-bold text-foreground">
               {formatCurrency(forecast.currentCashPosition)}
             </div>
           </div>
 
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mb-1">
+          <div className="bg-muted rounded-lg p-4">
+            <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
               <Calendar className="w-4 h-4" />
               Projected ({selectedPeriod}D)
             </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="text-2xl font-bold text-foreground">
               {formatCurrency(forecast.projectedCashPosition)}
             </div>
-            <div className={`text-sm flex items-center gap-1 ${cashChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <div className={`text-sm flex items-center gap-1 ${cashChange >= 0 ? 'text-primary' : 'text-destructive'}`}>
               {cashChange >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
               {cashChangePercent >= 0 ? '+' : ''}{cashChangePercent.toFixed(1)}%
             </div>
           </div>
 
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mb-1">
+          <div className="bg-muted rounded-lg p-4">
+            <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
               <AlertTriangle className="w-4 h-4" />
               Risk Level
             </div>
@@ -232,12 +232,12 @@ export const CashFlowForecast: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm mb-1">
+          <div className="bg-muted rounded-lg p-4">
+            <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
               <CheckCircle className="w-4 h-4" />
               Cash Runway
             </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="text-2xl font-bold text-foreground">
               {forecast.riskAssessment.cashRunwayDays} days
             </div>
           </div>
@@ -245,8 +245,8 @@ export const CashFlowForecast: React.FC = () => {
       </div>
 
       {/* Chart Placeholder - Would integrate with a charting library */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="rounded-xl border border-border bg-card shadow-soft p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           Daily Forecast
         </h3>
         <div className="overflow-x-auto">
@@ -260,15 +260,15 @@ export const CashFlowForecast: React.FC = () => {
                   <div className="h-24 w-full flex items-end justify-center">
                     <div
                       className={`w-8 rounded-t transition-all ${
-                        isPositive ? 'bg-green-500' : 'bg-red-500'
+                        isPositive ? 'bg-primary' : 'bg-destructive'
                       }`}
                       style={{ height: `${barHeight}%`, minHeight: '4px' }}
                     />
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  <div className="text-xs text-muted-foreground mt-2">
                     {formatDate(day.date)}
                   </div>
-                  <div className={`text-xs font-medium ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                  <div className={`text-xs font-medium ${isPositive ? 'text-primary' : 'text-destructive'}`}>
                     {isPositive ? '+' : ''}{formatCurrency(day.netCashFlow)}
                   </div>
                 </div>
@@ -280,29 +280,29 @@ export const CashFlowForecast: React.FC = () => {
 
       {/* Insights */}
       {forecast.insights.length > 0 && (
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="rounded-xl border border-border bg-card shadow-soft p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             AI Insights
           </h3>
           <div className="space-y-3">
             {forecast.insights.map((insight, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                className="flex items-start gap-3 p-3 bg-muted rounded-lg"
               >
                 {getInsightIcon(insight.type)}
                 <div className="flex-1">
-                  <div className="font-medium text-gray-900 dark:text-white">
+                  <div className="font-medium text-foreground">
                     {insight.title}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="text-sm text-muted-foreground">
                     {insight.description}
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  insight.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                  insight.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                  'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-400'
+                  insight.priority === 'high' ? 'bg-destructive/10 text-destructive' :
+                  insight.priority === 'medium' ? 'bg-accent text-accent-foreground' :
+                  'bg-muted text-muted-foreground'
                 }`}>
                   {insight.priority}
                 </span>
@@ -314,14 +314,14 @@ export const CashFlowForecast: React.FC = () => {
 
       {/* Recommendations */}
       {forecast.riskAssessment.recommendations.length > 0 && (
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <div className="rounded-xl border border-border bg-card shadow-soft p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             Recommendations
           </h3>
           <ul className="space-y-2">
             {forecast.riskAssessment.recommendations.map((rec, index) => (
-              <li key={index} className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
-                <ArrowRight className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+              <li key={index} className="flex items-start gap-2 text-muted-foreground">
+                <ArrowRight className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 {rec}
               </li>
             ))}
@@ -330,8 +330,8 @@ export const CashFlowForecast: React.FC = () => {
       )}
 
       {/* Accuracy Info */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+      <div className="bg-muted rounded-lg p-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Info className="w-4 h-4" />
           Forecast accuracy: {(forecast.accuracy.historicalAccuracy * 100).toFixed(0)}%
           <span className="mx-2">•</span>
