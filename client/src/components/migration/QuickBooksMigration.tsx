@@ -176,13 +176,13 @@ export const QuickBooksMigration: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto bg-card">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <div className="text-center mb-8 bg-card">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
           Import from QuickBooks
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-muted-foreground">
           Migrate your data in under 15 minutes with AI-powered categorization
         </p>
       </div>
@@ -194,24 +194,20 @@ export const QuickBooksMigration: React.FC = () => {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors ${
-              isDragging
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : file
-                ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                : 'border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600'
-            }`}
+            className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors ${isDragging ? 'border-primary bg-primary/10'
+              : file ? 'border-success bg-success/10'
+                : 'border-border hover:border-primary'}`}
           >
             {file ? (
               <div className="space-y-4">
-                <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                  <FileText className="w-8 h-8 text-green-600 dark:text-green-400" />
+                <div className="w-16 h-16 mx-auto bg-success/10 rounded-full flex items-center justify-center">
+                  <FileText className="w-8 h-8 text-success" />
                 </div>
                 <div>
-                  <p className="text-lg font-medium text-gray-900 dark:text-white">
+                  <p className="text-lg font-medium text-foreground">
                     {file.name}
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-muted-foreground">
                     {(file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
                 </div>
@@ -262,29 +258,29 @@ export const QuickBooksMigration: React.FC = () => {
           </div>
 
           {error && (
-            <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <p className="text-red-700 dark:text-red-400">{error}</p>
+            <div className="mt-4 p-4 bg-destructive/10 border border-destructive rounded-lg flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+              <p className="text-destructive">{error}</p>
             </div>
           )}
 
           {/* Supported Formats */}
-          <div className="mt-8 bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="mt-8 bg-card rounded-xl shadow-soft p-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               Supported Formats
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {supportedFormats.map((format) => (
                 <div
                   key={format.ext}
-                  className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                  className="flex items-start gap-3 p-3 bg-muted rounded-lg"
                 >
-                  <FileText className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <FileText className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-medium text-gray-900 dark:text-white">
+                    <div className="font-medium text-foreground">
                       {format.name} ({format.ext})
                     </div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="text-sm text-muted-foreground">
                       {format.description}
                     </div>
                   </div>
@@ -295,36 +291,36 @@ export const QuickBooksMigration: React.FC = () => {
 
           {/* Features */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 text-center">
-              <div className="w-12 h-12 mx-auto bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-4">
-                <Sparkles className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <div className="bg-card rounded-xl shadow-soft p-6 text-center">
+              <div className="w-12 h-12 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Sparkles className="w-6 h-6 text-primary" />
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+              <h4 className="font-semibold text-foreground mb-2">
                 AI Categorization
               </h4>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Automatically categorize transactions with 95% accuracy
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 text-center">
-              <div className="w-12 h-12 mx-auto bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4">
-                <Clock className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="bg-card rounded-xl shadow-soft p-6 text-center">
+              <div className="w-12 h-12 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Clock className="w-6 h-6 text-primary" />
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+              <h4 className="font-semibold text-foreground mb-2">
                 15-Minute Migration
               </h4>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Complete your migration quickly with smart data mapping
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 text-center">
-              <div className="w-12 h-12 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
-                <Database className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div className="bg-card rounded-xl shadow-soft p-6 text-center">
+              <div className="w-12 h-12 mx-auto bg-success/10 rounded-full flex items-center justify-center mb-4">
+                <Database className="w-6 h-6 text-success" />
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+              <h4 className="font-semibold text-foreground mb-2">
                 Complete Import
               </h4>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Accounts, transactions, customers, and invoices
               </p>
             </div>
