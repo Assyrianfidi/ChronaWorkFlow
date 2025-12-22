@@ -158,7 +158,7 @@ const ReportsPage: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Reports & Analytics</h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Business insights and financial reports
           </p>
         </div>
@@ -207,11 +207,11 @@ const ReportsPage: React.FC = () => {
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-enterprise-navy"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-border border-t-transparent"></div>
         </div>
       ) : loadError ? (
         <div className="py-10 text-center space-y-3">
-          <div className="text-sm text-red-700">{loadError}</div>
+          <div className="text-sm text-destructive">{loadError}</div>
           <div>
             <Button variant="outline" onClick={fetchReportData}>
               Retry
@@ -233,7 +233,7 @@ const ReportsPage: React.FC = () => {
                 <div className="text-2xl font-bold">
                   {formatCurrency(reportData.totalRevenue)}
                 </div>
-                <div className="flex items-center gap-1 text-xs text-green-600">
+                <div className="flex items-center gap-1 text-xs text-primary">
                   <ArrowUpRight className="w-3 h-3" />
                   {formatPercentage(reportData.monthlyGrowth)} from last month
                 </div>
@@ -247,10 +247,10 @@ const ReportsPage: React.FC = () => {
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-primary">
                   {formatCurrency(reportData.netProfit)}
                 </div>
-                <div className="flex items-center gap-1 text-xs text-green-600">
+                <div className="flex items-center gap-1 text-xs text-primary">
                   <ArrowUpRight className="w-3 h-3" />
                   {formatPercentage(reportData.yearlyGrowth)} from last year
                 </div>
@@ -280,7 +280,7 @@ const ReportsPage: React.FC = () => {
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-orange-600">
+                <div className="text-2xl font-bold">
                   {reportData.pendingInvoices}
                 </div>
                 <div className="text-xs text-muted-foreground">
@@ -315,13 +315,13 @@ const ReportsPage: React.FC = () => {
                           <div className="text-sm">
                             {formatCurrency(data.revenue)}
                           </div>
-                          <div className="text-xs text-green-600">
+                          <div className="text-xs text-muted-foreground">
                             ({formatCurrency(data.profit)} profit)
                           </div>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="w-full bg-muted rounded-full h-2">
                           <div
-                            className="bg-enterprise-navy h-2 rounded-full"
+                            className="bg-primary h-2 rounded-full"
                             style={{
                               width: `${(data.revenue / 16000) * 100}%`,
                             }}
@@ -361,7 +361,7 @@ const ReportsPage: React.FC = () => {
                         <TableCell>
                           <div>
                             <div className="font-medium">{customer.name}</div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-muted-foreground">
                               {customer.invoices} invoices
                             </div>
                           </div>
@@ -373,8 +373,8 @@ const ReportsPage: React.FC = () => {
                           <div
                             className={`flex items-center gap-1 text-sm ${
                               customer.growth > 0
-                                ? "text-green-600"
-                                : "text-red-600"
+                                ? "text-primary"
+                                : "text-destructive"
                             }`}
                           >
                             {customer.growth > 0 ? (
@@ -408,9 +408,9 @@ const ReportsPage: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Paid</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-20 bg-gray-200 rounded-full h-2">
+                      <div className="w-20 bg-muted rounded-full h-2">
                         <div
-                          className="bg-green-500 h-2 rounded-full"
+                          className="bg-primary h-2 rounded-full"
                           style={{
                             width: `${(reportData.paidInvoices / (reportData.paidInvoices + reportData.pendingInvoices + reportData.overdueInvoices)) * 100}%`,
                           }}
@@ -424,9 +424,9 @@ const ReportsPage: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Pending</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-20 bg-gray-200 rounded-full h-2">
+                      <div className="w-20 bg-muted rounded-full h-2">
                         <div
-                          className="bg-blue-500 h-2 rounded-full"
+                          className="bg-secondary h-2 rounded-full"
                           style={{
                             width: `${(reportData.pendingInvoices / (reportData.paidInvoices + reportData.pendingInvoices + reportData.overdueInvoices)) * 100}%`,
                           }}
@@ -440,9 +440,9 @@ const ReportsPage: React.FC = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Overdue</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-20 bg-gray-200 rounded-full h-2">
+                      <div className="w-20 bg-muted rounded-full h-2">
                         <div
-                          className="bg-red-500 h-2 rounded-full"
+                          className="bg-destructive h-2 rounded-full"
                           style={{
                             width: `${(reportData.overdueInvoices / (reportData.paidInvoices + reportData.pendingInvoices + reportData.overdueInvoices)) * 100}%`,
                           }}
@@ -468,10 +468,10 @@ const ReportsPage: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600">
+                    <div className="text-3xl font-bold text-primary">
                       Excellent
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-muted-foreground">
                       Overall financial score
                     </div>
                   </div>

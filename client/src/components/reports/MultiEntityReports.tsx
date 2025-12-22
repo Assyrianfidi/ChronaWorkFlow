@@ -172,54 +172,47 @@ const MultiEntityReports: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <FileText className="w-7 h-7 text-indigo-600" />
-                Financial Reports
-              </h1>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Multi-entity financial statements and analysis
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={fetchReport}
-                className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
-              </button>
-              <div className="relative">
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <Download className="w-5 h-5" />
-                  Export
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-              </div>
-              <button className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                <Printer className="w-5 h-5" />
-              </button>
-            </div>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold flex items-center gap-2">
+            <FileText className="w-7 h-7 text-muted-foreground" />
+            Financial Reports
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Multi-entity financial statements and analysis
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={fetchReport}
+            className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted"
+          >
+            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
+          <div className="relative">
+            <button className="flex items-center gap-2 px-4 py-2 border border-input bg-background text-foreground rounded-lg hover:bg-muted">
+              <Download className="w-5 h-5" />
+              Export
+              <ChevronDown className="w-4 h-4" />
+            </button>
           </div>
+          <button className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted">
+            <Printer className="w-5 h-5" />
+          </button>
         </div>
       </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Report Type Tabs */}
-            <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+      {/* Filters */}
+      <div className="bg-card rounded-xl shadow-sm border border-border p-4 mb-6">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Report Type Tabs */}
+          <div className="flex bg-muted rounded-lg p-1">
               <button
                 onClick={() => setReportType('profit_loss')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   reportType === 'profit_loss'
-                    ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <TrendingUp className="w-4 h-4" />
@@ -229,8 +222,8 @@ const MultiEntityReports: React.FC = () => {
                 onClick={() => setReportType('cash_flow')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   reportType === 'cash_flow'
-                    ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <DollarSign className="w-4 h-4" />
@@ -240,8 +233,8 @@ const MultiEntityReports: React.FC = () => {
                 onClick={() => setReportType('balance_sheet')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   reportType === 'balance_sheet'
-                    ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <BarChart3 className="w-4 h-4" />
@@ -253,11 +246,11 @@ const MultiEntityReports: React.FC = () => {
 
             {/* Entity Selector */}
             <div className="flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-gray-400" />
+              <Building2 className="w-5 h-5 text-muted-foreground" />
               <select
                 value={selectedEntity}
                 onChange={(e) => setSelectedEntity(e.target.value)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 {entities.map((entity) => (
                   <option key={entity.id} value={entity.id}>
@@ -269,11 +262,11 @@ const MultiEntityReports: React.FC = () => {
 
             {/* Date Range */}
             <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-gray-400" />
+              <Calendar className="w-5 h-5 text-muted-foreground" />
               <select
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value as DateRange)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <option value="this_month">This Month</option>
                 <option value="last_month">Last Month</option>
@@ -287,9 +280,9 @@ const MultiEntityReports: React.FC = () => {
 
         {/* Report Content */}
         {isLoading ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-12 text-center">
-            <RefreshCw className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-2" />
-            <p className="text-gray-500 dark:text-gray-400">Loading report...</p>
+          <div className="bg-card border border-border rounded-xl p-12 text-center">
+            <RefreshCw className="w-8 h-8 text-muted-foreground animate-spin mx-auto mb-2" />
+            <p className="text-muted-foreground">Loading report...</p>
           </div>
         ) : reportData ? (
           <>
@@ -298,15 +291,15 @@ const MultiEntityReports: React.FC = () => {
               <div className="space-y-6">
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Revenue</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  <div className="bg-card rounded-xl p-6 border border-border">
+                    <p className="text-sm text-muted-foreground">Revenue</p>
+                    <p className="text-2xl font-bold text-foreground mt-1">
                       {formatCurrency(reportData.profitAndLoss.revenue)}
                     </p>
                     {reportData.profitAndLoss.previousPeriod && (
                       <p className={`text-sm mt-1 ${
                         reportData.profitAndLoss.revenue >= reportData.profitAndLoss.previousPeriod.revenue
-                          ? 'text-green-600' : 'text-red-600'
+                          ? 'text-primary' : 'text-destructive'
                       }`}>
                         {formatPercentChange(
                           reportData.profitAndLoss.revenue,
@@ -315,110 +308,110 @@ const MultiEntityReports: React.FC = () => {
                       </p>
                     )}
                   </div>
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Gross Profit</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  <div className="bg-card rounded-xl p-6 border border-border">
+                    <p className="text-sm text-muted-foreground">Gross Profit</p>
+                    <p className="text-2xl font-bold text-foreground mt-1">
                       {formatCurrency(reportData.profitAndLoss.grossProfit)}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {((reportData.profitAndLoss.grossProfit / reportData.profitAndLoss.revenue) * 100).toFixed(1)}% margin
                     </p>
                   </div>
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Operating Expenses</p>
-                    <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-1">
+                  <div className="bg-card rounded-xl p-6 border border-border">
+                    <p className="text-sm text-muted-foreground">Operating Expenses</p>
+                    <p className="text-2xl font-bold text-destructive mt-1">
                       {formatCurrency(reportData.profitAndLoss.totalOperatingExpenses)}
                     </p>
                   </div>
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Net Income</p>
+                  <div className="bg-card rounded-xl p-6 border border-border">
+                    <p className="text-sm text-muted-foreground">Net Income</p>
                     <p className={`text-2xl font-bold mt-1 ${
                       reportData.profitAndLoss.netIncome >= 0
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
+                        ? 'text-primary'
+                        : 'text-destructive'
                     }`}>
                       {formatCurrency(reportData.profitAndLoss.netIncome)}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-muted-foreground mt-1">
                       {((reportData.profitAndLoss.netIncome / reportData.profitAndLoss.revenue) * 100).toFixed(1)}% margin
                     </p>
                   </div>
                 </div>
 
                 {/* Detailed P&L */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <div className="bg-card rounded-xl border border-border overflow-hidden">
+                  <div className="px-6 py-4 border-b border-border">
+                    <h3 className="text-lg font-semibold text-foreground">
                       Profit & Loss Statement
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       {getDateRangeLabel(dateRange)} • {entities.find(e => e.id === selectedEntity)?.name}
                     </p>
                   </div>
                   <div className="p-6">
                     <table className="w-full">
-                      <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                      <tbody className="divide-y divide-border">
                         <tr className="font-medium">
-                          <td className="py-3 text-gray-900 dark:text-white">Revenue</td>
-                          <td className="py-3 text-right text-gray-900 dark:text-white">
+                          <td className="py-3 text-foreground">Revenue</td>
+                          <td className="py-3 text-right text-foreground">
                             {formatCurrency(reportData.profitAndLoss.revenue)}
                           </td>
                         </tr>
                         <tr>
-                          <td className="py-3 text-gray-600 dark:text-gray-400 pl-4">Cost of Goods Sold</td>
-                          <td className="py-3 text-right text-gray-600 dark:text-gray-400">
+                          <td className="py-3 text-muted-foreground pl-4">Cost of Goods Sold</td>
+                          <td className="py-3 text-right text-muted-foreground">
                             ({formatCurrency(reportData.profitAndLoss.costOfGoodsSold)})
                           </td>
                         </tr>
-                        <tr className="font-medium bg-gray-50 dark:bg-gray-700/50">
-                          <td className="py-3 text-gray-900 dark:text-white">Gross Profit</td>
-                          <td className="py-3 text-right text-gray-900 dark:text-white">
+                        <tr className="font-medium bg-muted">
+                          <td className="py-3 text-foreground">Gross Profit</td>
+                          <td className="py-3 text-right text-foreground">
                             {formatCurrency(reportData.profitAndLoss.grossProfit)}
                           </td>
                         </tr>
                         <tr>
-                          <td colSpan={2} className="py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+                          <td colSpan={2} className="py-3 text-sm font-medium text-muted-foreground">
                             Operating Expenses
                           </td>
                         </tr>
                         {reportData.profitAndLoss.operatingExpenses.map((expense, idx) => (
                           <tr key={idx}>
-                            <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">{expense.category}</td>
-                            <td className="py-2 text-right text-gray-600 dark:text-gray-400">
+                            <td className="py-2 text-muted-foreground pl-4">{expense.category}</td>
+                            <td className="py-2 text-right text-muted-foreground">
                               ({formatCurrency(expense.amount)})
                             </td>
                           </tr>
                         ))}
                         <tr className="font-medium">
-                          <td className="py-3 text-gray-900 dark:text-white pl-4">Total Operating Expenses</td>
-                          <td className="py-3 text-right text-red-600 dark:text-red-400">
+                          <td className="py-3 text-foreground pl-4">Total Operating Expenses</td>
+                          <td className="py-3 text-right text-destructive">
                             ({formatCurrency(reportData.profitAndLoss.totalOperatingExpenses)})
                           </td>
                         </tr>
-                        <tr className="font-medium bg-gray-50 dark:bg-gray-700/50">
-                          <td className="py-3 text-gray-900 dark:text-white">Operating Income</td>
-                          <td className="py-3 text-right text-gray-900 dark:text-white">
+                        <tr className="font-medium bg-muted">
+                          <td className="py-3 text-foreground">Operating Income</td>
+                          <td className="py-3 text-right text-foreground">
                             {formatCurrency(reportData.profitAndLoss.operatingIncome)}
                           </td>
                         </tr>
                         <tr>
-                          <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">Other Income</td>
-                          <td className="py-2 text-right text-gray-600 dark:text-gray-400">
+                          <td className="py-2 text-muted-foreground pl-4">Other Income</td>
+                          <td className="py-2 text-right text-muted-foreground">
                             {formatCurrency(reportData.profitAndLoss.otherIncome)}
                           </td>
                         </tr>
                         <tr>
-                          <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">Other Expenses</td>
-                          <td className="py-2 text-right text-gray-600 dark:text-gray-400">
+                          <td className="py-2 text-muted-foreground pl-4">Other Expenses</td>
+                          <td className="py-2 text-right text-muted-foreground">
                             ({formatCurrency(reportData.profitAndLoss.otherExpenses)})
                           </td>
                         </tr>
-                        <tr className="font-bold text-lg bg-indigo-50 dark:bg-indigo-900/20">
-                          <td className="py-4 text-gray-900 dark:text-white">Net Income</td>
+                        <tr className="font-bold text-lg bg-muted">
+                          <td className="py-4 text-foreground">Net Income</td>
                           <td className={`py-4 text-right ${
                             reportData.profitAndLoss.netIncome >= 0
-                              ? 'text-green-600 dark:text-green-400'
-                              : 'text-red-600 dark:text-red-400'
+                              ? 'text-primary'
+                              : 'text-destructive'
                           }`}>
                             {formatCurrency(reportData.profitAndLoss.netIncome)}
                           </td>
@@ -435,62 +428,62 @@ const MultiEntityReports: React.FC = () => {
               <div className="space-y-6">
                 {/* Summary */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Beginning Cash</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  <div className="bg-card rounded-xl p-6 border border-border">
+                    <p className="text-sm text-muted-foreground">Beginning Cash</p>
+                    <p className="text-2xl font-bold text-foreground mt-1">
                       {formatCurrency(reportData.cashFlow.beginningCash)}
                     </p>
                   </div>
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Net Cash Change</p>
+                  <div className="bg-card rounded-xl p-6 border border-border">
+                    <p className="text-sm text-muted-foreground">Net Cash Change</p>
                     <p className={`text-2xl font-bold mt-1 ${
                       reportData.cashFlow.netCashChange >= 0
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
+                        ? 'text-primary'
+                        : 'text-destructive'
                     }`}>
                       {reportData.cashFlow.netCashChange >= 0 ? '+' : ''}{formatCurrency(reportData.cashFlow.netCashChange)}
                     </p>
                   </div>
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Ending Cash</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                  <div className="bg-card rounded-xl p-6 border border-border">
+                    <p className="text-sm text-muted-foreground">Ending Cash</p>
+                    <p className="text-2xl font-bold text-foreground mt-1">
                       {formatCurrency(reportData.cashFlow.endingCash)}
                     </p>
                   </div>
                 </div>
 
                 {/* Detailed Cash Flow */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <div className="bg-card rounded-xl border border-border overflow-hidden">
+                  <div className="px-6 py-4 border-b border-border">
+                    <h3 className="text-lg font-semibold text-foreground">
                       Statement of Cash Flows
                     </h3>
                   </div>
                   <div className="p-6 space-y-6">
                     {/* Operating Activities */}
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-3">
+                      <h4 className="font-medium text-foreground mb-3">
                         Cash Flows from Operating Activities
                       </h4>
                       <table className="w-full">
                         <tbody>
                           <tr>
-                            <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">Net Income</td>
-                            <td className="py-2 text-right text-gray-900 dark:text-white">
+                            <td className="py-2 text-muted-foreground pl-4">Net Income</td>
+                            <td className="py-2 text-right text-foreground">
                               {formatCurrency(reportData.cashFlow.operatingActivities.netIncome)}
                             </td>
                           </tr>
                           {reportData.cashFlow.operatingActivities.adjustments.map((adj, idx) => (
                             <tr key={idx}>
-                              <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">{adj.item}</td>
-                              <td className="py-2 text-right text-gray-600 dark:text-gray-400">
+                              <td className="py-2 text-muted-foreground pl-4">{adj.item}</td>
+                              <td className="py-2 text-right text-muted-foreground">
                                 {adj.amount >= 0 ? '' : '('}{formatCurrency(Math.abs(adj.amount))}{adj.amount < 0 ? ')' : ''}
                               </td>
                             </tr>
                           ))}
-                          <tr className="font-medium bg-gray-50 dark:bg-gray-700/50">
-                            <td className="py-3 text-gray-900 dark:text-white">Net Cash from Operating</td>
-                            <td className="py-3 text-right text-gray-900 dark:text-white">
+                          <tr className="font-medium bg-muted">
+                            <td className="py-3 text-foreground">Net Cash from Operating</td>
+                            <td className="py-3 text-right text-foreground">
                               {formatCurrency(reportData.cashFlow.operatingActivities.totalOperating)}
                             </td>
                           </tr>
@@ -500,22 +493,22 @@ const MultiEntityReports: React.FC = () => {
 
                     {/* Investing Activities */}
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-3">
+                      <h4 className="font-medium text-foreground mb-3">
                         Cash Flows from Investing Activities
                       </h4>
                       <table className="w-full">
                         <tbody>
                           {reportData.cashFlow.investingActivities.items.map((item, idx) => (
                             <tr key={idx}>
-                              <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">{item.item}</td>
-                              <td className="py-2 text-right text-gray-600 dark:text-gray-400">
+                              <td className="py-2 text-muted-foreground pl-4">{item.item}</td>
+                              <td className="py-2 text-right text-muted-foreground">
                                 {item.amount >= 0 ? '' : '('}{formatCurrency(Math.abs(item.amount))}{item.amount < 0 ? ')' : ''}
                               </td>
                             </tr>
                           ))}
-                          <tr className="font-medium bg-gray-50 dark:bg-gray-700/50">
-                            <td className="py-3 text-gray-900 dark:text-white">Net Cash from Investing</td>
-                            <td className="py-3 text-right text-gray-900 dark:text-white">
+                          <tr className="font-medium bg-muted">
+                            <td className="py-3 text-foreground">Net Cash from Investing</td>
+                            <td className="py-3 text-right text-foreground">
                               {formatCurrency(reportData.cashFlow.investingActivities.totalInvesting)}
                             </td>
                           </tr>
@@ -525,22 +518,22 @@ const MultiEntityReports: React.FC = () => {
 
                     {/* Financing Activities */}
                     <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-3">
+                      <h4 className="font-medium text-foreground mb-3">
                         Cash Flows from Financing Activities
                       </h4>
                       <table className="w-full">
                         <tbody>
                           {reportData.cashFlow.financingActivities.items.map((item, idx) => (
                             <tr key={idx}>
-                              <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">{item.item}</td>
-                              <td className="py-2 text-right text-gray-600 dark:text-gray-400">
+                              <td className="py-2 text-muted-foreground pl-4">{item.item}</td>
+                              <td className="py-2 text-right text-muted-foreground">
                                 {item.amount >= 0 ? '' : '('}{formatCurrency(Math.abs(item.amount))}{item.amount < 0 ? ')' : ''}
                               </td>
                             </tr>
                           ))}
-                          <tr className="font-medium bg-gray-50 dark:bg-gray-700/50">
-                            <td className="py-3 text-gray-900 dark:text-white">Net Cash from Financing</td>
-                            <td className="py-3 text-right text-gray-900 dark:text-white">
+                          <tr className="font-medium bg-muted">
+                            <td className="py-3 text-foreground">Net Cash from Financing</td>
+                            <td className="py-3 text-right text-foreground">
                               {formatCurrency(reportData.cashFlow.financingActivities.totalFinancing)}
                             </td>
                           </tr>
@@ -549,15 +542,15 @@ const MultiEntityReports: React.FC = () => {
                     </div>
 
                     {/* Summary */}
-                    <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <div className="border-t border-border pt-4">
                       <table className="w-full">
                         <tbody>
                           <tr className="font-bold text-lg">
-                            <td className="py-3 text-gray-900 dark:text-white">Net Change in Cash</td>
+                            <td className="py-3 text-foreground">Net Change in Cash</td>
                             <td className={`py-3 text-right ${
                               reportData.cashFlow.netCashChange >= 0
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-red-600 dark:text-red-400'
+                                ? 'text-primary'
+                                : 'text-destructive'
                             }`}>
                               {formatCurrency(reportData.cashFlow.netCashChange)}
                             </td>
@@ -574,54 +567,54 @@ const MultiEntityReports: React.FC = () => {
             {reportType === 'balance_sheet' && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Assets */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Assets</h3>
+                <div className="bg-card rounded-xl border border-border overflow-hidden">
+                  <div className="px-6 py-4 border-b border-border bg-muted">
+                    <h3 className="text-lg font-semibold text-foreground">Assets</h3>
                   </div>
                   <div className="p-6">
                     <table className="w-full">
                       <tbody>
                         <tr>
-                          <td colSpan={2} className="py-2 font-medium text-gray-700 dark:text-gray-300">
+                          <td colSpan={2} className="py-2 font-medium text-foreground">
                             Current Assets
                           </td>
                         </tr>
                         {reportData.balanceSheet.assets.current.map((item, idx) => (
                           <tr key={idx}>
-                            <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">{item.item}</td>
-                            <td className="py-2 text-right text-gray-900 dark:text-white">
+                            <td className="py-2 text-muted-foreground pl-4">{item.item}</td>
+                            <td className="py-2 text-right text-foreground">
                               {formatCurrency(item.amount)}
                             </td>
                           </tr>
                         ))}
                         <tr className="font-medium">
-                          <td className="py-2 text-gray-900 dark:text-white pl-4">Total Current Assets</td>
-                          <td className="py-2 text-right text-gray-900 dark:text-white">
+                          <td className="py-2 text-foreground pl-4">Total Current Assets</td>
+                          <td className="py-2 text-right text-foreground">
                             {formatCurrency(reportData.balanceSheet.assets.totalCurrent)}
                           </td>
                         </tr>
                         <tr>
-                          <td colSpan={2} className="py-2 font-medium text-gray-700 dark:text-gray-300 pt-4">
+                          <td colSpan={2} className="py-2 font-medium text-foreground pt-4">
                             Fixed Assets
                           </td>
                         </tr>
                         {reportData.balanceSheet.assets.fixed.map((item, idx) => (
                           <tr key={idx}>
-                            <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">{item.item}</td>
-                            <td className="py-2 text-right text-gray-900 dark:text-white">
+                            <td className="py-2 text-muted-foreground pl-4">{item.item}</td>
+                            <td className="py-2 text-right text-foreground">
                               {formatCurrency(item.amount)}
                             </td>
                           </tr>
                         ))}
                         <tr className="font-medium">
-                          <td className="py-2 text-gray-900 dark:text-white pl-4">Total Fixed Assets</td>
-                          <td className="py-2 text-right text-gray-900 dark:text-white">
+                          <td className="py-2 text-foreground pl-4">Total Fixed Assets</td>
+                          <td className="py-2 text-right text-foreground">
                             {formatCurrency(reportData.balanceSheet.assets.totalFixed)}
                           </td>
                         </tr>
-                        <tr className="font-bold text-lg bg-blue-50 dark:bg-blue-900/20">
-                          <td className="py-4 text-gray-900 dark:text-white">Total Assets</td>
-                          <td className="py-4 text-right text-blue-600 dark:text-blue-400">
+                        <tr className="font-bold text-lg bg-muted">
+                          <td className="py-4 text-foreground">Total Assets</td>
+                          <td className="py-4 text-right text-foreground">
                             {formatCurrency(reportData.balanceSheet.assets.totalAssets)}
                           </td>
                         </tr>
@@ -633,52 +626,52 @@ const MultiEntityReports: React.FC = () => {
                 {/* Liabilities & Equity */}
                 <div className="space-y-6">
                   {/* Liabilities */}
-                  <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-red-50 dark:bg-red-900/20">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Liabilities</h3>
+                  <div className="bg-card rounded-xl border border-border overflow-hidden">
+                    <div className="px-6 py-4 border-b border-border bg-muted">
+                      <h3 className="text-lg font-semibold text-foreground">Liabilities</h3>
                     </div>
                     <div className="p-6">
                       <table className="w-full">
                         <tbody>
                           <tr>
-                            <td colSpan={2} className="py-2 font-medium text-gray-700 dark:text-gray-300">
+                            <td colSpan={2} className="py-2 font-medium text-foreground">
                               Current Liabilities
                             </td>
                           </tr>
                           {reportData.balanceSheet.liabilities.current.map((item, idx) => (
                             <tr key={idx}>
-                              <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">{item.item}</td>
-                              <td className="py-2 text-right text-gray-900 dark:text-white">
+                              <td className="py-2 text-muted-foreground pl-4">{item.item}</td>
+                              <td className="py-2 text-right text-foreground">
                                 {formatCurrency(item.amount)}
                               </td>
                             </tr>
                           ))}
                           <tr className="font-medium">
-                            <td className="py-2 text-gray-900 dark:text-white pl-4">Total Current Liabilities</td>
-                            <td className="py-2 text-right text-gray-900 dark:text-white">
+                            <td className="py-2 text-foreground pl-4">Total Current Liabilities</td>
+                            <td className="py-2 text-right text-foreground">
                               {formatCurrency(reportData.balanceSheet.liabilities.totalCurrent)}
                             </td>
                           </tr>
                           {reportData.balanceSheet.liabilities.longTerm.length > 0 && (
                             <>
                               <tr>
-                                <td colSpan={2} className="py-2 font-medium text-gray-700 dark:text-gray-300 pt-4">
+                                <td colSpan={2} className="py-2 font-medium text-foreground pt-4">
                                   Long-Term Liabilities
                                 </td>
                               </tr>
                               {reportData.balanceSheet.liabilities.longTerm.map((item, idx) => (
                                 <tr key={idx}>
-                                  <td className="py-2 text-gray-600 dark:text-gray-400 pl-4">{item.item}</td>
-                                  <td className="py-2 text-right text-gray-900 dark:text-white">
+                                  <td className="py-2 text-muted-foreground pl-4">{item.item}</td>
+                                  <td className="py-2 text-right text-foreground">
                                     {formatCurrency(item.amount)}
                                   </td>
                                 </tr>
                               ))}
                             </>
                           )}
-                          <tr className="font-bold bg-red-50 dark:bg-red-900/20">
-                            <td className="py-3 text-gray-900 dark:text-white">Total Liabilities</td>
-                            <td className="py-3 text-right text-red-600 dark:text-red-400">
+                          <tr className="font-bold bg-muted">
+                            <td className="py-3 text-foreground">Total Liabilities</td>
+                            <td className="py-3 text-right text-destructive">
                               {formatCurrency(reportData.balanceSheet.liabilities.totalLiabilities)}
                             </td>
                           </tr>
@@ -688,24 +681,24 @@ const MultiEntityReports: React.FC = () => {
                   </div>
 
                   {/* Equity */}
-                  <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-green-50 dark:bg-green-900/20">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Equity</h3>
+                  <div className="bg-card rounded-xl border border-border overflow-hidden">
+                    <div className="px-6 py-4 border-b border-border bg-muted">
+                      <h3 className="text-lg font-semibold text-foreground">Equity</h3>
                     </div>
                     <div className="p-6">
                       <table className="w-full">
                         <tbody>
                           {reportData.balanceSheet.equity.items.map((item, idx) => (
                             <tr key={idx}>
-                              <td className="py-2 text-gray-600 dark:text-gray-400">{item.item}</td>
-                              <td className="py-2 text-right text-gray-900 dark:text-white">
+                              <td className="py-2 text-muted-foreground">{item.item}</td>
+                              <td className="py-2 text-right text-foreground">
                                 {formatCurrency(item.amount)}
                               </td>
                             </tr>
                           ))}
-                          <tr className="font-bold bg-green-50 dark:bg-green-900/20">
-                            <td className="py-3 text-gray-900 dark:text-white">Total Equity</td>
-                            <td className="py-3 text-right text-green-600 dark:text-green-400">
+                          <tr className="font-bold bg-muted">
+                            <td className="py-3 text-foreground">Total Equity</td>
+                            <td className="py-3 text-right text-primary">
                               {formatCurrency(reportData.balanceSheet.equity.totalEquity)}
                             </td>
                           </tr>
@@ -715,14 +708,14 @@ const MultiEntityReports: React.FC = () => {
                   </div>
 
                   {/* Balance Check */}
-                  <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-4 flex items-center justify-between">
+                  <div className="bg-muted rounded-xl p-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <span className="font-medium text-gray-900 dark:text-white">
+                      <CheckCircle className="w-5 h-5 text-primary" />
+                      <span className="font-medium text-foreground">
                         Total Liabilities + Equity
                       </span>
                     </div>
-                    <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                    <span className="font-bold text-foreground">
                       {formatCurrency(
                         reportData.balanceSheet.liabilities.totalLiabilities +
                         reportData.balanceSheet.equity.totalEquity
@@ -734,12 +727,11 @@ const MultiEntityReports: React.FC = () => {
             )}
           </>
         ) : (
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-12 text-center">
-            <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">No report data available</p>
+          <div className="bg-card border border-border rounded-xl p-12 text-center">
+            <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground">No report data available</p>
           </div>
         )}
-      </div>
     </div>
   );
 };

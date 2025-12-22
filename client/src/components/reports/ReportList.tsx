@@ -243,16 +243,16 @@ export function ReportList() {
 }
 
 // Status badge component
-function StatusBadge({ status }: { status: ReportStatus }) {
+function StatusBadge({ status }: { status: string }) {
   const statusMap = {
-    pending: { label: "Pending", className: "bg-amber-100 text-amber-800" },
-    approved: { label: "Approved", className: "bg-green-100 text-green-800" },
-    rejected: { label: "Rejected", className: "bg-red-100 text-red-800" },
+    pending: { label: "Pending", className: "bg-muted text-muted-foreground" },
+    approved: { label: "Approved", className: "bg-muted text-primary" },
+    rejected: { label: "Rejected", className: "bg-muted text-destructive" },
   } as const;
 
   const statusInfo = statusMap[status] || {
     label: status,
-    className: "bg-gray-100 text-gray-800",
+    className: "bg-muted text-foreground",
   };
 
   return (
