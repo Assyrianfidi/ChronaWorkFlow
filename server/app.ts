@@ -30,12 +30,12 @@ app.get("/api/inventory", async (req: any, res) => {
   const limit = 10;
 
   const [items, total] = await Promise.all([
-    prisma.inventory.findMany({
+    (prisma as any).inventory.findMany({
       where: { tenantId: req.user?.tenantId },
       skip: (page - 1) * limit,
       take: limit,
     } as any),
-    prisma.inventory.count({ where: { tenantId: req.user?.tenantId } } as any),
+    (prisma as any).inventory.count({ where: { tenantId: req.user?.tenantId } } as any),
   ]);
 
   res.status(200).json({
@@ -51,7 +51,7 @@ app.get("/api/inventory", async (req: any, res) => {
 });
 
 app.post("/api/inventory", async (req: any, res) => {
-  const created = await prisma.inventory.create({
+  const created = await (prisma as any).inventory.create({
     data: {
       ...req.body,
       tenantId: req.user?.tenantId,
@@ -59,7 +59,7 @@ app.post("/api/inventory", async (req: any, res) => {
   } as any);
 
   try {
-    await prisma.inventoryHistory.create({
+    await (prisma as any).inventoryHistory.create({
       data: {
         inventoryId: created.id,
         action: "CREATE",

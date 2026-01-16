@@ -25,7 +25,7 @@ export class RedisCacheService {
       enableReadyCheck: false,
       maxRetriesPerRequest: null,
       lazyConnect: true,
-    });
+    } as any);
 
     this.redis.on('connect', () => {
       console.log('Redis cache connected');

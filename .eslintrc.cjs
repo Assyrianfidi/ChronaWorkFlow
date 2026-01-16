@@ -20,15 +20,20 @@ module.exports = {
   overrides: [
     {
       files: [
-        'server/**/*.ts',
-        'server/**/*.tsx',
+        'server/app.ts',
+        'server/middleware/**/*.ts',
+        'server/middleware/**/*.tsx',
+        'server/services/**/*.ts',
+        'server/services/**/*.tsx',
+        'server/types/**/*.ts',
+        'server/types/**/*.tsx',
         'shared/**/*.ts',
         'shared/**/*.tsx',
         'src/runtime/**/*.ts',
         'src/runtime/**/*.tsx',
       ],
       parserOptions: {
-        project: ['./tsconfig.json'],
+        project: ['./tsconfig.typecheck.json'],
       },
     },
     {

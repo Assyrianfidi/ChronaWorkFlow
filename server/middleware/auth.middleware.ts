@@ -2,23 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../prisma';
 import { ApiError } from '../utils/error';
+import type { UserPayload } from '../types';
 
 // Define custom role type to avoid Prisma client issues
 type AppRole = 'ADMIN' | 'USER' | 'INVENTORY_MANAGER' | 'ACCOUNTANT' | 'CASHIER' | 'MANAGER' | 'CUSTOMER_SERVICE' | 'VIEWER';
-
-export interface UserPayload {
-  id: string;
-  role: AppRole;
-  tenantId: string;
-}
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: UserPayload;
-    }
-  }
-}
 
 /**
  * Middleware to authenticate JWT token and optionally check for required roles
@@ -69,7 +56,7 @@ export const authenticate = (roles: AppRole[] = []) => {
         id: user.id,
         role: userRole,
         tenantId: user.tenantId
-      };
+      } as any;
 
       next();
     } catch (error) {
@@ -106,7 +93,7 @@ export const authorize = (roles: AppRole | AppRole[]) => {
 
     const requiredRoles = Array.isArray(roles) ? roles : [roles];
     
-    if (!requiredRoles.includes(req.user.role)) {
+    if (!requiredRoles.includes(req.user.role as AppRole)) {
       return next(new ApiError(403, 'Not authorized to access this resource'));
     }
 

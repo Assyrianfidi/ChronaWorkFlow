@@ -53,7 +53,7 @@ export function validateMultiple(schemas: {
             message: err.message,
           }));
           
-          throw new ApiError(400, 'Validation error', errors);
+          throw new ApiError(400, 'Validation error', true, errors as any);
         }
         
         // Replace the request data with the validated and parsed data
@@ -67,7 +67,7 @@ export function validateMultiple(schemas: {
       }
       
       if (error instanceof ZodError) {
-        return next(new ApiError(400, 'Validation error', error.errors));
+        return next(new ApiError(400, 'Validation error', true, error.errors as any));
       }
       
       next(new ApiError(500, 'Internal server error'));

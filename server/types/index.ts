@@ -2,8 +2,8 @@ import { Request } from 'express';
 
 export interface UserPayload {
   id: string;
-  email: string;
-  name: string;
+  email: string | null;
+  name: string | null;
   role: string;
   isActive: boolean;
   tenantId?: string;
@@ -19,7 +19,7 @@ declare global {
 
 export interface AuthRequest<T = any, P = any, Q = any> extends Request<P, any, T, Q> {
   user: UserPayload;
-  tenantId: string;
+  tenantId?: string;
 }
 
 export interface RegisterInput {

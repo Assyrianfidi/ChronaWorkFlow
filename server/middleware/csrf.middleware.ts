@@ -2,15 +2,6 @@ import { Request, Response, NextFunction, RequestHandler, ErrorRequestHandler } 
 import csrf from 'csurf';
 import { ApiError } from '../utils/error';
 
-// Extend Express Request type to include csrfToken
-declare global {
-  namespace Express {
-    interface Request {
-      csrfToken?: () => string;
-    }
-  }
-}
-
 // CSRF protection middleware configuration
 type CsrfOptions = {
   cookie?: boolean | {

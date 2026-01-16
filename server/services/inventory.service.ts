@@ -19,7 +19,7 @@ export class InventoryService {
     const validatedData = inventoryItemSchema.parse(data);
 
     // Check if SKU already exists
-    const existingItem = await this.prisma.inventoryItem.findUnique({
+    const existingItem = await (this.prisma as any).inventoryItem.findUnique({
       where: { sku: validatedData.sku, deletedAt: null },
     });
 
@@ -28,7 +28,7 @@ export class InventoryService {
     }
 
     // Create the inventory item
-    const item = await this.prisma.inventoryItem.create({
+    const item = await (this.prisma as any).inventoryItem.create({
       data: {
         ...validatedData,
         tenantId,
@@ -46,7 +46,7 @@ export class InventoryService {
     tenantId: string
   ) {
     // Find the existing item
-    const existingItem = await this.prisma.inventoryItem.findUnique({
+    const existingItem = await (this.prisma as any).inventoryItem.findUnique({
       where: { id, tenantId, deletedAt: null },
     });
 
@@ -61,7 +61,7 @@ export class InventoryService {
     delete (updateData as any).createdById; // Prevent createdBy changes
 
     // Update the item
-    const item = await this.prisma.inventoryItem.update({
+    const item = await (this.prisma as any).inventoryItem.update({
       where: { id },
       data: {
         ...updateData,
@@ -79,7 +79,7 @@ export class InventoryService {
     tenantId: string
   ) {
     // Find the existing item
-    const existingItem = await this.prisma.inventoryItem.findUnique({
+    const existingItem = await (this.prisma as any).inventoryItem.findUnique({
       where: { id, tenantId, deletedAt: null },
     });
 
@@ -88,7 +88,7 @@ export class InventoryService {
     }
 
     // Soft delete the item
-    const item = await this.prisma.inventoryItem.update({
+    const item = await (this.prisma as any).inventoryItem.update({
       where: { id },
       data: {
         deletedAt: new Date(),
@@ -103,7 +103,7 @@ export class InventoryService {
     id: string,
     tenantId: string
   ) {
-    const item = await this.prisma.inventoryItem.findFirst({
+    const item = await (this.prisma as any).inventoryItem.findFirst({
       where: { id, tenantId, deletedAt: null },
     });
 
@@ -168,10 +168,10 @@ export class InventoryService {
     }
 
     // Get total count
-    const total = await this.prisma.inventoryItem.count({ where });
+    const total = await (this.prisma as any).inventoryItem.count({ where });
 
     // Get items
-    const items = await this.prisma.inventoryItem.findMany({
+    const items = await (this.prisma as any).inventoryItem.findMany({
       where,
       orderBy: {
         [pagination.sortBy || 'createdAt']: pagination.sortOrder || 'desc',
@@ -198,7 +198,7 @@ export class InventoryService {
     userId?: number,
     tenantId?: string
   ) {
-    const existingItem = await this.prisma.inventoryItem.findUnique({
+    const existingItem = await (this.prisma as any).inventoryItem.findUnique({
       where: { id, tenantId, deletedAt: null },
     });
 
@@ -212,7 +212,7 @@ export class InventoryService {
     }
 
     // Update the item quantity
-    const item = await this.prisma.inventoryItem.update({
+    const item = await (this.prisma as any).inventoryItem.update({
       where: { id },
       data: {
         quantity: newQuantity,

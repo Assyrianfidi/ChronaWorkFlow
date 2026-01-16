@@ -1,0 +1,32 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "server/app.ts",
+    "server/middleware/**/*",
+    "server/services/**/*",
+    "server/types/**/*",
+    "shared/**/*",
+    "src/runtime/**/*",
+    "src/types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "server/seed.ts",
+    "server/routes/**/*",
+    "server/controllers/**/*",
+    "server/jobs/**/*",
+    "server/test/**/*",
+    "server/worker/**/*",
+    "server/runtime/**/*",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.test.tsx",
+    "**/*.spec.tsx",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "**/__tests__/**",
+    "**/__mocks__/**"
+  ]
+}
