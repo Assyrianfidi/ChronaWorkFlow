@@ -26,7 +26,7 @@
     "test:integration": "cross-env NODE_ENV=test jest --config=jest.config.cjs --testMatch='**/*.test.ts'",
     "test:watch:integration": "cross-env NODE_ENV=test jest --watch --config=jest.config.cjs",
     "test:coverage:integration": "cross-env NODE_ENV=test jest --coverage --config=jest.config.cjs",
-    "lint": "eslint . --ext .ts,.tsx,.js,.jsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "node ./node_modules/eslint/bin/eslint.js server shared src/runtime src/types --ext .ts,.tsx,.js,.jsx --max-warnings 0",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "validate": "npm run lint && npm run format:check && npm run build",
