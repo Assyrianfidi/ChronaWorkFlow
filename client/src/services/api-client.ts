@@ -1,4 +1,10 @@
 import { toast } from "sonner";
+import { z } from "zod";
+import {
+  apiEnvelopeSchema,
+  isApiEnvelopeLike,
+  parseContract,
+} from "@shared/contracts";
 
 interface ApiResponse<T = unknown> {
   data: T;
@@ -61,6 +67,18 @@ class ApiClient {
           data.code,
           data,
         );
+      }
+
+      if (response.ok && isApiEnvelopeLike(data)) {
+        try {
+          parseContract("ApiEnvelope", apiEnvelopeSchema(z.unknown()), data);
+        } catch (_e) {
+          throw new ApiError(
+            "Response did not match the expected contract",
+            response.status,
+            "CONTRACT_VIOLATION",
+          );
+        }
       }
 
       return {

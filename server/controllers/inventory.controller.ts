@@ -11,6 +11,12 @@ import {
   InventoryRequest,
   InventoryResponse
 } from '../types/inventory.types';
+import {
+  apiEnvelopeSchema,
+  apiSuccessMessageSchema,
+  inventoryListResponseSchema,
+  parseContract,
+} from '../../shared/contracts';
 
 // Type for pagination parameters
 type PaginationParams = {
@@ -65,15 +71,25 @@ export const getInventory = async (req: InventoryRequest, res: Response, next: N
       req.user.tenantId
     );
 
+    const payload = parseContract(
+      'InventoryListResponse',
+      inventoryListResponseSchema,
+      {
+        items: result.items,
+        pagination: result.pagination,
+      },
+    );
+
     // Transform the response
-    res.json({
-      items: result.items,
-      pagination: result.pagination
-    });
+    res.json(payload);
 
     res.status(200);
   } catch (error) {
     logger.error('Error fetching inventory items:', error);
+    if (error instanceof Error && error.name === 'ContractViolationError') {
+      next(new ApiError(500, 'Internal Server Error'));
+      return;
+    }
     next(error);
   }
 };
@@ -93,12 +109,22 @@ export const getInventoryItem = async (req: InventoryRequest, res: Response, nex
       req.user.tenantId
     );
     
-    res.status(200).json({
-      success: true,
-      data: item
-    });
+    const payload = parseContract(
+      'ApiEnvelope',
+      apiEnvelopeSchema(z.unknown()),
+      {
+        success: true,
+        data: item,
+      },
+    );
+
+    res.status(200).json(payload);
   } catch (error) {
     logger.error(`Error fetching inventory item ${req.params.id}:`, error);
+    if (error instanceof Error && error.name === 'ContractViolationError') {
+      next(new ApiError(500, 'Internal Server Error'));
+      return;
+    }
     next(error);
   }
 };
@@ -119,13 +145,23 @@ export const createInventoryItem = async (req: InventoryRequest, res: Response, 
       req.user.tenantId || ''
     );
 
-    res.status(201).json({
-      success: true,
-      data: result,
-      message: 'Inventory item created successfully'
-    });
+    const payload = parseContract(
+      'ApiEnvelope',
+      apiEnvelopeSchema(z.unknown()),
+      {
+        success: true,
+        data: result,
+        message: 'Inventory item created successfully',
+      },
+    );
+
+    res.status(201).json(payload);
   } catch (error) {
     logger.error('Error creating inventory item:', error);
+    if (error instanceof Error && error.name === 'ContractViolationError') {
+      next(new ApiError(500, 'Internal Server Error'));
+      return;
+    }
     next(error);
   }
 };
@@ -149,13 +185,23 @@ export const updateInventoryItem = async (req: InventoryRequest, res: Response, 
       req.user.tenantId
     );
 
-    res.status(200).json({
-      success: true,
-      data: result,
-      message: 'Inventory item updated successfully'
-    });
+    const payload = parseContract(
+      'ApiEnvelope',
+      apiEnvelopeSchema(z.unknown()),
+      {
+        success: true,
+        data: result,
+        message: 'Inventory item updated successfully',
+      },
+    );
+
+    res.status(200).json(payload);
   } catch (error) {
     logger.error(`Error updating inventory item ${req.params.id}:`, error);
+    if (error instanceof Error && error.name === 'ContractViolationError') {
+      next(new ApiError(500, 'Internal Server Error'));
+      return;
+    }
     next(error);
   }
 };
@@ -172,12 +218,22 @@ export const deleteInventoryItem = async (req: InventoryRequest, res: Response, 
     const { id } = req.params;
     await inventoryService.deleteInventoryItem(id, parseInt(req.user.id, 10), req.user.tenantId);
     
-    res.status(200).json({
-      success: true,
-      message: 'Inventory item deleted successfully'
-    });
+    const payload = parseContract(
+      'ApiSuccessMessage',
+      apiSuccessMessageSchema,
+      {
+        success: true,
+        message: 'Inventory item deleted successfully',
+      },
+    );
+
+    res.status(200).json(payload);
   } catch (error) {
     logger.error(`Error deleting inventory item ${req.params.id}:`, error);
+    if (error instanceof Error && error.name === 'ContractViolationError') {
+      next(new ApiError(500, 'Internal Server Error'));
+      return;
+    }
     next(error);
   }
 };
@@ -206,13 +262,23 @@ export const adjustInventoryQuantity = async (req: InventoryRequest, res: Respon
       req.user.tenantId
     );
 
-    res.status(200).json({
-      success: true,
-      data: result,
-      message: 'Inventory quantity adjusted successfully'
-    });
+    const payload = parseContract(
+      'ApiEnvelope',
+      apiEnvelopeSchema(z.unknown()),
+      {
+        success: true,
+        data: result,
+        message: 'Inventory quantity adjusted successfully',
+      },
+    );
+
+    res.status(200).json(payload);
   } catch (error) {
     logger.error(`Error adjusting inventory quantity for item ${req.params.id}:`, error);
+    if (error instanceof Error && error.name === 'ContractViolationError') {
+      next(new ApiError(500, 'Internal Server Error'));
+      return;
+    }
     next(error);
   }
 };
@@ -223,13 +289,23 @@ export const adjustInventoryQuantity = async (req: InventoryRequest, res: Respon
 export const getInventoryHistory = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     // TODO: Implement when service supports inventory history
-    res.status(200).json({
-      success: true,
-      data: [],
-      message: 'Inventory history not yet implemented'
-    });
+    const payload = parseContract(
+      'ApiEnvelope',
+      apiEnvelopeSchema(z.unknown()),
+      {
+        success: true,
+        data: [],
+        message: 'Inventory history not yet implemented',
+      },
+    );
+
+    res.status(200).json(payload);
   } catch (error) {
     logger.error('Error fetching inventory history:', error);
+    if (error instanceof Error && error.name === 'ContractViolationError') {
+      next(new ApiError(500, 'Internal Server Error'));
+      return;
+    }
     next(error);
   }
 };
