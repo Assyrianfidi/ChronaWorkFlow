@@ -5,7 +5,7 @@ const API_BASE_URL = "/api/reports";
 /**
  * Fetches a report by its ID
  */
-export const getReport = async (id: string) => {
+export const getReport = async (id: string): Promise<unknown> => {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
     method: "GET",
     headers: {
@@ -25,7 +25,7 @@ export const getReport = async (id: string) => {
 /**
  * Creates a new report
  */
-export const createReport = async (data: ReportFormValues) => {
+export const createReport = async (data: ReportFormValues): Promise<unknown> => {
   const formData = new FormData();
 
   // Append all form fields to FormData
@@ -66,7 +66,7 @@ export const createReport = async (data: ReportFormValues) => {
 export const updateReport = async (
   id: string,
   data: Partial<ReportFormValues>,
-) => {
+): Promise<unknown> => {
   const formData = new FormData();
 
   // Append all form fields to FormData
@@ -104,7 +104,7 @@ export const updateReport = async (
 /**
  * Deletes a report
  */
-export const deleteReport = async (id: string) => {
+export const deleteReport = async (id: string): Promise<unknown> => {
   const response = await fetch(`${API_BASE_URL}/${id}`, {
     method: "DELETE",
     credentials: "include",
@@ -121,7 +121,7 @@ export const deleteReport = async (id: string) => {
 /**
  * Uploads an attachment to a report
  */
-export const uploadAttachment = async (reportId: string, file: File) => {
+export const uploadAttachment = async (reportId: string, file: File): Promise<unknown> => {
   const formData = new FormData();
   formData.append("file", file);
 
@@ -145,7 +145,7 @@ export const uploadAttachment = async (reportId: string, file: File) => {
 export const deleteAttachment = async (
   reportId: string,
   attachmentId: string,
-) => {
+): Promise<unknown> => {
   const response = await fetch(
     `${API_BASE_URL}/${reportId}/attachments/${attachmentId}`,
     {

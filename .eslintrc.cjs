@@ -43,12 +43,26 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/no-var-requires': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
         'no-case-declarations': 'off',
         'no-useless-escape': 'off',
         'no-control-regex': 'off',
         'no-prototype-builtins': 'off',
         'prefer-const': 'off',
         'react-hooks/exhaustive-deps': 'off',
+      },
+    },
+    {
+      files: [
+        'server/controllers/**/*.ts',
+        'client/src/lib/api/**/*.ts',
+        'client/src/services/api-client.ts',
+        'client/src/services/api-client.tsx',
+        'client/src/services/api-client.js',
+        'client/src/services/api-client.jsx',
+      ],
+      rules: {
+        '@typescript-eslint/explicit-module-boundary-types': 'error',
       },
     },
     {

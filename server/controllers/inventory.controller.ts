@@ -33,7 +33,7 @@ type InventoryFilters = {
 /**
  * Get all inventory items with filtering, sorting, and pagination
  */
-export const getInventory = async (req: InventoryRequest, res: Response, next: NextFunction) => {
+export const getInventory = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     if (!req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing tenant information');
@@ -81,7 +81,7 @@ export const getInventory = async (req: InventoryRequest, res: Response, next: N
 /**
  * Get a single inventory item by ID
  */
-export const getInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction) => {
+export const getInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     if (!req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing tenant information');
@@ -106,7 +106,7 @@ export const getInventoryItem = async (req: InventoryRequest, res: Response, nex
 /**
  * Create a new inventory item
  */
-export const createInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction) => {
+export const createInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     if (!req.user?.id || !req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing user or tenant information');
@@ -133,7 +133,7 @@ export const createInventoryItem = async (req: InventoryRequest, res: Response, 
 /**
  * Update an existing inventory item
  */
-export const updateInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction) => {
+export const updateInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     if (!req.user?.id || !req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing user or tenant information');
@@ -163,7 +163,7 @@ export const updateInventoryItem = async (req: InventoryRequest, res: Response, 
 /**
  * Delete an inventory item (soft delete)
  */
-export const deleteInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction) => {
+export const deleteInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     if (!req.user?.id || !req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing user or tenant information');
@@ -185,7 +185,7 @@ export const deleteInventoryItem = async (req: InventoryRequest, res: Response, 
 /**
  * Adjust inventory quantity
  */
-export const adjustInventoryQuantity = async (req: InventoryRequest, res: Response, next: NextFunction) => {
+export const adjustInventoryQuantity = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     if (!req.user?.id || !req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing user or tenant information');
@@ -220,7 +220,7 @@ export const adjustInventoryQuantity = async (req: InventoryRequest, res: Respon
 /**
  * Get inventory history for an item
  */
-export const getInventoryHistory = async (req: InventoryRequest, res: Response, next: NextFunction) => {
+export const getInventoryHistory = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     // TODO: Implement when service supports inventory history
     res.status(200).json({

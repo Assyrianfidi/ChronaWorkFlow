@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 
-interface ApiResponse<T = any> {
+interface ApiResponse<T = unknown> {
   data: T;
   message?: string;
   status: number;
@@ -11,7 +11,7 @@ interface ApiErrorData {
   message: string;
   status: number;
   code?: string;
-  details?: any;
+  details?: unknown;
 }
 
 class ApiError extends Error {
@@ -19,7 +19,7 @@ class ApiError extends Error {
     message: string,
     public status: number,
     public code?: string,
-    public details?: any,
+    public details?: unknown,
   ) {
     super(message);
     this.name = "ApiError";
@@ -85,7 +85,7 @@ class ApiClient {
 
   async get<T>(
     endpoint: string,
-    params?: Record<string, any>,
+    params?: Record<string, unknown>,
   ): Promise<ApiResponse<T>> {
     const url = new URL(`${this.baseURL}${endpoint}`);
     if (params) {
@@ -99,21 +99,21 @@ class ApiClient {
     return this.request<T>(endpoint + url.search, { method: "GET" });
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: "POST",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: "PUT",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
-  async patch<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async patch<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: "PATCH",
       body: data ? JSON.stringify(data) : undefined,
@@ -128,7 +128,7 @@ class ApiClient {
   async upload<T>(
     endpoint: string,
     file: File,
-    additionalData?: Record<string, any>,
+    additionalData?: Record<string, unknown>,
   ): Promise<ApiResponse<T>> {
     const formData = new FormData();
     formData.append("file", file);
