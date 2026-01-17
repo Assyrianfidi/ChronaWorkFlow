@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+export type ApiVersion = 'v1';
+export const CURRENT_API_VERSION: ApiVersion = 'v1';
+
+export const API_VERSION_HEADER = 'x-api-version' as const;
+
+export type AssertBackwardCompatible<Prev, Next> = Next extends Prev ? true : never;
+
 export type ApiEnvelope<T> = {
   success: boolean;
   data: T;

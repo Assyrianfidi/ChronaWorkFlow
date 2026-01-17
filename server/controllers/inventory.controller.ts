@@ -14,6 +14,8 @@ import {
 import {
   apiEnvelopeSchema,
   apiSuccessMessageSchema,
+  CURRENT_API_VERSION,
+  API_VERSION_HEADER,
   inventoryListResponseSchema,
   parseContract,
 } from '../../shared/contracts';
@@ -81,6 +83,7 @@ export const getInventory = async (req: InventoryRequest, res: Response, next: N
     );
 
     // Transform the response
+    res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.json(payload);
 
     res.status(200);
@@ -118,6 +121,7 @@ export const getInventoryItem = async (req: InventoryRequest, res: Response, nex
       },
     );
 
+    res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(200).json(payload);
   } catch (error) {
     logger.error(`Error fetching inventory item ${req.params.id}:`, error);
@@ -155,6 +159,7 @@ export const createInventoryItem = async (req: InventoryRequest, res: Response, 
       },
     );
 
+    res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(201).json(payload);
   } catch (error) {
     logger.error('Error creating inventory item:', error);
@@ -195,6 +200,7 @@ export const updateInventoryItem = async (req: InventoryRequest, res: Response, 
       },
     );
 
+    res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(200).json(payload);
   } catch (error) {
     logger.error(`Error updating inventory item ${req.params.id}:`, error);
@@ -227,6 +233,7 @@ export const deleteInventoryItem = async (req: InventoryRequest, res: Response, 
       },
     );
 
+    res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(200).json(payload);
   } catch (error) {
     logger.error(`Error deleting inventory item ${req.params.id}:`, error);
@@ -272,6 +279,7 @@ export const adjustInventoryQuantity = async (req: InventoryRequest, res: Respon
       },
     );
 
+    res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(200).json(payload);
   } catch (error) {
     logger.error(`Error adjusting inventory quantity for item ${req.params.id}:`, error);
@@ -299,6 +307,7 @@ export const getInventoryHistory = async (req: InventoryRequest, res: Response, 
       },
     );
 
+    res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(200).json(payload);
   } catch (error) {
     logger.error('Error fetching inventory history:', error);

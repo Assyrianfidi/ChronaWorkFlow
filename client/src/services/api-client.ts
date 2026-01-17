@@ -2,6 +2,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import {
   apiEnvelopeSchema,
+  CURRENT_API_VERSION,
+  API_VERSION_HEADER,
   isApiEnvelopeLike,
   parseContract,
 } from "@shared/contracts";
@@ -66,6 +68,15 @@ class ApiClient {
           response.status,
           data.code,
           data,
+        );
+      }
+
+      const versionHeader = response.headers.get(API_VERSION_HEADER);
+      if (versionHeader && versionHeader !== CURRENT_API_VERSION) {
+        throw new ApiError(
+          "Incompatible API version",
+          response.status,
+          "INCOMPATIBLE_API_VERSION",
         );
       }
 
