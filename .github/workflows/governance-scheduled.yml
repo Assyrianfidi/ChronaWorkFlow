@@ -1,0 +1,147 @@
+name: Governance Scheduled Verification (Phases 1–6)
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+      - "release-*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  governance-scheduled:
+    name: Governance Scheduled
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/accubooks_ci
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      JWT_SECRET: ci-jwt-secret
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: accubooks_ci
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Type Lock
+        run: npm run verify:type-lock
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run TypeScript checks
+        run: npm run typecheck
+
+      - name: Verify Runtime Prereqs (Prisma client)
+        run: npm run verify:prereqs
+
+      - name: Verify Chaos Resilience
+        run: npm run verify:chaos
+
+      - name: Verify SLO Policy
+        run: npm run verify:slo
+
+      - name: Verify Disaster Recovery
+        run: npm run verify:disaster-recovery
+
+      - name: Verify Security Invariants + Abuse Simulation
+        run: npm run verify:security
+
+      - name: Verify Enterprise Assurance (Executive)
+        run: npm run verify:enterprise-assurance
+
+      - name: Verify Public Trust (Regulatory Publication)
+        run: npm run verify:public-trust
+
+      - name: Generate Evidence Manifest (tamper-evident)
+        run: node scripts/generate-evidence-manifest.mjs
+        env:
+          EVIDENCE_HMAC_KEY: ${{ secrets.EVIDENCE_HMAC_KEY }}
+          EVIDENCE_HMAC_KEY_ID: ${{ secrets.EVIDENCE_HMAC_KEY_ID }}
+
+      - name: Require Evidence Signing for Immutable Upload
+        if: ${{ secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != '' }}
+        run: |
+          if [ -z "${{ secrets.EVIDENCE_HMAC_KEY }}" ]; then
+            echo "EVIDENCE_HMAC_KEY must be configured when uploading evidence to immutable storage."
+            exit 1
+          fi
+
+      - name: Upload Governance Evidence Bundle
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accubooks-governance-evidence-scheduled-${{ github.run_id }}
+          path: |
+            governance/phase1-chaos-report.json
+            governance/slo-policy.json
+            governance/disaster-recovery-report.json
+            governance/security-invariants.json
+            governance/enterprise-assurance-report.json
+            governance/public-trust-report.json
+            governance/evidence-manifest.json
+
+      - name: Configure AWS Credentials (OIDC)
+        if: ${{ secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upload Governance Evidence to Immutable Store (S3)
+        if: ${{ secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != '' }}
+        env:
+          EVIDENCE_BUCKET: ${{ secrets.EVIDENCE_BUCKET }}
+          EVIDENCE_PREFIX: ${{ secrets.EVIDENCE_PREFIX }}
+          GIT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          PREFIX=${EVIDENCE_PREFIX:-accubooks/governance}
+          DEST=s3://${EVIDENCE_BUCKET}/${PREFIX}/${GIT_SHA}/${RUN_ID}
+          echo "Uploading governance evidence to ${DEST}"
+          aws s3 cp governance "${DEST}/governance" --recursive --exclude "*" --include "*.json" --only-show-errors
+          echo "Uploaded."
+
+      - name: Alert on Governance Failure (Webhook)
+        if: failure() && secrets.ALERT_WEBHOOK_URL != ''
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          payload=$(printf '{"system":"AccuBooks","workflow":"governance-scheduled","job":"%s","status":"fail","timestamp":"%s","run_url":"%s","sha":"%s","ref":"%s"}' "${{ github.job }}" "$TS" "$RUN_URL" "${{ github.sha }}" "${{ github.ref }}")
+          curl -sS -X POST -H "Content-Type: application/json" -d "$payload" "$ALERT_WEBHOOK_URL" >/dev/null

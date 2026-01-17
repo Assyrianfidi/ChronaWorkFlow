@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ApiError } from '../utils/error';
 import { inventoryService } from '../services/inventory.service';
 import { logger } from '../utils/logger';
+import { logError, logEvent, recordError, recordRequest } from '../../shared/logging';
 import {
   inventoryItemSchema,
   updateInventorySchema,
@@ -42,6 +43,14 @@ type InventoryFilters = {
  * Get all inventory items with filtering, sorting, and pagination
  */
 export const getInventory = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
+  recordRequest('inventory.getInventory');
+  logEvent({
+    level: 'info',
+    component: 'server.controllers.inventory',
+    message: 'request.start',
+    apiVersion: CURRENT_API_VERSION,
+    data: { action: 'getInventory' },
+  });
   try {
     if (!req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing tenant information');
@@ -88,6 +97,8 @@ export const getInventory = async (req: InventoryRequest, res: Response, next: N
 
     res.status(200);
   } catch (error) {
+    recordError('inventory.getInventory');
+    logError('server.controllers.inventory', 'request.error', error, { action: 'getInventory' });
     logger.error('Error fetching inventory items:', error);
     if (error instanceof Error && error.name === 'ContractViolationError') {
       next(new ApiError(500, 'Internal Server Error'));
@@ -101,6 +112,14 @@ export const getInventory = async (req: InventoryRequest, res: Response, next: N
  * Get a single inventory item by ID
  */
 export const getInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
+  recordRequest('inventory.getInventoryItem');
+  logEvent({
+    level: 'info',
+    component: 'server.controllers.inventory',
+    message: 'request.start',
+    apiVersion: CURRENT_API_VERSION,
+    data: { action: 'getInventoryItem' },
+  });
   try {
     if (!req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing tenant information');
@@ -124,6 +143,8 @@ export const getInventoryItem = async (req: InventoryRequest, res: Response, nex
     res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(200).json(payload);
   } catch (error) {
+    recordError('inventory.getInventoryItem');
+    logError('server.controllers.inventory', 'request.error', error, { action: 'getInventoryItem' });
     logger.error(`Error fetching inventory item ${req.params.id}:`, error);
     if (error instanceof Error && error.name === 'ContractViolationError') {
       next(new ApiError(500, 'Internal Server Error'));
@@ -137,6 +158,14 @@ export const getInventoryItem = async (req: InventoryRequest, res: Response, nex
  * Create a new inventory item
  */
 export const createInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
+  recordRequest('inventory.createInventoryItem');
+  logEvent({
+    level: 'info',
+    component: 'server.controllers.inventory',
+    message: 'request.start',
+    apiVersion: CURRENT_API_VERSION,
+    data: { action: 'createInventoryItem' },
+  });
   try {
     if (!req.user?.id || !req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing user or tenant information');
@@ -162,6 +191,8 @@ export const createInventoryItem = async (req: InventoryRequest, res: Response, 
     res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(201).json(payload);
   } catch (error) {
+    recordError('inventory.createInventoryItem');
+    logError('server.controllers.inventory', 'request.error', error, { action: 'createInventoryItem' });
     logger.error('Error creating inventory item:', error);
     if (error instanceof Error && error.name === 'ContractViolationError') {
       next(new ApiError(500, 'Internal Server Error'));
@@ -175,6 +206,14 @@ export const createInventoryItem = async (req: InventoryRequest, res: Response, 
  * Update an existing inventory item
  */
 export const updateInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
+  recordRequest('inventory.updateInventoryItem');
+  logEvent({
+    level: 'info',
+    component: 'server.controllers.inventory',
+    message: 'request.start',
+    apiVersion: CURRENT_API_VERSION,
+    data: { action: 'updateInventoryItem' },
+  });
   try {
     if (!req.user?.id || !req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing user or tenant information');
@@ -203,6 +242,8 @@ export const updateInventoryItem = async (req: InventoryRequest, res: Response, 
     res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(200).json(payload);
   } catch (error) {
+    recordError('inventory.updateInventoryItem');
+    logError('server.controllers.inventory', 'request.error', error, { action: 'updateInventoryItem' });
     logger.error(`Error updating inventory item ${req.params.id}:`, error);
     if (error instanceof Error && error.name === 'ContractViolationError') {
       next(new ApiError(500, 'Internal Server Error'));
@@ -216,6 +257,14 @@ export const updateInventoryItem = async (req: InventoryRequest, res: Response, 
  * Delete an inventory item (soft delete)
  */
 export const deleteInventoryItem = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
+  recordRequest('inventory.deleteInventoryItem');
+  logEvent({
+    level: 'info',
+    component: 'server.controllers.inventory',
+    message: 'request.start',
+    apiVersion: CURRENT_API_VERSION,
+    data: { action: 'deleteInventoryItem' },
+  });
   try {
     if (!req.user?.id || !req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing user or tenant information');
@@ -236,6 +285,8 @@ export const deleteInventoryItem = async (req: InventoryRequest, res: Response, 
     res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(200).json(payload);
   } catch (error) {
+    recordError('inventory.deleteInventoryItem');
+    logError('server.controllers.inventory', 'request.error', error, { action: 'deleteInventoryItem' });
     logger.error(`Error deleting inventory item ${req.params.id}:`, error);
     if (error instanceof Error && error.name === 'ContractViolationError') {
       next(new ApiError(500, 'Internal Server Error'));
@@ -249,6 +300,14 @@ export const deleteInventoryItem = async (req: InventoryRequest, res: Response, 
  * Adjust inventory quantity
  */
 export const adjustInventoryQuantity = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
+  recordRequest('inventory.adjustInventoryQuantity');
+  logEvent({
+    level: 'info',
+    component: 'server.controllers.inventory',
+    message: 'request.start',
+    apiVersion: CURRENT_API_VERSION,
+    data: { action: 'adjustInventoryQuantity' },
+  });
   try {
     if (!req.user?.id || !req.user?.tenantId) {
       throw new ApiError(401, 'Unauthorized - Missing user or tenant information');
@@ -282,6 +341,8 @@ export const adjustInventoryQuantity = async (req: InventoryRequest, res: Respon
     res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(200).json(payload);
   } catch (error) {
+    recordError('inventory.adjustInventoryQuantity');
+    logError('server.controllers.inventory', 'request.error', error, { action: 'adjustInventoryQuantity' });
     logger.error(`Error adjusting inventory quantity for item ${req.params.id}:`, error);
     if (error instanceof Error && error.name === 'ContractViolationError') {
       next(new ApiError(500, 'Internal Server Error'));
@@ -295,6 +356,14 @@ export const adjustInventoryQuantity = async (req: InventoryRequest, res: Respon
  * Get inventory history for an item
  */
 export const getInventoryHistory = async (req: InventoryRequest, res: Response, next: NextFunction): Promise<void> => {
+  recordRequest('inventory.getInventoryHistory');
+  logEvent({
+    level: 'info',
+    component: 'server.controllers.inventory',
+    message: 'request.start',
+    apiVersion: CURRENT_API_VERSION,
+    data: { action: 'getInventoryHistory' },
+  });
   try {
     // TODO: Implement when service supports inventory history
     const payload = parseContract(
@@ -310,6 +379,8 @@ export const getInventoryHistory = async (req: InventoryRequest, res: Response, 
     res.setHeader(API_VERSION_HEADER, CURRENT_API_VERSION);
     res.status(200).json(payload);
   } catch (error) {
+    recordError('inventory.getInventoryHistory');
+    logError('server.controllers.inventory', 'request.error', error, { action: 'getInventoryHistory' });
     logger.error('Error fetching inventory history:', error);
     if (error instanceof Error && error.name === 'ContractViolationError') {
       next(new ApiError(500, 'Internal Server Error'));

@@ -1,0 +1,62 @@
+name: Release Governance (SemVer + Declaration)
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - 'release-*'
+
+permissions:
+  contents: read
+
+jobs:
+  release-governance:
+    name: Release Governance
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Checkout code (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Type Lock
+        run: npm run verify:type-lock
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run TypeScript checks
+        run: npm run typecheck
+
+      - name: Verify Contract Lock
+        run: npm run verify:contract-lock
+
+      - name: Verify Release Governance
+        run: npm run verify:release-governance
+
+      - name: Release Artifacts (tag builds only)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: node scripts/check-release-governance.mjs --write-artifacts
+
+      - name: Upload Release Artifacts (tag builds only)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v4
+        with:
+          name: accubooks-release-artifacts-${{ github.ref_name }}
+          path: |
+            governance/contract-lock.json
+            governance/release-declaration.json
+            prisma/schema.prisma
+            governance/type-lock-hash.txt
+            client/src/types/shared.ts
+            client/src/config/access.ts
