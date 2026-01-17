@@ -5,7 +5,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  ignorePatterns: ['backend/**', 'client/**', 'frontend/**'],
+  ignorePatterns: ['backend/**', 'frontend/**'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -16,7 +16,7 @@ module.exports = {
     sourceType: 'module',
     tsconfigRootDir: __dirname,
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'import', 'react-hooks'],
   overrides: [
     {
       files: [
@@ -34,6 +34,21 @@ module.exports = {
       ],
       parserOptions: {
         project: ['./tsconfig.typecheck.json'],
+      },
+    },
+    {
+      files: ['client/src/**/*.ts', 'client/src/**/*.tsx', 'client/src/**/*.js', 'client/src/**/*.jsx'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
+        '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/ban-ts-comment': 'off',
+        'no-case-declarations': 'off',
+        'no-useless-escape': 'off',
+        'no-control-regex': 'off',
+        'no-prototype-builtins': 'off',
+        'prefer-const': 'off',
+        'react-hooks/exhaustive-deps': 'off',
       },
     },
     {
@@ -100,6 +115,50 @@ module.exports = {
     },
   ],
   rules: {
+    'import/no-restricted-paths': [
+      'error',
+      {
+        zones: [
+          {
+            target: './client/src',
+            from: ['./server', './backend', './infrastructure', './prisma', './drizzle', './scripts', './server/src'],
+            message:
+              'client (UI) must not import server or infrastructure. Use shared types or API contracts instead.',
+          },
+          {
+            target: './shared',
+            from: ['./client', './server', './backend', './infrastructure'],
+            message:
+              'shared must not import client or server. shared is a leaf dependency for DTOs/types/utils only.',
+          },
+          {
+            target: './server',
+            from: ['./client', './frontend'],
+            message:
+              'server must not import client/frontend code. Keep server independent of UI layer.',
+          },
+        ],
+      },
+    ],
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['../server/*', '../../server/*', '../../../server/*', '../../../../server/*'],
+            message: 'Do not import server from client via deep relative paths.',
+          },
+          {
+            group: ['../server/src/*', '../../server/src/*', '../../../server/src/*', '../../../../server/src/*'],
+            message: 'Do not import server/src from client via deep relative paths.',
+          },
+          {
+            group: ['../backend/*', '../../backend/*', '../../../backend/*', '../../../../backend/*'],
+            message: 'Do not import backend from client via deep relative paths.',
+          },
+        ],
+      },
+    ],
     '@typescript-eslint/ban-ts-comment': [
       'error',
       {

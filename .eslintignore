@@ -7,7 +7,9 @@ coverage/
 rebrand_backup_20260102_174242/
 rebrand_backup_*/
 backend/
-client/
+client/*
+!client/src
+!client/src/**
 frontend/
 tests/
 vitest.config.ts
