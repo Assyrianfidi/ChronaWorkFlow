@@ -3,12 +3,29 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { jobService } from "./jobs/service";
+import { logEvent, logError, recordError, recordRequest } from "../shared/logging";
+import { newRequestId } from "./runtime/audit-log";
+
+if (String(process.env.NODE_ENV || "").toLowerCase() === "production") {
+  if (String(process.env.ALLOW_DEV_RELAXATIONS || "").toLowerCase() === "true") {
+    throw new Error("ALLOW_DEV_RELAXATIONS must not be enabled in production");
+  }
+}
 
 const app = express();
 
 declare module 'http' {
   interface IncomingMessage {
     rawBody: unknown
+    requestId?: string
+  }
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      requestId?: string;
+    }
   }
 }
 // Health check endpoint - must be before other middleware to ensure it's always accessible
@@ -30,29 +47,34 @@ app.use(express.json({
 app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
+  const requestId = newRequestId();
+  req.requestId = requestId;
+  res.setHeader("x-request-id", requestId);
+  next();
+});
+
+app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
 
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
+      recordRequest("server.http");
+      const slowMs = Number(process.env.SLOW_REQUEST_MS || 1500);
+      const isSlow = Number.isFinite(slowMs) && duration >= slowMs;
+      logEvent({
+        level: isSlow ? "warn" : "info",
+        component: "server.http",
+        message: isSlow ? "slow_request" : "request",
+        data: {
+          requestId: req.requestId,
+          method: req.method,
+          path,
+          statusCode: res.statusCode,
+          durationMs: duration,
+        },
+      });
     }
   });
 
@@ -66,8 +88,25 @@ app.use((req, res, next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
+    recordError("server.http");
+    logError("server.http", "unhandled_request_error", err, {
+      requestId: (_req as any)?.requestId,
+      method: (_req as any)?.method,
+      path: (_req as any)?.path,
+      statusCode: status,
+    });
+
     res.status(status).json({ message });
-    throw err;
+  });
+
+  process.on("unhandledRejection", (reason) => {
+    recordError("server.process");
+    logError("server.process", "unhandledRejection", reason, { requestId: null });
+  });
+
+  process.on("uncaughtException", (error) => {
+    recordError("server.process");
+    logError("server.process", "uncaughtException", error, { requestId: null });
   });
 
   // importantly only setup vite in development and after

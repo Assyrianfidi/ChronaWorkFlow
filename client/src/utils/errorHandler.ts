@@ -6,6 +6,44 @@ declare global {
 
 import { useToast } from "../hooks/useToast";
 
+const GLOBAL_ERROR_GUARD_KEY = "__accubooksGlobalErrorHandlersInstalled";
+
+function getRequestId(): string | undefined {
+  try {
+    return localStorage.getItem("requestId") || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function normalizeUnknownError(err: unknown): Error {
+  if (err instanceof Error) return err;
+  if (typeof err === "string") return new Error(err);
+  try {
+    return new Error(JSON.stringify(err));
+  } catch {
+    return new Error("Unknown error");
+  }
+}
+
+function installGlobalErrorHandlers(): void {
+  if (typeof window === "undefined") return;
+  const w: any = window as any;
+  if (w[GLOBAL_ERROR_GUARD_KEY]) return;
+  w[GLOBAL_ERROR_GUARD_KEY] = true;
+
+  window.addEventListener("error", (event) => {
+    const err = normalizeUnknownError((event as any)?.error || (event as any)?.message);
+    handleRuntimeError(err);
+  });
+
+  window.addEventListener("unhandledrejection", (event) => {
+    const reason = (event as any)?.reason;
+    const err = normalizeUnknownError(reason);
+    handleRuntimeError(err);
+  });
+}
+
 export class AppError extends Error {
   constructor(
     message: string,
@@ -121,16 +159,27 @@ export const handleSuccess = (
 };
 
 export const handleRuntimeError = (error: Error) => {
+  const requestId = getRequestId();
+  const route = typeof window !== "undefined" ? window.location.pathname : undefined;
+
   if (import.meta.env.PROD) {
-    console.error('Application error:', error.message);
-    // Send error to monitoring service
-  } else {
-    console.error(error);
+    console.error("runtime_error", {
+      name: error.name,
+      message: error.message,
+      requestId,
+      route,
+    });
+    return;
   }
+
+  console.error(error);
+  console.error("runtime_error", {
+    name: error.name,
+    message: error.message,
+    requestId,
+    route,
+    stack: error.stack,
+  });
 };
 
-if (import.meta.env.PROD) {
-  window.onerror = (message, source, lineno, colno, error) => {
-    handleRuntimeError(error || new Error(message.toString()));
-  };
-}
+installGlobalErrorHandlers();

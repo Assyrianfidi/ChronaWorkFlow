@@ -25,8 +25,14 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Verify Workflow Script Alignment (no CI drift)
+        run: npm run verify:workflow-scripts
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify Environment Invariants
+        run: npm run verify:env
 
       - name: Verify Type Lock
         run: npm run verify:type-lock
@@ -36,6 +42,9 @@ jobs:
 
       - name: Run TypeScript checks
         run: npm run typecheck
+
+      - name: Verify Observability Invariants
+        run: npm run verify:observability-invariants
 
       - name: Verify Contract Lock
         run: npm run verify:contract-lock

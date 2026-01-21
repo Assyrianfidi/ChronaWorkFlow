@@ -32,12 +32,6 @@ export const PublicRoute: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { isAuthenticated } = useAuth();
 
-  // Temporarily bypass loading check to test
-  // if (isLoading) {
-  //   console.log('PublicRoute - showing loading');
-  //   return <FullPageLoading />;
-  // }
-
   return !isAuthenticated ? (
     <>{children}</>
   ) : (

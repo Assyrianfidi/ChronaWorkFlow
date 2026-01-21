@@ -51,8 +51,14 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Verify Workflow Script Alignment (no CI drift)
+        run: npm run verify:workflow-scripts
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify Environment Invariants
+        run: npm run verify:env
 
       - name: Verify Type Lock
         run: npm run verify:type-lock
@@ -62,6 +68,9 @@ jobs:
 
       - name: Run TypeScript checks
         run: npm run typecheck
+
+      - name: Verify Observability Invariants
+        run: npm run verify:observability-invariants
 
       - name: Verify Runtime Prereqs (Prisma client)
         run: npm run verify:prereqs
@@ -97,7 +106,7 @@ jobs:
           EVIDENCE_HMAC_KEY_ID: ${{ secrets.EVIDENCE_HMAC_KEY_ID }}
 
       - name: Require Evidence Signing for Immutable Upload
-        if: ${{ secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != '' }}
+        if: secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != ''
         run: |
           if [ -z "${{ secrets.EVIDENCE_HMAC_KEY }}" ]; then
             echo "EVIDENCE_HMAC_KEY must be configured when uploading evidence to immutable storage."
@@ -105,14 +114,14 @@ jobs:
           fi
 
       - name: Configure AWS Credentials (OIDC)
-        if: ${{ secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != '' }}
+        if: secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != ''
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Upload Governance Evidence to Immutable Store (S3)
-        if: ${{ secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != '' }}
+        if: secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != ''
         env:
           EVIDENCE_BUCKET: ${{ secrets.EVIDENCE_BUCKET }}
           EVIDENCE_PREFIX: ${{ secrets.EVIDENCE_PREFIX }}

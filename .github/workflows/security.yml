@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Verify Workflow Script Alignment (no CI drift)
+        run: npm run verify:workflow-scripts
+
       - name: Install backend deps
         working-directory: backend
         run: |

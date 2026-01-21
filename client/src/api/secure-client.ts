@@ -8,6 +8,25 @@ import axios, {
 import { securityConfig, apiConfig } from "@/config/env";
 import { sanitizeInput, generateCSRFToken } from "@/security/utils";
 
+const REQUEST_ID_HEADER = "x-request-id";
+
+function safeStoreRequestId(value: unknown): void {
+  if (typeof value !== "string") return;
+  const id = value.trim();
+  if (!id) return;
+  try {
+    localStorage.setItem("requestId", id);
+  } catch {
+    // ignore
+  }
+}
+
+function shouldSample(rate: number): boolean {
+  if (!Number.isFinite(rate) || rate <= 0) return false;
+  if (rate >= 1) return true;
+  return Math.random() < rate;
+}
+
 // Secure request interceptor
 const secureRequestInterceptor = (config: InternalAxiosRequestConfig) => {
   // Sanitize input data
@@ -34,14 +53,53 @@ const secureRequestInterceptor = (config: InternalAxiosRequestConfig) => {
     headers["X-Requested-With"] = "XMLHttpRequest";
     headers["Cache-Control"] = "no-cache";
     headers.Pragma = "no-cache";
+    const requestId = (() => {
+      try {
+        return localStorage.getItem("requestId");
+      } catch {
+        return null;
+      }
+    })();
+    if (requestId) headers["X-Request-Id"] = requestId;
     config.headers = headers;
   }
+
+  (config as any).metadata = {
+    startTime: typeof performance !== "undefined" ? performance.now() : Date.now(),
+  };
 
   return config;
 };
 
 // Secure response interceptor
 const secureResponseInterceptor = (response: AxiosResponse) => {
+  const reqId = response?.headers?.[REQUEST_ID_HEADER] || response?.headers?.["x-request-id"];
+  safeStoreRequestId(reqId);
+
+  const meta = (response.config as any)?.metadata;
+  const startTime = meta?.startTime;
+  if (typeof startTime === "number") {
+    const endTime = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const durationMs = Math.max(0, endTime - startTime);
+    const slowMs = Number((import.meta as any).env?.VITE_SLOW_API_MS || 1500);
+    const sampleRate = Number((import.meta as any).env?.VITE_PERF_SAMPLE_RATE || 0.05);
+    if (Number.isFinite(slowMs) && durationMs >= slowMs && shouldSample(sampleRate)) {
+      console.warn("slow_api_call", {
+        url: response.config?.url,
+        method: response.config?.method,
+        status: response.status,
+        durationMs,
+        requestId: (() => {
+          try {
+            return localStorage.getItem("requestId") || undefined;
+          } catch {
+            return undefined;
+          }
+        })(),
+      });
+    }
+  }
+
   // Validate response data
   if (response.data) {
     response.data = sanitizeResponseData(response.data);
@@ -52,9 +110,36 @@ const secureResponseInterceptor = (response: AxiosResponse) => {
 
 // Error interceptor with security handling
 const errorInterceptor = (error: any) => {
+  const reqId = error?.response?.headers?.[REQUEST_ID_HEADER] || error?.response?.headers?.["x-request-id"];
+  safeStoreRequestId(reqId);
+
   // Log security-relevant errors
   if (error.response?.status === 401 || error.response?.status === 403) {
     console.warn("Security error detected:", error.response?.status);
+  }
+
+  const meta = error?.config?.metadata;
+  const startTime = meta?.startTime;
+  if (typeof startTime === "number") {
+    const endTime = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const durationMs = Math.max(0, endTime - startTime);
+    const slowMs = Number((import.meta as any).env?.VITE_SLOW_API_MS || 1500);
+    const sampleRate = Number((import.meta as any).env?.VITE_PERF_SAMPLE_RATE || 0.05);
+    if (Number.isFinite(slowMs) && durationMs >= slowMs && shouldSample(sampleRate)) {
+      console.warn("slow_api_error", {
+        url: error?.config?.url,
+        method: error?.config?.method,
+        status: error?.response?.status,
+        durationMs,
+        requestId: (() => {
+          try {
+            return localStorage.getItem("requestId") || undefined;
+          } catch {
+            return undefined;
+          }
+        })(),
+      });
+    }
   }
 
   // Handle CSRF errors
