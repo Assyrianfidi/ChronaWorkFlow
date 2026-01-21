@@ -1,9 +1,0 @@
-﻿git : warning: in the working copy of 'backend/src/index.js', LF will be replaced by 
-CRLF the next time Git touches it
-At line:66 char:270
-+ ... ase32.json; git add package.json src/index.js src/controllers/index.j ...
-+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (warning: in the... Git touches it:String 
-   ) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 

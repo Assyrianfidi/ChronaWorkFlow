@@ -64,6 +64,12 @@ jobs:
     - name: Verify Workflow Script Alignment (no CI drift)
       run: npm run verify:workflow-scripts
 
+    - name: Verify Test Stub Reproducibility (stubs must be tracked)
+      run: npm run verify:test-stubs-tracked
+
+    - name: Verify Artifact Denylist (no generated/binary artifacts tracked)
+      run: npm run verify:artifact-denylist
+
     - name: Install dependencies
       run: npm ci
 

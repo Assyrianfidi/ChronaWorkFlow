@@ -39,6 +39,8 @@ function assertCiCdHasRequiredGates(repoRoot) {
   const text = String(fs.readFileSync(ciCd, "utf8"));
   const required = [
     "npm run verify:workflow-scripts",
+    "npm run verify:test-stubs-tracked",
+    "npm run verify:artifact-denylist",
     "npm run verify:env",
     "npm run verify:observability-invariants",
     "npm run verify:test-metrics",

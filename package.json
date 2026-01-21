@@ -60,6 +60,8 @@
     "verify:release-guard": "node scripts/verify-release-guard.mjs",
     "verify:test-metrics": "node scripts/run-tests-with-metrics.mjs",
     "relock:test-metrics-baseline": "cross-env UPDATE_TEST_METRICS_BASELINE=true node scripts/run-tests-with-metrics.mjs",
+    "verify:test-stubs-tracked": "node scripts/verify-test-stubs-tracked.mjs",
+    "verify:artifact-denylist": "node scripts/verify-artifact-denylist.mjs",
     "verify:workflow-scripts": "node scripts/verify-workflow-scripts.mjs",
     "verify:observability-invariants": "node scripts/verify-observability-invariants.mjs",
     "typecheck": "tsc -p tsconfig.typecheck.json --noEmit",
