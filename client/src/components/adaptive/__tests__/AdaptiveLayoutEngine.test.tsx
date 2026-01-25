@@ -1,6 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
+import { useWindowSize } from "@/hooks/useWindowSize";
 import {
   AdaptiveLayoutEngine,
   useAdaptiveLayout,
@@ -10,12 +11,12 @@ import {
 } from '../AdaptiveLayoutEngine';
 
 // Mock the useWindowSize hook
-vi.mock("../hooks/useWindowSize", () => ({
+vi.mock("@/hooks/useWindowSize", () => ({
   useWindowSize: vi.fn(() => ({ width: 1024, height: 768 })),
 }));
 
 // Mock the auth store
-vi.mock("../store/auth-store", () => ({
+vi.mock("@/store/auth-store", () => ({
   useAuthStore: vi.fn(() => ({
     user: { role: "user" },
   })),
@@ -40,12 +41,11 @@ describe("AdaptiveLayoutEngine", () => {
     );
 
     const container = screen.getByText("Test Content").parentElement;
-    expect(container).toHaveClass("breakpoint-tablet");
+    expect(container).toHaveClass("breakpoint-desktop");
   });
 
   it("applies mobile adaptations for small screens", async () => {
-    const { useWindowSize } = require("../hooks/useWindowSize");
-    useWindowSize.mockReturnValue({ width: 500, height: 768 });
+    vi.mocked(useWindowSize).mockReturnValue({ width: 500, height: 768 } as any);
 
     render(
       <AdaptiveLayoutEngine>
@@ -215,7 +215,7 @@ describe("AdaptiveText", () => {
       },
     };
 
-    jest.spyOn(React, "useContext").mockReturnValue(compactLayout);
+    vi.spyOn(React, "useContext").mockReturnValue(compactLayout);
 
     render(<AdaptiveText>Compact Text</AdaptiveText>);
 

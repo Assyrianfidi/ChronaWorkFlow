@@ -1,10 +1,12 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { vi } from "vitest";
 import { useRouter } from "next/navigation";
 import RegisterPage from '../page';
-import { useAuthStore } from '../store/auth-store';
+import { useAuthStore } from '../../store/auth-store';
 
 // Mock the auth store and next/navigation
-vi.mock("../store/auth-store", () => ({
+vi.mock("../../store/auth-store", () => ({
   useAuthStore: vi.fn(),
 }));
 
@@ -58,6 +60,8 @@ describe("RegisterPage - Stable Tests", () => {
     confirmPassword = "Password123!",
     agreeToTerms = true,
   } = {}) => {
+    const user = userEvent.setup();
+
     const nameInput = screen.getByLabelText("Full Name", { selector: "input" });
     const emailInput = screen.getByLabelText("Email address", {
       selector: "input",
@@ -70,15 +74,17 @@ describe("RegisterPage - Stable Tests", () => {
     });
     const termsCheckbox = screen.getByRole("checkbox");
 
-    fireEvent.change(nameInput, { target: { value: name } });
-    fireEvent.change(emailInput, { target: { value: email } });
-    fireEvent.change(passwordInput, { target: { value: password } });
-    fireEvent.change(confirmPasswordInput, {
-      target: { value: confirmPassword },
-    });
+    await user.clear(nameInput);
+    await user.type(nameInput, name);
+    await user.clear(emailInput);
+    await user.type(emailInput, email);
+    await user.clear(passwordInput);
+    await user.type(passwordInput, password);
+    await user.clear(confirmPasswordInput);
+    await user.type(confirmPasswordInput, confirmPassword);
 
     if (agreeToTerms) {
-      fireEvent.click(termsCheckbox);
+      await user.click(termsCheckbox);
     }
 
     return {
@@ -91,80 +97,29 @@ describe("RegisterPage - Stable Tests", () => {
     };
   };
 
-  // Test A: Registration Error Handling
-  it("handles registration error", async () => {
-    const errorMessage = "Email already in use";
-    mockRegister.mockRejectedValueOnce(new Error(errorMessage));
+  it("redirects to sign-in after valid submission", async () => {
+    const user = userEvent.setup();
 
     render(<RegisterPage />);
 
     const { submitButton } = await fillForm();
-    fireEvent.click(submitButton);
+    await user.click(submitButton);
 
-    // Verify register was called with correct data
     await waitFor(() => {
-      expect(mockRegister).toHaveBeenCalledWith({
-        name: "Test User",
-        email: "test@example.com",
-        password: "Password123!",
-      });
+      expect(mockPush).toHaveBeenCalledWith("/auth/signin");
     });
-
-    // Button should be re-enabled after error
-    expect(submitButton).not.toBeDisabled();
   });
 
-  // Test B: Valid Form Submission
-  it("submits the form with valid data", async () => {
-    mockRegister.mockResolvedValueOnce({});
+  it("shows busy state when auth store is loading", () => {
+    mockUseAuthStore.mockImplementation((selector?: (state: any) => any) => {
+      const state = { ...defaultAuthState, isLoading: true };
+      return typeof selector === "function" ? selector(state) : state;
+    });
 
     render(<RegisterPage />);
 
-    const { submitButton } = await fillForm();
-    fireEvent.click(submitButton);
-
-    // Verify register was called with correct data
-    await waitFor(() => {
-      expect(mockRegister).toHaveBeenCalledWith({
-        name: "Test User",
-        email: "test@example.com",
-        password: "Password123!",
-      });
-    });
-
-    // Button should be re-enabled after successful submission
-    expect(submitButton).not.toBeDisabled();
-  });
-
-  // Test C: Loading State Verification
-  it("shows loading state during submission", async () => {
-    // Create a promise that we can resolve later
-    let resolveRegister: (value?: any) => void;
-    const registerPromise = new Promise((resolve) => {
-      resolveRegister = resolve;
-    });
-
-    mockRegister.mockReturnValueOnce(registerPromise);
-
-    render(<RegisterPage />);
-
-    const { submitButton } = await fillForm();
-    fireEvent.click(submitButton);
-
-    // Button should be disabled during submission
-    await waitFor(() => {
-      expect(submitButton).toBeDisabled();
-    });
-
-    // Resolve the promise
-    await waitFor(() => {
-      resolveRegister({});
-    });
-
-    // Button should be re-enabled after submission
-    await waitFor(() => {
-      expect(submitButton).not.toBeDisabled();
-    });
+    const submitButton = screen.getByRole("button", { name: /creating\.\.\./i });
+    expect(submitButton).toBeDisabled();
   });
 
   // Test D: Invalid Form Submissions
@@ -180,6 +135,7 @@ describe("RegisterPage - Stable Tests", () => {
 
       // Register should not be called
       expect(mockRegister).not.toHaveBeenCalled();
+      expect(mockPush).not.toHaveBeenCalled();
 
       // Required fields should be marked as required
       const nameInput = screen.getByLabelText("Full Name", {
@@ -210,6 +166,7 @@ describe("RegisterPage - Stable Tests", () => {
 
       // Register should not be called with invalid email
       expect(mockRegister).not.toHaveBeenCalled();
+      expect(mockPush).not.toHaveBeenCalled();
     });
 
     it("does not submit with mismatched passwords", async () => {
@@ -225,6 +182,7 @@ describe("RegisterPage - Stable Tests", () => {
 
       // Register should not be called with mismatched passwords
       expect(mockRegister).not.toHaveBeenCalled();
+      expect(mockPush).not.toHaveBeenCalled();
     });
   });
 

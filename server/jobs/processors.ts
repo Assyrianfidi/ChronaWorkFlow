@@ -1,5 +1,5 @@
 import { Job } from 'bullmq';
-import { RecurringInvoiceJobData, ReportGenerationJobData, BackupJobData, NotificationJobData } from './config';
+import { RecurringInvoiceJobData, ReportGenerationJobData, BackupJobData, NotificationJobData, WorkflowTimerJobData } from './config';
 import { logger } from '../utils/logger';
 
 // Recurring Invoice Processor
@@ -92,5 +92,23 @@ export async function sendNotification(job: Job<NotificationJobData>) {
     notificationId: 'notification-id-123',
     sentVia: job.data.type,
     message: 'Notification sent successfully',
+  };
+}
+
+export async function processWorkflowTimer(job: Job<WorkflowTimerJobData>) {
+  logger.info(`Firing workflow timer ${job.data.workflowTimerId} for company ${job.data.companyId}`);
+
+  const mod = await import('../services/workflow.service');
+  await mod.fireTimer({
+    companyId: job.data.companyId,
+    workflowTimerId: job.data.workflowTimerId,
+    workflowInstanceId: job.data.workflowInstanceId,
+  });
+
+  return {
+    success: true,
+    workflowTimerId: job.data.workflowTimerId,
+    workflowInstanceId: job.data.workflowInstanceId,
+    message: 'Workflow timer fired successfully',
   };
 }

@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-01-22T01:22:53.656Z",
+  "wall_ms": 323808,
+  "vitest_duration_ms": 2340000,
+  "memory": {
+    "rss": 39526400,
+    "heapUsed": 7230640,
+    "heapTotal": 8486912,
+    "external": 1863299
+  },
+  "exit_code": 134
+}

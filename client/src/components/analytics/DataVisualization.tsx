@@ -13,7 +13,7 @@ interface ChartProps {
 }
 
 // Base Chart Component
-const BaseChart: React.FC<ChartProps> = ({
+export const BaseChart: React.FC<ChartProps> = ({
   data,
   config,
   type,

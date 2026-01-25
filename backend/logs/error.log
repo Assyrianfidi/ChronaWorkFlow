@@ -1,0 +1,2051 @@
+2025-10-31 18:53:39 [[31merror[39m]: Environment contains redacted placeholders for: SMTP_PASS, STRIPE_SECRET_KEY. Replace with real values.
+2025-10-31 18:53:39 [[31merror[39m]: Error: Environment contains redacted placeholders for: SMTP_PASS, STRIPE_SECRET_KEY. Replace with real values.
+    at validateEnv (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\envValidator.js:88:11)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:5:3)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49
+2025-10-31 18:54:08 [[31merror[39m]: Environment validation failed:
+2025-10-31 18:54:08 [[31merror[39m]:  - "REDIS_URL" is required
+2025-10-31 18:54:08 [[31merror[39m]:  - "JWT_SECRET" length must be at least 32 characters long
+2025-10-31 18:54:08 [[31merror[39m]:  - "JWT_REFRESH_SECRET" is required
+2025-10-31 18:54:08 [[31merror[39m]:  - "SESSION_SECRET" is required
+2025-10-31 18:54:08 [[31merror[39m]:  - "MAIL_FROM" is required
+2025-10-31 18:54:08 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "your-stripe-secret-key" fails to match the required pattern: /^sk_/
+2025-10-31 18:54:08 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "your-stripe-publishable-key" fails to match the required pattern: /^pk_/
+2025-10-31 18:54:08 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" is required
+2025-10-31 18:54:08 [[31merror[39m]:  - "ADMIN_URL" is required
+2025-10-31 18:54:08 [[31merror[39m]:  - "API_URL" is required
+2025-10-31 18:54:08 [[31merror[39m]:  - "DOCS_URL" is required
+2025-10-31 18:54:08 [[31merror[39m]: Error: Environment validation failed
+    at validateEnv (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\envValidator.js:94:11)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:5:3)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49
+2025-10-31 19:12:13 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:12:13 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:12:13 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:12:13 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:12:13 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:12:13 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:12:13 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 19:12:14 [[31merror[39m]: TypeError: app.use() requires a middleware function
+    at Function.use (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\node_modules\express\lib\application.js:217:11)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:106:5)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49
+2025-10-31 19:12:13 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:12:13 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:12:13 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:12:13 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:12:13 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:12:13 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:12:13 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 19:12:14 [[31merror[39m]: TypeError: app.use() requires a middleware function
+    at Function.use (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\node_modules\express\lib\application.js:217:11)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:106:5)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49
+2025-10-31 19:12:22 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:12:22 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:12:22 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:12:22 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:12:22 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:12:22 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:12:22 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 19:12:23 [[31merror[39m]: TypeError: app.use() requires a middleware function
+    at Function.use (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\node_modules\express\lib\application.js:217:11)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:106:5)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49
+2025-10-31 19:13:49 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:13:49 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:13:49 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:13:49 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:13:49 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:13:49 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:13:49 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:13:49 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 19:13:49 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:13:49 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:13:49 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:13:49 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:13:49 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:13:49 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 19:14:10 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:14:10 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:14:10 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:14:10 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:14:10 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:14:10 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:14:10 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 19:14:11 [[31merror[39m]: Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at Function.listen (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\node_modules\express\lib\application.js:635:24)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:189:20)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+2025-10-31 19:14:10 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:14:10 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:14:10 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:14:10 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:14:10 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:14:10 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:14:10 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 19:14:11 [[31merror[39m]: Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at Function.listen (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\node_modules\express\lib\application.js:635:24)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:189:20)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+2025-10-31 19:14:17 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:14:17 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:14:17 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:14:17 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:14:17 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:14:17 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:14:17 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 19:14:18 [[31merror[39m]: Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at Function.listen (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\node_modules\express\lib\application.js:635:24)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:189:20)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+2025-10-31 19:14:46 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:14:46 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:14:46 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:14:46 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:14:46 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:14:46 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:14:46 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 19:14:47 [[31merror[39m]: Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at Function.listen (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\node_modules\express\lib\application.js:635:24)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:201:20)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+2025-10-31 19:15:06 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:15:06 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:15:06 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:15:06 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:15:06 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:15:06 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:15:06 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 19:15:07 [[31merror[39m]: Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at Function.listen (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\node_modules\express\lib\application.js:635:24)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:201:20)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+2025-10-31 19:15:24 [[31merror[39m]: Environment validation failed:
+2025-10-31 19:15:24 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 19:15:24 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 19:15:24 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 19:15:24 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 19:15:24 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 19:15:24 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 23:20:47 [[31merror[39m]: Environment validation failed:
+2025-10-31 23:20:47 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 23:20:47 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 23:20:47 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 23:20:47 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 23:20:47 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 23:20:47 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+2025-10-31 23:20:47 [[31merror[39m]: Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at Function.listen (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\node_modules\express\lib\application.js:635:24)
+    at Object.<anonymous> (C:\FidiMyProjects2025\Software_Projects\AccuBooks\AccuBooks\backend\src\index.js:201:20)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+2025-10-31 23:21:25 [[31merror[39m]: Environment validation failed:
+2025-10-31 23:21:25 [[31merror[39m]:  - "REDIS_URL" must be a valid uri
+2025-10-31 23:21:25 [[31merror[39m]:  - "SMTP_PORT" must be a number
+2025-10-31 23:21:25 [[31merror[39m]:  - "SMTP_SECURE" must be a boolean
+2025-10-31 23:21:25 [[31merror[39m]:  - "STRIPE_SECRET_KEY" with value "<REDACTED_STRIPE_SECRET_KEY>" fails to match the required pattern: /^sk_/
+2025-10-31 23:21:25 [[31merror[39m]:  - "STRIPE_PUBLISHABLE_KEY" with value "<REDACTED_STRIPE_PUBLISHABLE_KEY>" fails to match the required pattern: /^pk_/
+2025-10-31 23:21:25 [[31merror[39m]:  - "STRIPE_WEBHOOK_SECRET" with value "<REDACTED_STRIPE_WEBHOOK_SECRET>" fails to match the required pattern: /^whsec_/
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-23 21:30:52'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-23 21:30:52'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-23 21:30:52'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-23 21:30:52'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-23 21:30:52'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-23 21:30:52'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 11:34:25'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 11:34:26'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 11:34:26'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 11:34:26'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 11:34:26'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 11:34:26'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 12:11:20'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 12:11:20'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 12:11:20'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 12:11:20'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 12:11:20'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 12:11:20'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 14:29:47'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 14:29:47'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 14:29:47'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 14:29:47'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 14:29:47'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 14:29:47'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 16:22:37'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 16:22:37'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 16:22:37'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 16:22:37'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 16:22:37'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-24 16:22:37'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:03:21'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:03:21'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:03:21'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:03:21'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:03:21'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:03:21'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:50:39'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:50:39'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:50:39'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:50:39'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:50:39'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:50:39'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:15'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:15'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:15'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:15'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:15'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:15'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:49'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:49'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:49'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:49'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:49'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 17:51:49'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:38:47'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:38:47'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:38:47'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:38:47'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:38:47'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:38:47'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:39:21'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:39:21'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:39:21'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:39:21'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:39:21'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:39:21'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:52:56'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:52:56'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:52:56'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:52:56'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:52:56'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:52:56'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:53:48'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:53:48'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:53:48'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:53:48'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:53:48'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:53:48'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:55:15'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:55:15'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:55:15'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:55:15'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:55:15'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:55:15'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:56:08'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:56:08'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:56:08'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:56:08'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:56:08'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:56:08'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:02'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:02'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:02'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:02'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:02'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:02'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:56'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:56'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:56'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:56'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:56'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:57:56'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:58:58'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:58:58'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:58:58'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:58:58'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:58:58'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 18:58:58'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:06'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:06'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:06'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:06'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:06'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:06'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:56'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:56'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:56'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:56'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:56'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:34:56'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:36:37'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:36:37'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:36:37'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:36:37'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:36:37'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:36:37'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:03'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:03'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:03'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:03'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:03'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:03'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:31'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:31'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:31'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:31'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:31'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 19:37:31'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 21:37:53'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 21:37:53'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 21:37:53'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 21:37:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 21:37:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-25 21:37:53'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:06'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:06'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:06'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:06'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:06'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:06'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:41'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:41'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:41'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:41'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:41'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-26 11:20:41'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:39:30'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:39:30'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:39:30'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:39:30'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:39:30'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:39:30'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:43:10'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:43:10'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:43:10'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:43:10'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:43:10'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:43:10'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:44:05'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:44:05'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:44:05'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:44:05'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:44:05'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:44:05'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:45:01'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:45:01'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:45:01'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:45:01'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:45:01'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:45:01'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:46:18'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:46:18'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:46:18'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:46:18'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:46:18'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-29 11:46:18'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:45'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-11-30 11:53:55'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:56'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-10 23:51:57'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:52'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:30:53'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:37'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:31:38'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:45:53'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:05'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:47:06'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:02'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:48:40'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 12:49:45'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '400 - Bad request - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Prisma error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Invalid token - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Validation failed - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}
+{
+  message: '500 - Test error - /test - undefined - 127.0.0.1',
+  level: 'error',
+  service: 'accubooks-backend',
+  timestamp: '2025-12-11 15:21:03'
+}

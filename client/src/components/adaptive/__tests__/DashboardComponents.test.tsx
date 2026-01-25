@@ -1,25 +1,30 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
 
 import { UIPerformanceEngine } from "../UI-Performance-Engine";
 
 import {
   InteractiveDashboard,
   DashboardBuilder,
+  MetricWidget,
+  TableWidget,
+  ListWidget,
+  CalendarWidget,
   withPerformanceTracking,
 } from '../DashboardComponents';
 
 // Mock the adaptive layout hook
-jest.mock("../AdaptiveLayoutEngine", () => ({
-  useAdaptiveLayout: jest.fn(() => ({
+vi.mock("../AdaptiveLayoutEngine", () => ({
+  useAdaptiveLayout: vi.fn(() => ({
     currentBreakpoint: "desktop",
     isMobile: false,
   })),
 }));
 
 // Mock the UX mode hook
-jest.mock("../UserExperienceMode", () => ({
-  useUserExperienceMode: jest.fn(() => ({
+vi.mock("../UserExperienceMode", () => ({
+  useUserExperienceMode: vi.fn(() => ({
     currentMode: {
       animations: "normal",
     },
@@ -56,7 +61,7 @@ describe("InteractiveDashboard", () => {
     render(
       <InteractiveDashboard
         layout={mockLayout}
-        onLayoutChange={jest.fn()}
+        onLayoutChange={vi.fn()}
         editable={false}
       />,
     );
@@ -72,7 +77,7 @@ describe("InteractiveDashboard", () => {
     render(
       <InteractiveDashboard
         layout={mockLayout}
-        onLayoutChange={jest.fn()}
+        onLayoutChange={vi.fn()}
         editable={true}
       />,
     );
@@ -85,7 +90,7 @@ describe("InteractiveDashboard", () => {
     render(
       <InteractiveDashboard
         layout={mockLayout}
-        onLayoutChange={jest.fn()}
+        onLayoutChange={vi.fn()}
         editable={false}
       />,
     );
@@ -95,7 +100,7 @@ describe("InteractiveDashboard", () => {
   });
 
   it("calls onLayoutChange when widget is resized", async () => {
-    const onLayoutChange = jest.fn();
+    const onLayoutChange = vi.fn();
 
     render(
       <InteractiveDashboard
@@ -117,7 +122,7 @@ describe("InteractiveDashboard", () => {
     render(
       <InteractiveDashboard
         layout={mockLayout}
-        onLayoutChange={jest.fn()}
+        onLayoutChange={vi.fn()}
         editable={false}
       />,
     );
@@ -161,7 +166,6 @@ describe("DashboardBuilder", () => {
 
 describe("Widget Components", () => {
   it("renders metric widget with data", () => {
-    const MetricWidget = require("../DashboardComponents").MetricWidget;
     const data = { value: 5000, label: "Test Metric", change: -10 };
 
     render(<MetricWidget data={data} />);
@@ -172,7 +176,6 @@ describe("Widget Components", () => {
   });
 
   it("renders table widget with data", () => {
-    const TableWidget = require("../DashboardComponents").TableWidget;
     const data = {
       columns: ["Name", "Value"],
       rows: [
@@ -190,7 +193,6 @@ describe("Widget Components", () => {
   });
 
   it("renders list widget with items", () => {
-    const ListWidget = require("../DashboardComponents").ListWidget;
     const data = {
       items: [
         { label: "Task 1", value: "Done" },
@@ -207,7 +209,6 @@ describe("Widget Components", () => {
   });
 
   it("renders calendar widget", () => {
-    const CalendarWidget = require("../DashboardComponents").CalendarWidget;
     const data = { date: "2024-01-15" };
 
     render(<CalendarWidget data={data} />);
@@ -219,7 +220,7 @@ describe("Widget Components", () => {
 
 describe("withPerformanceTracking HOC", () => {
   it("wraps component with performance tracking", () => {
-    const MockComponent = jest.fn(() => <div>Test Component</div>);
+    const MockComponent = vi.fn(() => <div>Test Component</div>);
     const TrackedComponent = withPerformanceTracking(
       MockComponent,
       "TestComponent",

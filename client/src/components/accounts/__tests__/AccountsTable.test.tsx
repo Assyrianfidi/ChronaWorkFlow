@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { vi } from "vitest";
 import { AccountsTable } from '../AccountsTable';
 import type { AccountWithChildren } from '../types/accounts';
 
@@ -49,7 +50,7 @@ const mockAccounts: AccountWithChildren[] = [
 ];
 
 describe("AccountsTable", () => {
-  const mockOnToggleExpand = jest.fn();
+  const mockOnToggleExpand = vi.fn();
   const defaultProps = {
     accounts: mockAccounts,
     searchQuery: "",
@@ -58,7 +59,7 @@ describe("AccountsTable", () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("renders accounts table with correct data", () => {

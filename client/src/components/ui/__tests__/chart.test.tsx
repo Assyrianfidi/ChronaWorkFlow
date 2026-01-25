@@ -1,9 +1,10 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { UsersOverTimeCard, SalesOverviewCard } from "../cards/Charts";
+import { vi } from "vitest";
 
 // Mock recharts components
-jest.mock("recharts", () => ({
+vi.mock("recharts", () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="responsive-container">{children}</div>
   ),

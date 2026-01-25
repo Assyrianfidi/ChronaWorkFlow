@@ -46,12 +46,22 @@ const storybookProject: any[] | undefined = storybookTest && playwright && hasSt
       }]
     },
     setupFiles: ['frontend/.storybook/vitest.setup.ts']
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(dirname, './client/src'),
+      '@shared': path.resolve(dirname, './shared'),
+      '@backend': path.resolve(dirname, './backend/src'),
+      'next-auth/react': path.resolve(dirname, './client/src/test-stubs/next-auth-react.ts'),
+      'next/navigation': path.resolve(dirname, './client/src/test-stubs/next-navigation.ts')
+    }
   }
 }] : undefined;
 
 export default defineConfig({
   test: {
     globals: true,
+    pool: 'threads',
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
@@ -63,9 +73,20 @@ export default defineConfig({
     testTimeout: 30000,
     projects: [
       {
+        resolve: {
+          alias: {
+            '@': path.resolve(dirname, './client/src'),
+            '@shared': path.resolve(dirname, './shared'),
+            '@backend': path.resolve(dirname, './backend/src'),
+            'next-auth/react': path.resolve(dirname, './client/src/test-stubs/next-auth-react.ts'),
+            'next/navigation': path.resolve(dirname, './client/src/test-stubs/next-navigation.ts')
+          }
+        },
         test: {
           name: 'client',
           globals: true,
+          pool: 'threads',
+          css: false,
           environment: 'jsdom',
           setupFiles: ['./client/vitest.setup.ts'],
           include: [
@@ -77,9 +98,17 @@ export default defineConfig({
         }
       },
       {
+        resolve: {
+          alias: {
+            '@': path.resolve(dirname, './client/src'),
+            '@shared': path.resolve(dirname, './shared'),
+            '@backend': path.resolve(dirname, './backend/src')
+          }
+        },
         test: {
           name: 'server',
           globals: true,
+          pool: 'threads',
           environment: 'node',
           setupFiles: ['./server/test/setup.ts'],
           include: [

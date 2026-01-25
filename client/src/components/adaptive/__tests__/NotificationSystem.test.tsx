@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { vi } from "vitest";
 import {
   NotificationSystem,
   useNotifications,
@@ -9,13 +10,13 @@ import {
 } from "../NotificationSystem";
 
 afterEach(() => {
-  jest.useRealTimers();
-  jest.clearAllTimers();
+  vi.useRealTimers();
+  vi.clearAllTimers();
 });
 
 // Mock the UX mode hook
-jest.mock("../UserExperienceMode", () => ({
-  useUserExperienceMode: jest.fn(() => ({
+vi.mock("../UserExperienceMode", () => ({
+  useUserExperienceMode: vi.fn(() => ({
     currentMode: {
       animations: "normal",
       sounds: false,
@@ -24,48 +25,51 @@ jest.mock("../UserExperienceMode", () => ({
 }));
 
 // Mock the performance hook
-jest.mock("../UI-Performance-Engine", () => ({
-  usePerformance: jest.fn(() => ({
+vi.mock("../UI-Performance-Engine", () => ({
+  usePerformance: vi.fn(() => ({
     isLowPerformanceMode: false,
   })),
 }));
 
 // Mock AudioContext
-global.AudioContext = jest.fn(() => ({
-  createOscillator: jest.fn(() => ({
-    connect: jest.fn(),
+global.AudioContext = vi.fn(() => ({
+  createOscillator: vi.fn(() => ({
+    connect: vi.fn(),
     frequency: { value: 0 },
     type: "sine",
     gain: {
-      setValueAtTime: jest.fn(),
-      exponentialRampToValueAtTime: jest.fn(),
+      setValueAtTime: vi.fn(),
+      exponentialRampToValueAtTime: vi.fn(),
     },
-    start: jest.fn(),
-    stop: jest.fn(),
+    start: vi.fn(),
+    stop: vi.fn(),
   })),
-  createGain: jest.fn(() => ({
-    connect: jest.fn(),
+  createGain: vi.fn(() => ({
+    connect: vi.fn(),
     gain: { value: 0 },
   })),
   destination: {},
   currentTime: 0,
-  close: jest.fn(),
+  close: vi.fn(),
 })) as any;
 
 // Mock createPortal
-jest.mock("react-dom", () => ({
-  ...jest.requireActual("react-dom"),
-  createPortal: jest.fn((element) => element),
-}));
+vi.mock("react-dom", async () => {
+  const actual = await vi.importActual<any>("react-dom");
+  return {
+    ...actual,
+    createPortal: vi.fn((element) => element),
+  };
+});
 
 describe("NotificationSystem", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
-    jest.clearAllTimers();
+    vi.useRealTimers();
+    vi.clearAllTimers();
   });
 
   it("renders children correctly", () => {
@@ -106,7 +110,7 @@ describe("NotificationSystem", () => {
   });
 
   it("removes notifications after duration", async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const TestComponent = () => {
       const { addNotification } = useNotifications();
@@ -133,7 +137,7 @@ describe("NotificationSystem", () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(1100);
+      vi.advanceTimersByTime(1100);
     });
 
     await waitFor(() => {
@@ -142,6 +146,8 @@ describe("NotificationSystem", () => {
   });
 
   it("keeps persistent notifications", async () => {
+    vi.useFakeTimers();
+
     const TestComponent = () => {
       const { addNotification } = useNotifications();
 
@@ -168,13 +174,13 @@ describe("NotificationSystem", () => {
 
     // Should not disappear automatically
     await act(async () => {
-      jest.advanceTimersByTime(50);
+      vi.advanceTimersByTime(50);
     });
     expect(screen.getByText("Persistent Warning")).toBeInTheDocument();
   });
 
   it("does not auto-remove persistent notifications", async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const TestComponent = () => {
       const { addNotification } = useNotifications();
@@ -201,7 +207,7 @@ describe("NotificationSystem", () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(1100);
+      vi.advanceTimersByTime(1100);
     });
 
     expect(screen.getByText("Persistent Info")).toBeInTheDocument();
@@ -399,7 +405,7 @@ describe("useNotifications hook", () => {
 
 describe("Toast component", () => {
   it("renders toast component", async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     render(
       <NotificationSystem>
@@ -418,7 +424,7 @@ describe("Toast component", () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(1100);
+      vi.advanceTimersByTime(1100);
     });
 
     await waitFor(() => {
@@ -430,13 +436,13 @@ describe("Toast component", () => {
 
 describe("NotificationQueue", () => {
   it("processes notifications in queue", async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const mockNotifications = {
-      addNotification: jest.fn(),
-      removeNotification: jest.fn(),
-      updateNotification: jest.fn(),
-      clearNotifications: jest.fn(),
+      addNotification: vi.fn(),
+      removeNotification: vi.fn(),
+      updateNotification: vi.fn(),
+      clearNotifications: vi.fn(),
     };
 
     const queue = new NotificationQueue(mockNotifications as any);
@@ -445,7 +451,7 @@ describe("NotificationQueue", () => {
     queue.add({ type: "info", title: "Notification 2" });
 
     await act(async () => {
-      jest.advanceTimersByTime(250);
+      vi.advanceTimersByTime(250);
     });
 
     await waitFor(() => {
@@ -457,7 +463,7 @@ describe("NotificationQueue", () => {
 
   it("clears queue", () => {
     const mockNotifications = {
-      addNotification: jest.fn(),
+      addNotification: vi.fn(),
     };
 
     const queue = new NotificationQueue(mockNotifications as any);
@@ -503,7 +509,7 @@ describe("Notification rendering", () => {
   });
 
   it("renders notification actions", async () => {
-    const mockAction = jest.fn();
+    const mockAction = vi.fn();
 
     const TestComponent = () => {
       const { addNotification } = useNotifications();
@@ -514,7 +520,7 @@ describe("Notification rendering", () => {
           title: "Notification with Actions",
           actions: [
             { label: "Action 1", action: mockAction },
-            { label: "Action 2", action: jest.fn() },
+            { label: "Action 2", action: vi.fn() },
           ],
         });
       }, []);
@@ -539,7 +545,7 @@ describe("Notification rendering", () => {
   });
 
   it("shows progress bar for loading notifications", async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
 
     const TestComponent = () => {
       const { notify, updateProgress } = useNotification();
@@ -571,7 +577,7 @@ describe("Notification rendering", () => {
     });
 
     await act(async () => {
-      jest.advanceTimersByTime(150);
+      vi.advanceTimersByTime(150);
     });
 
     await waitFor(() => {

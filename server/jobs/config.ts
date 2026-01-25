@@ -12,7 +12,7 @@ export const redis = new IORedis({
   maxRetriesPerRequest: null,
   connectTimeout: 10000, // 10 seconds
   lazyConnect: true, // Don't connect immediately
-});
+} as any);
 
 // Handle Redis connection events
 redis.on('connect', () => {
@@ -35,6 +35,7 @@ export const JOB_QUEUES = {
   REPORT_GENERATION: 'report-generation',
   BACKUP: 'backup',
   NOTIFICATIONS: 'notifications',
+  WORKFLOW_TIMERS: 'workflow-timers',
 } as const;
 
 // Queue configurations
@@ -61,6 +62,11 @@ export const QUEUE_CONFIGS = {
   },
   [JOB_QUEUES.NOTIFICATIONS]: {
     concurrency: 10,
+    removeOnComplete: 1000,
+    removeOnFail: 100,
+  },
+  [JOB_QUEUES.WORKFLOW_TIMERS]: {
+    concurrency: 5,
     removeOnComplete: 1000,
     removeOnFail: 100,
   },
@@ -123,6 +129,12 @@ export interface NotificationJobData {
   scheduledFor?: Date;
 }
 
+export interface WorkflowTimerJobData {
+  companyId: string;
+  workflowTimerId: string;
+  workflowInstanceId: string;
+}
+
 // Job result types
 export interface JobResult<T = any> {
   success: boolean;
@@ -162,10 +174,11 @@ export interface WorkerStats {
 export const jobProcessors = new Map<string, (job: Job) => Promise<any>>();
 
 // Register job processors
-import { processRecurringInvoice, processPayroll, generateReport, createBackup, sendNotification } from './processors';
+import { processRecurringInvoice, processPayroll, generateReport, createBackup, sendNotification, processWorkflowTimer } from './processors';
 
 jobProcessors.set(`${JOB_QUEUES.RECURRING_INVOICES}:process-recurring-invoice`, processRecurringInvoice);
 jobProcessors.set(`${JOB_QUEUES.PAYROLL_PROCESSING}:process-payroll`, processPayroll);
 jobProcessors.set(`${JOB_QUEUES.REPORT_GENERATION}:generate-report`, generateReport);
 jobProcessors.set(`${JOB_QUEUES.BACKUP}:create-backup`, createBackup);
 jobProcessors.set(`${JOB_QUEUES.NOTIFICATIONS}:send-notification`, sendNotification);
+jobProcessors.set(`${JOB_QUEUES.WORKFLOW_TIMERS}:fire-workflow-timer`, processWorkflowTimer);

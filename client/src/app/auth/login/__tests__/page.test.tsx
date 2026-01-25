@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { act } from "react-dom/test-utils";
 
 // Mock the auth store first
-vi.mock("../store/auth-store", () => ({
+vi.mock("@/app/auth/store/auth-store", () => ({
   useAuthStore: vi.fn(),
 }));
 
@@ -23,7 +23,7 @@ vi.mock("next/navigation", () => ({
 
 // Import after setting up mocks
 import { useRouter } from "next/navigation";
-import { useAuthStore } from '../store/auth-store';
+import { useAuthStore } from "@/app/auth/store/auth-store";
 import LoginPage from '../page';
 
 // Setup mocks
@@ -140,7 +140,8 @@ describe("LoginPage", () => {
     expect(
       screen.getByRole("button", { name: /sign in/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/don't have an account/i)).toBeInTheDocument();
+    expect(screen.getByText(/new to accubooks\?/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /create an account/i })).toBeInTheDocument();
   });
 
   it("submits the form with valid data", async () => {
@@ -176,7 +177,9 @@ describe("LoginPage", () => {
     expect(
       screen.getByRole("button", { name: /signing in.../i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button")).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /signing in.../i }),
+    ).toBeDisabled();
   });
 
   it("shows error message when login fails", async () => {

@@ -1,0 +1,89 @@
+﻿
+> accubooks-backend@1.0.0 dev
+> nodemon --exec tsx server.ts
+
+[33m[nodemon] 3.1.10[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `tsx server.ts`[39m
+npm : 
+At line:1 char:85
++ ... tware_Projects\AccuBoo
+ks\AccuBooks\backend"; npm 
+run dev 2>&1 | Out-F ...
++                           
+                       
+~~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (:Stri  
+  ng) [], RemoteException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+node:internal/modules/run_ma
+in:123
+    
+triggerUncaughtException(
+    ^
+Error 
+[ERR_MODULE_NOT_FOUND]: 
+Cannot find module 'C:\FidiM
+yProjects2025\Software_Proje
+cts\AccuBooks\AccuBooks\back
+end\server.ts' imported 
+from C:\FidiMyProjects2025\S
+oftware_Projects\AccuBooks\A
+ccuBooks\backend\
+    at finalizeResolution (n
+ode:internal/modules/esm/res
+olve:283:11)
+    at moduleResolve (node:i
+nternal/modules/esm/resolve:
+952:10)
+    at defaultResolve (node:
+internal/modules/esm/resolve
+:1188:11)
+    at nextResolve (node:int
+ernal/modules/esm/hooks:864:
+28)
+    at resolveBase (file:///
+C:/FidiMyProjects2025/Softwa
+re_Projects/AccuBooks/AccuBo
+oks/backend/node_modules/tsx
+/dist/esm/index.mjs?17646540
+66248:2:3744)
+    at resolveDirectory (fil
+e:///C:/FidiMyProjects2025/S
+oftware_Projects/AccuBooks/A
+ccuBooks/backend/node_module
+s/tsx/dist/esm/index.mjs?176
+4654066248:2:4243)
+    at resolveTsPaths (file:
+///C:/FidiMyProjects2025/Sof
+tware_Projects/AccuBooks/Acc
+uBooks/backend/node_modules/
+tsx/dist/esm/index.mjs?17646
+54066248:2:4984)
+    at resolve (file:///C:/F
+idiMyProjects2025/Software_P
+rojects/AccuBooks/AccuBooks/
+backend/node_modules/tsx/dis
+t/esm/index.mjs?176465406624
+8:2:5361)
+    at nextResolve (node:int
+ernal/modules/esm/hooks:864:
+28)
+    at Hooks.resolve (node:i
+nternal/modules/esm/hooks:30
+6:30) {
+  code: 
+'ERR_MODULE_NOT_FOUND',
+  url: 'file:///C:/FidiMyPro
+jects2025/Software_Projects/
+AccuBooks/AccuBooks/backend/
+server.ts'
+}
+
+Node.js v20.19.5
+[31m[nodemon] app crashed - waiting for file changes before starting...[39m

@@ -42,7 +42,7 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-vi.mock("../store/auth-store", () => ({
+vi.mock("@/app/auth/store/auth-store", () => ({
   useAuthStore: () => mockUseAuthStore(),
 }));
 
@@ -141,7 +141,7 @@ describe("LoginPage", () => {
       rerender(<LoginPage />);
     });
 
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", { name: /signing in\.\.\./i });
     expect(button).toBeDisabled();
 
     act(() => {
@@ -155,7 +155,7 @@ describe("LoginPage", () => {
     const errorMessage = "Invalid credentials";
     mockLogin.mockRejectedValueOnce(new Error(errorMessage));
 
-    render(<LoginPage />);
+    const { rerender } = render(<LoginPage />);
     fillForm();
 
     await act(async () => {
@@ -164,6 +164,7 @@ describe("LoginPage", () => {
 
     act(() => {
       applyAuthState({ error: errorMessage });
+      rerender(<LoginPage />);
     });
 
     expect(await screen.findByText(errorMessage)).toBeInTheDocument();

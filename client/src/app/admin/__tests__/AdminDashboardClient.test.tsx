@@ -5,18 +5,25 @@ declare global {
 }
 
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import AdminDashboardClient from '../AdminDashboardClient';
 import userEvent from "@testing-library/user-event";
 import { User } from '../types/user';
+import { useAuthStore } from "@/store/auth-store";
+
+const { pushMock } = vi.hoisted(() => {
+  const pushMock = vi.fn();
+  return { pushMock };
+});
 
 // Mock fetch
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
-// Mock next-auth/react
-vi.mock("next-auth/react");
+// Mock auth store
+vi.mock("@/store/auth-store", () => ({
+  useAuthStore: vi.fn(),
+}));
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -87,21 +94,15 @@ describe("AdminDashboardClient", () => {
     // Reset all mocks
     vi.clearAllMocks();
 
-    // Mock session
-    (useSession as jest.Mock).mockReturnValue({
-      data: {
-        user: {
-          role: "ADMIN",
-        },
-      },
-      status: "authenticated",
-    });
+    vi.mocked(useAuthStore).mockReturnValue({
+      user: { role: "ADMIN" },
+      isLoading: false,
+    } as any);
 
     // Mock router
-    const pushMock = vi.fn();
-    (useRouter as jest.Mock).mockReturnValue({
+    vi.mocked(useRouter).mockReturnValue({
       push: pushMock,
-    });
+    } as any);
 
     // Setup fetch mock
     mockFetch.mockReset();
@@ -131,28 +132,23 @@ describe("AdminDashboardClient", () => {
   });
 
   it("shows loading state while session is loading", () => {
-    (useSession as jest.Mock).mockReturnValue({
-      data: null,
-      status: "loading",
-    });
+    vi.mocked(useAuthStore).mockReturnValue({
+      user: null,
+      isLoading: true,
+    } as any);
 
     render(<AdminDashboardClient users={[]} />);
-    expect(screen.getByText("Loading users...")).toBeInTheDocument();
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
   it("redirects to unauthorized if user is not admin", () => {
     // Mock non-admin user
-    (useSession as jest.Mock).mockReturnValue({
-      data: {
-        user: {
-          role: "USER",
-        },
-      },
-      status: "authenticated",
-    });
+    vi.mocked(useAuthStore).mockReturnValue({
+      user: { role: "USER" },
+      isLoading: false,
+    } as any);
 
-    const pushMock = vi.fn();
-    (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
+    vi.mocked(useRouter).mockReturnValue({ push: pushMock } as any);
 
     render(<AdminDashboardClient users={mockUsers} />);
     expect(pushMock).toHaveBeenCalledWith("/unauthorized");

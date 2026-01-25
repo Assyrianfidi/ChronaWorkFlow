@@ -1,11 +1,12 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import AdminDashboardClient from '../AdminDashboardClient';
-import { UserRole } from '../types/next-auth';
+import { useAuthStore } from "@/store/auth-store";
 
-// Mock next-auth/react
-vi.mock("next-auth/react");
+// Mock auth store
+vi.mock("@/store/auth-store", () => ({
+  useAuthStore: vi.fn(),
+}));
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -22,7 +23,7 @@ describe("AdminDashboardClient - Client Side", () => {
       id: "1",
       name: "Admin User",
       email: "admin@example.com",
-      role: "ADMIN" as UserRole,
+      role: "ADMIN",
       emailVerified: new Date(),
       image: null,
       createdAt: new Date(),
@@ -33,7 +34,7 @@ describe("AdminDashboardClient - Client Side", () => {
       id: "2",
       name: "Regular User",
       email: "user@example.com",
-      role: "USER" as UserRole,
+      role: "USER",
       emailVerified: new Date(),
       image: null,
       createdAt: new Date(),
@@ -52,21 +53,16 @@ describe("AdminDashboardClient - Client Side", () => {
     // Reset all mocks
     vi.clearAllMocks();
 
-    // Mock session
-    (useSession as jest.Mock).mockReturnValue({
-      data: {
-        user: {
-          role: "ADMIN",
-        },
-      },
-      status: "authenticated",
-    });
+    vi.mocked(useAuthStore).mockReturnValue({
+      user: { role: "ADMIN" },
+      isLoading: false,
+    } as any);
 
     // Mock router
     const pushMock = vi.fn();
-    (useRouter as jest.Mock).mockReturnValue({
+    vi.mocked(useRouter).mockReturnValue({
       push: pushMock,
-    });
+    } as any);
   });
 
   it("renders the admin dashboard with user management table", async () => {
@@ -90,17 +86,13 @@ describe("AdminDashboardClient - Client Side", () => {
 
   it("redirects to unauthorized if user is not admin", () => {
     // Mock non-admin user
-    (useSession as jest.Mock).mockReturnValue({
-      data: {
-        user: {
-          role: "USER",
-        },
-      },
-      status: "authenticated",
-    });
+    vi.mocked(useAuthStore).mockReturnValue({
+      user: { role: "USER" },
+      isLoading: false,
+    } as any);
 
     const pushMock = vi.fn();
-    (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
+    vi.mocked(useRouter).mockReturnValue({ push: pushMock } as any);
 
     render(<AdminDashboardClient users={mockProps.users} />);
 
@@ -109,6 +101,7 @@ describe("AdminDashboardClient - Client Side", () => {
   });
 
   it("allows changing user roles", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     render(<AdminDashboardClient users={mockProps.users} />);
 
     // Find and click the role select for the regular user
@@ -127,5 +120,7 @@ describe("AdminDashboardClient - Client Side", () => {
         }),
       );
     });
+
+    consoleErrorSpy.mockRestore();
   });
 });

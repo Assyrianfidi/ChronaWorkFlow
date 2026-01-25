@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState, useEffect } from "react";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStore } from "../store/auth-store";
 
 const registerSchema = z
   .object({

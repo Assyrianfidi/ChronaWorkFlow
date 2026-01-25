@@ -326,11 +326,27 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAccountsByCompany(companyId: string): Promise<Account[]> {
-    return db
-      .select()
+    const rows = await db
+      .select({
+        account: accounts,
+        computedBalance: sql<string>`coalesce(sum(${transactionLines.debit} - ${transactionLines.credit}), 0)`,
+      })
       .from(accounts)
-      .where(eq(accounts.companyId, companyId))
+      .leftJoin(transactionLines, eq(transactionLines.accountId, accounts.id))
+      .leftJoin(transactions, eq(transactions.id, transactionLines.transactionId))
+      .where(
+        and(
+          eq(accounts.companyId, companyId),
+          sql`(${transactions.id} is null) OR (${transactions.isVoid} = false)`,
+        ),
+      )
+      .groupBy(accounts.id)
       .orderBy(accounts.name);
+
+    return rows.map((r) => ({
+      ...r.account,
+      balance: r.computedBalance,
+    }));
   }
 
   async createAccount(account: InsertAccount): Promise<Account> {
@@ -348,13 +364,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateAccountBalance(id: string, amount: string): Promise<void> {
-    await db
-      .update(accounts)
-      .set({
-        balance: sql`${accounts.balance} + ${amount}`,
-        updatedAt: new Date()
-      })
-      .where(eq(accounts.id, id));
+    void id;
+    void amount;
+    throw new Error("Direct account balance mutation is forbidden. Post a journal entry instead.");
   }
 
   // ===================
@@ -388,13 +400,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateCustomerBalance(id: string, amount: string): Promise<void> {
-    await db
-      .update(customers)
-      .set({
-        balance: sql`${customers.balance} + ${amount}`,
-        updatedAt: new Date()
-      })
-      .where(eq(customers.id, id));
+    void id;
+    void amount;
+    throw new Error("Direct customer balance mutation is forbidden. Post a journal entry instead.");
   }
 
   // =================
@@ -467,10 +475,12 @@ export class DatabaseStorage implements IStorage {
   ): Promise<Transaction> {
     return db.transaction(async (tx) => {
       // Insert the transaction
-      const [newTransaction] = await tx
+      const inserted = (await tx
         .insert(transactions)
         .values(transaction)
-        .returning();
+        .returning()) as any[];
+
+      const newTransaction = inserted[0] as any;
 
       // Insert all transaction lines
       if (lines.length > 0) {

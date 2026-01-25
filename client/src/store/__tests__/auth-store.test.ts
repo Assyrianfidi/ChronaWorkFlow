@@ -1,7 +1,8 @@
 import { act } from "@testing-library/react";
 import { useAuthStore } from "../auth-store";
+import { vi } from "vitest";
 
-const fetchMock = jest.fn();
+const fetchMock = vi.fn();
 
 Object.defineProperty(global, "fetch", {
   value: fetchMock,
@@ -32,7 +33,7 @@ Object.defineProperty(window, "localStorage", {
 describe("Auth Store", () => {
   beforeEach(() => {
     // Reset all mocks and localStorage before each test
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     localStorage.clear();
 
     // Reset the store state

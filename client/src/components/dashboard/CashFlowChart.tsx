@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import { TrendingUp, TrendingDown, DollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Card from "@/components/ui/card";
+import Card from "@/components/ui/Card";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
 
 interface CashFlowData {

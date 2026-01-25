@@ -1,0 +1,11 @@
+﻿node.exe : npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer 
+supported
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Users\Fidi\AppData\Roaming\n ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn deprec...onger supported:String 
+   ) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+added 5 packages, removed 21 packages, and changed 3 packages in 6s

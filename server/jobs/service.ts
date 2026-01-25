@@ -1,5 +1,5 @@
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
-import { redis, queues, JOB_QUEUES, jobProcessors, JobResult, JobStats, WorkerStats } from './config';
+import { redis, queues, JOB_QUEUES, jobProcessors, JobResult, JobStats, WorkerStats, type WorkflowTimerJobData } from './config';
 import { logger } from '../utils/logger';
 
 export class JobService {
@@ -196,6 +196,10 @@ export class JobService {
 
   async addNotificationJob(data: any, delay = 0) {
     return this.addJob(JOB_QUEUES.NOTIFICATIONS, 'send-notification', data, delay);
+  }
+
+  async addWorkflowTimerJob(data: WorkflowTimerJobData, delay = 0) {
+    return this.addJob(JOB_QUEUES.WORKFLOW_TIMERS, 'fire-workflow-timer', data, delay);
   }
 
   private async addJob(queueName: string, jobName: string, data: any, delay = 0) {

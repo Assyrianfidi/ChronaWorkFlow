@@ -1,25 +1,27 @@
 import React from "react";
 import { LoadingState } from '@/components/ui/LoadingState';
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
 import {
   UIPerformanceEngine,
   usePerformance,
   LazyLoad,
   PerformanceMonitor,
   withPerformanceTracking,
+  AdaptiveImage,
 } from '../UI-Performance-Engine';
 
 // Mock the adaptive layout hook
-jest.mock("../AdaptiveLayoutEngine", () => ({
-  useAdaptiveLayout: jest.fn(() => ({
+vi.mock("../AdaptiveLayoutEngine", () => ({
+  useAdaptiveLayout: vi.fn(() => ({
     currentBreakpoint: "desktop",
     isMobile: false,
   })),
 }));
 
 // Mock the UX mode hook
-jest.mock("../UserExperienceMode", () => ({
-  useUserExperienceMode: jest.fn(() => ({
+vi.mock("../UserExperienceMode", () => ({
+  useUserExperienceMode: vi.fn(() => ({
     currentMode: {
       animations: "normal",
       sounds: false,
@@ -30,7 +32,7 @@ jest.mock("../UserExperienceMode", () => ({
 // Mock performance API
 Object.defineProperty(window, "performance", {
   value: {
-    now: jest.fn(() => Date.now()),
+    now: vi.fn(() => Date.now()),
     memory: {
       usedJSHeapSize: 50000000, // 50MB
     },
@@ -38,8 +40,8 @@ Object.defineProperty(window, "performance", {
 });
 
 // Mock requestAnimationFrame
-global.requestAnimationFrame = jest.fn(() => 1 as any);
-global.cancelAnimationFrame = jest.fn();
+global.requestAnimationFrame = vi.fn(() => 1 as any);
+global.cancelAnimationFrame = vi.fn();
 
 describe("UIPerformanceEngine", () => {
   it("renders children correctly", () => {
@@ -60,13 +62,13 @@ describe("UIPerformanceEngine", () => {
       configurable: true,
     });
 
-    const setIntervalSpy = jest
+    const setIntervalSpy = vi
       .spyOn(global, "setInterval")
       .mockImplementation(((cb: any) => {
         cb();
         return 1 as any;
       }) as any);
-    const clearIntervalSpy = jest
+    const clearIntervalSpy = vi
       .spyOn(global, "clearInterval")
       .mockImplementation((() => undefined) as any);
 
@@ -97,32 +99,35 @@ describe("LazyLoad", () => {
     },
     componentMetrics: new Map(),
     isLowPerformanceMode: false,
-    enablePerformanceMode: jest.fn(),
-    disablePerformanceMode: jest.fn(),
-    registerComponent: jest.fn(),
-    unregisterComponent: jest.fn(),
-    getComponentMetrics: jest.fn(),
+    enablePerformanceMode: vi.fn(),
+    disablePerformanceMode: vi.fn(),
+    registerComponent: vi.fn(),
+    unregisterComponent: vi.fn(),
+    getComponentMetrics: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.spyOn(React, "useContext").mockReturnValue(mockUsePerformance);
+    vi.spyOn(React, "useContext").mockReturnValue(mockUsePerformance);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("renders fallback when not visible", () => {
     // Mock IntersectionObserver to not trigger intersection
-    const mockObserve = jest.fn();
-    const mockUnobserve = jest.fn();
-    const mockDisconnect = jest.fn();
+    const mockObserve = vi.fn();
+    const mockUnobserve = vi.fn();
+    const mockDisconnect = vi.fn();
 
-    global.IntersectionObserver = jest.fn(() => ({
-      observe: mockObserve,
-      unobserve: mockUnobserve,
-      disconnect: mockDisconnect,
-    })) as any;
+    class MockIntersectionObserver {
+      observe = mockObserve;
+      unobserve = mockUnobserve;
+      disconnect = mockDisconnect;
+      constructor(_cb: any, _options?: any) {}
+    }
+
+    global.IntersectionObserver = MockIntersectionObserver as any;
 
     render(
       <LazyLoad fallback={<LoadingState size="sm" />}>
@@ -140,7 +145,7 @@ describe("LazyLoad", () => {
       isLowPerformanceMode: true,
     };
 
-    jest.spyOn(React, "useContext").mockReturnValue(lowPerfMock);
+    vi.spyOn(React, "useContext").mockReturnValue(lowPerfMock);
 
     render(
       <LazyLoad>
@@ -188,19 +193,19 @@ describe("PerformanceMonitor", () => {
       ],
     ]),
     isLowPerformanceMode: false,
-    enablePerformanceMode: jest.fn(),
-    disablePerformanceMode: jest.fn(),
-    registerComponent: jest.fn(),
-    unregisterComponent: jest.fn(),
-    getComponentMetrics: jest.fn(),
+    enablePerformanceMode: vi.fn(),
+    disablePerformanceMode: vi.fn(),
+    registerComponent: vi.fn(),
+    unregisterComponent: vi.fn(),
+    getComponentMetrics: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.spyOn(React, "useContext").mockReturnValue(mockUsePerformance);
+    vi.spyOn(React, "useContext").mockReturnValue(mockUsePerformance);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("displays performance metrics", () => {
@@ -269,14 +274,14 @@ describe("usePerformance hook", () => {
       },
       componentMetrics: new Map(),
       isLowPerformanceMode: false,
-      enablePerformanceMode: jest.fn(),
-      disablePerformanceMode: jest.fn(),
-      registerComponent: jest.fn(),
-      unregisterComponent: jest.fn(),
-      getComponentMetrics: jest.fn(),
+      enablePerformanceMode: vi.fn(),
+      disablePerformanceMode: vi.fn(),
+      registerComponent: vi.fn(),
+      unregisterComponent: vi.fn(),
+      getComponentMetrics: vi.fn(),
     };
 
-    jest.spyOn(React, "useContext").mockReturnValue(mockContext);
+    vi.spyOn(React, "useContext").mockReturnValue(mockContext);
 
     const TestComponent = () => {
       const { metrics } = usePerformance();
@@ -295,18 +300,18 @@ describe("usePerformance hook", () => {
 
 describe("withPerformanceTracking HOC", () => {
   it("wraps component with performance tracking", () => {
-    const MockComponent = jest.fn(() => <div>Test Component</div>);
+    const MockComponent = vi.fn(() => <div>Test Component</div>);
     const TrackedComponent = withPerformanceTracking(
       MockComponent,
       "TestComponent",
     );
 
     const mockContext = {
-      registerComponent: jest.fn(),
-      unregisterComponent: jest.fn(),
+      registerComponent: vi.fn(),
+      unregisterComponent: vi.fn(),
     };
 
-    jest.spyOn(React, "useContext").mockReturnValue(mockContext);
+    vi.spyOn(React, "useContext").mockReturnValue(mockContext);
 
     render(<TrackedComponent />);
 
@@ -318,18 +323,18 @@ describe("withPerformanceTracking HOC", () => {
   });
 
   it("cleans up on unmount", () => {
-    const MockComponent = jest.fn(() => <div>Test Component</div>);
+    const MockComponent = vi.fn(() => <div>Test Component</div>);
     const TrackedComponent = withPerformanceTracking(
       MockComponent,
       "TestComponent",
     );
 
     const mockContext = {
-      registerComponent: jest.fn(),
-      unregisterComponent: jest.fn(),
+      registerComponent: vi.fn(),
+      unregisterComponent: vi.fn(),
     };
 
-    jest.spyOn(React, "useContext").mockReturnValue(mockContext);
+    vi.spyOn(React, "useContext").mockReturnValue(mockContext);
 
     const { unmount } = render(<TrackedComponent />);
     unmount();
@@ -341,8 +346,6 @@ describe("withPerformanceTracking HOC", () => {
 });
 
 describe("AdaptiveImage", () => {
-  const AdaptiveImage = require("../UI-Performance-Engine").AdaptiveImage;
-
   const mockUsePerformance = {
     metrics: {
       fps: 60,
@@ -354,19 +357,19 @@ describe("AdaptiveImage", () => {
     },
     componentMetrics: new Map(),
     isLowPerformanceMode: false,
-    enablePerformanceMode: jest.fn(),
-    disablePerformanceMode: jest.fn(),
-    registerComponent: jest.fn(),
-    unregisterComponent: jest.fn(),
-    getComponentMetrics: jest.fn(),
+    enablePerformanceMode: vi.fn(),
+    disablePerformanceMode: vi.fn(),
+    registerComponent: vi.fn(),
+    unregisterComponent: vi.fn(),
+    getComponentMetrics: vi.fn(),
   };
 
   beforeEach(() => {
-    jest.spyOn(React, "useContext").mockReturnValue(mockUsePerformance);
+    vi.spyOn(React, "useContext").mockReturnValue(mockUsePerformance);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("renders image with loading state", () => {
@@ -391,7 +394,7 @@ describe("AdaptiveImage", () => {
       isLowPerformanceMode: true,
     };
 
-    jest.spyOn(React, "useContext").mockReturnValue(lowPerfMock);
+    vi.spyOn(React, "useContext").mockReturnValue(lowPerfMock);
 
     render(<AdaptiveImage src="test.jpg" alt="Test Image" />);
 

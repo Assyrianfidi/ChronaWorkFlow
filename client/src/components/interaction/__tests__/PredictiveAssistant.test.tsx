@@ -7,6 +7,35 @@ import {
   withBehaviorTracking,
 } from "@/components/PredictiveAssistant";
 
+const { standardMode, minimalMode, mockUseUserExperienceMode, mockUsePerformance } =
+  vi.hoisted(() => {
+    const standardMode = {
+      id: "standard",
+      name: "Standard",
+      animations: "normal",
+      sounds: false,
+      shortcuts: true,
+    };
+
+    const minimalMode = {
+      id: "minimal",
+      name: "Minimal",
+      animations: "minimal",
+      sounds: false,
+      shortcuts: false,
+    };
+
+    const mockUseUserExperienceMode = vi.fn(() => ({ currentMode: standardMode }));
+    const mockUsePerformance = vi.fn(() => ({ isLowPerformanceMode: false }));
+
+    return {
+      standardMode,
+      minimalMode,
+      mockUseUserExperienceMode,
+      mockUsePerformance,
+    };
+  });
+
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({
   useWindowSize: vi.fn(() => ({ width: 1024, height: 768 })),
@@ -18,22 +47,12 @@ vi.mock("../store/auth-store", () => ({
   })),
 }));
 
-vi.mock("../adaptive/UserExperienceMode.tsx", () => ({
-  useUserExperienceMode: vi.fn(() => ({
-    currentMode: {
-      id: "standard",
-      name: "Standard",
-      animations: "normal",
-      sounds: false,
-      shortcuts: true,
-    },
-  })),
+vi.mock("@/components/adaptive/UserExperienceMode", () => ({
+  useUserExperienceMode: mockUseUserExperienceMode,
 }));
 
-vi.mock("../adaptive/UI-Performance-Engine.tsx", () => ({
-  usePerformance: vi.fn(() => ({
-    isLowPerformanceMode: false,
-  })),
+vi.mock("@/components/adaptive/UI-Performance-Engine", () => ({
+  usePerformance: mockUsePerformance,
 }));
 
 vi.mock("../adaptive/NotificationSystem", () => ({
@@ -46,6 +65,9 @@ describe("PredictiveAssistant", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+
+    mockUseUserExperienceMode.mockReturnValue({ currentMode: standardMode });
+    mockUsePerformance.mockReturnValue({ isLowPerformanceMode: false });
   });
 
   it("renders children correctly", () => {
@@ -80,9 +102,7 @@ describe("PredictiveAssistant", () => {
   });
 
   it("disables features in low performance mode", () => {
-    const { usePerformance } = require("../adaptive/UI-Performance-Engine");
-
-    usePerformance.mockReturnValue({
+    mockUsePerformance.mockReturnValue({
       isLowPerformanceMode: true,
     });
 
@@ -101,17 +121,7 @@ describe("PredictiveAssistant", () => {
   });
 
   it("adapts to user experience mode", () => {
-    const { useUserExperienceMode } = require("../adaptive/UserExperienceMode");
-
-    useUserExperienceMode.mockReturnValue({
-      currentMode: {
-        id: "minimal",
-        name: "Minimal",
-        animations: "minimal",
-        sounds: false,
-        shortcuts: false,
-      },
-    });
+    mockUseUserExperienceMode.mockReturnValue({ currentMode: minimalMode });
 
     function TestComponent() {
       const { config } = usePredictiveAssistant();
@@ -427,11 +437,6 @@ describe("withBehaviorTracking HOC", () => {
     function TestWrapper() {
       const { trackBehavior } = usePredictiveAssistant();
 
-      // Mock trackBehavior to verify calls
-      React.useEffect(() => {
-        vi.mocked(trackBehavior).mockImplementation(mockTrackBehavior);
-      }, []);
-
       return <TrackedComponent />;
     }
 
@@ -486,7 +491,7 @@ describe("withBehaviorTracking HOC", () => {
 });
 
 describe("ML Model Manager", () => {
-  it("initializes with built-in models", () => {
+  it("initializes with built-in models", async () => {
     function TestComponent() {
       const { generatePrediction } = usePredictiveAssistant();
       const [models, setModels] = React.useState<string[]>([]);
@@ -1024,7 +1029,7 @@ describe("Insight Generator", () => {
 });
 
 describe("Privacy and Data Management", () => {
-  it("respects privacy settings", () => {
+  it("respects privacy settings", async () => {
     function TestComponent() {
       const { config, updateConfig } = usePredictiveAssistant();
       const [privacyUpdated, setPrivacyUpdated] = React.useState(false);
@@ -1073,7 +1078,7 @@ describe("Privacy and Data Management", () => {
     });
   });
 
-  it("clears data based on type", () => {
+  it("clears data based on type", async () => {
     function TestComponent() {
       const { clearData, suggestions, patterns } = usePredictiveAssistant();
       const [clearedBehavior, setClearedBehavior] = React.useState(false);

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { FileText, Download, Eye, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Card from "@/components/ui/card";
+import Card from "@/components/ui/Card";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
 
 interface Invoice {

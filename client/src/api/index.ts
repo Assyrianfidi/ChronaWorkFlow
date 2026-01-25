@@ -5,12 +5,6 @@ declare global {
 }
 
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import {
-  demoAccountsApi,
-  demoLedgerApi,
-  getDemoCompanyId,
-  isDemoModeEnabled,
-} from "../lib/demo";
 
 // API base URL from environment
 const API_BASE_URL =
@@ -106,7 +100,8 @@ export const authApi = {
 
   logout: () => api.post<ApiResponse>("/auth/logout"),
 
-  getProfile: () => api.get<ApiResponse<{ user: any }>>("/auth/profile"),
+  getProfile: () => api.get<ApiResponse<any>>("/auth/profile"),
+  getMe: () => api.get<ApiResponse<any>>("/me"),
 };
 
 export const ownerApi = {
@@ -125,16 +120,9 @@ export const ownerApi = {
 // Accounts API
 export const accountsApi = {
   list: (companyId: string, limit?: number) =>
-    isDemoModeEnabled()
-      ? Promise.resolve({
-          data: {
-            success: true,
-            data: demoAccountsApi().list(companyId || getDemoCompanyId()),
-          },
-        } as any)
-      : api.get<ApiResponse<any[]>>("/accounts", {
-          params: { companyId, limit: limit || 50 },
-        }),
+    api.get<ApiResponse<any[]>>("/accounts", {
+      params: { companyId, limit: limit || 50 },
+    }),
 
   create: (accountData: {
     companyId: string;
@@ -146,19 +134,7 @@ export const accountsApi = {
     description?: string;
     isActive?: boolean;
   }) =>
-    isDemoModeEnabled()
-      ? Promise.resolve({
-          data: {
-            success: true,
-            data: demoAccountsApi().create({
-              ...accountData,
-              companyId: accountData.companyId || getDemoCompanyId(),
-              createdAt: "",
-              updatedAt: "",
-            } as any),
-          },
-        } as any)
-      : api.post<ApiResponse<any>>("/accounts", accountData),
+    api.post<ApiResponse<any>>("/accounts", accountData),
 
   update: (
     id: string,
@@ -172,41 +148,20 @@ export const accountsApi = {
       isActive?: boolean;
     }>,
   ) =>
-    isDemoModeEnabled()
-      ? Promise.resolve({
-          data: {
-            success: true,
-            data: demoAccountsApi().update(id, updateData as any),
-          },
-        } as any)
-      : api.put<ApiResponse<any>>(`/accounts/${id}`, updateData),
+    api.put<ApiResponse<any>>(`/accounts/${id}`, updateData),
 
   adjustBalance: (id: string, amount: number) =>
-    isDemoModeEnabled()
-      ? Promise.resolve({
-          data: {
-            success: true,
-            data: demoAccountsApi().adjustBalance(id, amount),
-          },
-        } as any)
-      : api.post<ApiResponse<any>>(`/accounts/${id}/adjust-balance`, {
-          amount,
-        }),
+    api.post<ApiResponse<any>>(`/accounts/${id}/adjust-balance`, {
+      amount,
+    }),
 };
 
 // Transactions API
 export const transactionsApi = {
   list: (companyId: string, limit?: number) =>
-    isDemoModeEnabled()
-      ? Promise.resolve({
-          data: {
-            success: true,
-            data: demoLedgerApi().list(companyId || getDemoCompanyId()),
-          },
-        } as any)
-      : api.get<ApiResponse<any[]>>("/transactions", {
-          params: { companyId, limit: limit || 50 },
-        }),
+    api.get<ApiResponse<any[]>>("/transactions", {
+      params: { companyId, limit: limit || 50 },
+    }),
 
   create: (transactionData: {
     companyId: string;
@@ -223,25 +178,7 @@ export const transactionsApi = {
     description?: string;
     referenceNumber?: string;
   }) =>
-    isDemoModeEnabled()
-      ? Promise.resolve({
-          data: {
-            success: true,
-            data: demoLedgerApi().create({
-              ...transactionData,
-              companyId: transactionData.companyId || getDemoCompanyId(),
-              createdBy: "demo-user",
-              createdAt: "",
-              updatedAt: "",
-              lines: transactionData.lines.map((l) => ({
-                ...l,
-                id: "",
-                transactionId: "",
-              })),
-            } as any),
-          },
-        } as any)
-      : api.post<ApiResponse<any>>("/transactions", transactionData),
+    api.post<ApiResponse<any>>("/transactions", transactionData),
 };
 
 export default api;

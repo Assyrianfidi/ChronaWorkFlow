@@ -1,5 +1,5 @@
 import { sql, relations } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, numeric, integer, boolean, pgEnum, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, numeric, integer, boolean, pgEnum, uniqueIndex, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -385,6 +385,7 @@ export const transactions = pgTable("transactions", {
   description: text("description"),
   referenceNumber: text("reference_number"),
   totalAmount: numeric("total_amount", { precision: 15, scale: 2 }).notNull(),
+  reversalOfTransactionId: varchar("reversal_of_transaction_id", { length: 36 }),
   isVoid: boolean("is_void").default(false).notNull(),
   voidedAt: timestamp("voided_at"),
   voidedBy: varchar("voided_by", { length: 36 }),
@@ -403,6 +404,26 @@ export const transactionLines = pgTable("transaction_lines", {
   debit: numeric("debit", { precision: 15, scale: 2 }).default("0").notNull(),
   credit: numeric("credit", { precision: 15, scale: 2 }).default("0").notNull(),
   description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const accountingPeriods = pgTable("accounting_periods", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueCompanyPeriod: uniqueIndex("unique_company_accounting_period").on(table.companyId, table.startDate, table.endDate),
+}));
+
+export const accountingPeriodLocks = pgTable("accounting_period_locks", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  periodId: varchar("period_id", { length: 36 }).notNull().references(() => accountingPeriods.id),
+  action: text("action").notNull(),
+  reason: text("reason"),
+  actorUserId: varchar("actor_user_id", { length: 36 }).references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -678,6 +699,110 @@ export const workflowExecutions = pgTable("workflow_executions", {
   completedAt: timestamp("completed_at"),
   error: text("error"),
   result: text("result"), // JSON
+});
+
+export const workflowDefinitions = pgTable("workflow_definitions", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  name: text("name").notNull(),
+  description: text("description"),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdBy: varchar("created_by", { length: 36 }).notNull().references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const workflowDefinitionVersions = pgTable("workflow_definition_versions", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  workflowDefinitionId: varchar("workflow_definition_id", { length: 36 }).notNull().references(() => workflowDefinitions.id),
+  version: integer("version").notNull(),
+  status: text("status").default("draft").notNull(),
+  triggerEventType: text("trigger_event_type").notNull(),
+  triggerEntityType: text("trigger_entity_type").notNull(),
+  definitionJson: jsonb("definition_json").notNull(),
+  metadataJson: jsonb("metadata_json"),
+  createdBy: varchar("created_by", { length: 36 }).notNull().references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  publishedAt: timestamp("published_at"),
+}, (table) => ({
+  uniqueWorkflowDefinitionVersion: uniqueIndex("unique_workflow_definition_version").on(table.workflowDefinitionId, table.version),
+}));
+
+export const workflowInstances = pgTable("workflow_instances", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  workflowDefinitionId: varchar("workflow_definition_id", { length: 36 }).notNull().references(() => workflowDefinitions.id),
+  workflowDefinitionVersionId: varchar("workflow_definition_version_id", { length: 36 }).notNull().references(() => workflowDefinitionVersions.id),
+  status: text("status").default("running").notNull(),
+  currentStepKey: text("current_step_key"),
+  currentStepIndex: integer("current_step_index").default(0).notNull(),
+  triggerEventType: text("trigger_event_type").notNull(),
+  triggerEntityType: text("trigger_entity_type").notNull(),
+  triggerEntityId: varchar("trigger_entity_id", { length: 36 }),
+  metadataJson: jsonb("metadata_json"),
+  startedBy: varchar("started_by", { length: 36 }).references(() => users.id),
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+  canceledAt: timestamp("canceled_at"),
+  error: text("error"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const workflowInstanceStepHistory = pgTable("workflow_instance_step_history", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  workflowInstanceId: varchar("workflow_instance_id", { length: 36 }).notNull().references(() => workflowInstances.id),
+  stepKey: text("step_key"),
+  stepIndex: integer("step_index"),
+  fromStatus: text("from_status"),
+  toStatus: text("to_status"),
+  eventType: text("event_type").notNull(),
+  metadataJson: jsonb("metadata_json"),
+  actorUserId: varchar("actor_user_id", { length: 36 }).references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const workflowApprovals = pgTable("workflow_approvals", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  workflowInstanceId: varchar("workflow_instance_id", { length: 36 }).notNull().references(() => workflowInstances.id),
+  stepHistoryId: varchar("step_history_id", { length: 36 }).references(() => workflowInstanceStepHistory.id),
+  requiredRole: text("required_role").notNull(),
+  status: text("status").default("pending").notNull(),
+  requestedAt: timestamp("requested_at").defaultNow().notNull(),
+  requestedBy: varchar("requested_by", { length: 36 }).references(() => users.id),
+  decidedAt: timestamp("decided_at"),
+  decidedBy: varchar("decided_by", { length: 36 }).references(() => users.id),
+  decisionReason: text("decision_reason"),
+  metadataJson: jsonb("metadata_json"),
+});
+
+export const workflowTimers = pgTable("workflow_timers", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  workflowInstanceId: varchar("workflow_instance_id", { length: 36 }).notNull().references(() => workflowInstances.id),
+  timerKey: text("timer_key").notNull(),
+  status: text("status").default("scheduled").notNull(),
+  fireAt: timestamp("fire_at").notNull(),
+  jobId: text("job_id"),
+  firedAt: timestamp("fired_at"),
+  canceledAt: timestamp("canceled_at"),
+  metadataJson: jsonb("metadata_json"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const workflowEventLog = pgTable("workflow_event_log", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  eventType: text("event_type").notNull(),
+  entityType: text("entity_type").notNull(),
+  entityId: varchar("entity_id", { length: 36 }),
+  payloadJson: jsonb("payload_json"),
+  source: text("source").default("system").notNull(),
+  userId: varchar("user_id", { length: 36 }).references(() => users.id),
+  correlationId: text("correlation_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Custom Reports
@@ -1500,7 +1625,18 @@ export const insertTransactionSchema = createInsertSchema(transactions).omit({
 
 export const insertTransactionLineSchema = createInsertSchema(transactionLines).omit({
   id: true,
-  createdAt: true
+  createdAt: true,
+  transactionId: true
+});
+
+export const insertAccountingPeriodSchema = createInsertSchema(accountingPeriods).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAccountingPeriodLockSchema = createInsertSchema(accountingPeriodLocks).omit({
+  id: true,
+  createdAt: true,
 });
 
 // Create a base invoice schema and then extend it
@@ -1596,6 +1732,43 @@ export const insertAiUsageLogSchema = createInsertSchema(aiUsageLogs).omit({
   createdAt: true
 });
 
+export const insertWorkflowDefinitionSchema = createInsertSchema(workflowDefinitions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWorkflowDefinitionVersionSchema = createInsertSchema(workflowDefinitionVersions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertWorkflowInstanceSchema = createInsertSchema(workflowInstances).omit({
+  id: true,
+  startedAt: true,
+  updatedAt: true,
+});
+
+export const insertWorkflowInstanceStepHistorySchema = createInsertSchema(workflowInstanceStepHistory).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertWorkflowApprovalSchema = createInsertSchema(workflowApprovals).omit({
+  id: true,
+  requestedAt: true,
+});
+
+export const insertWorkflowTimerSchema = createInsertSchema(workflowTimers).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertWorkflowEventLogSchema = createInsertSchema(workflowEventLog).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
 
@@ -1625,3 +1798,36 @@ export type InsertUsageMetric = z.infer<typeof insertUsageMetricSchema>;
 
 export type AiUsageLog = typeof aiUsageLogs.$inferSelect;
 export type InsertAiUsageLog = z.infer<typeof insertAiUsageLogSchema>;
+
+export type Transaction = typeof transactions.$inferSelect;
+export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
+
+export type TransactionLine = typeof transactionLines.$inferSelect;
+export type InsertTransactionLine = z.infer<typeof insertTransactionLineSchema>;
+
+export type AccountingPeriod = typeof accountingPeriods.$inferSelect;
+export type InsertAccountingPeriod = z.infer<typeof insertAccountingPeriodSchema>;
+
+export type AccountingPeriodLock = typeof accountingPeriodLocks.$inferSelect;
+export type InsertAccountingPeriodLock = z.infer<typeof insertAccountingPeriodLockSchema>;
+
+export type WorkflowDefinition = typeof workflowDefinitions.$inferSelect;
+export type InsertWorkflowDefinition = z.infer<typeof insertWorkflowDefinitionSchema>;
+
+export type WorkflowDefinitionVersion = typeof workflowDefinitionVersions.$inferSelect;
+export type InsertWorkflowDefinitionVersion = z.infer<typeof insertWorkflowDefinitionVersionSchema>;
+
+export type WorkflowInstance = typeof workflowInstances.$inferSelect;
+export type InsertWorkflowInstance = z.infer<typeof insertWorkflowInstanceSchema>;
+
+export type WorkflowInstanceStepHistory = typeof workflowInstanceStepHistory.$inferSelect;
+export type InsertWorkflowInstanceStepHistory = z.infer<typeof insertWorkflowInstanceStepHistorySchema>;
+
+export type WorkflowApproval = typeof workflowApprovals.$inferSelect;
+export type InsertWorkflowApproval = z.infer<typeof insertWorkflowApprovalSchema>;
+
+export type WorkflowTimer = typeof workflowTimers.$inferSelect;
+export type InsertWorkflowTimer = z.infer<typeof insertWorkflowTimerSchema>;
+
+export type WorkflowEventLog = typeof workflowEventLog.$inferSelect;
+export type InsertWorkflowEventLog = z.infer<typeof insertWorkflowEventLogSchema>;

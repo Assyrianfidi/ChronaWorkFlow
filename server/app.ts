@@ -1,79 +1,83 @@
 import express from "express";
-import { prisma } from "./prisma";
+import { logEvent, recordRequest } from "../shared/logging";
+import { newRequestId } from "./runtime/audit-log";
+import { authenticate } from "./middleware/authenticate";
+import { authorizeRequest } from "./middleware/authorize";
+import { enforceBillingStatus } from "./middleware/billing-status";
+import { enforcePlanLimits } from "./middleware/plan-limits";
 
-const app = express();
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
-
-app.use((req: any, res: any, next: any) => {
-  const authHeader = req.headers?.authorization;
-  if (!authHeader || !String(authHeader).startsWith("Bearer ")) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+declare module "http" {
+  interface IncomingMessage {
+    rawBody: unknown;
+    requestId?: string;
   }
+}
 
-  req.user = {
-    id: "test-user",
-    tenantId: "test-tenant",
-    role: "ADMIN",
-  };
+declare global {
+  namespace Express {
+    interface Request {
+      requestId?: string;
+    }
+  }
+}
 
-  next();
-});
+export function createApp() {
+  const app = express();
 
-app.get("/api/inventory", async (req: any, res) => {
-  const page = 1;
-  const limit = 10;
-
-  const [items, total] = await Promise.all([
-    (prisma as any).inventory.findMany({
-      where: { tenantId: req.user?.tenantId },
-      skip: (page - 1) * limit,
-      take: limit,
-    } as any),
-    (prisma as any).inventory.count({ where: { tenantId: req.user?.tenantId } } as any),
-  ]);
-
-  res.status(200).json({
-    success: true,
-    data: items,
-    pagination: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit) || 1,
-    },
+  app.get("/api/health", (req, res) => {
+    console.log("Health check endpoint hit");
+    res.json({ status: "ok", message: "AccuBooks API is healthy" });
   });
-});
 
-app.post("/api/inventory", async (req: any, res) => {
-  const created = await (prisma as any).inventory.create({
-    data: {
-      ...req.body,
-      tenantId: req.user?.tenantId,
-    },
-  } as any);
+  app.get("/", (req, res) => {
+    res.json({ status: "ok", message: "AccuBooks API is running" });
+  });
 
-  try {
-    await (prisma as any).inventoryHistory.create({
-      data: {
-        inventoryId: created.id,
-        action: "CREATE",
-        tenantId: req.user?.tenantId,
+  app.use(
+    express.json({
+      verify: (req, _res, buf) => {
+        req.rawBody = buf;
       },
-    } as any);
-  } catch {
-  }
+    }),
+  );
+  app.use(express.urlencoded({ extended: false }));
 
-  res.status(201).json({
-    success: true,
-    data: created,
+  app.use((req, res, next) => {
+    const requestId = newRequestId();
+    req.requestId = requestId;
+    res.setHeader("x-request-id", requestId);
+    next();
   });
-});
 
-export { app };
-export default app;
+  app.use((req, res, next) => {
+    const start = Date.now();
+    const path = req.path;
+
+    res.on("finish", () => {
+      const duration = Date.now() - start;
+      if (path.startsWith("/api")) {
+        recordRequest("server.http");
+        const slowMs = Number(process.env.SLOW_REQUEST_MS || 1500);
+        const isSlow = Number.isFinite(slowMs) && duration >= slowMs;
+        logEvent({
+          level: isSlow ? "warn" : "info",
+          component: "server.http",
+          message: isSlow ? "slow_request" : "request",
+          data: {
+            requestId: req.requestId,
+            method: req.method,
+            path,
+            statusCode: res.statusCode,
+            durationMs: duration,
+          },
+        });
+      }
+    });
+
+    next();
+  });
+
+  app.use("/api", authenticate(), authorizeRequest(), enforceBillingStatus(), enforcePlanLimits());
+
+  return app;
+}

@@ -1,0 +1,53 @@
+[INFO] 2025-11-12T06:34:37.019Z - Loaded project configuration
+[INFO] 2025-11-12T06:34:37.026Z - Running preflight checks...
+[INFO] 2025-11-12T06:34:37.027Z - Node.js version: v20.19.5
+[INFO] 2025-11-12T06:34:37.366Z - npm version: 11.6.2
+[INFO] 2025-11-12T06:34:37.439Z - Git version: git version 2.51.1.windows.1
+[INFO] 2025-11-12T06:34:37.440Z - Installing dependencies...
+[INFO] 2025-11-12T06:34:37.441Z - Installing root dependencies
+[ERROR] 2025-11-12T06:34:44.391Z - Command failed: npm install Command failed: npm install
+[ERROR] 2025-11-12T06:34:44.393Z - ❌ Setup failed: Error: Command failed: npm install
+[INFO] 2025-11-12T06:35:06.047Z - Loaded project configuration
+[INFO] 2025-11-12T06:35:06.054Z - Running preflight checks...
+[INFO] 2025-11-12T06:35:06.055Z - Node.js version: v20.19.5
+[INFO] 2025-11-12T06:35:06.340Z - npm version: 11.6.2
+[INFO] 2025-11-12T06:35:06.380Z - Git version: git version 2.51.1.windows.1
+[INFO] 2025-11-12T06:35:06.382Z - Installing dependencies...
+[INFO] 2025-11-12T06:35:06.382Z - Installing root dependencies
+[INFO] 2025-11-12T06:35:11.317Z - Command executed successfully: npm install
+[INFO] 2025-11-12T06:35:11.318Z - Installing client dependencies
+[ERROR] 2025-11-12T06:35:13.763Z - Command failed: npm install Command failed: npm install
+[ERROR] 2025-11-12T06:35:13.765Z - ❌ Setup failed: Error: Command failed: npm install
+[INFO] 2025-11-12T06:39:00.636Z - Loaded project configuration
+[INFO] 2025-11-12T06:39:00.643Z - Running preflight checks...
+[INFO] 2025-11-12T06:39:00.644Z - Node.js version: v20.19.5
+[INFO] 2025-11-12T06:39:00.986Z - npm version: 11.6.2
+[INFO] 2025-11-12T06:39:01.038Z - Git version: git version 2.51.1.windows.1
+[INFO] 2025-11-12T06:39:01.039Z - Installing dependencies...
+[INFO] 2025-11-12T06:39:01.040Z - Installing root dependencies
+[INFO] 2025-11-12T06:39:13.204Z - Command executed successfully: npm install
+[INFO] 2025-11-12T06:39:13.205Z - Installing client dependencies
+[ERROR] 2025-11-12T06:39:17.432Z - Command failed: npm install Command failed: npm install
+[ERROR] 2025-11-12T06:39:17.434Z - ❌ Setup failed: Error: Command failed: npm install
+[INFO] 2025-11-12T06:41:45.440Z - Loaded project configuration
+[INFO] 2025-11-12T06:41:45.445Z - Running preflight checks...
+[INFO] 2025-11-12T06:41:45.446Z - Node.js version: v20.19.5
+[INFO] 2025-11-12T06:41:45.728Z - npm version: 11.6.2
+[INFO] 2025-11-12T06:41:45.771Z - Git version: git version 2.51.1.windows.1
+[INFO] 2025-11-12T06:41:45.772Z - Installing dependencies...
+[INFO] 2025-11-12T06:41:45.773Z - Installing root dependencies
+[INFO] 2025-11-12T06:41:56.577Z - Command executed successfully: npm install
+[INFO] 2025-11-12T06:41:56.579Z - Installing client dependencies
+[ERROR] 2025-11-12T06:41:59.283Z - Command failed: npm install Command failed: npm install
+[ERROR] 2025-11-12T06:41:59.285Z - ❌ Setup failed: Error: Command failed: npm install
+[INFO] 2025-11-12T06:42:03.907Z - Loaded project configuration
+[INFO] 2025-11-12T06:42:03.914Z - Running preflight checks...
+[INFO] 2025-11-12T06:42:03.916Z - Node.js version: v20.19.5
+[INFO] 2025-11-12T06:42:04.264Z - npm version: 11.6.2
+[INFO] 2025-11-12T06:42:04.307Z - Git version: git version 2.51.1.windows.1
+[INFO] 2025-11-12T06:42:04.308Z - Installing dependencies...
+[INFO] 2025-11-12T06:42:04.309Z - Installing root dependencies
+[INFO] 2025-11-12T06:42:11.444Z - Command executed successfully: npm install
+[INFO] 2025-11-12T06:42:11.445Z - Installing client dependencies
+[ERROR] 2025-11-12T06:42:13.877Z - Command failed: npm install Command failed: npm install
+[ERROR] 2025-11-12T06:42:13.878Z - ❌ Setup failed: Error: Command failed: npm install

@@ -1,12 +1,12 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
-import App from '../App';
+import App from './App';
 
 // Mock the API client
-jest.mock('../hooks/queryClient', () => ({
-  apiRequest: jest.fn(),
+vi.mock('./hooks/queryClient', () => ({
+  apiRequest: vi.fn(),
 }));
 
 const createTestQueryClient = () => new QueryClient({
@@ -22,9 +22,7 @@ const renderWithProviders = (component: React.ReactElement) => {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {component}
-      </BrowserRouter>
+      {component}
     </QueryClientProvider>
   );
 };

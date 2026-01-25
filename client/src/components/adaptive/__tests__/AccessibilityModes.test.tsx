@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
 import {
   AccessibilityProvider,
   useAccessibility,
@@ -8,21 +9,21 @@ import {
 } from '../AccessibilityModes';
 
 // Mock the UX mode context
-jest.mock("../UserExperienceMode", () => ({
-  useUserExperienceMode: jest.fn(() => ({
+vi.mock("../UserExperienceMode", () => ({
+  useUserExperienceMode: vi.fn(() => ({
     currentMode: {
       accessibility: "standard",
     },
-    updateCustomSettings: jest.fn(),
+    updateCustomSettings: vi.fn(),
   })),
 }));
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 };
 
 Object.defineProperty(window, "localStorage", {
@@ -32,15 +33,15 @@ Object.defineProperty(window, "localStorage", {
 describe("AccessibilityProvider", () => {
   beforeEach(() => {
     localStorageMock.getItem.mockImplementation(() => null);
-    jest.spyOn(document.body.classList, "add");
-    jest.spyOn(document.body.classList, "remove");
-    jest.spyOn(document.documentElement.classList, "add");
-    jest.spyOn(document.documentElement.classList, "remove");
-    jest.spyOn(document.documentElement, "setAttribute");
-    jest.spyOn(document.documentElement, "removeAttribute");
-    jest.spyOn(document.body, "setAttribute");
-    jest.spyOn(document.body, "removeAttribute");
-    jest.clearAllMocks();
+    vi.spyOn(document.body.classList, "add");
+    vi.spyOn(document.body.classList, "remove");
+    vi.spyOn(document.documentElement.classList, "add");
+    vi.spyOn(document.documentElement.classList, "remove");
+    vi.spyOn(document.documentElement, "setAttribute");
+    vi.spyOn(document.documentElement, "removeAttribute");
+    vi.spyOn(document.body, "setAttribute");
+    vi.spyOn(document.body, "removeAttribute");
+    vi.clearAllMocks();
   });
 
   it("renders children correctly", () => {
@@ -288,7 +289,7 @@ describe("AccessibilityTest", () => {
   });
 
   it("triggers contrast test", () => {
-    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => undefined);
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     render(
       <AccessibilityProvider>
@@ -441,9 +442,7 @@ describe("Keyboard Navigation", () => {
 
 describe("Voice Navigation", () => {
   it("initializes voice navigation when enabled", () => {
-    const consoleSpy = jest
-      .spyOn(console, "log")
-      .mockImplementation(() => undefined);
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     const TestComponent = () => {
       const { updateConfig } = useAccessibility();
@@ -461,7 +460,7 @@ describe("Voice Navigation", () => {
     );
 
     // Mock Web Speech API
-    global.webkitSpeechRecognition = jest.fn();
+    global.webkitSpeechRecognition = vi.fn();
 
     fireEvent.click(screen.getByText("Enable Voice Navigation"));
 

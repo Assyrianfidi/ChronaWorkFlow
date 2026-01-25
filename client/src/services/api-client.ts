@@ -1,12 +1,5 @@
 import { toast } from "sonner";
 import { z } from "zod";
-import {
-  apiEnvelopeSchema,
-  CURRENT_API_VERSION,
-  API_VERSION_HEADER,
-  isApiEnvelopeLike,
-  parseContract,
-} from "@shared/contracts";
 
 interface ApiResponse<T = unknown> {
   data: T;
@@ -71,23 +64,13 @@ class ApiClient {
         );
       }
 
-      const versionHeader = response.headers.get(API_VERSION_HEADER);
-      if (versionHeader && versionHeader !== CURRENT_API_VERSION) {
-        throw new ApiError(
-          "Incompatible API version",
-          response.status,
-          "INCOMPATIBLE_API_VERSION",
-        );
-      }
-
-      if (response.ok && isApiEnvelopeLike(data)) {
-        try {
-          parseContract("ApiEnvelope", apiEnvelopeSchema(z.unknown()), data);
-        } catch (_e) {
+      if (response.ok && data && typeof data === "object" && "success" in data) {
+        // Basic envelope validation without contracts
+        if (typeof data.success !== "boolean") {
           throw new ApiError(
-            "Response did not match the expected contract",
+            "Invalid response format",
             response.status,
-            "CONTRACT_VIOLATION",
+            "INVALID_RESPONSE",
           );
         }
       }
@@ -191,16 +174,29 @@ export const handleApiError = (error: unknown): void => {
     } else if (error.status >= 500) {
       toast.error("Server error. Please try again later.");
     } else if (error.status === 401) {
-      toast.error("Unauthorized. Please log in again.");
+      toast.error("Session expired. Please log in again.");
+      // Optional: redirect to login
+      window.location.href = "/auth/signin";
     } else if (error.status === 403) {
       toast.error("Access denied. You don't have permission for this action.");
+    } else if (error.status === 402) {
+      toast.error("Payment required. Please update your billing information.");
+      // Optional: redirect to billing
+      window.location.href = "/billing";
     } else if (error.status === 404) {
       toast.error("Resource not found.");
     } else {
       toast.error(error.message || "An error occurred.");
     }
+    // Internal logging hook (optional)
+    if (error.status >= 500) {
+      console.error("[API Error]", error);
+      // Example: send to internal logging endpoint
+      // fetch("/api/logs/error", { method: "POST", body: JSON.stringify({ error: error.message, stack: error.stack }) }).catch(() => {});
+    }
   } else {
     toast.error("An unexpected error occurred.");
+    console.error("[Unexpected Error]", error);
   }
 };
 

@@ -46,7 +46,7 @@ const mockUseAuthStore = vi
     return selector ? selector(mockAuthState) : mockAuthState;
   });
 
-vi.mock("../store/auth-store", () => ({
+vi.mock("@/app/auth/store/auth-store", () => ({
   useAuthStore: () => mockUseAuthStore(),
 }));
 
@@ -192,7 +192,7 @@ describe("LoginPage", () => {
     });
 
     // Check the button state during loading
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", { name: /signing in\.\.\./i });
     expect(button).toHaveTextContent("Signing in...");
     expect(button).toBeDisabled();
 

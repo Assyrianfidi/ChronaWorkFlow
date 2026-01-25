@@ -1,0 +1,26 @@
+﻿npx : Environment variables loaded from .env
+At line:1 char:85
++ ... s\backend"; npx prisma migrate dev --name add_invoicing_models 2>&1 | ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Environment variables loaded from .env:String) [], Re 
+   moteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "AccuBooks", schema "public" at "localhost:5432"
+
+Applying migration `20251201015845_add_invoicing_models`
+
+The following migration(s) have been created and applied from new schema changes:
+
+prisma\migrations/
+  ΓööΓöÇ 20251201015845_add_invoicing_models/
+    ΓööΓöÇ migration.sql
+
+Your database is now in sync with your schema.
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[GΓ£ö Generated Prisma Client (v6.18.0) to .\node_modules\@prisma\client in 394ms
+
+

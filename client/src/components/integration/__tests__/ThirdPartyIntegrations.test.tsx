@@ -13,17 +13,17 @@ import {
 } from "@/components/ThirdPartyIntegrations";
 
 // Mock modules
-vi.mock("../hooks/useWindowSize", () => ({
+vi.mock("@/hooks/useWindowSize", () => ({
   useWindowSize: vi.fn(() => ({ width: 1024, height: 768 })),
 }));
 
-vi.mock("../store/auth-store", () => ({
+vi.mock("@/store/auth-store", () => ({
   useAuthStore: vi.fn(() => ({
     user: { role: "admin", id: "user-123" },
   })),
 }));
 
-vi.mock("../../adaptive/UserExperienceMode.tsx", () => ({
+vi.mock("@/components/adaptive/UserExperienceMode", () => ({
   useUserExperienceMode: vi.fn(() => ({
     currentMode: {
       id: "standard",
@@ -35,7 +35,7 @@ vi.mock("../../adaptive/UserExperienceMode.tsx", () => ({
   })),
 }));
 
-vi.mock("../../adaptive/UI-Performance-Engine.tsx", () => ({
+vi.mock("@/components/adaptive/UI-Performance-Engine", () => ({
   usePerformance: vi.fn(() => ({
     isLowPerformanceMode: false,
   })),

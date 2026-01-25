@@ -8,7 +8,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Card from "@/components/ui/card";
+import Card from "@/components/ui/Card";
 
 interface KPIMetric {
   title: string;

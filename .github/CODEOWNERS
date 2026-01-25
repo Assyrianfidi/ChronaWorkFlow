@@ -1,0 +1,9 @@
+# CODEOWNERS governance lock
+# NOTE: Replace @Assyrianfidi with your org/team handle if you use team-based ownership.
+
+.github/workflows/ @Assyrianfidi
+scripts/verify-* @Assyrianfidi
+scripts/run-tests-with-metrics.mjs @Assyrianfidi
+server/index.ts @Assyrianfidi
+shared/logging.ts @Assyrianfidi
+governance/*.md @Assyrianfidi

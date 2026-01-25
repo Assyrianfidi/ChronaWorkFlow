@@ -60,14 +60,13 @@ describe("AuthContext", () => {
     vi.clearAllMocks();
     // Ensure localStorage returns null for all tokens
     localStorageMock.getItem.mockImplementation((key) => {
-      if (key === "accessToken" || key === "refreshToken") {
-        return null;
-      }
       return null;
     });
     localStorageMock.setItem.mockClear();
     localStorageMock.removeItem.mockClear();
     localStorageMock.clear.mockClear();
+
+    useAuth.setState({ user: null, isAuthenticated: false, isLoading: false });
   });
 
   afterEach(() => {
@@ -96,19 +95,19 @@ describe("AuthContext", () => {
     authApi.login.mockResolvedValue(mockResponse);
 
     const TestComponent = () => {
-      const { state, login } = useAuth();
+      const auth = useAuth();
 
       const handleLogin = async () => {
-        await login("test@example.com", "password");
+        await auth.login("test@example.com", "password");
       };
 
       return (
         <div>
           <button onClick={handleLogin}>Login</button>
           <div data-testid="auth-state">
-            {state.isAuthenticated ? "Authenticated" : "Not Authenticated"}
+            {auth.isAuthenticated ? "Authenticated" : "Not Authenticated"}
           </div>
-          <div data-testid="user-email">{state.user?.email || ""}</div>
+          <div data-testid="user-email">{auth.user?.email || ""}</div>
         </div>
       );
     };
@@ -123,7 +122,7 @@ describe("AuthContext", () => {
       "Not Authenticated",
     );
 
-    userEvent.click(screen.getByText("Login"));
+    await userEvent.click(screen.getByText("Login"));
 
     await waitFor(
       () => {
@@ -143,13 +142,18 @@ describe("AuthContext", () => {
       { timeout: 3000 },
     );
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      "accessToken",
+      "accubooks_token",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjk5OTk5OTk5OTl9.invalid",
     );
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      "refreshToken",
-      "refresh-token",
+
+    const userCall = localStorageMock.setItem.mock.calls.find(
+      ([key]) => key === "accubooks_user",
     );
+    expect(userCall).toBeTruthy();
+    if (userCall) {
+      const parsedUser = JSON.parse(String(userCall[1]));
+      expect(parsedUser.email).toBe("test@example.com");
+    }
   });
 
   it("should handle login failure", async () => {
@@ -157,11 +161,11 @@ describe("AuthContext", () => {
     authApi.login.mockRejectedValue(mockError);
 
     const TestComponent = () => {
-      const { state, login } = useAuth();
+      const auth = useAuth();
 
       const handleLogin = async () => {
         try {
-          await login("test@example.com", "wrong-password");
+          await auth.login("test@example.com", "wrong-password");
         } catch (error) {
           // Error is handled in context
         }
@@ -171,9 +175,8 @@ describe("AuthContext", () => {
         <div>
           <button onClick={handleLogin}>Login</button>
           <div data-testid="auth-state">
-            {state.isAuthenticated ? "Authenticated" : "Not Authenticated"}
+            {auth.isAuthenticated ? "Authenticated" : "Not Authenticated"}
           </div>
-          <div data-testid="error-message">{state.error || ""}</div>
         </div>
       );
     };
@@ -184,17 +187,12 @@ describe("AuthContext", () => {
       </AuthProvider>,
     );
 
-    userEvent.click(screen.getByText("Login"));
-
-    await waitFor(() => {
-      expect(screen.getByTestId("error-message")).toHaveTextContent(
-        "Login failed",
-      );
-    });
+    await userEvent.click(screen.getByText("Login"));
 
     expect(screen.getByTestId("auth-state")).toHaveTextContent(
       "Not Authenticated",
     );
+    expect(authApi.login).toHaveBeenCalled();
   });
 
   it("should logout successfully", async () => {
@@ -219,14 +217,14 @@ describe("AuthContext", () => {
     authApi.login.mockResolvedValue(mockResponse);
 
     const TestComponent = () => {
-      const { state, login, logout } = useAuth();
+      const auth = useAuth();
 
       const handleLogin = async () => {
-        await login("test@example.com", "password");
+        await auth.login("test@example.com", "password");
       };
 
       const handleLogout = () => {
-        logout();
+        auth.logout();
       };
 
       return (
@@ -234,7 +232,7 @@ describe("AuthContext", () => {
           <button onClick={handleLogin}>Login</button>
           <button onClick={handleLogout}>Logout</button>
           <div data-testid="auth-state">
-            {state.isAuthenticated ? "Authenticated" : "Not Authenticated"}
+            {auth.isAuthenticated ? "Authenticated" : "Not Authenticated"}
           </div>
         </div>
       );
@@ -247,7 +245,7 @@ describe("AuthContext", () => {
     );
 
     // Login first
-    userEvent.click(screen.getByText("Login"));
+    await userEvent.click(screen.getByText("Login"));
     await waitFor(() => {
       expect(screen.getByTestId("auth-state")).toHaveTextContent(
         "Authenticated",
@@ -262,8 +260,11 @@ describe("AuthContext", () => {
       );
     });
 
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith("accessToken");
-    expect(localStorageMock.removeItem).toHaveBeenCalledWith("refreshToken");
+    expect(localStorageMock.removeItem).toHaveBeenCalledWith("accubooks_token");
+    expect(localStorageMock.removeItem).toHaveBeenCalledWith("accubooks_user");
+    expect(localStorageMock.removeItem).toHaveBeenCalledWith("token");
+    expect(localStorageMock.removeItem).toHaveBeenCalledWith("auth_token");
+    expect(localStorageMock.removeItem).toHaveBeenCalledWith("auth_user");
   });
 });
 

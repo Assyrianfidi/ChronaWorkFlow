@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from '../store/auth-store';
+import { useAuthStore } from "@/app/auth/store/auth-store";
 import LoginPage from '../page';
 
 // Mock next/navigation
@@ -11,7 +11,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 // Mock the auth store
-vi.mock("../store/auth-store", () => ({
+vi.mock("@/app/auth/store/auth-store", () => ({
   useAuthStore: vi.fn(),
 }));
 

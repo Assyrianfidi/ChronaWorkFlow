@@ -16,44 +16,7 @@ const DEMO_USERS: Array<{
   password: string;
   role: UserRole;
   name: string;
-}> = [
-  {
-    email: "owner@accubooks.com",
-    password: "owner123",
-    role: "OWNER",
-    name: "Demo Owner",
-  },
-  {
-    email: "admin@accubooks.com",
-    password: "admin123",
-    role: "ADMIN",
-    name: "Demo Admin",
-  },
-  {
-    email: "manager@accubooks.com",
-    password: "manager123",
-    role: "MANAGER",
-    name: "Demo Manager",
-  },
-  {
-    email: "user@accubooks.com",
-    password: "user123",
-    role: "ACCOUNTANT",
-    name: "Demo Accountant",
-  },
-  {
-    email: "auditor@accubooks.com",
-    password: "auditor123",
-    role: "AUDITOR",
-    name: "Demo Auditor",
-  },
-  {
-    email: "inventory@accubooks.com",
-    password: "inventory123",
-    role: "INVENTORY_MANAGER",
-    name: "Demo Inventory Manager",
-  },
-];
+}> = [];
 
 function storageAvailable() {
   return (
@@ -234,36 +197,11 @@ export const useAuth = create<AuthState>((set, get) => {
     login: async (email: string, password: string) => {
       set({ isLoading: true });
 
-      const demoUser = DEMO_USERS.find(
-        (candidate) =>
-          candidate.email.toLowerCase() === email.toLowerCase() &&
-          candidate.password === password,
-      );
-
-      if (demoUser) {
-        const transformedUser: User = {
-          id: `demo-${demoUser.role.toLowerCase()}`,
-          name: demoUser.name,
-          email: demoUser.email,
-          role: demoUser.role,
-          permissions: getPermissionsForRole(demoUser.role),
-        };
-        const demoToken = `demo-token-${Date.now()}`;
-
-        persistAuth(transformedUser, demoToken, true);
-        set({ user: transformedUser, isAuthenticated: true, isLoading: false });
-        return;
-      }
-
       try {
         const response = await authApi.login(email, password);
-        const payload = response?.data;
-        const user = payload?.data?.data?.user ?? payload?.user ?? payload?.data?.user;
-        const accessToken =
-          payload?.data?.data?.accessToken ??
-          payload?.data?.accessToken ??
-          payload?.accessToken ??
-          payload?.token;
+        const payload = response?.data as any;
+        const user = payload?.data?.user ?? payload?.user ?? payload;
+        const accessToken = payload?.data?.accessToken ?? payload?.accessToken ?? payload?.token;
 
         const role = normalizeRole(user?.role);
         const name =
@@ -299,25 +237,38 @@ export const useAuth = create<AuthState>((set, get) => {
       set({ isLoading: true });
 
       try {
-        const newUser: User = {
-          id: Date.now().toString(),
-          name: userData.name,
+        const names = userData.name.trim().split(/\s+/);
+        const firstName = names[0] || "";
+        const lastName = names.slice(1).join(" ") || "";
+        const response = await authApi.register({
           email: userData.email,
-          role: userData.role,
-          permissions: getPermissionsForRole(userData.role),
+          password: userData.password,
+          firstName,
+          lastName,
+        });
+        const payload = response?.data as any;
+        const user = payload?.data?.user ?? payload?.user ?? payload;
+        const accessToken = payload?.data?.accessToken ?? payload?.accessToken ?? payload?.token;
+
+        const role = normalizeRole(user?.role);
+        const name =
+          user?.name ||
+          [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+          user?.email ||
+          "User";
+
+        const transformedUser: User = {
+          id: String(user?.id ?? ""),
+          name,
+          email: String(user?.email ?? userData.email),
+          avatar: user?.avatar,
+          role,
+          permissions: getPermissionsForRole(role),
         };
 
-        const token = "mock-jwt-token-" + Date.now();
+        persistAuth(transformedUser, String(accessToken || ""), false);
 
-        // Store token and user
-        localStorage.setItem("accubooks_token", token);
-        localStorage.setItem("accubooks_user", JSON.stringify(newUser));
-
-        set({
-          user: newUser,
-          isAuthenticated: true,
-          isLoading: false,
-        });
+        set({ user: transformedUser, isAuthenticated: true, isLoading: false });
       } catch (error) {
         set({ isLoading: false });
         throw error;

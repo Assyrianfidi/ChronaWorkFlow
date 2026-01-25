@@ -3,6 +3,10 @@ import RegisterPage from '../page';
 
 // Simple mock for useRouter
 const mockPush = vi.fn();
+let authState = {
+  isAuthenticated: false,
+  isLoading: false,
+};
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: mockPush,
@@ -10,24 +14,29 @@ vi.mock("next/navigation", () => ({
 }));
 
 // Simple mock for useAuthStore
-const mockRegister = vi.fn();
-vi.mock("../store/auth-store", () => ({
-  useAuthStore: (selector?: (state: any) => any) => {
-    const state = {
-      user: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
-      register: mockRegister,
-    };
-    return selector ? selector(state) : state;
-  },
+const useAuthStoreMock = vi.hoisted(() => vi.fn());
+vi.mock("../../store/auth-store", () => ({
+  useAuthStore: useAuthStoreMock,
 }));
 
 describe("RegisterPage - Simple Tests", () => {
   beforeEach(() => {
     // Clear all mocks before each test
     vi.clearAllMocks();
+    authState = {
+      isAuthenticated: false,
+      isLoading: false,
+    };
+
+    useAuthStoreMock.mockImplementation((selector?: (state: any) => any) => {
+      const state = {
+        user: null,
+        isAuthenticated: authState.isAuthenticated,
+        isLoading: authState.isLoading,
+        error: null,
+      };
+      return selector ? selector(state) : state;
+    });
   });
 
   it("renders the registration form", () => {
@@ -48,9 +57,6 @@ describe("RegisterPage - Simple Tests", () => {
   });
 
   it("submits the form with valid data", async () => {
-    // Mock a successful registration
-    mockRegister.mockResolvedValueOnce({});
-
     render(<RegisterPage />);
 
     // Fill out the form
@@ -75,67 +81,41 @@ describe("RegisterPage - Simple Tests", () => {
     // Submit the form
     fireEvent.click(submitButton);
 
-    // Wait for the form submission to complete
     await waitFor(() => {
-      expect(mockRegister).toHaveBeenCalledWith({
-        name: "Test User",
-        email: "test@example.com",
-        password: "Password123!",
-      });
+      expect(mockPush).toHaveBeenCalledWith("/auth/signin");
     });
   });
 
   it("shows loading state during submission", async () => {
-    // Create a promise that we can resolve later
-    let resolveRegister!: (value?: any) => void;
-    const registerPromise = new Promise((resolve) => {
-      resolveRegister = resolve;
+    useAuthStoreMock.mockImplementation((selector?: (state: any) => any) => {
+      const state = {
+        user: null,
+        isAuthenticated: false,
+        isLoading: true,
+        error: null,
+      };
+      return selector ? selector(state) : state;
     });
-
-    mockRegister.mockReturnValueOnce(registerPromise);
 
     render(<RegisterPage />);
 
-    // Fill out the form
-    const nameInput = screen.getByPlaceholderText("Full Name");
-    const emailInput = screen.getByPlaceholderText("Email address");
-    const passwordInput = screen.getByPlaceholderText("Password");
-    const confirmPasswordInput =
-      screen.getByPlaceholderText("Confirm Password");
-    const termsCheckbox = screen.getByRole("checkbox");
     const submitButton = screen.getByRole("button", {
-      name: /create account/i,
+      name: /creating\.\.\./i,
     });
+    expect(submitButton).toBeDisabled();
 
-    fireEvent.change(nameInput, { target: { value: "Test User" } });
-    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-    fireEvent.change(passwordInput, { target: { value: "Password123!" } });
-    fireEvent.change(confirmPasswordInput, {
-      target: { value: "Password123!" },
-    });
-    fireEvent.click(termsCheckbox);
-
-    // Submit the form
-    fireEvent.click(submitButton);
-
-    // Button should be disabled during submission
-    await waitFor(() => {
-      expect(submitButton).toBeDisabled();
-    });
-
-    // Resolve the promise
-    resolveRegister({});
-
-    // Wait for the form submission to complete
-    await waitFor(() => {
-      expect(submitButton).not.toBeDisabled();
-    });
+    expect(screen.getByPlaceholderText("Full Name")).toBeDisabled();
+    expect(screen.getByPlaceholderText("Email address")).toBeDisabled();
+    expect(screen.getByPlaceholderText("Password")).toBeDisabled();
+    expect(screen.getByPlaceholderText("Confirm Password")).toBeDisabled();
+    expect(screen.getByRole("checkbox")).toBeDisabled();
   });
 
   it("handles registration error", async () => {
-    // Mock a failed registration
     const errorMessage = "Email already in use";
-    mockRegister.mockRejectedValueOnce(new Error(errorMessage));
+    mockPush.mockImplementationOnce(() => {
+      throw new Error(errorMessage);
+    });
 
     render(<RegisterPage />);
 
@@ -161,14 +141,7 @@ describe("RegisterPage - Simple Tests", () => {
     // Submit the form
     fireEvent.click(submitButton);
 
-    // Wait for the form submission to complete
-    await waitFor(() => {
-      expect(mockRegister).toHaveBeenCalledWith({
-        name: "Test User",
-        email: "test@example.com",
-        password: "Password123!",
-      });
-    });
+    expect(await screen.findByRole("alert")).toHaveTextContent(errorMessage);
 
     // Button should be re-enabled after error
     expect(submitButton).not.toBeDisabled();

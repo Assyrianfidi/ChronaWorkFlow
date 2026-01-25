@@ -36,10 +36,98 @@ import {
   plaidHealthCheck,
 } from "./routes/plaid";
 
-import { enforceBillingStatus, enforcePlanLimits, enforcePlanLimitsMiddleware } from "./middleware/billing-enforcement";
+import { enforceBillingStatus, enforcePlanLimits, enforcePlanLimitsMiddleware, getBillingEnforcementMode, getCompanyIdFromRequest } from "./middleware/billing-enforcement";
+import { getCurrentPlan, enforcePlanLimits as enforcePlanLimitsNew, requireFeature } from "./middleware/plan-enforcement";
 
-const JWT_SECRET = process.env.SESSION_SECRET || "dev-secret-change-in-production";
+import { startWorkflowInstance } from "./services/workflow.service";
+import { getActorFromRequest, isAccountingError, postJournalEntry, voidByReversal } from "./services/accounting.service";
+import { isPeriodLocked, lockAccountingPeriod, unlockAccountingPeriod, getAccountingPeriods } from "./services/accounting-periods.service";
+
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET;
 const OWNER_EMAIL = process.env.OWNER_EMAIL?.toLowerCase();
+
+// Validate JWT_SECRET is set
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET or SESSION_SECRET must be set in environment variables');
+}
+
+function getPermissionsForRole(role: string): string[] {
+  const normalized = role.trim().toUpperCase();
+  switch (normalized) {
+    case "OWNER":
+      return [
+        "read:*",
+        "write:*",
+        "owner:access",
+        "owner:impersonate",
+        "owner:feature-flags",
+        "owner:billing",
+        "owner:security",
+        "owner:audit",
+      ];
+    case "ADMIN":
+      return [
+        "read:dashboard",
+        "write:dashboard",
+        "read:invoices",
+        "write:invoices",
+        "read:users",
+        "write:users",
+        "read:reports",
+        "write:reports",
+        "read:billing",
+        "write:billing",
+        "read:settings",
+        "write:settings",
+      ];
+    case "MANAGER":
+      return [
+        "read:dashboard",
+        "write:dashboard",
+        "read:invoices",
+        "write:invoices",
+        "read:reports",
+        "write:reports",
+        "read:team",
+        "write:team",
+        "read:settings",
+        "write:settings",
+      ];
+    case "ACCOUNTANT":
+      return [
+        "read:dashboard",
+        "write:dashboard",
+        "read:invoices",
+        "write:invoices",
+        "read:reports",
+        "write:reports",
+        "read:transactions",
+        "write:transactions",
+      ];
+    case "AUDITOR":
+      return [
+        "read:dashboard",
+        "read:invoices",
+        "read:reports",
+        "read:audit",
+        "read:compliance",
+        "read:settings",
+      ];
+    case "INVENTORY_MANAGER":
+      return [
+        "read:dashboard",
+        "write:dashboard",
+        "read:inventory",
+        "write:inventory",
+        "read:reports",
+        "write:reports",
+        "read:settings",
+        "write:settings",
+      ];
+    default:
+      return [];
+  }
+}
 
 function isOwnerEmail(email?: string | null) {
   if (!OWNER_EMAIL) return false;
@@ -1132,6 +1220,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/transactions", authenticateToken, enforceBillingStatus(), async (req, res) => {
     try {
       const { transaction, lines } = req.body;
+      const companyId = transaction.companyId;
+
+      // Enforce accounting period lock
+      const isLocked = await isPeriodLocked(companyId, new Date(transaction.date));
+      if (isLocked) {
+        return res.status(403).json({
+          error: "Accounting period is locked. Transactions cannot be created in locked periods.",
+        });
+      }
 
       // Validate double-entry: sum of debits must equal sum of credits
       const totalDebits = lines.reduce(
@@ -1151,18 +1248,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const newTransaction = await storage.createTransaction(transaction, lines);
+      const actor = getActorFromRequest(req);
+
+      const newTransaction = await postJournalEntry({
+        transaction: {
+          ...transaction,
+          createdBy: actor.userId,
+          updatedAt: new Date(),
+        },
+        lines,
+        actor,
+      } as any);
+
       res.status(201).json(newTransaction);
     } catch (error: any) {
+      if (isAccountingError(error)) {
+        return res.status(error.status).json({ error: error.message });
+      }
       res.status(500).json({ error: error.message });
     }
   });
 
   app.post("/api/transactions/:id/void", authenticateToken, enforceBillingStatus(), async (req, res) => {
     try {
-      await storage.voidTransaction(req.params.id, (req as any).user.id);
+      const actor = getActorFromRequest(req);
+      const [original] = await db
+        .select({ companyId: sharedSchema.transactions.companyId })
+        .from(sharedSchema.transactions)
+        .where(eq(sharedSchema.transactions.id, req.params.id))
+        .limit(1);
+
+      if (!original?.companyId) {
+        return res.status(404).json({ error: "Transaction not found" });
+      }
+
+      await voidByReversal({
+        companyId: original.companyId,
+        transactionId: req.params.id,
+        actor,
+        reason: typeof req.body?.reason === "string" ? req.body.reason : null,
+      });
       res.json({ success: true });
     } catch (error: any) {
+      if (isAccountingError(error)) {
+        return res.status(error.status).json({ error: error.message });
+      }
       res.status(500).json({ error: error.message });
     }
   });
@@ -1220,6 +1350,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       const newInvoice = await storage.createInvoice(invoiceData, items);
+
+      void startWorkflowInstance({
+        companyId: String((newInvoice as any).companyId ?? invoiceData.companyId ?? ""),
+        triggerEventType: "invoice_created",
+        triggerEntityType: "invoice",
+        triggerEntityId: String((newInvoice as any).id ?? null),
+        metadataJson: { invoiceId: (newInvoice as any).id ?? null },
+        actorUserId: String((req as any).user?.id ?? null),
+      }).catch(() => {
+        return;
+      });
+
       res.status(201).json(newInvoice);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -1236,6 +1378,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdBy: (req as any).user.id,
       };
       const payment = await storage.createPayment(paymentData);
+
+      void startWorkflowInstance({
+        companyId: String((payment as any).companyId ?? paymentData.companyId ?? ""),
+        triggerEventType: "payment_received",
+        triggerEntityType: "payment",
+        triggerEntityId: String((payment as any).id ?? null),
+        metadataJson: { paymentId: (payment as any).id ?? null, invoiceId: (payment as any).invoiceId ?? null },
+        actorUserId: String((req as any).user?.id ?? null),
+      }).catch(() => {
+        return;
+      });
+
       res.status(201).json(payment);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -1611,6 +1765,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { payRun, details } = req.body;
       const newPayRun = await storage.createPayRun(payRun, details);
+
+      void startWorkflowInstance({
+        companyId: String((newPayRun as any).companyId ?? payRun?.companyId ?? ""),
+        triggerEventType: "payroll_run",
+        triggerEntityType: "pay_run",
+        triggerEntityId: String((newPayRun as any).id ?? null),
+        metadataJson: { payRunId: (newPayRun as any).id ?? null },
+        actorUserId: String((req as any).user?.id ?? null),
+      }).catch(() => {
+        return;
+      });
+
       res.status(201).json(newPayRun);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -1761,6 +1927,172 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const adjustment = await storage.createInventoryAdjustment(req.body);
       res.status(201).json(adjustment);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ==================== BILLING & PLANS ====================
+
+  app.get("/api/billing/plans", authenticateToken, async (req, res) => {
+    try {
+      const plans = await db
+        .select()
+        .from(s.plans)
+        .where(eq(s.plans.isActive, true))
+        .orderBy(s.plans.priceCents);
+      res.json(plans);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/billing/subscription", authenticateToken, async (req, res) => {
+    try {
+      const companyId = getCompanyIdFromRequest(req as any);
+      if (!companyId) return res.status(400).json({ error: "companyId required" });
+
+      const { plan, entitlements } = await getCurrentPlan(companyId);
+      res.json({ plan, entitlements });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/billing/upgrade", authenticateToken, async (req, res) => {
+    try {
+      const { planId } = req.body;
+      const companyId = getCompanyIdFromRequest(req as any);
+      if (!companyId) return res.status(400).json({ error: "companyId required" });
+
+      // TODO: Integrate with Stripe to create/upgrade subscription
+      res.json({ success: true, message: "Upgrade flow initiated." });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ==================== OWNER COMMAND CONTROLS ====================
+
+  app.get("/api/owner/accounting-periods", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const companyId = req.query.companyId as string;
+      if (!companyId) return res.status(400).json({ error: "companyId required" });
+      const periods = await getAccountingPeriods(companyId);
+      res.json(periods);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/owner/accounting-periods/:periodId/lock", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const { periodId } = req.params;
+      const { companyId, reason } = req.body;
+      if (!companyId || !reason) return res.status(400).json({ error: "companyId and reason required" });
+      await lockAccountingPeriod(companyId, periodId, (req as any).user.id, reason);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/owner/accounting-periods/:periodId/unlock", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const { periodId } = req.params;
+      const { companyId, reason } = req.body;
+      if (!companyId || !reason) return res.status(400).json({ error: "companyId and reason required" });
+      await unlockAccountingPeriod(companyId, periodId, (req as any).user.id, reason);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/owner/export/accountant-report", authenticateToken, requireOwner, async (req, res) => {
+    try {
+      const { companyId, startDate, endDate, format = "json" } = req.query;
+      if (!companyId || !startDate || !endDate) return res.status(400).json({ error: "companyId, startDate, endDate required" });
+
+      // Fetch transactions, accounts, and period locks for the range
+      const transactions = await db
+        .select()
+        .from(s.transactions)
+        .where(
+          and(
+            eq(s.transactions.companyId, companyId as string),
+            sql`${s.transactions.date}::date >= ${startDate}::date AND ${s.transactions.date}::date <= ${endDate}::date`
+          )
+        )
+        .orderBy(s.transactions.date);
+
+      const accounts = await db
+        .select()
+        .from(s.accounts)
+        .where(eq(s.accounts.companyId, companyId as string));
+
+      const periods = await getAccountingPeriods(companyId as string);
+
+      const report = {
+        meta: {
+          companyId,
+          startDate,
+          endDate,
+          generatedAt: new Date().toISOString(),
+          generatedBy: (req as any).user.email,
+          accountingPeriods: periods,
+        },
+        accounts,
+        transactions,
+      };
+
+      if (format === "csv") {
+        // Simple CSV export for transactions
+        const csv = [
+          "Transaction Number,Date,Type,Description,Debit,Credit,Account Code,Account Name",
+          ...transactions.flatMap((tx) =>
+            (tx.lines ?? []).map((line: any) =>
+              `${tx.transactionNumber},${tx.date},${tx.type},"${tx.description}",${line.debit ?? ""},${line.credit ?? ""},${line.accountCode},${line.accountName}`
+            )
+          ),
+        ].join("\n");
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Disposition", `attachment; filename="accountant-report-${startDate}-${endDate}.csv"`);
+        return res.send(csv);
+      }
+
+      res.json(report);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ==================== USER PROFILE & PERMISSIONS ====================
+
+  app.get("/api/me", authenticateToken, async (req, res) => {
+    try {
+      const user = (req as any).user;
+      const permissions = getPermissionsForRole(user.role);
+      res.json({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        permissions,
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/billing/status", authenticateToken, enforceBillingStatus(), async (req, res) => {
+    try {
+      const companyId = getCompanyIdFromRequest(req as any);
+      if (!companyId) {
+        return res.status(400).json({ error: "companyId is required" });
+      }
+      const { mode, subscription } = await getBillingEnforcementMode(companyId);
+      res.json({ mode, subscription });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

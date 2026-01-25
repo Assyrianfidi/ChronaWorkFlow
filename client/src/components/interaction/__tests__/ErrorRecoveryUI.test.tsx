@@ -136,7 +136,7 @@ describe("ErrorRecoveryUI", () => {
     });
   });
 
-  it("dismisses errors", () => {
+  it("dismisses errors", async () => {
     function TestComponent() {
       const { addError, dismissError, errors } = useErrorRecovery();
       const [dismissed, setDismissed] = React.useState(false);
@@ -192,7 +192,7 @@ describe("ErrorRecoveryUI", () => {
     });
   });
 
-  it("clears all errors", () => {
+  it("clears all errors", async () => {
     function TestComponent() {
       const { addError, clearErrors, errors } = useErrorRecovery();
       const [cleared, setCleared] = React.useState(false);
@@ -261,7 +261,7 @@ describe("ErrorRecoveryUI", () => {
     });
   });
 
-  it("provides error statistics", () => {
+  it("provides error statistics", async () => {
     function TestComponent() {
       const { addError, getErrorStats } = useErrorRecovery();
       const [stats, setStats] = React.useState<any>(null);
@@ -347,7 +347,7 @@ describe("ErrorRecoveryUI", () => {
     });
   });
 
-  it("manages error patterns", () => {
+  it("manages error patterns", async () => {
     function TestComponent() {
       const { addPattern, updatePattern, deletePattern, patterns } =
         useErrorRecovery();
@@ -793,7 +793,7 @@ describe("withErrorBoundary HOC", () => {
 });
 
 describe("useAsyncError Hook", () => {
-  it("provides async error handler", () => {
+  it("provides async error handler", async () => {
     function TestComponent() {
       const asyncError = useAsyncError();
       const [errorHandled, setErrorHandled] = React.useState(false);
@@ -827,7 +827,7 @@ describe("useAsyncError Hook", () => {
     });
   });
 
-  it("adds context to async errors", () => {
+  it("adds context to async errors", async () => {
     function TestComponent() {
       const asyncError = useAsyncError();
       const { errors } = useErrorRecovery();
@@ -868,7 +868,7 @@ describe("Global Error Handling", () => {
     vi.clearAllMocks();
   });
 
-  it("handles global JavaScript errors", () => {
+  it("handles global JavaScript errors", async () => {
     function TestComponent() {
       const { errors } = useErrorRecovery();
 
@@ -905,7 +905,7 @@ describe("Global Error Handling", () => {
     });
   });
 
-  it("handles unhandled promise rejections", () => {
+  it("handles unhandled promise rejections", async () => {
     function TestComponent() {
       const { errors } = useErrorRecovery();
 
@@ -943,7 +943,7 @@ describe("Global Error Handling", () => {
 });
 
 describe("Error Pattern Matching", () => {
-  it("matches errors against patterns", () => {
+  it("matches errors against patterns", async () => {
     function TestComponent() {
       const { addError, patterns } = useErrorRecovery();
 
@@ -1022,7 +1022,7 @@ describe("Error Pattern Matching", () => {
     });
   });
 
-  it("updates pattern severity based on errors", () => {
+  it("updates pattern severity based on errors", async () => {
     function TestComponent() {
       const { addError, updatePattern, patterns } = useErrorRecovery();
 
@@ -1135,7 +1135,7 @@ describe("Recovery Strategies", () => {
     });
   });
 
-  it("filters recovery strategies by conditions", () => {
+  it("filters recovery strategies by conditions", async () => {
     function TestComponent() {
       const { addError, patterns } = useErrorRecovery();
       const [strategies, setStrategies] = React.useState<any[]>([]);

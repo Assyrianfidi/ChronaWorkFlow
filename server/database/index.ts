@@ -2,9 +2,10 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
 import { logger } from '../utils/logger';
+import { getDatabaseConfig } from '../config/env-validation';
 
-// Database connection
-const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:Fkhouch8@localhost:5432/AccuBooks';
+// Database connection using validated environment variable
+const connectionString = getDatabaseConfig();
 
 const client = postgres(connectionString, { prepare: false });
 const db = drizzle(client, { schema });

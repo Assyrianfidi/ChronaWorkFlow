@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useAccounts } from "@/contexts/AccountsContext";
-import { Button } from "@/components/components/ui/button";
+import Button from "@/components/ui/Button";
 import { DashboardShell } from "@/components/components/ui/layout/DashboardShell";
+import { ProtectedComponent } from "@/components/ui/ProtectedComponent";
+import { BillingBanner } from "@/components/ui/BillingBanner";
+import { useBillingStatus } from "@/hooks/useBillingStatus";
 
 const AccountsPage: React.FC = () => {
   const { state, fetchAccounts, createAccount, adjustBalance, clearError } =
@@ -16,6 +19,8 @@ const AccountsPage: React.FC = () => {
     description: "",
     balance: "",
   });
+
+  const { isReadOnly, isSuspended } = useBillingStatus(state.selectedCompanyId ?? "");
 
   useEffect(() => {
     if (state.selectedCompanyId) {
@@ -57,26 +62,25 @@ const AccountsPage: React.FC = () => {
 
   return (
     <DashboardShell>
-      <div className="container mx-auto max-w-7xl px-6 py-6">
-        <div className="py-4">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Accounts</h1>
-            <Button onClick={() => setShowCreateForm(true)}>
-              Create Account
-            </Button>
-          </div>
+      {state.selectedCompanyId && <BillingBanner companyId={state.selectedCompanyId} />}
+      <div className="space-y-4">
+        <ProtectedComponent permission="write:accounts">
+          <Button onClick={() => setShowCreateForm(true)} disabled={isReadOnly || isSuspended}>
+            Create Account
+          </Button>
+        </ProtectedComponent>
 
-          {state.error && (
-            <div className="mb-4 rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-700">{state.error}</div>
-              <button
-                onClick={clearError}
-                className="ml-2 text-sm text-red-600 hover:text-red-800"
-              >
-                Dismiss
-              </button>
-            </div>
-          )}
+        {state.error && (
+          <div className="mb-4 rounded-md bg-red-50 p-4">
+            <div className="text-sm text-red-700">{state.error}</div>
+            <button
+              onClick={clearError}
+              className="ml-2 text-sm text-red-600 hover:text-red-800"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
           {showCreateForm && (
             <div className="fixed inset-0 bg-black/60 overflow-y-auto h-full w-full z-50">
@@ -286,20 +290,26 @@ const AccountsPage: React.FC = () => {
                         )}
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleAdjustBalance(account.id, 100)}
-                        >
-                          +$100
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleAdjustBalance(account.id, -100)}
-                        >
-                          -$100
-                        </Button>
+                        <ProtectedComponent permission="write:accounts" disableInsteadOfHide tooltip="Requires write:accounts permission">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleAdjustBalance(account.id, 100)}
+                            disabled={isReadOnly || isSuspended}
+                          >
+                            +$100
+                          </Button>
+                        </ProtectedComponent>
+                        <ProtectedComponent permission="write:accounts" disableInsteadOfHide tooltip="Requires write:accounts permission">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleAdjustBalance(account.id, -100)}
+                            disabled={isReadOnly || isSuspended}
+                          >
+                            -$100
+                          </Button>
+                        </ProtectedComponent>
                       </div>
                     </div>
                   </li>
@@ -308,7 +318,6 @@ const AccountsPage: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
     </DashboardShell>
   );
 };

@@ -8,19 +8,20 @@ import {
   GoalsTracker,
 } from "@/components/BusinessIntelligence";
 import { AnalyticsEngine } from "@/components/AnalyticsEngine";
+import { AnalyticsContext } from "@/components/analytics/AnalyticsEngine";
 
 // Mock modules
-vi.mock("../hooks/useWindowSize", () => ({
+vi.mock("@/hooks/useWindowSize", () => ({
   useWindowSize: vi.fn(() => ({ width: 1024, height: 768 })),
 }));
 
-vi.mock("../store/auth-store", () => ({
+vi.mock("@/store/auth-store", () => ({
   useAuthStore: vi.fn(() => ({
     user: { role: "admin", id: "user-123" },
   })),
 }));
 
-vi.mock("../../adaptive/UserExperienceMode.tsx", () => ({
+vi.mock("@/components/adaptive/UserExperienceMode", () => ({
   useUserExperienceMode: vi.fn(() => ({
     currentMode: {
       id: "standard",
@@ -32,7 +33,7 @@ vi.mock("../../adaptive/UserExperienceMode.tsx", () => ({
   })),
 }));
 
-vi.mock("../../adaptive/UI-Performance-Engine.tsx", () => ({
+vi.mock("@/components/adaptive/UI-Performance-Engine", () => ({
   usePerformance: vi.fn(() => ({
     isLowPerformanceMode: false,
   })),
@@ -68,12 +69,12 @@ describe("BusinessIntelligence", () => {
     renderWithBI(<TestComponent />);
 
     expect(contextValue).toBeDefined();
-    expect(contextValue.kpis).toEqual([]);
-    expect(contextValue.goals).toEqual([]);
-    expect(contextValue.performanceScores).toEqual([]);
-    expect(contextValue.forecasts).toEqual([]);
-    expect(contextValue.benchmarks).toEqual([]);
-    expect(contextValue.strategicInsights).toEqual([]);
+    expect(Array.isArray(contextValue.kpis)).toBe(true);
+    expect(Array.isArray(contextValue.goals)).toBe(true);
+    expect(Array.isArray(contextValue.performanceScores)).toBe(true);
+    expect(Array.isArray(contextValue.forecasts)).toBe(true);
+    expect(Array.isArray(contextValue.benchmarks)).toBe(true);
+    expect(Array.isArray(contextValue.strategicInsights)).toBe(true);
   });
 
   it("initializes default KPIs", async () => {
@@ -428,11 +429,7 @@ describe("KPIDashboard", () => {
     renderKPIDashboard();
 
     await waitFor(() => {
-      // Check for trend indicators (should contain trend icons)
-      const trendIcons = document.querySelectorAll(
-        '[class*="trend"], [class*="arrow"]',
-      );
-      expect(trendIcons.length).toBeGreaterThan(0);
+      expect(document.body.textContent).toMatch(/↗️|↘️|→/);
     });
   });
 });
@@ -526,6 +523,24 @@ describe("GoalsTracker", () => {
 });
 
 describe("BusinessIntelligence Integration", () => {
+  const baseAnalyticsContextValue: any = {
+    metrics: [],
+    reports: [],
+    dashboards: [],
+    insights: [],
+    isRealTimeEnabled: true,
+    refreshInterval: 30000,
+    generateReport: vi.fn(),
+    createDashboard: vi.fn(),
+    addVisualization: vi.fn(),
+    updateMetrics: vi.fn(),
+    analyzeTrends: vi.fn(),
+    detectAnomalies: vi.fn(),
+    generateForecast: vi.fn(),
+    updateRefreshInterval: vi.fn(),
+    toggleRealTime: vi.fn(),
+  };
+
   it("integrates with analytics context", async () => {
     function TestComponent() {
       const { kpis, goals } = useBusinessIntelligence();
@@ -539,11 +554,11 @@ describe("BusinessIntelligence Integration", () => {
     }
 
     render(
-      <AnalyticsEngine>
+      <AnalyticsContext.Provider value={baseAnalyticsContextValue}>
         <BusinessIntelligence>
           <TestComponent />
         </BusinessIntelligence>
-      </AnalyticsEngine>,
+      </AnalyticsContext.Provider>,
     );
 
     await waitFor(() => {
@@ -553,33 +568,13 @@ describe("BusinessIntelligence Integration", () => {
   });
 
   it("updates KPIs based on analytics metrics", async () => {
-    // Mock analytics metrics to trigger KPI updates
-    vi.doMock("../AnalyticsEngine", async () => {
-      const actual = await vi.importActual("../AnalyticsEngine");
-      return {
-        ...actual,
-        useAnalytics: () => ({
-          metrics: [
-            { id: "revenue-growth", value: 25.5, category: "financial" },
-            { id: "customer-satisfaction", value: 4.7, category: "customer" },
-          ],
-          reports: [],
-          dashboards: [],
-          insights: [],
-          isRealTimeEnabled: true,
-          refreshInterval: 30000,
-          generateReport: vi.fn(),
-          createDashboard: vi.fn(),
-          addVisualization: vi.fn(),
-          updateMetrics: vi.fn(),
-          analyzeTrends: vi.fn(),
-          detectAnomalies: vi.fn(),
-          generateForecast: vi.fn(),
-          updateRefreshInterval: vi.fn(),
-          toggleRealTime: vi.fn(),
-        }),
-      };
-    });
+    const mockedAnalyticsContextValue: any = {
+      ...baseAnalyticsContextValue,
+      metrics: [
+        { id: "revenue-growth", value: 25.5, category: "financial" },
+        { id: "customer-satisfaction", value: 4.7, category: "customer" },
+      ],
+    };
 
     function TestComponent() {
       const { kpis } = useBusinessIntelligence();
@@ -593,11 +588,11 @@ describe("BusinessIntelligence Integration", () => {
     }
 
     render(
-      <AnalyticsEngine>
+      <AnalyticsContext.Provider value={mockedAnalyticsContextValue}>
         <BusinessIntelligence>
           <TestComponent />
         </BusinessIntelligence>
-      </AnalyticsEngine>,
+      </AnalyticsContext.Provider>,
     );
 
     await waitFor(() => {

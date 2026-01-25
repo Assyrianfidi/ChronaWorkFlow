@@ -12,19 +12,19 @@ import {
 } from '../../test-utils';
 import { vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { ReportView } from '../components/reports/ReportView';
-import { useReport } from '../hooks/useReports';
+import { ReportView } from '../../../components/reports/ReportView';
+import { useReport } from '../../../hooks/useReports';
 
 // Mock the useToast hook
 const mockToast = vi.fn();
-vi.mock("../components/ui/use-toast", () => ({
+vi.mock("../../../components/ui/use-toast", () => ({
   useToast: () => ({
     toast: mockToast,
   }),
 }));
 
 // Mock the useReport hook
-vi.mock("../hooks/useReports", () => ({
+vi.mock("../../../hooks/useReports", () => ({
   useReport: vi.fn(),
 }));
 

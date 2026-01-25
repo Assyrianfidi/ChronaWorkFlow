@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { useAuthStore } from '../store/auth-store';
+import { useAuthStore } from "@/app/auth/store/auth-store";
 import { cn } from "@/lib/utils";
 
 // Form validation schema
@@ -47,8 +47,14 @@ const theme = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading, error: authError } = useAuthStore();
+  const { login, isLoading, error: authError, isAuthenticated } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
 
   const {
     register,
@@ -66,8 +72,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      await login(data.email, data.password);
-      router.push("/dashboard");
+      await login({ email: data.email, password: data.password });
     } catch (error) {
       setFormError("root", {
         type: "manual",
@@ -126,6 +131,12 @@ export default function LoginPage() {
           {authError && (
             <div className="mb-6 p-3 bg-red-50 text-red-700 text-sm rounded-md border border-red-200">
               {authError}
+            </div>
+          )}
+
+          {errors.root?.message && (
+            <div className="mb-6 p-3 bg-red-50 text-red-700 text-sm rounded-md border border-red-200">
+              {errors.root.message}
             </div>
           )}
 
@@ -206,7 +217,7 @@ export default function LoginPage() {
                   type="button"
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? "Hide" : "Show"}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-500" />

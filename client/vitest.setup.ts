@@ -1,50 +1,82 @@
 import "@testing-library/jest-dom";
-import { vi } from "vitest";
+import { afterEach, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
 
 // Mock IntersectionObserver
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+class MockIntersectionObserver {
+  constructor() {
+    this.observe = () => {};
+    this.unobserve = () => {};
+    this.disconnect = () => {};
+  }
+}
+
+globalThis.IntersectionObserver = MockIntersectionObserver;
+if (typeof window !== "undefined") {
+  window.IntersectionObserver = MockIntersectionObserver;
+}
 
 // Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+class MockResizeObserver {
+  constructor() {
+    this.observe = () => {};
+    this.unobserve = () => {};
+    this.disconnect = () => {};
+  }
+}
+
+globalThis.ResizeObserver = MockResizeObserver;
+if (typeof window !== "undefined") {
+  window.ResizeObserver = MockResizeObserver;
+}
 
 // Mock window.matchMedia
 Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: vi.fn().mockImplementation((query) => ({
+  value: (query: string) => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
+    addListener: () => {}, // deprecated
+    removeListener: () => {}, // deprecated
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  }),
 });
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
+  getItem: (_key: string) => null,
+  setItem: (_key: string, _value: string) => {},
+  removeItem: (_key: string) => {},
+  clear: () => {},
 };
 global.localStorage = localStorageMock;
 
 // Mock console methods to reduce noise in tests
 global.console = {
   ...console,
-  warn: vi.fn(),
-  error: vi.fn(),
+  warn: (..._args: unknown[]) => {},
+  error: (..._args: unknown[]) => {},
 };
 
 // Mock cn utility
-global.cn = vi.fn((...classes) => classes.filter(Boolean).join(" "));
+global.cn = (...classes: unknown[]) => classes.filter(Boolean).join(" ");
+
+afterEach(() => {
+  cleanup();
+});
+
+if (typeof HTMLCanvasElement !== "undefined") {
+  Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
+    value: () => ({
+      clearRect: () => {},
+      beginPath: () => {},
+      arc: () => {},
+      fill: () => {},
+      setTransform: () => {},
+      drawImage: () => {},
+    }),
+  });
+}

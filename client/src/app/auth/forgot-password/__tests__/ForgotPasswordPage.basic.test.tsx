@@ -1,11 +1,12 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
 import ForgotPasswordPage from '../page';
-import { useAuthStore } from '../store/auth-store';
+import { useAuthStore } from '../../store/auth-store';
 
-const mockRequestPasswordReset = jest.fn();
+const mockRequestPasswordReset = vi.fn();
 
-jest.mock("../store/auth-store", () => ({
-  useAuthStore: jest.fn(() => ({
+vi.mock("../../store/auth-store", () => ({
+  useAuthStore: vi.fn(() => ({
     isAuthenticated: false,
     isLoading: false,
     requestPasswordReset: mockRequestPasswordReset,

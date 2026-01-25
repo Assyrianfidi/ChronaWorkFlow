@@ -1,5 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
+import { useAuthStore } from "@/store/auth-store";
 import {
   UserExperienceModeProvider,
   useUserExperienceMode,
@@ -8,18 +10,18 @@ import {
 } from '../UserExperienceMode';
 
 // Mock the auth store
-jest.mock("@/store/auth-store", () => ({
-  useAuthStore: jest.fn(() => ({
+vi.mock("@/store/auth-store", () => ({
+  useAuthStore: vi.fn(() => ({
     user: { role: "user" },
   })),
 }));
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 };
 
 Object.defineProperty(window, "localStorage", {
@@ -28,10 +30,9 @@ Object.defineProperty(window, "localStorage", {
 
 describe("UserExperienceModeProvider", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     localStorageMock.getItem.mockImplementation(() => null);
-    const { useAuthStore } = require("@/store/auth-store");
     useAuthStore.mockReturnValue({ user: { role: "user" } });
-    jest.clearAllMocks();
   });
 
   it("renders children correctly", () => {
@@ -112,7 +113,6 @@ describe("UserExperienceModeProvider", () => {
   });
 
   it("auto-selects mode based on user role", () => {
-    const { useAuthStore } = require("@/store/auth-store");
     useAuthStore.mockReturnValue({ user: { role: "admin" } });
 
     const TestComponent = () => {
@@ -170,10 +170,9 @@ describe("UXModeSelector", () => {
 
 describe("UXCustomSettings", () => {
   beforeEach(() => {
-    const { useAuthStore } = require("@/store/auth-store");
+    vi.clearAllMocks();
     useAuthStore.mockReturnValue({ user: { role: "user" } });
     localStorageMock.getItem.mockImplementation(() => null);
-    jest.clearAllMocks();
   });
 
   it("renders custom settings controls", () => {

@@ -23,6 +23,7 @@ import { InventoryItem, InventoryStatus } from "@/types/inventory";
 interface InventoryTableProps {
   items: InventoryItem[];
   isLoading?: boolean;
+  isError?: boolean;
   selectedItems?: string[];
   onSelectItem?: (id: string, selected: boolean) => void;
   onSelectAll?: (selected: boolean) => void;
@@ -38,6 +39,7 @@ interface InventoryTableProps {
 export function InventoryTable({
   items,
   isLoading = false,
+  isError = false,
   selectedItems = [],
   onSelectItem,
   onSelectAll,
@@ -112,6 +114,12 @@ export function InventoryTable({
                 <LoadingState label="Loading inventory items…" size="sm" />
               </TableCell>
             </TableRow>
+          ) : isError ? (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center py-8">
+                <EmptyState size="sm" title="Error loading inventory" />
+              </TableCell>
+            </TableRow>
           ) : items.length === 0 ? (
             <TableRow>
               <TableCell colSpan={7} className="text-center py-8">
@@ -146,6 +154,7 @@ export function InventoryTable({
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6"
+                          aria-label={isRowExpanded ? "Collapse row" : "Expand row"}
                           onClick={(e) => {
                             e.stopPropagation();
                             onToggleExpand(item.id);

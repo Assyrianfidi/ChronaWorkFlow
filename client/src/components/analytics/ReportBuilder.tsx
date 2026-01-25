@@ -126,27 +126,35 @@ export const ReportBuilder: React.FC<ReportBuilderProps> = ({
 
   const [selectedTemplate, setSelectedTemplate] =
     useState<ReportTemplate | null>(initialTemplate || null);
-  const [reportName, setReportName] = useState("");
-  const [reportType, setReportType] =
-    useState<ReportTemplate["type"]>("summary");
+  const [reportName, setReportName] = useState(initialTemplate?.name || "");
+  const [reportType, setReportType] = useState<ReportTemplate["type"]>(
+    initialTemplate?.type || "summary",
+  );
   const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
-  const [filters, setFilters] = useState<ReportFilter[]>([]);
+  const [filters, setFilters] = useState<ReportFilter[]>(() => {
+    if (!initialTemplate) return [];
+    return initialTemplate.filters.map((f) => ({
+      field: f.field,
+      operator: f.operator as any,
+      value: f.value,
+      label: f.label || f.field,
+    }));
+  });
   const [isGenerating, setIsGenerating] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(initialTemplate ? 2 : 1);
   const [customFilters, setCustomFilters] = useState<Partial<ReportFilter>>({});
 
   // Filter available metrics based on selected template
   const availableMetrics = useMemo(() => {
-    if (!selectedTemplate) return metrics;
-    return metrics.filter((m) => selectedTemplate.metrics.includes(m.id));
-  }, [selectedTemplate, metrics]);
+    return metrics;
+  }, [metrics]);
 
   // Handle template selection
   const handleTemplateSelect = useCallback((template: ReportTemplate) => {
     setSelectedTemplate(template);
     setReportName(template.name);
     setReportType(template.type);
-    setSelectedMetrics(template.metrics);
+    setSelectedMetrics([]);
 
     // Convert template filters to report filters
     const reportFilters: ReportFilter[] = template.filters.map((f) => ({
@@ -253,7 +261,7 @@ export const ReportBuilder: React.FC<ReportBuilderProps> = ({
         <button
           className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
           onClick={() =>
-            setSelectedTemplate({
+            handleTemplateSelect({
               id: "custom",
               name: "Custom Report",
               description: "Build a custom report from scratch",
@@ -281,11 +289,9 @@ export const ReportBuilder: React.FC<ReportBuilderProps> = ({
             key={metric.id}
             className="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50"
           >
-            
-        <label htmlFor="input-tfejtwwkd" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-tfejtwwkd"
+            <span className="sr-only">Checkbox</span>
+            <input
+              id={`metric-${metric.id}`}
               type="checkbox"
               checked={selectedMetrics.includes(metric.id)}
               onChange={() =>

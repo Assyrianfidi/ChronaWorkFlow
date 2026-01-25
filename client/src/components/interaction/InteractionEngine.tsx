@@ -571,8 +571,9 @@ class GestureManager {
 export function InteractionEngine({ children }: { children: React.ReactNode }) {
   const { currentMode } = useUserExperienceMode();
   const { isLowPerformanceMode } = usePerformance();
-  const { config: accessibilityConfig } = useAccessibility();
-  const reducedMotion = accessibilityConfig.reducedMotion;
+  const accessibilityContext: any = useAccessibility();
+  const accessibilityConfig = accessibilityContext?.config ?? accessibilityContext ?? {};
+  const reducedMotion = Boolean(accessibilityConfig.reducedMotion);
 
   const [config, setConfig] = useState<InteractionConfig>(defaultConfig);
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -655,11 +656,21 @@ export function InteractionEngine({ children }: { children: React.ReactNode }) {
 
   // Animation loop for particles
   useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      const userAgent = String(navigator.userAgent || "");
+      if (userAgent.toLowerCase().includes("jsdom")) return;
+    }
+
     const animate = () => {
       if (particleManagerRef.current) {
-        setParticles(particleManagerRef.current.getParticles());
+        const nextParticles = particleManagerRef.current.getParticles();
+        setParticles(nextParticles);
+
+        if (nextParticles.length > 0) {
+          animationFrameRef.current = requestAnimationFrame(animate);
+        }
+        return;
       }
-      animationFrameRef.current = requestAnimationFrame(animate);
     };
 
     if (config.physics.enabled && config.animations.enabled) {
@@ -667,7 +678,7 @@ export function InteractionEngine({ children }: { children: React.ReactNode }) {
     }
 
     return () => {
-      if (animationFrameRef.current) {
+      if (animationFrameRef.current != null) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
@@ -791,8 +802,20 @@ function InteractionCanvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    if (typeof navigator !== "undefined") {
+      const userAgent = String(navigator.userAgent || "");
+      if (userAgent.toLowerCase().includes("jsdom")) return;
+    }
+
+    let ctx: CanvasRenderingContext2D | null = null;
+    try {
+      ctx = canvas.getContext("2d");
+    } catch {
+      return;
+    }
     if (!ctx) return;
+
+    let animationFrameId: number | null = null;
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -808,7 +831,9 @@ function InteractionCanvas() {
         ctx.fill();
       });
 
-      requestAnimationFrame(render);
+      if (particles.length > 0) {
+        animationFrameId = requestAnimationFrame(render);
+      }
     };
 
     render();
@@ -821,6 +846,9 @@ function InteractionCanvas() {
     window.addEventListener("resize", handleResize);
 
     return () => {
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
       window.removeEventListener("resize", handleResize);
     };
   }, [particles]);

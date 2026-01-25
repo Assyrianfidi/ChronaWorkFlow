@@ -3,19 +3,20 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import { AIPoweredAssistant } from '../AIPoweredAssistant';
 import { AutomationEngine } from '../AutomationEngine';
+import { AnalyticsEngine } from "../../analytics/AnalyticsEngine";
 
 // Mock modules
 vi.mock("../hooks/useWindowSize", () => ({
   useWindowSize: vi.fn(() => ({ width: 1024, height: 768 })),
 }));
 
-vi.mock("../store/auth-store", () => ({
+vi.mock("@/store/auth-store", () => ({
   useAuthStore: vi.fn(() => ({
     user: { role: "admin", id: "user-123" },
   })),
 }));
 
-vi.mock("../../adaptive/UserExperienceMode.tsx", () => ({
+vi.mock("@/components/adaptive/UserExperienceMode", () => ({
   useUserExperienceMode: vi.fn(() => ({
     currentMode: {
       id: "standard",
@@ -27,7 +28,7 @@ vi.mock("../../adaptive/UserExperienceMode.tsx", () => ({
   })),
 }));
 
-vi.mock("../../adaptive/UI-Performance-Engine.tsx", () => ({
+vi.mock("@/components/adaptive/UI-Performance-Engine", () => ({
   usePerformance: vi.fn(() => ({
     isLowPerformanceMode: false,
   })),
@@ -35,15 +36,27 @@ vi.mock("../../adaptive/UI-Performance-Engine.tsx", () => ({
 
 describe("AIPoweredAssistant", () => {
   beforeEach(() => {
+    Object.defineProperty(window.HTMLElement.prototype, "scrollIntoView", {
+      value: vi.fn(),
+      writable: true,
+    });
     vi.clearAllMocks();
   });
 
   const renderAssistant = (props?: any) => {
     return render(
-      <AutomationEngine>
-        <AIPoweredAssistant {...props} />
-      </AutomationEngine>,
+      <AnalyticsEngine>
+        <AutomationEngine>
+          <AIPoweredAssistant {...props} />
+        </AutomationEngine>
+      </AnalyticsEngine>,
     );
+  };
+
+  const getFirstByText = (text: string) => {
+    const els = screen.getAllByText(text);
+    expect(els.length).toBeGreaterThan(0);
+    return els[0];
   };
 
   it("renders assistant interface", () => {
@@ -51,7 +64,7 @@ describe("AIPoweredAssistant", () => {
 
     expect(screen.getByText("AI Assistant")).toBeInTheDocument();
     expect(
-      screen.getByText("Hello! I'm your AI assistant."),
+      screen.getByText(/Hello! I'm your AI assistant/),
     ).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText("Ask me anything..."),
@@ -62,19 +75,19 @@ describe("AIPoweredAssistant", () => {
     renderAssistant();
 
     expect(screen.getByText(/I can help you with:/)).toBeInTheDocument();
-    expect(screen.getByText("Creating automation rules")).toBeInTheDocument();
+    expect(screen.getByText(/Creating automation rules/)).toBeInTheDocument();
     expect(
-      screen.getByText("Generating reports and dashboards"),
+      screen.getByText(/Generating reports and dashboards/),
     ).toBeInTheDocument();
-    expect(screen.getByText("Monitoring system health")).toBeInTheDocument();
+    expect(screen.getByText(/Monitoring system health/)).toBeInTheDocument();
   });
 
   it("shows action buttons in welcome message", () => {
     renderAssistant();
 
-    expect(screen.getByText("Create Automation")).toBeInTheDocument();
-    expect(screen.getByText("Generate Report")).toBeInTheDocument();
-    expect(screen.getByText("System Status")).toBeInTheDocument();
+    expect(screen.getAllByText("Create Automation").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Generate Report").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("System Status").length).toBeGreaterThan(0);
   });
 
   it("sends user message and receives response", async () => {
@@ -112,7 +125,7 @@ describe("AIPoweredAssistant", () => {
     renderAssistant();
 
     // Click on Create Automation action in welcome message
-    fireEvent.click(screen.getByText("Create Automation"));
+    fireEvent.click(getFirstByText("Create Automation"));
 
     await waitFor(() => {
       expect(
@@ -158,7 +171,7 @@ describe("AIPoweredAssistant", () => {
 
     renderAssistant();
 
-    fireEvent.click(screen.getByText("Create Automation"));
+    fireEvent.click(getFirstByText("Create Automation"));
 
     await waitFor(() => {
       expect(
@@ -273,9 +286,9 @@ describe("AIPoweredAssistant", () => {
     renderAssistant();
 
     expect(screen.getByText("Quick Actions:")).toBeInTheDocument();
-    expect(screen.getByText("Create Automation")).toBeInTheDocument();
-    expect(screen.getByText("Generate Report")).toBeInTheDocument();
-    expect(screen.getByText("System Status")).toBeInTheDocument();
+    expect(screen.getAllByText("Create Automation").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Generate Report").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("System Status").length).toBeGreaterThan(0);
   });
 
   it("hides quick actions after first interaction", async () => {
@@ -357,14 +370,13 @@ describe("AIPoweredAssistant", () => {
     const assistantContainer = document.querySelector(".custom-class");
     expect(assistantContainer).toBeInTheDocument();
   });
-});
-
-describe("AIPoweredAssistant Integration", () => {
   it("integrates with automation context", () => {
     render(
-      <AutomationEngine>
-        <AIPoweredAssistant />
-      </AutomationEngine>,
+      <AnalyticsEngine>
+        <AutomationEngine>
+          <AIPoweredAssistant />
+        </AutomationEngine>
+      </AnalyticsEngine>,
     );
 
     expect(screen.getByText("AI Assistant")).toBeInTheDocument();
@@ -372,12 +384,14 @@ describe("AIPoweredAssistant Integration", () => {
 
   it("uses automation context for actions", async () => {
     render(
-      <AutomationEngine>
-        <AIPoweredAssistant />
-      </AutomationEngine>,
+      <AnalyticsEngine>
+        <AutomationEngine>
+          <AIPoweredAssistant />
+        </AutomationEngine>
+      </AnalyticsEngine>,
     );
 
-    fireEvent.click(screen.getByText("Create Automation"));
+    fireEvent.click(screen.getAllByText("Create Automation")[0]);
 
     await waitFor(() => {
       expect(

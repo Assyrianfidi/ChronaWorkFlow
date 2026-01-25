@@ -1,0 +1,43 @@
+import type { InventoryItem } from "@/types/inventory";
+
+export const mockInventoryItems: InventoryItem[] = [
+  {
+    id: "inv-001",
+    name: "Widget A",
+    sku: "SKU-001",
+    category: "Widgets",
+    unitPrice: 19.99,
+    unitCost: 10.0,
+    quantityOnHand: 25,
+    quantityAvailable: 20,
+    quantityReserved: 5,
+    reorderPoint: 10,
+    description: "Standard widget",
+  } as InventoryItem,
+  {
+    id: "inv-002",
+    name: "Widget B",
+    sku: "SKU-002",
+    category: "Widgets",
+    unitPrice: 24.99,
+    unitCost: 12.5,
+    quantityOnHand: 8,
+    quantityAvailable: 8,
+    quantityReserved: 0,
+    reorderPoint: 10,
+    description: "Low stock widget",
+  } as InventoryItem,
+  {
+    id: "inv-003",
+    name: "Widget C",
+    sku: "SKU-003",
+    category: "Widgets",
+    unitPrice: 9.99,
+    unitCost: 5.0,
+    quantityOnHand: 0,
+    quantityAvailable: 0,
+    quantityReserved: 0,
+    reorderPoint: 10,
+    description: "Out of stock widget",
+  } as InventoryItem,
+];

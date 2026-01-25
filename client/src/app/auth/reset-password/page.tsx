@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useAuthStore } from "@/store/auth-store";
+import { useAuthStore } from "@/app/auth/store/auth-store";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
@@ -34,7 +34,7 @@ const ResetPasswordPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, resetPassword } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -68,6 +68,7 @@ const ResetPasswordPage = () => {
     setIsSubmitting(true);
 
     try {
+      await resetPassword({ token, newPassword: data.password });
       // Redirect to login with success state
       router.push("/auth/login?reset=success");
     } catch (err) {

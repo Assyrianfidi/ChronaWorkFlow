@@ -1,0 +1,32 @@
+{
+  "module": "Backend",
+  "timestamp": "2025-11-22T16:44:00Z",
+  "testCommand": "npm test",
+  "status": "❌",
+  "summary": {
+    "testSuites": {
+      "failed": 5,
+      "passed": 2,
+      "total": 7
+    },
+    "tests": {
+      "failed": 16,
+      "passed": 7,
+      "total": 23
+    }
+  },
+  "failures": [
+    {
+      "file": "src/__tests__/app.test.ts",
+      "title": "should authenticate user",
+      "reason": "missing mock for auth service causing network error"
+    },
+    {
+      "file": "src/routes/report.routes.ts",
+      "title": "should create report",
+      "reason": "database mock rejected Promise"
+    }
+  ],
+  "notes": "Backend Jest tests are failing; coverage output shows many uncovered lines across controllers and services. Mocks/providers need synchronization.",
+  "nextSteps": "Inspect failing suites, update mocks (vi), ensure services use proper providers, and rerun until green."
+}

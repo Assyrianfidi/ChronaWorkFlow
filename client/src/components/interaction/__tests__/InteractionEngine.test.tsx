@@ -1,47 +1,109 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import {
-  InteractionEngine,
-  useInteractionEngine,
-  withInteraction,
-  GestureHandler,
-  PhysicsAnimation,
-} from '../InteractionEngine';
+type InteractionEngineModule = typeof import("../InteractionEngine");
+
+let InteractionEngine!: InteractionEngineModule["InteractionEngine"];
+let useInteractionEngine!: InteractionEngineModule["useInteractionEngine"];
+let withInteraction!: InteractionEngineModule["withInteraction"];
+let GestureHandler!: InteractionEngineModule["GestureHandler"];
+let PhysicsAnimation!: InteractionEngineModule["PhysicsAnimation"];
+
+const standardMode = {
+  id: "standard",
+  name: "Standard",
+  animations: "normal",
+  sounds: false,
+  shortcuts: true,
+} as const;
+
+const powerUserMode = {
+  id: "power-user",
+  name: "Power User",
+  animations: "enhanced",
+  sounds: true,
+  shortcuts: true,
+} as const;
+
+const minimalMode = {
+  id: "minimal",
+  name: "Minimal",
+  animations: "minimal",
+  sounds: false,
+  shortcuts: false,
+} as const;
+
+const mockUseWindowSize = vi.fn(() => ({ width: 1024, height: 768 }));
+const mockUseAuthStore = vi.fn(() => ({ user: { role: "user" } }));
+const mockUseUserExperienceMode = vi.fn(() => ({ currentMode: standardMode }));
+const mockUsePerformance = vi.fn(() => ({ isLowPerformanceMode: false }));
+const mockUseAccessibility = vi.fn(() => ({ config: { reducedMotion: false } }));
+
+let rafCount = 0;
+
+beforeAll(async () => {
+  const rafImpl = (cb: FrameRequestCallback) => {
+    if (rafCount++ > 5) return 0;
+    return window.setTimeout(() => cb(performance.now()), 0) as unknown as number;
+  };
+
+  const cafImpl = (id: number) => {
+    window.clearTimeout(id);
+  };
+
+  vi.stubGlobal("requestAnimationFrame", rafImpl);
+  vi.stubGlobal("cancelAnimationFrame", cafImpl);
+
+  // Some modules call global requestAnimationFrame directly; keep window aligned with global.
+  window.requestAnimationFrame = rafImpl as unknown as typeof window.requestAnimationFrame;
+  window.cancelAnimationFrame = cafImpl as unknown as typeof window.cancelAnimationFrame;
+
+  const m = (await import("../InteractionEngine")) as InteractionEngineModule;
+  InteractionEngine = m.InteractionEngine;
+  useInteractionEngine = m.useInteractionEngine;
+  withInteraction = m.withInteraction;
+  GestureHandler = m.GestureHandler;
+  PhysicsAnimation = m.PhysicsAnimation;
+});
+
+beforeEach(() => {
+  rafCount = 0;
+  mockUseWindowSize.mockReturnValue({ width: 1024, height: 768 });
+  mockUseAuthStore.mockReturnValue({ user: { role: "user" } });
+  mockUseUserExperienceMode.mockReturnValue({ currentMode: standardMode });
+  mockUsePerformance.mockReturnValue({ isLowPerformanceMode: false });
+  mockUseAccessibility.mockReturnValue({ config: { reducedMotion: false } });
+
+  // Ensure AudioContext is truly absent by default. Assigning `undefined` would
+  // still satisfy `'AudioContext' in window` and crash when constructed.
+  delete (window as any).AudioContext;
+  delete (window as any).webkitAudioContext;
+});
+
+afterAll(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 // Mock modules
-vi.mock("../hooks/useWindowSize", () => ({
-  useWindowSize: vi.fn(() => ({ width: 1024, height: 768 })),
+vi.mock("@/hooks/useWindowSize", () => ({
+  useWindowSize: mockUseWindowSize,
 }));
 
-vi.mock("../store/auth-store", () => ({
-  useAuthStore: vi.fn(() => ({
-    user: { role: "user" },
-  })),
+vi.mock("@/store/auth-store", () => ({
+  useAuthStore: mockUseAuthStore,
 }));
 
-vi.mock("../adaptive/UserExperienceMode.tsx", () => ({
-  useUserExperienceMode: vi.fn(() => ({
-    currentMode: {
-      id: "standard",
-      name: "Standard",
-      animations: "normal",
-      sounds: false,
-      shortcuts: true,
-    },
-  })),
+vi.mock("@/components/adaptive/UserExperienceMode", () => ({
+  useUserExperienceMode: mockUseUserExperienceMode,
 }));
 
-vi.mock("../adaptive/UI-Performance-Engine.tsx", () => ({
-  usePerformance: vi.fn(() => ({
-    isLowPerformanceMode: false,
-  })),
+vi.mock("@/components/adaptive/UI-Performance-Engine", () => ({
+  usePerformance: mockUsePerformance,
 }));
 
-vi.mock("../adaptive/AccessibilityModes.tsx", () => ({
-  useAccessibility: vi.fn(() => ({
-    reducedMotion: false,
-  })),
+vi.mock("@/components/adaptive/AccessibilityModes", () => ({
+  useAccessibility: mockUseAccessibility,
 }));
 
 describe("InteractionEngine", () => {
@@ -80,19 +142,9 @@ describe("InteractionEngine", () => {
   });
 
   it("updates config when user experience mode changes", () => {
-    const {
-      useUserExperienceMode,
-    } = require("../adaptive/UserExperienceMode.tsx");
-
     // Mock different mode
-    useUserExperienceMode.mockReturnValue({
-      currentMode: {
-        id: "power-user",
-        name: "Power User",
-        animations: "enhanced",
-        sounds: true,
-        shortcuts: true,
-      },
+    mockUseUserExperienceMode.mockReturnValue({
+      currentMode: powerUserMode,
     });
 
     function TestComponent() {
@@ -114,9 +166,7 @@ describe("InteractionEngine", () => {
   });
 
   it("disables features in low performance mode", () => {
-    const { usePerformance } = require("../adaptive/UI-Performance-Engine");
-
-    usePerformance.mockReturnValue({
+    mockUsePerformance.mockReturnValue({
       isLowPerformanceMode: true,
     });
 
@@ -139,10 +189,6 @@ describe("InteractionEngine", () => {
 
 describe("withInteraction HOC", () => {
   it("wraps component with interaction handlers", () => {
-    const mockTriggerHaptic = vi.fn();
-    const mockPlaySound = vi.fn();
-    const mockAddParticle = vi.fn();
-
     function TestComponent({ onClick, ...props }: any) {
       return (
         <button {...props} onClick={onClick}>
@@ -167,22 +213,9 @@ describe("withInteraction HOC", () => {
       ],
     });
 
-    function TestWrapper() {
-      const { triggerHaptic, playSound, addParticle } = useInteractionEngine();
-
-      // Mock the context methods
-      React.useEffect(() => {
-        vi.mocked(triggerHaptic).mockImplementation(mockTriggerHaptic);
-        vi.mocked(playSound).mockImplementation(mockPlaySound);
-        vi.mocked(addParticle).mockImplementation(mockAddParticle);
-      }, []);
-
-      return <WrappedComponent />;
-    }
-
     render(
       <InteractionEngine>
-        <TestWrapper />
+        <WrappedComponent />
       </InteractionEngine>,
     );
 
@@ -358,42 +391,86 @@ describe("Interaction Context Methods", () => {
 
 describe("Audio Manager", () => {
   it("initializes audio context on mount", () => {
-    // Mock AudioContext
-    global.AudioContext = vi.fn().mockImplementation(() => ({
-      close: vi.fn(),
-      decodeAudioData: vi.fn(),
-      createBufferSource: vi.fn(() => ({
-        buffer: {},
-        connect: vi.fn(),
-        start: vi.fn(),
-      })),
-      createGain: vi.fn(() => ({
-        gain: { value: 0.3 },
-        connect: vi.fn(),
-      })),
-      destination: {},
-    })) as any;
+    const hadAudioContext = Object.prototype.hasOwnProperty.call(window, "AudioContext");
+    const originalAudioContext = (window as any).AudioContext;
+    let ctorCalls = 0;
+    class AudioContextMock {
+      close = vi.fn();
+      decodeAudioData = vi.fn();
+      destination = {};
 
-    render(
-      <InteractionEngine>
-        <div>Test</div>
-      </InteractionEngine>,
-    );
+      constructor() {
+        ctorCalls++;
+      }
 
-    expect(global.AudioContext).toHaveBeenCalled();
-  });
+      createBufferSource() {
+        return {
+          buffer: {},
+          connect: vi.fn(),
+          start: vi.fn(),
+        };
+      }
 
-  it("handles missing AudioContext gracefully", () => {
-    // Remove AudioContext
-    delete (global as any).AudioContext;
+      createGain() {
+        return {
+          gain: { value: 0.3 },
+          connect: vi.fn(),
+        };
+      }
+    }
 
-    expect(() => {
+    (window as any).AudioContext = AudioContextMock;
+
+    try {
       render(
         <InteractionEngine>
           <div>Test</div>
         </InteractionEngine>,
       );
-    }).not.toThrow();
+
+      expect(ctorCalls).toBeGreaterThan(0);
+    } finally {
+      if (hadAudioContext) {
+        (window as any).AudioContext = originalAudioContext;
+      } else {
+        delete (window as any).AudioContext;
+      }
+    }
+  });
+
+  it("handles missing AudioContext gracefully", () => {
+    const hadAudioContext = Object.prototype.hasOwnProperty.call(window, "AudioContext");
+    const originalAudioContext = (window as any).AudioContext;
+    const hadWebkitAudioContext = Object.prototype.hasOwnProperty.call(
+      window,
+      "webkitAudioContext",
+    );
+    const originalWebkitAudioContext = (window as any).webkitAudioContext;
+
+    delete (window as any).AudioContext;
+    delete (window as any).webkitAudioContext;
+
+    try {
+      expect(() => {
+        render(
+          <InteractionEngine>
+            <div>Test</div>
+          </InteractionEngine>,
+        );
+      }).not.toThrow();
+    } finally {
+      if (hadAudioContext) {
+        (window as any).AudioContext = originalAudioContext;
+      } else {
+        delete (window as any).AudioContext;
+      }
+
+      if (hadWebkitAudioContext) {
+        (window as any).webkitAudioContext = originalWebkitAudioContext;
+      } else {
+        delete (window as any).webkitAudioContext;
+      }
+    }
   });
 });
 
@@ -596,7 +673,13 @@ describe("Canvas Rendering", () => {
     );
   });
 
-  it("sets canvas dimensions correctly", () => {
+  it("sets canvas dimensions correctly", async () => {
+    const originalUserAgent = navigator.userAgent;
+    Object.defineProperty(navigator, "userAgent", {
+      value: "Mozilla/5.0 Chrome/120.0.0.0",
+      configurable: true,
+    });
+
     // Mock window dimensions
     Object.defineProperty(window, "innerWidth", {
       value: 1024,
@@ -614,17 +697,22 @@ describe("Canvas Rendering", () => {
     );
 
     const canvas = document.querySelector("canvas") as HTMLCanvasElement;
-    expect(canvas.width).toBe(1024);
-    expect(canvas.height).toBe(768);
+    await waitFor(() => {
+      expect(canvas.width).toBe(1024);
+      expect(canvas.height).toBe(768);
+    });
+
+    Object.defineProperty(navigator, "userAgent", {
+      value: originalUserAgent,
+      configurable: true,
+    });
   });
 });
 
 describe("Performance Optimization", () => {
   it("disables features in reduced motion mode", () => {
-    const { useAccessibility } = require("../adaptive/AccessibilityModes.tsx");
-
-    useAccessibility.mockReturnValue({
-      reducedMotion: true,
+    mockUseAccessibility.mockReturnValue({
+      config: { reducedMotion: true },
     });
 
     function TestComponent() {
@@ -646,18 +734,8 @@ describe("Performance Optimization", () => {
   });
 
   it("reduces audio features when sounds are disabled", () => {
-    const {
-      useUserExperienceMode,
-    } = require("../adaptive/UserExperienceMode.tsx");
-
-    useUserExperienceMode.mockReturnValue({
-      currentMode: {
-        id: "minimal",
-        name: "Minimal",
-        animations: "minimal",
-        sounds: false,
-        shortcuts: false,
-      },
+    mockUseUserExperienceMode.mockReturnValue({
+      currentMode: minimalMode,
     });
 
     function TestComponent() {
