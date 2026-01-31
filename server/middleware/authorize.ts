@@ -1,7 +1,15 @@
 import type { NextFunction, Request, Response } from "express";
 
 import { storage } from "../storage";
+import { runWithRequestContext } from "../runtime/request-context";
 import type { Role } from "./authenticate";
+
+function fullPath(req: Request): string {
+  const baseUrl = typeof (req as any).baseUrl === "string" ? (req as any).baseUrl : "";
+  const path = typeof (req as any).path === "string" ? (req as any).path : "";
+  if (baseUrl || path) return `${baseUrl}${path}`;
+  return String((req as any).originalUrl ?? req.url ?? "");
+}
 
 export type Action =
   | "owner:access"
@@ -123,9 +131,6 @@ const rolePermissions: Record<Role, Set<Action>> = {
 };
 
 function resolveCompanyId(req: any): string | null {
-  const tokenCompanyId = req.user?.currentCompanyId as string | undefined;
-  if (typeof tokenCompanyId === "string" && tokenCompanyId) return tokenCompanyId;
-
   const q = req.query?.companyId;
   if (typeof q === "string" && q) return q;
 
@@ -134,7 +139,105 @@ function resolveCompanyId(req: any): string | null {
     (req.body?.invoice?.companyId as string | undefined);
   if (typeof bodyCompanyId === "string" && bodyCompanyId) return bodyCompanyId;
 
+  const tokenCompanyId = req.user?.currentCompanyId as string | undefined;
+  if (typeof tokenCompanyId === "string" && tokenCompanyId) return tokenCompanyId;
+
   return null;
+}
+
+function resolveCompanyIdFromPath(path: string): string | null {
+  const m = /^\/api\/companies\/([^/?#]+)$/.exec(path);
+  if (!m) return null;
+  const id = m[1];
+  return typeof id === "string" && id ? id : null;
+}
+
+const COMPANY_ISOLATION_PUBLIC_PATHS = new Set<string>([
+  "/api/auth/register",
+  "/api/auth/login",
+  "/api/health",
+  "/api/webhooks/stripe",
+  "/api/stripe/webhooks",
+  "/api/plaid/webhooks",
+  "/api/stripe/health",
+  "/api/plaid/health",
+]);
+
+export function enforceCompanyIsolation() {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const path = fullPath(req);
+
+    if (COMPANY_ISOLATION_PUBLIC_PATHS.has(path)) {
+      return next();
+    }
+
+    const user = (req as any).user as any;
+    if (!user) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const roles = (Array.isArray(user.roles) ? user.roles : []) as Role[];
+    const isOwner = roles.includes("OWNER");
+
+    const tokenCompanyId = typeof user.currentCompanyId === "string" ? user.currentCompanyId : null;
+    const requestedCompanyId =
+      resolveCompanyId(req as any) ??
+      resolveCompanyIdFromPath(path) ??
+      tokenCompanyId;
+
+    if (!requestedCompanyId) {
+      if (isOwner) {
+        return next();
+      }
+      await audit({
+        companyId: null,
+        userId: typeof user.id === "string" ? user.id : String(user.id ?? null),
+        action: "tenant.company.missing_context",
+        endpoint: String((req as any).originalUrl ?? req.url ?? ""),
+        method: String(req.method ?? ""),
+        details: { path },
+      });
+      return res.status(400).json({ error: "companyId is required" });
+    }
+
+    if (!isOwner && tokenCompanyId && tokenCompanyId !== requestedCompanyId) {
+      await audit({
+        companyId: requestedCompanyId,
+        userId: typeof user.id === "string" ? user.id : String(user.id ?? null),
+        action: "tenant.company.mismatch",
+        endpoint: String((req as any).originalUrl ?? req.url ?? ""),
+        method: String(req.method ?? ""),
+        details: { tokenCompanyId, requestedCompanyId },
+      });
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    const userId = typeof user.id === "string" ? user.id : String(user.id ?? "");
+    if (!isOwner) {
+      const hasAccess = await storage.hasUserCompanyAccess(userId, requestedCompanyId);
+      if (!hasAccess) {
+        await audit({
+          companyId: requestedCompanyId,
+          userId,
+          action: "tenant.company.denied",
+          endpoint: String((req as any).originalUrl ?? req.url ?? ""),
+          method: String(req.method ?? ""),
+          details: { requestedCompanyId },
+        });
+        return res.status(403).json({ error: "Forbidden" });
+      }
+    }
+
+    return runWithRequestContext(
+      {
+        requestId: (req as any).requestId,
+        userId,
+        companyId: requestedCompanyId,
+        roles: Array.isArray(user.roles) ? user.roles : [],
+      },
+      () => next(),
+    );
+  };
 }
 
 async function audit(event: {
@@ -221,7 +324,7 @@ export function authorize(required: Action | Action[], opts?: { anyOf?: boolean 
 }
 
 function inferAction(req: Request): Action | null {
-  const path = String((req as any).path ?? req.url ?? "");
+  const path = fullPath(req);
   const method = String(req.method ?? "GET").toUpperCase();
 
   if (path.startsWith("/api/owner")) return "owner:access";
@@ -233,6 +336,7 @@ function inferAction(req: Request): Action | null {
   if (path.startsWith("/api/transactions")) return method === "GET" ? "transactions:read" : "transactions:write";
   if (path.startsWith("/api/invoices")) return method === "GET" ? "invoices:read" : "invoices:write";
   if (path.startsWith("/api/payments")) return "payments:write";
+  if (path.startsWith("/api/ledger")) return "banking:write";
   if (path.startsWith("/api/bank-transactions")) return method === "GET" ? "banking:read" : "banking:write";
   if (path.startsWith("/api/reports")) return "reports:read";
   if (path.startsWith("/api/payroll")) return method === "GET" ? "payroll:read" : "payroll:write";
@@ -259,7 +363,7 @@ function inferAction(req: Request): Action | null {
 
 export function authorizeRequest() {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const path = String((req as any).path ?? req.url ?? "");
+    const path = fullPath(req);
 
     if (
       path === "/api/auth/register" ||

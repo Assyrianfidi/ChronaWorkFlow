@@ -44,12 +44,20 @@ function isOwnerEmail(email?: string | null) {
 const PUBLIC_PATHS = new Set<string>([
   "/api/auth/register",
   "/api/auth/login",
+  "/api/health",
   "/api/webhooks/stripe",
   "/api/stripe/webhooks",
   "/api/plaid/webhooks",
   "/api/stripe/health",
   "/api/plaid/health",
 ]);
+
+function fullPath(req: Request): string {
+  const baseUrl = typeof (req as any).baseUrl === "string" ? (req as any).baseUrl : "";
+  const path = typeof (req as any).path === "string" ? (req as any).path : "";
+  if (baseUrl || path) return `${baseUrl}${path}`;
+  return String((req as any).originalUrl ?? req.url ?? "");
+}
 
 export function authenticate() {
   const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET;
@@ -58,8 +66,8 @@ export function authenticate() {
     throw new Error('JWT_SECRET or SESSION_SECRET must be set in environment variables');
   }
 
-  return (req: Request, res: Response, next: NextFunction) => {
-    if (PUBLIC_PATHS.has(req.path)) {
+  return function authenticateMiddleware(req: Request, res: Response, next: NextFunction) {
+    if (PUBLIC_PATHS.has(fullPath(req))) {
       return next();
     }
 

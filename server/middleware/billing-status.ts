@@ -3,6 +3,12 @@ import type { NextFunction, Request, Response } from "express";
 import { storage } from "../storage";
 import { getBillingEnforcementMode } from "./billing-enforcement";
 
+function fullPath(req: Request): string {
+  const baseUrl = typeof (req as any).baseUrl === "string" ? String((req as any).baseUrl) : "";
+  const path = typeof (req as any).path === "string" ? String((req as any).path) : "";
+  return `${baseUrl}${path}`;
+}
+
 function getCompanyIdFromRequest(req: any): string | null {
   const q = req.query?.companyId;
   if (typeof q === "string" && q) return q;
@@ -26,6 +32,7 @@ function isWriteMethod(method: string): boolean {
 const PUBLIC_PATHS = new Set<string>([
   "/api/auth/register",
   "/api/auth/login",
+  "/api/health",
   "/api/webhooks/stripe",
   "/api/stripe/webhooks",
   "/api/plaid/webhooks",
@@ -34,9 +41,9 @@ const PUBLIC_PATHS = new Set<string>([
 ]);
 
 export function enforceBillingStatus() {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async function enforceBillingStatusMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
-      if (PUBLIC_PATHS.has(req.path)) {
+      if (PUBLIC_PATHS.has(fullPath(req))) {
         return next();
       }
 

@@ -3,6 +3,12 @@ import type { NextFunction, Request, Response } from "express";
 import { storage } from "../storage";
 import { enforcePlanLimits as checkPlanLimits } from "./billing-enforcement";
 
+function fullPath(req: Request): string {
+  const baseUrl = typeof (req as any).baseUrl === "string" ? String((req as any).baseUrl) : "";
+  const path = typeof (req as any).path === "string" ? String((req as any).path) : "";
+  return `${baseUrl}${path}`;
+}
+
 function getCompanyIdFromRequest(req: any): string | null {
   const q = req.query?.companyId;
   if (typeof q === "string" && q) return q;
@@ -26,6 +32,7 @@ function isWriteMethod(method: string): boolean {
 const PUBLIC_PATHS = new Set<string>([
   "/api/auth/register",
   "/api/auth/login",
+  "/api/health",
   "/api/webhooks/stripe",
   "/api/stripe/webhooks",
   "/api/plaid/webhooks",
@@ -34,9 +41,9 @@ const PUBLIC_PATHS = new Set<string>([
 ]);
 
 export function enforcePlanLimits() {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async function enforcePlanLimitsMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
-      if (PUBLIC_PATHS.has(req.path)) {
+      if (PUBLIC_PATHS.has(fullPath(req))) {
         return next();
       }
 
@@ -65,7 +72,7 @@ export function enforcePlanLimits() {
 
       const endpoint = String((req as any).originalUrl ?? req.url ?? "");
 
-      if (req.method.toUpperCase() === "POST" && req.path === "/api/invoices") {
+      if (req.method.toUpperCase() === "POST" && fullPath(req) === "/api/invoices") {
         const invoiceResult = await checkPlanLimits(companyId, "create_invoice");
         if ((invoiceResult as any).warnings?.length) {
           res.setHeader("x-plan-warnings", JSON.stringify((invoiceResult as any).warnings));

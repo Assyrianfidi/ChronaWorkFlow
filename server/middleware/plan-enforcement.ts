@@ -36,28 +36,28 @@ export function enforcePlanLimits(action: "users" | "entities" | "workflows" | "
       const currentUsage = await getCurrentUsage(companyId, action);
 
       let limit = 0;
-      let metric = "";
+      let metric = 0;
 
       switch (action) {
         case "users":
           limit = entitlements.maxUsers;
-          metric = currentUsage.activeUsers;
+          metric = currentUsage.activeUsers ?? 0;
           break;
         case "entities":
           limit = entitlements.maxEntities;
-          metric = currentUsage.entities;
+          metric = currentUsage.entities ?? 0;
           break;
         case "workflows":
           limit = entitlements.maxWorkflowsPerMonth;
-          metric = currentUsage.workflowsThisMonth;
+          metric = currentUsage.workflowsThisMonth ?? 0;
           break;
         case "api":
           limit = entitlements.maxApiCallsPerMonth;
-          metric = currentUsage.apiCallsThisMonth;
+          metric = currentUsage.apiCallsThisMonth ?? 0;
           break;
         case "ai":
           limit = entitlements.maxAiTokensPerMonth;
-          metric = currentUsage.aiTokensThisMonth;
+          metric = currentUsage.aiTokensThisMonth ?? 0;
           break;
       }
 
@@ -109,12 +109,24 @@ async function getCurrentUsage(companyId: string, action: string) {
       const activeUsers = await db
         .select()
         .from(s.users)
-        .where(and(eq(s.users.companyId, companyId), eq(s.users.isActive, true)))
+        .where(eq(s.users.currentCompanyId, companyId))
         .then((r) => r.length);
       return { activeUsers };
     }
     case "entities": {
-      const entities = await db.select().from(s.companies).where(eq(s.companies.parentId, companyId)).then((r) => r.length);
+      const customers = await db
+        .select({ id: s.customers.id })
+        .from(s.customers)
+        .where(eq(s.customers.companyId, companyId))
+        .then((r) => r.length);
+
+      const vendors = await db
+        .select({ id: s.vendors.id })
+        .from(s.vendors)
+        .where(eq(s.vendors.companyId, companyId))
+        .then((r) => r.length);
+
+      const entities = customers + vendors;
       return { entities };
     }
     case "workflows": {
@@ -125,7 +137,7 @@ async function getCurrentUsage(companyId: string, action: string) {
         .where(
           and(
             eq(s.workflowInstances.companyId, companyId),
-            sql`${s.workflowInstances.startedAt} >= date_trunc('month', current_date)}`
+            sql`${s.workflowInstances.startedAt} >= date_trunc('month', current_date)`
           )
         )
         .then((r) => r.length);
