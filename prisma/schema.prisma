@@ -137,6 +137,9 @@ model Tenant {
   cashControlRules CashControlRule[]
   cashControlExecutions CashControlExecution[]
   paymentAnalytics PaymentAnalytics[]
+  financialForecasts FinancialForecast[]
+  scenarios     Scenario[]
+  scenarioAnalytics ScenarioAnalytics[]
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
 
@@ -731,4 +734,135 @@ model PaymentAnalytics {
   @@index([tenantId, timestamp])
   @@index([eventType])
   @@map("payment_analytics")
+}
+
+// Predictive Financial Control & Scenario Intelligence Engine
+
+enum ForecastType {
+  CASH_RUNWAY
+  BURN_RATE
+  REVENUE_GROWTH
+  EXPENSE_TRAJECTORY
+  PAYMENT_INFLOW
+}
+
+enum ScenarioType {
+  HIRING
+  LARGE_PURCHASE
+  REVENUE_CHANGE
+  PAYMENT_DELAY
+  AUTOMATION_CHANGE
+  CUSTOM
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model FinancialForecast {
+  id                  String        @id @default(cuid())
+  tenantId            String        @map("tenant_id")
+  forecastType        ForecastType  @map("forecast_type")
+  
+  // Forecast results
+  value               Float
+  unit                String        // "days", "months", "dollars", "percentage"
+  confidenceScore     Float         @map("confidence_score") // 0-100
+  
+  // Time range
+  forecastDate        DateTime      @map("forecast_date")
+  forecastHorizon     Int           @map("forecast_horizon") // Days into future
+  
+  // Explainability
+  formula             String        @db.Text
+  assumptions         Json          @default("[]")
+  dataSources         Json          @map("data_sources") @default("[]")
+  historicalBaseline  Json?         @map("historical_baseline")
+  
+  // Metadata
+  calculatedAt        DateTime      @default(now()) @map("calculated_at")
+  
+  tenant              Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, forecastType])
+  @@index([forecastDate])
+  @@map("financial_forecasts")
+}
+
+model Scenario {
+  id                  String        @id @default(cuid())
+  tenantId            String        @map("tenant_id")
+  
+  name                String
+  description         String?       @db.Text
+  scenarioType        ScenarioType  @map("scenario_type")
+  
+  // Scenario configuration
+  config              Json          @default("{}")
+  
+  // Results
+  baselineRunway      Float?        @map("baseline_runway") // Days
+  projectedRunway     Float?        @map("projected_runway") // Days
+  runwayChange        Float?        @map("runway_change") // Days difference
+  
+  riskLevel           RiskLevel?    @map("risk_level")
+  riskScore           Float?        @map("risk_score") // 0-100
+  successProbability  Float?        @map("success_probability") // 0-100
+  
+  // Risk analysis
+  topRiskDrivers      Json          @map("top_risk_drivers") @default("[]")
+  criticalAssumptions Json          @map("critical_assumptions") @default("[]")
+  
+  // Impact analysis
+  cashFlowImpact      Json?         @map("cash_flow_impact")
+  automationImpact    Json?         @map("automation_impact")
+  paymentImpact       Json?         @map("payment_impact")
+  
+  // Recommendations
+  recommendations     Json          @default("[]")
+  
+  // Metadata
+  createdBy           String        @map("created_by")
+  isArchived          Boolean       @default(false) @map("is_archived")
+  
+  tenant              Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+
+  @@index([tenantId, scenarioType])
+  @@index([createdBy])
+  @@map("scenarios")
+}
+
+model ScenarioAnalytics {
+  id                  String    @id @default(cuid())
+  tenantId            String    @map("tenant_id")
+  scenarioId          String?   @map("scenario_id")
+  
+  eventType           String    @map("event_type") // SCENARIO_CREATED, DECISION_INFLUENCED, etc.
+  scenarioType        String?   @map("scenario_type")
+  
+  // Decision tracking
+  decisionMade        Boolean?  @map("decision_made")
+  decisionOutcome     String?   @map("decision_outcome")
+  riskAvoided         Boolean?  @map("risk_avoided")
+  
+  // Upgrade tracking
+  upgradeTriggered    Boolean?  @map("upgrade_triggered")
+  planBefore          String?   @map("plan_before")
+  planAfter           String?   @map("plan_after")
+  
+  // Performance
+  timeToDecision      Int?      @map("time_to_decision") // Seconds
+  
+  tenant              Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  timestamp           DateTime  @default(now())
+
+  @@index([tenantId, timestamp])
+  @@index([eventType])
+  @@map("scenario_analytics")
 }
