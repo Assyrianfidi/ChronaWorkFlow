@@ -126,6 +126,10 @@ model Tenant {
   dashboardLayouts DashboardLayout[]
   auditLogs     AuditLog[]
   analyticsEvents AnalyticsEvent[]
+  automationRules AutomationRule[]
+  automationExecutions AutomationExecution[]
+  smartInsights SmartInsight[]
+  automationMetrics AutomationUsageMetric[]
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
 
@@ -203,4 +207,193 @@ model AnalyticsEvent {
   @@index([userId, timestamp])
   @@index([eventType])
   @@map("analytics_events")
+}
+
+// Finance Automation & Intelligence Engine
+
+enum AutomationTriggerType {
+  INVOICE_OVERDUE
+  CASH_BALANCE_THRESHOLD
+  EXPENSE_ANOMALY
+  REVENUE_DROP
+  REVENUE_INCREASE
+  MONTH_END
+  QUARTER_END
+  YEAR_END
+  SCHEDULED_DAILY
+  SCHEDULED_WEEKLY
+  SCHEDULED_MONTHLY
+  MANUAL
+  TRANSACTION_CREATED
+  PAYMENT_RECEIVED
+  PAYMENT_FAILED
+  BUDGET_EXCEEDED
+  LOW_INVENTORY
+  LATE_PAYMENT_PATTERN
+}
+
+enum AutomationActionType {
+  SEND_EMAIL
+  SEND_IN_APP_NOTIFICATION
+  GENERATE_REPORT
+  LOCK_ACTION
+  FLAG_TRANSACTION
+  CREATE_TASK
+  NOTIFY_ROLE
+  WEBHOOK
+  UPDATE_FIELD
+  CREATE_APPROVAL_REQUEST
+}
+
+enum AutomationStatus {
+  ACTIVE
+  PAUSED
+  DRAFT
+  ARCHIVED
+}
+
+enum AutomationExecutionStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+  SKIPPED
+  CANCELLED
+}
+
+enum InsightType {
+  EXPENSE_ANOMALY
+  CASH_FLOW_WARNING
+  REVENUE_TREND
+  PAYMENT_PATTERN
+  BUDGET_ALERT
+  PROFITABILITY_CHANGE
+  SEASONAL_PATTERN
+  VENDOR_RISK
+}
+
+enum InsightSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+model AutomationRule {
+  id              String                @id @default(cuid())
+  tenantId        String                @map("tenant_id")
+  name            String
+  description     String?               @db.Text
+  triggerType     AutomationTriggerType @map("trigger_type")
+  triggerConfig   Json                  @map("trigger_config") // Trigger-specific configuration
+  conditions      Json                  @default("[]") // Array of condition objects with AND/OR logic
+  actions         Json                  @default("[]") // Array of action objects
+  status          AutomationStatus      @default(DRAFT)
+  isTemplate      Boolean               @default(false) @map("is_template")
+  requiresApproval Boolean              @default(false) @map("requires_approval")
+  createdBy       String                @map("created_by")
+  updatedBy       String?               @map("updated_by")
+  lastTriggered   DateTime?             @map("last_triggered")
+  executionCount  Int                   @default(0) @map("execution_count")
+  successCount    Int                   @default(0) @map("success_count")
+  failureCount    Int                   @default(0) @map("failure_count")
+  tenant          Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  executions      AutomationExecution[]
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+
+  @@index([tenantId, status])
+  @@index([triggerType])
+  @@index([status])
+  @@map("automation_rules")
+}
+
+model AutomationExecution {
+  id              String                    @id @default(cuid())
+  ruleId          String                    @map("rule_id")
+  tenantId        String                    @map("tenant_id")
+  status          AutomationExecutionStatus @default(PENDING)
+  triggeredBy     String?                   @map("triggered_by") // User ID if manual
+  triggerData     Json                      @map("trigger_data") // Context data that triggered the rule
+  conditionsEvaluated Json                  @map("conditions_evaluated") // Results of condition checks
+  conditionsMet   Boolean                   @map("conditions_met")
+  actionsExecuted Json                      @default("[]") @map("actions_executed") // Results of each action
+  isDryRun        Boolean                   @default(false) @map("is_dry_run")
+  errorMessage    String?                   @db.Text @map("error_message")
+  executionTime   Int?                      @map("execution_time") // Milliseconds
+  retryCount      Int                       @default(0) @map("retry_count")
+  nextRetryAt     DateTime?                 @map("next_retry_at")
+  completedAt     DateTime?                 @map("completed_at")
+  rule            AutomationRule            @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  tenant          Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt       DateTime                  @default(now()) @map("created_at")
+
+  @@index([tenantId, createdAt])
+  @@index([ruleId, status])
+  @@index([status, nextRetryAt])
+  @@map("automation_executions")
+}
+
+model SmartInsight {
+  id              String          @id @default(cuid())
+  tenantId        String          @map("tenant_id")
+  insightType     InsightType     @map("insight_type")
+  severity        InsightSeverity @default(INFO)
+  title           String
+  description     String          @db.Text
+  explanation     String          @db.Text // Why this was flagged
+  confidence      Float           @default(1.0) // 0.0 to 1.0
+  metadata        Json            @default("{}") // Supporting data, calculations
+  relatedEntities Json            @default("[]") @map("related_entities") // IDs of invoices, transactions, etc.
+  actionable      Boolean         @default(true)
+  suggestedActions Json           @default("[]") @map("suggested_actions")
+  dismissedBy     String?         @map("dismissed_by")
+  dismissedAt     DateTime?       @map("dismissed_at")
+  dismissReason   String?         @db.Text @map("dismiss_reason")
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  expiresAt       DateTime?       @map("expires_at")
+
+  @@index([tenantId, createdAt])
+  @@index([insightType, severity])
+  @@index([dismissedAt])
+  @@map("smart_insights")
+}
+
+model AutomationTemplate {
+  id              String                @id @default(cuid())
+  name            String
+  description     String                @db.Text
+  category        String // "Cash Flow", "Invoicing", "Expense Management", etc.
+  triggerType     AutomationTriggerType @map("trigger_type")
+  triggerConfig   Json                  @map("trigger_config")
+  conditions      Json                  @default("[]")
+  actions         Json                  @default("[]")
+  requiredPlan    SubscriptionPlan      @map("required_plan") // Minimum plan required
+  popularity      Int                   @default(0) // Usage count
+  isPublic        Boolean               @default(true) @map("is_public")
+  createdBy       String                @map("created_by")
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@index([requiredPlan])
+  @@map("automation_templates")
+}
+
+model AutomationUsageMetric {
+  id              String   @id @default(cuid())
+  tenantId        String   @map("tenant_id")
+  ruleId          String   @map("rule_id")
+  executionId     String   @map("execution_id")
+  actionType      String   @map("action_type")
+  success         Boolean
+  executionTime   Int      @map("execution_time") // Milliseconds
+  costImpact      Float?   @map("cost_impact") // Estimated cost saved/incurred
+  businessImpact  Json?    @map("business_impact") // Metrics like time saved, errors prevented
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  timestamp       DateTime @default(now())
+
+  @@index([tenantId, timestamp])
+  @@index([ruleId])
+  @@map("automation_usage_metrics")
 }
