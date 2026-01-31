@@ -44,6 +44,7 @@ const OwnerPlaceholderPage = lazy(
   () => import("../pages/owner/OwnerPlaceholderPage"),
 );
 const NewFeaturePage = lazy(() => import("../pages/NewFeaturePage"));
+const FinancialDashboard = lazy(() => import("../pages/FinancialDashboard"));
 
 const router = createBrowserRouter([
   {
@@ -326,6 +327,16 @@ const router = createBrowserRouter([
             <NewFeaturePage />
           </SuspenseWrapper>
         </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/financial-dashboard",
+    element: (
+      <ProtectedRoute>
+        <SuspenseWrapper>
+          <FinancialDashboard />
+        </SuspenseWrapper>
       </ProtectedRoute>
     ),
   },
