@@ -13,14 +13,28 @@ datasource db {
 
 // Authentication models
 enum Role {
-  USER
+  OWNER
   ADMIN
   MANAGER
-  CASHIER
-  INVENTORY_MANAGER
   ACCOUNTANT
-  CUSTOMER_SERVICE
+  AUDITOR
+  INVENTORY_MANAGER
+  STAFF
   VIEWER
+}
+
+enum SubscriptionPlan {
+  FREE
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  TRIAL
+  CANCELLED
 }
 
 model User {
@@ -30,7 +44,8 @@ model User {
   emailVerified     DateTime?     @map("email_verified")
   image             String?
   password          String?       @db.Text
-  role              Role          @default(USER)
+  role              Role          @default(VIEWER)
+  tenantId          String        @map("tenant_id")
   isActive          Boolean       @default(true) @map("is_active")
   lastLogin         DateTime?     @map("last_login")
   refreshToken      String?       @db.Text @map("refresh_token")
@@ -38,12 +53,17 @@ model User {
   resetTokenExpiry  DateTime?     @map("reset_token_expiry")
   accounts          Account[]
   sessions          Session[]
+  dashboardLayouts  DashboardLayout[]
+  auditLogs         AuditLog[]
+  tenant            Tenant        @relation(fields: [tenantId], references: [id])
   createdAt         DateTime      @default(now()) @map("created_at")
   updatedAt         DateTime      @updatedAt @map("updated_at")
   createdBy         String?       @map("created_by")
   updatedBy         String?       @map("updated_by")
   deletedAt         DateTime?     @map("deleted_at")
 
+  @@index([tenantId])
+  @@index([email])
   @@map("users")
 }
 
@@ -87,4 +107,100 @@ model VerificationToken {
   
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+// Multi-Tenant System
+model Tenant {
+  id            String           @id @default(cuid())
+  name          String
+  subdomain     String           @unique
+  customDomain  String?          @unique @map("custom_domain")
+  logo          Json?            // { light: string, dark: string }
+  favicon       String?
+  theme         Json?            // Theme colors and typography
+  featureFlags  Json             @default("{}") @map("feature_flags")
+  settings      Json             @default("{}") // Tenant-specific settings
+  plan          SubscriptionPlan @default(FREE)
+  status        TenantStatus     @default(TRIAL)
+  users         User[]
+  dashboardLayouts DashboardLayout[]
+  auditLogs     AuditLog[]
+  analyticsEvents AnalyticsEvent[]
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  @@index([subdomain])
+  @@index([status])
+  @@map("tenants")
+}
+
+// Dashboard Composition System
+model DashboardLayout {
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id") // Null for role defaults
+  role      Role?    // Null for user-specific layouts
+  tenantId  String   @map("tenant_id")
+  name      String
+  isDefault Boolean  @default(false) @map("is_default")
+  layout    Json     // { desktop: [], tablet: [], mobile: [] }
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, tenantId])
+  @@unique([role, tenantId, isDefault])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([role])
+  @@map("dashboard_layouts")
+}
+
+// RBAC Audit Logging
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String   @map("tenant_id")
+  userId      String   @map("user_id")
+  action      String   // Permission name or action type
+  resource    String?  // Resource type (invoice, report, etc.)
+  resourceId  String?  @map("resource_id")
+  allowed     Boolean  // true = allowed, false = denied
+  reason      String?  // Denial reason if applicable
+  metadata    Json?    // Additional context
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent") @db.Text
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId, createdAt])
+  @@index([userId, createdAt])
+  @@index([action])
+  @@index([allowed])
+  @@map("audit_logs")
+}
+
+// Feature Flag Analytics
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  eventId     String   @unique @map("event_id") // Client-generated ID
+  eventType   String   @map("event_type") // VIEWED, CLICKED, USED
+  featureFlag String   @map("feature_flag")
+  featureName String   @map("feature_name")
+  userId      String   @map("user_id")
+  userRole    Role     @map("user_role")
+  tenantId    String   @map("tenant_id")
+  sessionId   String   @map("session_id")
+  metadata    Json?    // Additional event data
+  timestamp   DateTime // Client timestamp
+  serverTimestamp DateTime @default(now()) @map("server_timestamp")
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent") @db.Text
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, timestamp])
+  @@index([featureFlag, timestamp])
+  @@index([userId, timestamp])
+  @@index([eventType])
+  @@map("analytics_events")
 }
