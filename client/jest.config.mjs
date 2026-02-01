@@ -13,7 +13,6 @@ const config = {
   testPathIgnorePatterns: [
     "<rootDir>/node_modules/",
     "<rootDir>/.next/",
-    "<rootDir>/src/__tests__/",
     "<rootDir>/src/app/",
     "<rootDir>/src/components/accessibility/__tests__/",
     "<rootDir>/src/components/analytics/__tests__/",

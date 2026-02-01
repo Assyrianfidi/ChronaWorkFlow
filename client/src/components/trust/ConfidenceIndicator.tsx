@@ -102,6 +102,7 @@ export const ConfidenceIndicator: React.FC<ConfidenceIndicatorProps> = ({
               }`}
               style={{ width: `${score}%` }}
               role="progressbar"
+              aria-label={`Confidence level: ${score}%`}
               aria-valuenow={score}
               aria-valuemin={0}
               aria-valuemax={100}

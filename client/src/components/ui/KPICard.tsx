@@ -92,6 +92,7 @@ export const KPICard: React.FC<KPICardProps> = ({
       <div
         className={`rounded-lg border p-6 ${variantStyles[variant]} ${className}`}
         role="status"
+        aria-live="polite"
         aria-label={`Loading ${title}`}
       >
         <div className="animate-pulse">
