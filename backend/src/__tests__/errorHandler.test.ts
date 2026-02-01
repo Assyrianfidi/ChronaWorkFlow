@@ -1,42 +1,40 @@
-import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { Request, Response, NextFunction } from "express";
 
-// Mock logger before importing errorHandler
-const mockLogger = {
-  error: jest.fn(),
-};
-
-jest.mock("../utils/logger", () => ({
-  logger: mockLogger,
+vi.mock("../utils/logger", () => ({
+  logger: {
+    error: vi.fn(),
+  },
 }));
 
 import { errorHandler, notFound } from "../middleware/errorHandler";
 import { ApiError } from "../utils/errors";
+import { logger as mockLogger } from "../utils/logger";
 
 describe("Error Handler Middleware", () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let nextFunction: NextFunction;
-  let consoleErrorSpy: jest.SpyInstance;
+  let consoleErrorSpy: any;
 
   beforeEach(() => {
-    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     mockRequest = {
       originalUrl: "/test",
       ip: "127.0.0.1",
-      get: jest.fn(),
+      get: vi.fn(),
     };
     mockResponse = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
+      status: vi.fn().mockReturnThis(),
+      json: vi.fn(),
     };
-    nextFunction = jest.fn();
+    nextFunction = vi.fn();
   });
 
   afterEach(() => {
     consoleErrorSpy.mockRestore();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("errorHandler", () => {
@@ -117,7 +115,7 @@ describe("Error Handler Middleware", () => {
 
       // Mock NODE_ENV
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = "development";
+      (process.env as any).NODE_ENV = "development";
 
       errorHandler(
         error,
@@ -132,7 +130,7 @@ describe("Error Handler Middleware", () => {
       });
 
       // Restore original NODE_ENV
-      process.env.NODE_ENV = originalEnv;
+      (process.env as any).NODE_ENV = originalEnv;
     });
 
     it("should log errors", () => {

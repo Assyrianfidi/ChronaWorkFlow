@@ -105,10 +105,13 @@ describe("Auth Controller - Unit Tests", () => {
   beforeAll(async () => {
     // Import after mocking
     const authControllerModule = await import(
-      "../controllers/auth.controller"
+      "../controllers/auth.controller.ts"
     );
-    ({ login, register, refreshToken, logout, logoutAll, changePassword } =
-      authControllerModule);
+    const resolved = {
+      ...(authControllerModule as any),
+      ...((authControllerModule as any).default ?? {}),
+    };
+    ({ login, register, refreshToken, logout, logoutAll, changePassword } = resolved);
   });
 
   beforeEach(() => {

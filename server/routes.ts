@@ -1,5 +1,4 @@
 import type { Express } from "express";
-import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { db } from "./db";
 import * as sharedSchema from "../shared/schema";
@@ -24,8 +23,7 @@ import {
 import { handleStripeWebhook, createCheckoutSession, createPaymentIntent, getPaymentIntent, createStripeInvoice, sendInvoice, refundPayment, getBalance, stripeHealthCheck } from "./routes/stripe";
 import { healthCheck } from "./routes/health";
 
-import {
-  handlePlaidWebhook,
+import { handlePlaidWebhook,
   createLinkToken,
   exchangePublicToken,
   getAccounts,
@@ -35,6 +33,8 @@ import {
   getInstitutions,
   plaidHealthCheck,
 } from "./routes/plaid";
+
+import { requireCompanyId } from "./runtime/request-context";
 
 import { enforceBillingStatus, enforcePlanLimits, enforcePlanLimitsMiddleware, getBillingEnforcementMode, getCompanyIdFromRequest } from "./middleware/billing-enforcement";
 import { getCurrentPlan, enforcePlanLimits as enforcePlanLimitsNew, requireFeature } from "./middleware/plan-enforcement";
@@ -152,20 +152,11 @@ function requireOwner(req: any, res: any, next: any) {
 
 // Middleware to verify JWT token
 function authenticateToken(req: any, res: any, next: any) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
+  if (!req.user) {
     return res.status(401).json({ error: "Authentication required" });
   }
 
-  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
-    if (err) {
-      return res.status(403).json({ error: "Invalid or expired token" });
-    }
-    req.user = user;
-    next();
-  });
+  return next();
 }
 
 function registerOwnerAiAuditRoutes(app: Express) {
@@ -702,7 +693,11 @@ function registerOwnerAiAuditRoutes(app: Express) {
   );
 }
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<void> {
+  // Import idempotency route helpers at the top to ensure they're available throughout
+  const { registerFinancialRoute, getIdempotencyKey } = await import("./resilience/financial-route-gate");
+  const { registerHighRiskRoute } = await import("./resilience/high-risk-route-gate");
+
   // ==================== AUTHENTICATION ====================
   
   app.post("/api/auth/register", async (req, res) => {
@@ -1080,8 +1075,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/companies", authenticateToken, async (req, res) => {
     try {
-      const companies = await storage.getCompanies();
-      res.json(companies);
+      const roles = (Array.isArray((req as any).user?.roles) ? (req as any).user.roles : []) as string[];
+      const isOwner = roles.includes("OWNER");
+      if (isOwner) {
+        const companies = await storage.getCompanies();
+        return res.json(companies);
+      }
+
+      const userId = String((req as any).user?.id ?? "");
+      const rows = await db
+        .select({ company: sharedSchema.companies })
+        .from(sharedSchema.userCompanyAccess)
+        .innerJoin(
+          sharedSchema.companies,
+          eq(sharedSchema.userCompanyAccess.companyId, sharedSchema.companies.id),
+        )
+        .where(eq(sharedSchema.userCompanyAccess.userId, userId));
+
+      return res.json(rows.map((r) => r.company));
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -1089,6 +1100,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/companies/:id", authenticateToken, async (req, res) => {
     try {
+      const roles = (Array.isArray((req as any).user?.roles) ? (req as any).user.roles : []) as string[];
+      const isOwner = roles.includes("OWNER");
+      if (!isOwner) {
+        const userId = String((req as any).user?.id ?? "");
+        const allowed = await storage.hasUserCompanyAccess(userId, req.params.id);
+        if (!allowed) {
+          return res.status(403).json({ error: "Forbidden" });
+        }
+      }
+
       const company = await storage.getCompany(req.params.id);
       if (!company) {
         return res.status(404).json({ error: "Company not found" });
@@ -1102,6 +1123,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/companies", authenticateToken, async (req, res) => {
     try {
       const company = await storage.createCompany(req.body);
+
+      const userId = String((req as any).user?.id ?? "");
+      if (userId) {
+        await storage.updateUser(userId, { currentCompanyId: company.id } as any);
+        try {
+          await db.insert(sharedSchema.userCompanyAccess).values({
+            userId,
+            companyId: company.id,
+            role: "admin" as any,
+          } as any);
+        } catch {
+          // ignore
+        }
+      }
+
       res.status(201).json(company);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -1147,25 +1183,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/customers", authenticateToken, enforceBillingStatus(), async (req, res) => {
-    try {
+  registerHighRiskRoute(app, {
+    operationName: "createCustomer",
+    path: "/api/customers",
+    method: "POST",
+    middleware: [authenticateToken, enforceBillingStatus()],
+    handler: async (req, res) => {
       const customer = await storage.createCustomer(req.body);
       res.status(201).json(customer);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
-  app.patch("/api/customers/:id", authenticateToken, enforceBillingStatus(), async (req, res) => {
-    try {
-      const customer = await storage.updateCustomer(req.params.id, req.body);
+  registerHighRiskRoute(app, {
+    operationName: "updateCustomer",
+    path: "/api/customers/:id",
+    method: "PATCH",
+    middleware: [authenticateToken, enforceBillingStatus()],
+    handler: async (req, res) => {
+      const companyId = requireCompanyId();
+      const customer = await storage.updateCustomerByCompany(companyId, req.params.id, req.body);
       if (!customer) {
         return res.status(404).json({ error: "Customer not found" });
       }
       res.json(customer);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
   // ==================== VENDORS ====================
@@ -1314,7 +1355,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/invoices/:id", authenticateToken, async (req, res) => {
     try {
-      const data = await storage.getInvoiceWithItems(req.params.id);
+      const companyId = requireCompanyId();
+      const data = await storage.getInvoiceWithItemsByCompany(companyId, req.params.id);
       if (!data) {
         return res.status(404).json({ error: "Invoice not found" });
       }
@@ -1331,6 +1373,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     enforcePlanLimitsMiddleware("create_invoice"),
     async (req, res) => {
     try {
+      const idempotencyKey = String(req.header("Idempotency-Key") ?? "").trim();
+      if (!idempotencyKey) {
+        return res.status(400).json({ error: "Idempotency-Key header is required" });
+      }
+
       const { invoice, items } = req.body;
 
       // Calculate totals
@@ -1347,58 +1394,120 @@ export async function registerRoutes(app: Express): Promise<Server> {
         taxAmount: taxAmount.toString(),
         total: total.toString(),
         createdBy: (req as any).user.id,
+        date: invoice.date ? new Date(invoice.date) : new Date(),
+        dueDate: invoice.dueDate ? new Date(invoice.dueDate) : undefined,
       };
 
-      const newInvoice = await storage.createInvoice(invoiceData, items);
+      const { invoice: newInvoice, replayed } = await storage.createInvoice(invoiceData, items, idempotencyKey);
 
-      void startWorkflowInstance({
-        companyId: String((newInvoice as any).companyId ?? invoiceData.companyId ?? ""),
-        triggerEventType: "invoice_created",
-        triggerEntityType: "invoice",
-        triggerEntityId: String((newInvoice as any).id ?? null),
-        metadataJson: { invoiceId: (newInvoice as any).id ?? null },
-        actorUserId: String((req as any).user?.id ?? null),
-      }).catch(() => {
-        return;
-      });
+      if (!replayed) {
+        void startWorkflowInstance({
+          companyId: String((newInvoice as any).companyId ?? invoiceData.companyId ?? ""),
+          triggerEventType: "invoice_created",
+          triggerEntityType: "invoice",
+          triggerEntityId: String((newInvoice as any).id ?? null),
+          metadataJson: { invoiceId: (newInvoice as any).id ?? null },
+          actorUserId: String((req as any).user?.id ?? null),
+        }).catch(() => {
+          return;
+        });
+      }
 
-      res.status(201).json(newInvoice);
+      res.status(replayed ? 200 : 201).json(newInvoice);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
     },
   );
 
+  app.post(
+    "/api/invoices/:invoiceId/finalize",
+    authenticateToken,
+    enforceBillingStatus(),
+    async (req, res) => {
+      try {
+        const idempotencyKey = String(req.header("Idempotency-Key") ?? "").trim();
+        if (!idempotencyKey) {
+          return res.status(400).json({ error: "Idempotency-Key header is required" });
+        }
+
+        const companyId = requireCompanyId();
+        const { invoiceId } = req.params;
+        const { targetStatus } = req.body;
+
+        if (!targetStatus || !["sent", "issued", "approved", "finalized"].includes(targetStatus)) {
+          return res.status(400).json({ error: "Valid targetStatus is required (sent, issued, approved, or finalized)" });
+        }
+
+        const { invoice, replayed } = await storage.finalizeInvoice(
+          companyId,
+          invoiceId,
+          targetStatus,
+          idempotencyKey
+        );
+
+        if (!replayed) {
+          void startWorkflowInstance({
+            companyId: String(invoice.companyId ?? companyId),
+            triggerEventType: "invoice_finalized",
+            triggerEntityType: "invoice",
+            triggerEntityId: String(invoice.id ?? invoiceId),
+            metadataJson: { invoiceId: invoice.id, targetStatus, previousStatus: "draft" },
+            actorUserId: String((req as any).user?.id ?? null),
+          }).catch(() => {
+            return;
+          });
+        }
+
+        res.status(replayed ? 200 : 201).json(invoice);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  );
+
   // ==================== PAYMENTS ====================
 
-  app.post("/api/payments", authenticateToken, enforceBillingStatus(), async (req, res) => {
-    try {
+  // Payment creation route - uses financial mutation gate
+  registerFinancialRoute(app, {
+    operationName: "createPayment",
+    path: "/api/payments",
+    method: "POST",
+    middleware: [authenticateToken, enforceBillingStatus()],
+    handler: async (req, res) => {
+      const idempotencyKey = getIdempotencyKey(req);
+      const companyId = requireCompanyId();
+      
       const paymentData = {
         ...req.body,
+        companyId,
         createdBy: (req as any).user.id,
+        date: req.body.date ? new Date(req.body.date) : new Date(),
       };
-      const payment = await storage.createPayment(paymentData);
+      
+      const { payment, replayed } = await storage.createPayment(paymentData, idempotencyKey);
 
-      void startWorkflowInstance({
-        companyId: String((payment as any).companyId ?? paymentData.companyId ?? ""),
-        triggerEventType: "payment_received",
-        triggerEntityType: "payment",
-        triggerEntityId: String((payment as any).id ?? null),
-        metadataJson: { paymentId: (payment as any).id ?? null, invoiceId: (payment as any).invoiceId ?? null },
-        actorUserId: String((req as any).user?.id ?? null),
-      }).catch(() => {
-        return;
-      });
+      if (!replayed) {
+        void startWorkflowInstance({
+          companyId: String((payment as any).companyId ?? paymentData.companyId ?? ""),
+          triggerEventType: "payment_received",
+          triggerEntityType: "payment",
+          triggerEntityId: String((payment as any).id ?? null),
+          metadataJson: { paymentId: (payment as any).id ?? null, invoiceId: (payment as any).invoiceId ?? null },
+          actorUserId: String((req as any).user?.id ?? null),
+        }).catch(() => {
+          return;
+        });
+      }
 
-      res.status(201).json(payment);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+      res.status(replayed ? 200 : 201).json(payment);
+    },
   });
 
   app.get("/api/invoices/:invoiceId/payments", authenticateToken, async (req, res) => {
     try {
-      const payments = await storage.getPaymentsByInvoice(req.params.invoiceId);
+      const companyId = requireCompanyId();
+      const payments = await storage.getPaymentsByInvoiceByCompany(companyId, req.params.invoiceId);
       res.json(payments);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -1420,8 +1529,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/bank-transactions/import", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "importBankTransactions",
+    path: "/api/bank-transactions/import",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
+      const idempotencyKey = getIdempotencyKey(req);
       const { transactions: importedTransactions, companyId, accountId } = req.body;
 
       const created = [];
@@ -1439,20 +1553,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       res.status(201).json({ imported: created.length, transactions: created });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
-  app.post("/api/bank-transactions/:id/reconcile", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "reconcileBankTransaction",
+    path: "/api/bank-transactions/:id/reconcile",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
+      const idempotencyKey = getIdempotencyKey(req);
       const { matchedTransactionId } = req.body;
-      await storage.reconcileBankTransaction(req.params.id, matchedTransactionId);
+      const companyId = requireCompanyId();
+      await storage.reconcileBankTransactionByCompany(companyId, req.params.id, matchedTransactionId);
       res.json({ success: true });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
+
+  app.post(
+    "/api/ledger/reconcile/:bankTransactionId",
+    authenticateToken,
+    enforceBillingStatus(),
+    async (req, res) => {
+      try {
+        const idempotencyKey = String(req.header("Idempotency-Key") ?? "").trim();
+        if (!idempotencyKey) {
+          return res.status(400).json({ error: "Idempotency-Key header is required" });
+        }
+
+        const companyId = requireCompanyId();
+        const { bankTransactionId } = req.params;
+        const { matchedTransactionId } = req.body;
+
+        if (!matchedTransactionId) {
+          return res.status(400).json({ error: "matchedTransactionId is required" });
+        }
+
+        const userId = String((req as any).user?.id ?? "");
+        if (!userId) {
+          return res.status(401).json({ error: "User ID not found" });
+        }
+
+        const { bankTransaction, replayed } = await storage.reconcileLedger(
+          companyId,
+          bankTransactionId,
+          matchedTransactionId,
+          idempotencyKey,
+          userId
+        );
+
+        if (!replayed) {
+          void startWorkflowInstance({
+            companyId: String(bankTransaction.companyId ?? companyId),
+            triggerEventType: "ledger_reconciled",
+            triggerEntityType: "bank_transaction",
+            triggerEntityId: String(bankTransaction.id ?? bankTransactionId),
+            metadataJson: { bankTransactionId: bankTransaction.id, matchedTransactionId, amount: bankTransaction.amount },
+            actorUserId: userId,
+          }).catch(() => {
+            return;
+          });
+        }
+
+        res.status(replayed ? 200 : 201).json(bankTransaction);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  );
 
   // ==================== REPORTS ====================
 
@@ -1609,25 +1777,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/payroll/employees", authenticateToken, async (req, res) => {
-    try {
+  registerHighRiskRoute(app, {
+    operationName: "createEmployee",
+    path: "/api/payroll/employees",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const employee = await storage.createEmployee(req.body);
       res.status(201).json(employee);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
-  app.patch("/api/payroll/employees/:id", authenticateToken, async (req, res) => {
-    try {
-      const employee = await storage.updateEmployee(req.params.id, req.body);
+  registerFinancialRoute(app, {
+    operationName: "updateEmployee",
+    path: "/api/payroll/employees/:id",
+    method: "PATCH",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
+      const companyId = requireCompanyId();
+      const employee = await storage.updateEmployeeByCompany(companyId, req.params.id, req.body);
       if (!employee) {
         return res.status(404).json({ error: "Employee not found" });
       }
       res.json(employee);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
   // Deductions
@@ -1644,13 +1817,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/payroll/deductions", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "createDeduction",
+    path: "/api/payroll/deductions",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const deduction = await storage.createDeduction(req.body);
       res.status(201).json(deduction);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
   // Employee Deductions
@@ -1663,13 +1838,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/payroll/employee-deductions", authenticateToken, async (req, res) => {
-    try {
-      const deduction = await storage.createEmployeeDeduction(req.body);
+  registerFinancialRoute(app, {
+    operationName: "createEmployeeDeduction",
+    path: "/api/payroll/employee-deductions",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
+      const companyId = requireCompanyId();
+      const deduction = await storage.createEmployeeDeductionByCompany(companyId, req.body);
       res.status(201).json(deduction);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
   // Payroll Periods
@@ -1686,13 +1864,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/payroll/periods", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "createPayrollPeriod",
+    path: "/api/payroll/periods",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const period = await storage.createPayrollPeriod(req.body);
       res.status(201).json(period);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
   // Time Entries
@@ -1717,22 +1897,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/payroll/time-entries", authenticateToken, async (req, res) => {
-    try {
-      const entry = await storage.createTimeEntry(req.body);
+  registerFinancialRoute(app, {
+    operationName: "createTimeEntry",
+    path: "/api/payroll/time-entries",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
+      const companyId = requireCompanyId();
+      const entry = await storage.createTimeEntryByCompany(companyId, req.body);
       res.status(201).json(entry);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
-  app.post("/api/payroll/time-entries/:id/approve", authenticateToken, async (req, res) => {
-    try {
-      await storage.approveTimeEntry(req.params.id, (req as any).user.id);
+  registerFinancialRoute(app, {
+    operationName: "approveTimeEntry",
+    path: "/api/payroll/time-entries/:id/approve",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
+      const companyId = requireCompanyId();
+      await storage.approveTimeEntryByCompany(companyId, req.params.id, (req as any).user.id);
       res.json({ success: true });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
   // Pay Runs
@@ -1761,8 +1947,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/payroll/pay-runs", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "createPayRun",
+    path: "/api/payroll/pay-runs",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const { payRun, details } = req.body;
       const newPayRun = await storage.createPayRun(payRun, details);
 
@@ -1778,20 +1968,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       res.status(201).json(newPayRun);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
-  app.patch("/api/payroll/pay-runs/:id/status", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "updatePayRunStatus",
+    path: "/api/payroll/pay-runs/:id/status",
+    method: "PATCH",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const { status } = req.body;
-      await storage.updatePayRunStatus(req.params.id, status);
+      const companyId = requireCompanyId();
+      await storage.updatePayRunStatusByCompany(companyId, req.params.id, status);
       res.json({ success: true });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
+
+  app.post(
+    "/api/payroll/pay-runs/:payRunId/execute",
+    authenticateToken,
+    enforceBillingStatus(),
+    async (req, res) => {
+      try {
+        const idempotencyKey = String(req.header("Idempotency-Key") ?? "").trim();
+        if (!idempotencyKey) {
+          return res.status(400).json({ error: "Idempotency-Key header is required" });
+        }
+
+        const companyId = requireCompanyId();
+        const { payRunId } = req.params;
+        const { targetStatus } = req.body;
+
+        if (!targetStatus || !["approved", "processing", "completed"].includes(targetStatus)) {
+          return res.status(400).json({ error: "Valid targetStatus is required (approved, processing, or completed)" });
+        }
+
+        const { payRun, replayed } = await storage.executePayrollRun(
+          companyId,
+          payRunId,
+          targetStatus,
+          idempotencyKey
+        );
+
+        if (!replayed) {
+          void startWorkflowInstance({
+            companyId: String(payRun.companyId ?? companyId),
+            triggerEventType: "payroll_executed",
+            triggerEntityType: "pay_run",
+            triggerEntityId: String(payRun.id ?? payRunId),
+            metadataJson: { payRunId: payRun.id, targetStatus, previousStatus: "draft" },
+            actorUserId: String((req as any).user?.id ?? null),
+          }).catch(() => {
+            return;
+          });
+        }
+
+        res.status(replayed ? 200 : 201).json(payRun);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  );
 
   // Tax Forms
   app.get("/api/payroll/tax-forms", authenticateToken, async (req, res) => {
@@ -1807,13 +2044,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/payroll/tax-forms", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "createTaxForm",
+    path: "/api/payroll/tax-forms",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const form = await storage.createTaxForm(req.body);
       res.status(201).json(form);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
   // ==================== INVENTORY MODULE ====================
@@ -1832,35 +2071,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/inventory/items", authenticateToken, async (req, res) => {
-    try {
+  registerHighRiskRoute(app, {
+    operationName: "createInventoryItem",
+    path: "/api/inventory/items",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const item = await storage.createInventoryItem(req.body);
       res.status(201).json(item);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
-  app.patch("/api/inventory/items/:id", authenticateToken, async (req, res) => {
-    try {
-      const item = await storage.updateInventoryItem(req.params.id, req.body);
+  registerHighRiskRoute(app, {
+    operationName: "updateInventoryItem",
+    path: "/api/inventory/items/:id",
+    method: "PATCH",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
+      const companyId = requireCompanyId();
+      const item = await storage.updateInventoryItemByCompany(companyId, req.params.id, req.body);
       if (!item) {
         return res.status(404).json({ error: "Inventory item not found" });
       }
       res.json(item);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
-  app.patch("/api/inventory/items/:id/quantity", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "updateInventoryQuantity",
+    path: "/api/inventory/items/:id/quantity",
+    method: "PATCH",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const { quantityChange, reason } = req.body;
-      await storage.updateInventoryQuantity(req.params.id, quantityChange, reason);
+      const companyId = requireCompanyId();
+      await storage.updateInventoryQuantityByCompany(companyId, req.params.id, quantityChange, reason, String((req as any).user?.id ?? "system"));
       res.json({ success: true });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
   // Purchase Orders
@@ -1889,24 +2136,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/inventory/purchase-orders", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "createPurchaseOrder",
+    path: "/api/inventory/purchase-orders",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const { order, items } = req.body;
       const newOrder = await storage.createPurchaseOrder(order, items);
       res.status(201).json(newOrder);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
-  app.patch("/api/inventory/purchase-orders/:id/status", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "updatePurchaseOrderStatus",
+    path: "/api/inventory/purchase-orders/:id/status",
+    method: "PATCH",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const { status } = req.body;
-      await storage.updatePurchaseOrderStatus(req.params.id, status);
+      const companyId = requireCompanyId();
+      await storage.updatePurchaseOrderStatusByCompany(companyId, req.params.id, status);
       res.json({ success: true });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
   // Inventory Adjustments
@@ -1923,13 +2175,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/inventory/adjustments", authenticateToken, async (req, res) => {
-    try {
+  registerFinancialRoute(app, {
+    operationName: "createInventoryAdjustment",
+    path: "/api/inventory/adjustments",
+    method: "POST",
+    middleware: [authenticateToken],
+    handler: async (req, res) => {
       const adjustment = await storage.createInventoryAdjustment(req.body);
       res.status(201).json(adjustment);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
+    },
   });
 
   // ==================== BILLING & PLANS ====================
@@ -2153,7 +2407,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/health", healthCheck);
   app.get("/api/health", healthCheck);
 
-  const httpServer = createServer(app);
-
-  return httpServer;
+  return;
 }

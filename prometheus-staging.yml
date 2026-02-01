@@ -1,0 +1,226 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: accubooks-staging
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        cluster: 'accubooks-staging'
+        environment: 'staging'
+
+    scrape_configs:
+      - job_name: 'accubooks-staging'
+        scrape_interval: 15s
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - accubooks-staging
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: kubernetes_pod_name
+
+    rule_files:
+      - '/etc/prometheus/rules/*.yml'
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: accubooks-staging
+data:
+  idempotent-writes.yml: |
+    groups:
+      - name: idempotent_write_alerts
+        interval: 30s
+        rules:
+          # Recording rules
+          - record: idempotent_write_replay_rate
+            expr: |
+              rate(idempotent_writes_replayed_total[5m]) 
+              / 
+              rate(idempotent_writes_total[5m])
+          
+          - record: idempotent_write_failure_rate
+            expr: |
+              rate(idempotent_writes_failed_total[5m]) 
+              / 
+              rate(idempotent_writes_total[5m])
+          
+          - record: idempotent_write_p95_latency
+            expr: |
+              histogram_quantile(0.95, 
+                rate(idempotent_write_duration_ms_bucket[5m])
+              )
+          
+          # Alert rules - CRITICAL
+          - alert: HighIdempotentWriteFailureRate
+            expr: idempotent_write_failure_rate > 0.1
+            for: 5m
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "High failure rate for {{ $labels.operation }}"
+              description: "Failure rate is {{ $value | humanizePercentage }} for operation {{ $labels.operation }}"
+              runbook_url: "https://docs.accubooks.com/runbooks/high-failure-rate"
+
+          - alert: IdempotencyKeyCollision
+            expr: increase(idempotent_writes_failed_total{error_type="mismatch"}[5m]) > 0
+            labels:
+              severity: critical
+              team: platform
+            annotations:
+              summary: "Idempotency key collision detected"
+              description: "Operation {{ $labels.operation }} has {{ $value }} key mismatches in last 5 minutes"
+
+          # Alert rules - WARNING
+          - alert: HighIdempotentWriteReplayRate
+            expr: idempotent_write_replay_rate > 0.5
+            for: 10m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "High replay rate for {{ $labels.operation }}"
+              description: "Replay rate is {{ $value | humanizePercentage }} for operation {{ $labels.operation }}"
+
+          - alert: SlowIdempotentWriteExecution
+            expr: idempotent_write_p95_latency > 5000
+            for: 10m
+            labels:
+              severity: warning
+              team: platform
+            annotations:
+              summary: "Slow execution for {{ $labels.operation }}"
+              description: "P95 duration is {{ $value }}ms for operation {{ $labels.operation }}"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: accubooks-staging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.45.0
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--storage.tsdb.retention.time=30d'
+            - '--web.enable-lifecycle'
+          ports:
+            - containerPort: 9090
+              name: web
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+            - name: prometheus-rules
+              mountPath: /etc/prometheus/rules
+            - name: prometheus-storage
+              mountPath: /prometheus
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+        - name: prometheus-rules
+          configMap:
+            name: prometheus-rules
+        - name: prometheus-storage
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: accubooks-staging
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - port: 9090
+      targetPort: 9090
+      name: web
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: accubooks-staging
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/proxy
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: accubooks-staging

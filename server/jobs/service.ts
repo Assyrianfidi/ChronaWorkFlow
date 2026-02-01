@@ -1,6 +1,7 @@
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
 import { redis, queues, JOB_QUEUES, jobProcessors, JobResult, JobStats, WorkerStats, type WorkflowTimerJobData } from './config';
 import { logger } from '../utils/logger';
+import { runAsSystem, runWithCompanyContext } from '../runtime/request-context';
 
 export class JobService {
   private workers: Map<string, Worker> = new Map();
@@ -79,7 +80,9 @@ export class JobService {
       }
 
       try {
-        const result = await processor(job);
+        const companyId = typeof (job as any)?.data?.companyId === 'string' ? String((job as any).data.companyId) : '';
+        const runner = companyId ? () => runWithCompanyContext(companyId, () => processor(job)) : () => runAsSystem(() => processor(job));
+        const result = await runner();
         const duration = Date.now() - startTime;
 
         return {

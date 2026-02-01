@@ -1,10 +1,12 @@
 import { Job } from 'bullmq';
 import { RecurringInvoiceJobData, ReportGenerationJobData, BackupJobData, NotificationJobData, WorkflowTimerJobData } from './config';
 import { logger } from '../utils/logger';
+import { runWithCompanyContext } from '../runtime/request-context';
 
 // Recurring Invoice Processor
 export async function processRecurringInvoice(job: Job<RecurringInvoiceJobData>) {
-  logger.info(`Processing recurring invoice job for company ${job.data.companyId}`);
+  return runWithCompanyContext(job.data.companyId, async () => {
+    logger.info(`Processing recurring invoice job for company ${job.data.companyId}`);
 
   // Implementation would:
   // 1. Fetch the recurring invoice schedule
@@ -12,16 +14,18 @@ export async function processRecurringInvoice(job: Job<RecurringInvoiceJobData>)
   // 3. Create the invoice based on the schedule
   // 4. Send notifications to relevant parties
 
-  return {
-    success: true,
-    invoiceId: 'generated-invoice-id',
-    message: 'Recurring invoice processed successfully',
-  };
+    return {
+      success: true,
+      invoiceId: 'generated-invoice-id',
+      message: 'Recurring invoice processed successfully',
+    };
+  });
 }
 
 // Payroll Processing Processor
 export async function processPayroll(job: Job<any>) {
-  logger.info(`Processing payroll for company ${job.data.companyId}`);
+  return runWithCompanyContext(String(job.data.companyId), async () => {
+    logger.info(`Processing payroll for company ${job.data.companyId}`);
 
   // Implementation would:
   // 1. Fetch all approved time entries for the period
@@ -30,17 +34,19 @@ export async function processPayroll(job: Job<any>) {
   // 4. Process payments if configured
   // 5. Generate payslips and tax forms
 
-  return {
-    success: true,
-    payRunId: 'generated-pay-run-id',
-    processedEmployees: 25,
-    message: 'Payroll processed successfully',
-  };
+    return {
+      success: true,
+      payRunId: 'generated-pay-run-id',
+      processedEmployees: 25,
+      message: 'Payroll processed successfully',
+    };
+  });
 }
 
 // Report Generation Processor
 export async function generateReport(job: Job<ReportGenerationJobData>) {
-  logger.info(`Generating ${job.data.reportType} report for company ${job.data.companyId}`);
+  return runWithCompanyContext(job.data.companyId, async () => {
+    logger.info(`Generating ${job.data.reportType} report for company ${job.data.companyId}`);
 
   // Implementation would:
   // 1. Fetch relevant data based on report type and date range
@@ -48,17 +54,19 @@ export async function generateReport(job: Job<ReportGenerationJobData>) {
   // 3. Save the report file
   // 4. Send email notification if requested
 
-  return {
-    success: true,
-    reportId: 'generated-report-id',
-    filePath: '/reports/balance-sheet-2024.pdf',
-    message: 'Report generated successfully',
-  };
+    return {
+      success: true,
+      reportId: 'generated-report-id',
+      filePath: '/reports/balance-sheet-2024.pdf',
+      message: 'Report generated successfully',
+    };
+  });
 }
 
 // Backup Processor
 export async function createBackup(job: Job<BackupJobData>) {
-  logger.info(`Creating ${job.data.backupType} backup for company ${job.data.companyId}`);
+  return runWithCompanyContext(job.data.companyId, async () => {
+    logger.info(`Creating ${job.data.backupType} backup for company ${job.data.companyId}`);
 
   // Implementation would:
   // 1. Connect to the database
@@ -67,18 +75,20 @@ export async function createBackup(job: Job<BackupJobData>) {
   // 4. Store backup in secure location
   // 5. Send confirmation notification
 
-  return {
-    success: true,
-    backupId: 'backup-id-123',
-    fileSize: '2.5GB',
-    location: '/backups/company-123-full-20241201.sql',
-    message: 'Backup created successfully',
-  };
+    return {
+      success: true,
+      backupId: 'backup-id-123',
+      fileSize: '2.5GB',
+      location: '/backups/company-123-full-20241201.sql',
+      message: 'Backup created successfully',
+    };
+  });
 }
 
 // Notification Processor
 export async function sendNotification(job: Job<NotificationJobData>) {
-  logger.info(`Sending ${job.data.type} notification for company ${job.data.companyId}`);
+  return runWithCompanyContext(job.data.companyId, async () => {
+    logger.info(`Sending ${job.data.type} notification for company ${job.data.companyId}`);
 
   // Implementation would:
   // 1. Fetch the notification template
@@ -87,28 +97,31 @@ export async function sendNotification(job: Job<NotificationJobData>) {
   // 4. Create in-app notification if requested
   // 5. Handle delivery confirmations
 
-  return {
-    success: true,
-    notificationId: 'notification-id-123',
-    sentVia: job.data.type,
-    message: 'Notification sent successfully',
-  };
+    return {
+      success: true,
+      notificationId: 'notification-id-123',
+      sentVia: job.data.type,
+      message: 'Notification sent successfully',
+    };
+  });
 }
 
 export async function processWorkflowTimer(job: Job<WorkflowTimerJobData>) {
-  logger.info(`Firing workflow timer ${job.data.workflowTimerId} for company ${job.data.companyId}`);
+  return runWithCompanyContext(job.data.companyId, async () => {
+    logger.info(`Firing workflow timer ${job.data.workflowTimerId} for company ${job.data.companyId}`);
 
-  const mod = await import('../services/workflow.service');
-  await mod.fireTimer({
-    companyId: job.data.companyId,
-    workflowTimerId: job.data.workflowTimerId,
-    workflowInstanceId: job.data.workflowInstanceId,
+    const mod = await import('../services/workflow.service');
+    await mod.fireTimer({
+      companyId: job.data.companyId,
+      workflowTimerId: job.data.workflowTimerId,
+      workflowInstanceId: job.data.workflowInstanceId,
+    });
+
+    return {
+      success: true,
+      workflowTimerId: job.data.workflowTimerId,
+      workflowInstanceId: job.data.workflowInstanceId,
+      message: 'Workflow timer fired successfully',
+    };
   });
-
-  return {
-    success: true,
-    workflowTimerId: job.data.workflowTimerId,
-    workflowInstanceId: job.data.workflowInstanceId,
-    message: 'Workflow timer fired successfully',
-  };
 }

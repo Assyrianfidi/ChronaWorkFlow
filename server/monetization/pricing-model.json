@@ -1,0 +1,812 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-01-26T00:00:00Z",
+  "description": "Pricing model for AccuBooks product tiers",
+  "currency": "USD",
+  "billingCycles": ["MONTHLY", "ANNUAL"],
+  "tiers": {
+    "FREE": {
+      "name": "Free Tier",
+      "monthlyPrice": 0,
+      "annualPrice": 0,
+      "annualDiscount": 0,
+      "setupFee": 0,
+      "features": {
+        "included": [
+          {
+            "id": "basic_accounting",
+            "name": "Basic Accounting",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "invoice_generation",
+            "name": "Invoice Generation",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "expense_tracking",
+            "name": "Expense Tracking",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "basic_reports",
+            "name": "Basic Reports",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "data_export",
+            "name": "Data Export",
+            "value": 0,
+            "type": "BOOLEAN"
+          }
+        ],
+        "limited": [
+          {
+            "id": "users",
+            "name": "User Accounts",
+            "included": 1,
+            "unit": "users",
+            "overageRate": 0,
+            "hardLimit": true
+          },
+          {
+            "id": "companies",
+            "name": "Companies",
+            "included": 1,
+            "unit": "companies",
+            "overageRate": 0,
+            "hardLimit": true
+          },
+          {
+            "id": "transactions",
+            "name": "Transactions",
+            "included": 50,
+            "unit": "transactions/month",
+            "overageRate": 0,
+            "hardLimit": true
+          },
+          {
+            "id": "storage",
+            "name": "Storage",
+            "included": 1,
+            "unit": "GB",
+            "overageRate": 0,
+            "hardLimit": true
+          }
+        ]
+      },
+      "targetMarket": "Individuals, Freelancers, Micro-businesses",
+      "valueProposition": "Get started with basic accounting features at no cost"
+    },
+    "STARTER": {
+      "name": "Starter",
+      "monthlyPrice": 29,
+      "annualPrice": 290,
+      "annualDiscount": 20,
+      "setupFee": 0,
+      "features": {
+        "included": [
+          {
+            "id": "basic_accounting",
+            "name": "Basic Accounting",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "invoice_generation",
+            "name": "Invoice Generation",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "expense_tracking",
+            "name": "Expense Tracking",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "basic_reports",
+            "name": "Basic Reports",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "data_export",
+            "name": "Data Export",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "multi_user",
+            "name": "Multi-User Access",
+            "value": 15,
+            "type": "PER_USER"
+          },
+          {
+            "id": "basic_compliance",
+            "name": "Basic Compliance",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "api_access",
+            "name": "API Access",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "email_support",
+            "name": "Email Support",
+            "value": 0,
+            "type": "BOOLEAN"
+          }
+        ],
+        "limited": [
+          {
+            "id": "users",
+            "name": "User Accounts",
+            "included": 3,
+            "unit": "users",
+            "overageRate": 15,
+            "hardLimit": true
+          },
+          {
+            "id": "companies",
+            "name": "Companies",
+            "included": 2,
+            "unit": "companies",
+            "overageRate": 10,
+            "hardLimit": true
+          },
+          {
+            "id": "transactions",
+            "name": "Transactions",
+            "included": 500,
+            "unit": "transactions/month",
+            "overageRate": 0.10,
+            "hardLimit": false
+          },
+          {
+            "id": "storage",
+            "name": "Storage",
+            "included": 10,
+            "unit": "GB",
+            "overageRate": 0.50,
+            "hardLimit": false
+          },
+          {
+            "id": "api_calls",
+            "name": "API Calls",
+            "included": 1000,
+            "unit": "calls/day",
+            "overageRate": 0.001,
+            "hardLimit": true
+          }
+        ]
+      },
+      "targetMarket": "Small businesses, Startups",
+      "valueProposition": "Perfect for growing businesses needing collaboration and basic compliance"
+    },
+    "PRO": {
+      "name": "Professional",
+      "monthlyPrice": 99,
+      "annualPrice": 990,
+      "annualDiscount": 20,
+      "setupFee": 0,
+      "features": {
+        "included": [
+          {
+            "id": "basic_accounting",
+            "name": "Basic Accounting",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "invoice_generation",
+            "name": "Invoice Generation",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "expense_tracking",
+            "name": "Expense Tracking",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "basic_reports",
+            "name": "Basic Reports",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "data_export",
+            "name": "Data Export",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "multi_user",
+            "name": "Multi-User Access",
+            "value": 10,
+            "type": "PER_USER"
+          },
+          {
+            "id": "basic_compliance",
+            "name": "Basic Compliance",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "api_access",
+            "name": "API Access",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "email_support",
+            "name": "Email Support",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "advanced_compliance",
+            "name": "Advanced Compliance",
+            "value": 25,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "custom_integrations",
+            "name": "Custom Integrations",
+            "value": 5,
+            "type": "PER_INTEGRATION"
+          },
+          {
+            "id": "priority_support",
+            "name": "Priority Support",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "audit_logs",
+            "name": "Audit Logs",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "advanced_analytics",
+            "name": "Advanced Analytics",
+            "value": 20,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "custom_workflows",
+            "name": "Custom Workflows",
+            "value": 15,
+            "type": "BOOLEAN"
+          }
+        ],
+        "limited": [
+          {
+            "id": "users",
+            "name": "User Accounts",
+            "included": 10,
+            "unit": "users",
+            "overageRate": 10,
+            "hardLimit": true
+          },
+          {
+            "id": "companies",
+            "name": "Companies",
+            "included": 5,
+            "unit": "companies",
+            "overageRate": 15,
+            "hardLimit": true
+          },
+          {
+            "id": "transactions",
+            "name": "Transactions",
+            "included": 5000,
+            "unit": "transactions/month",
+            "overageRate": 0.08,
+            "hardLimit": false
+          },
+          {
+            "id": "storage",
+            "name": "Storage",
+            "included": 100,
+            "unit": "GB",
+            "overageRate": 0.40,
+            "hardLimit": false
+          },
+          {
+            "id": "api_calls",
+            "name": "API Calls",
+            "included": 10000,
+            "unit": "calls/day",
+            "overageRate": 0.0008,
+            "hardLimit": true
+          },
+          {
+            "id": "custom_reports",
+            "name": "Custom Reports",
+            "included": 25,
+            "unit": "reports",
+            "overageRate": 2.00,
+            "hardLimit": false
+          },
+          {
+            "id": "integrations",
+            "name": "Integrations",
+            "included": 15,
+            "unit": "integrations",
+            "overageRate": 5.00,
+            "hardLimit": false
+          }
+        ]
+      },
+      "targetMarket": "Medium businesses, Growing companies",
+      "valueProposition": "Comprehensive solution with advanced features and compliance"
+    },
+    "ENTERPRISE": {
+      "name": "Enterprise",
+      "monthlyPrice": 499,
+      "annualPrice": 4990,
+      "annualDiscount": 20,
+      "setupFee": 5000,
+      "features": {
+        "included": [
+          {
+            "id": "basic_accounting",
+            "name": "Basic Accounting",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "invoice_generation",
+            "name": "Invoice Generation",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "expense_tracking",
+            "name": "Expense Tracking",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "basic_reports",
+            "name": "Basic Reports",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "data_export",
+            "name": "Data Export",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "multi_user",
+            "name": "Multi-User Access",
+            "value": 0,
+            "type": "UNLIMITED"
+          },
+          {
+            "id": "basic_compliance",
+            "name": "Basic Compliance",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "api_access",
+            "name": "API Access",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "email_support",
+            "name": "Email Support",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "advanced_compliance",
+            "name": "Advanced Compliance",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "custom_integrations",
+            "name": "Custom Integrations",
+            "value": 0,
+            "type": "UNLIMITED"
+          },
+          {
+            "id": "priority_support",
+            "name": "Priority Support",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "audit_logs",
+            "name": "Audit Logs",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "advanced_analytics",
+            "name": "Advanced Analytics",
+            "value": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "custom_workflows",
+            "name": "Custom Workflows",
+            "value": 0,
+            "type": "BOOLEAN"
+          }
+        ],
+        "enterprise_only": [
+          {
+            "id": "enterprise_governance",
+            "name": "Enterprise Governance",
+            "value": 100,
+            "type": "BOOLEAN",
+            "complianceRequired": ["SOX"]
+          },
+          {
+            "id": "custom_compliance",
+            "name": "Custom Compliance",
+            "value": 150,
+            "type": "BOOLEAN",
+            "complianceRequired": ["CUSTOM"]
+          },
+          {
+            "id": "dedicated_support",
+            "name": "Dedicated Support",
+            "value": 200,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "white_label",
+            "name": "White Label",
+            "value": 300,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": "advanced_security",
+            "name": "Advanced Security",
+            "value": 250,
+            "type": "BOOLEAN",
+            "complianceRequired": ["SOC2", "ISO27001"]
+          },
+          {
+            "id": "custom_audit_trails",
+            "name": "Custom Audit Trails",
+            "value": 100,
+            "type": "BOOLEAN",
+            "complianceRequired": ["SOX"]
+          },
+          {
+            "id": "regulatory_reporting",
+            "name": "Regulatory Reporting",
+            "value": 200,
+            "type": "BOOLEAN",
+            "complianceRequired": ["SOX", "SEC"]
+          },
+          {
+            "id": "advanced_data_residency",
+            "name": "Advanced Data Residency",
+            "value": 150,
+            "type": "BOOLEAN",
+            "complianceRequired": ["GDPR", "CCPA"]
+          }
+        ],
+        "limited": [
+          {
+            "id": "users",
+            "name": "User Accounts",
+            "included": -1,
+            "unit": "users",
+            "overageRate": 0,
+            "hardLimit": false
+          },
+          {
+            "id": "companies",
+            "name": "Companies",
+            "included": -1,
+            "unit": "companies",
+            "overageRate": 0,
+            "hardLimit": false
+          },
+          {
+            "id": "transactions",
+            "name": "Transactions",
+            "included": -1,
+            "unit": "transactions/month",
+            "overageRate": 0,
+            "hardLimit": false
+          },
+          {
+            "id": "storage",
+            "name": "Storage",
+            "included": -1,
+            "unit": "GB",
+            "overageRate": 0,
+            "hardLimit": false
+          },
+          {
+            "id": "api_calls",
+            "name": "API Calls",
+            "included": -1,
+            "unit": "calls/day",
+            "overageRate": 0,
+            "hardLimit": false
+          },
+          {
+            "id": "custom_reports",
+            "name": "Custom Reports",
+            "included": -1,
+            "unit": "reports",
+            "overageRate": 0,
+            "hardLimit": false
+          },
+          {
+            "id": "integrations",
+            "name": "Integrations",
+            "included": -1,
+            "unit": "integrations",
+            "overageRate": 0,
+            "hardLimit": false
+          }
+        ]
+      },
+      "targetMarket": "Enterprise, Regulated industries",
+      "valueProposition": "Complete enterprise solution with unlimited scale and compliance"
+    }
+  },
+  "usagePricing": {
+    "transactions": {
+      "unit": "transaction",
+      "baseRates": {
+        "FREE": 0,
+        "STARTER": 0.10,
+        "PRO": 0.08,
+        "ENTERPRISE": 0
+      },
+      "volumeDiscounts": [
+        {
+          "minVolume": 1000,
+          "maxVolume": 5000,
+          "discount": 0.10
+        },
+        {
+          "minVolume": 5001,
+          "maxVolume": 10000,
+          "discount": 0.20
+        },
+        {
+          "minVolume": 10001,
+          "maxVolume": null,
+          "discount": 0.30
+        }
+      ]
+    },
+    "api_calls": {
+      "unit": "call",
+      "baseRates": {
+        "FREE": 0,
+        "STARTER": 0.001,
+        "PRO": 0.0008,
+        "ENTERPRISE": 0
+      },
+      "volumeDiscounts": [
+        {
+          "minVolume": 10000,
+          "maxVolume": 50000,
+          "discount": 0.15
+        },
+        {
+          "minVolume": 50001,
+          "maxVolume": 100000,
+          "discount": 0.25
+        },
+        {
+          "minVolume": 100001,
+          "maxVolume": null,
+          "discount": 0.35
+        }
+      ]
+    },
+    "storage": {
+      "unit": "GB",
+      "baseRates": {
+        "FREE": 0,
+        "STARTER": 0.50,
+        "PRO": 0.40,
+        "ENTERPRISE": 0
+      },
+      "volumeDiscounts": [
+        {
+          "minVolume": 100,
+          "maxVolume": 500,
+          "discount": 0.20
+        },
+        {
+          "minVolume": 501,
+          "maxVolume": 1000,
+          "discount": 0.30
+        },
+        {
+          "minVolume": 1001,
+          "maxVolume": null,
+          "discount": 0.40
+        }
+      ]
+    }
+  },
+  "addOns": {
+    "additional_users": {
+      "name": "Additional Users",
+      "pricing": {
+        "STARTER": 15,
+        "PRO": 10,
+        "ENTERPRISE": 0
+      },
+      "unit": "user/month",
+      "description": "Additional user accounts beyond included limit"
+    },
+    "additional_companies": {
+      "name": "Additional Companies",
+      "pricing": {
+        "STARTER": 10,
+        "PRO": 15,
+        "ENTERPRISE": 0
+      },
+      "unit": "company/month",
+      "description": "Additional company accounts beyond included limit"
+    },
+    "custom_integrations": {
+      "name": "Custom Integrations",
+      "pricing": {
+        "PRO": 5,
+        "ENTERPRISE": 0
+      },
+      "unit": "integration/month",
+      "description": "Custom third-party integrations"
+    },
+    "custom_reports": {
+      "name": "Custom Reports",
+      "pricing": {
+        "PRO": 2,
+        "ENTERPRISE": 0
+      },
+      "unit": "report/month",
+      "description": "Custom financial reports"
+    }
+  },
+  "discounts": {
+    "annual": {
+      "type": "PERCENTAGE",
+      "value": 20,
+      "description": "20% discount for annual billing"
+    },
+    "volume": {
+      "type": "TIERED",
+      "tiers": [
+        {
+          "minRevenue": 10000,
+          "maxRevenue": 50000,
+          "discount": 5
+        },
+        {
+          "minRevenue": 50001,
+          "maxRevenue": 100000,
+          "discount": 10
+        },
+        {
+          "minRevenue": 100001,
+          "maxRevenue": null,
+          "discount": 15
+        }
+      ],
+      "description": "Volume discounts based on annual contract value"
+    },
+    "nonprofit": {
+      "type": "PERCENTAGE",
+      "value": 50,
+      "description": "50% discount for qualified nonprofit organizations"
+    },
+    "startup": {
+      "type": "PERCENTAGE",
+      "value": 25,
+      "description": "25% discount for qualified startups (first year only)"
+    },
+    "educational": {
+      "type": "PERCENTAGE",
+      "value": 40,
+      "description": "40% discount for educational institutions"
+    }
+  },
+  "billingRules": {
+    "overageProtection": {
+      "enabled": true,
+      "hardLimits": ["users", "companies", "api_calls"],
+      "softLimits": ["transactions", "storage"],
+      "warningThresholds": {
+        "users": 90,
+        "companies": 90,
+        "api_calls": 80,
+        "transactions": 85,
+        "storage": 85
+      }
+    },
+    "proration": {
+      "enabled": true,
+      "method": "DAILY",
+      "description": "Prorated billing for mid-cycle upgrades/downgrades"
+    },
+    "paymentTerms": {
+      "netDays": 30,
+      "lateFees": {
+        "enabled": true,
+        "rate": 0.015,
+        "gracePeriod": 10
+      }
+    },
+    "cancellation": {
+      "noticePeriod": 30,
+      "refundPolicy": "PRO_RATED",
+      "dataRetention": 90
+    }
+  },
+  "compliance": {
+    "soxCompliant": {
+      "FREE": false,
+      "STARTER": false,
+      "PRO": false,
+      "ENTERPRISE": true
+    },
+    "auditRequirements": {
+      "FREE": "BASIC",
+      "STARTER": "STANDARD",
+      "PRO": "ENHANCED",
+      "ENTERPRISE": "COMPREHENSIVE"
+    },
+    "dataRetention": {
+      "FREE": 30,
+      "STARTER": 365,
+      "PRO": 2555, // 7 years
+      "ENTERPRISE": -1 // Permanent
+    }
+  },
+  "geographicPricing": {
+    "regions": {
+      "US": {
+        "adjustment": 1.0,
+        "currency": "USD"
+      },
+      "EU": {
+        "adjustment": 1.2,
+        "currency": "EUR"
+      },
+      "UK": {
+        "adjustment": 1.15,
+        "currency": "GBP"
+      },
+      "CA": {
+        "adjustment": 1.1,
+        "currency": "CAD"
+      },
+      "APAC": {
+        "adjustment": 0.9,
+        "currency": "USD"
+      }
+    }
+  }
+}

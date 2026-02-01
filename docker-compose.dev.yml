@@ -7,11 +7,11 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
       POSTGRES_DB: ${DB_NAME:-accubooks}
     ports:
-      - "5432:5432"
+      - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d accubooks"]
+      test: [CMD-SHELL, pg_isready -U postgres -d accubooks]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -20,35 +20,35 @@ services:
   redis:
     image: redis:7-alpine
     container_name: accubooks-redis
-    command: ["redis-server"]
+    command: [redis-server]
     ports:
-      - "6379:6379"
+      - 6379:6379
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [CMD, redis-cli, ping]
       interval: 10s
       timeout: 5s
       retries: 5
     restart: unless-stopped
 
-  api:
+  app:
     build:
       context: .
       dockerfile: Dockerfile.dev
     container_name: accubooks-api
     ports:
-      - "5000:5000"
+      - 5000:5000
     environment:
       NODE_ENV: development
-      PORT: "5000"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "<REDACTED_DB_PASSWORD>"
-      POSTGRES_DB: "accubooks"
-      POSTGRES_HOST: "accubooks-postgres"
-      POSTGRES_PORT: "5432"
-      REDIS_URL: "redis://accubooks-redis:6379"
-      JWT_SECRET: "your_jwt_secret_here"
+      PORT: 5000
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: <REDACTED_DB_PASSWORD>
+      POSTGRES_DB: accubooks
+      POSTGRES_HOST: accubooks-postgres
+      POSTGRES_PORT: 5432
+      REDIS_URL: redis://accubooks-redis:6379
+      JWT_SECRET: your_jwt_secret_here
     volumes:
       - .:/app
       - /app/node_modules
@@ -60,7 +60,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      test: [CMD, curl, -f, http://localhost:5000/api/health]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -72,22 +72,22 @@ services:
       dockerfile: Dockerfile.frontend.dev
     container_name: accubooks-frontend
     ports:
-      - "3000:3000"
+      - 3000:3000
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=http://api:5000
+      - VITE_API_URL=http://app:5000
       - PORT=3000
     volumes:
       - ./client:/app
       - /app/node_modules
     depends_on:
-      api:
+      app:
         condition: service_healthy
     restart: unless-stopped
     stdin_open: true
     tty: true
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      test: [CMD, wget, --no-verbose, --tries=1, --spider, http://localhost:3000]
       interval: 30s
       timeout: 10s
       retries: 3

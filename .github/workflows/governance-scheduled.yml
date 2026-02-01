@@ -2,12 +2,12 @@ name: Governance Scheduled Verification (Phases 1–6)
 
 on:
   schedule:
-    - cron: "0 9 * * 1"
+    - cron: 0 9 * * 1
   workflow_dispatch:
   push:
     tags:
-      - "v*"
-      - "release-*"
+      - v*
+      - release-*
 
 permissions:
   contents: read
@@ -19,15 +19,22 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/accubooks_ci
+      DATABASE_URL: postgresql://postgres@localhost:5432/accubooks_ci
       REDIS_HOST: localhost
       REDIS_PORT: 6379
-      JWT_SECRET: ci-jwt-secret
+      JWT_SECRET: ${{ vars.CI_JWT_SECRET || 'test-secret' }}
+      AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN || '' }}
+      AWS_REGION: ${{ vars.AWS_REGION || '' }}
+      EVIDENCE_BUCKET: ${{ vars.EVIDENCE_BUCKET || '' }}
+      EVIDENCE_PREFIX: ${{ vars.EVIDENCE_PREFIX || '' }}
+      EVIDENCE_HMAC_KEY: ${{ vars.EVIDENCE_HMAC_KEY || '' }}
+      EVIDENCE_HMAC_KEY_ID: ${{ vars.EVIDENCE_HMAC_KEY_ID || '' }}
+      ALERT_WEBHOOK_URL: ${{ vars.ALERT_WEBHOOK_URL || '' }}
     services:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
           POSTGRES_DB: accubooks_ci
           POSTGRES_USER: postgres
         options: >-
@@ -72,6 +79,12 @@ jobs:
       - name: Run TypeScript checks
         run: npm run typecheck
 
+      - name: Run verify:types (tsc --noEmit)
+        run: npm run verify:types
+
+      - name: Run backend tests
+        run: npm run test:backend
+
       - name: Verify Observability Invariants
         run: npm run verify:observability-invariants
 
@@ -99,13 +112,13 @@ jobs:
       - name: Generate Evidence Manifest (tamper-evident)
         run: node scripts/generate-evidence-manifest.mjs
         env:
-          EVIDENCE_HMAC_KEY: ${{ secrets.EVIDENCE_HMAC_KEY }}
-          EVIDENCE_HMAC_KEY_ID: ${{ secrets.EVIDENCE_HMAC_KEY_ID }}
+          EVIDENCE_HMAC_KEY: ${{ env.EVIDENCE_HMAC_KEY }}
+          EVIDENCE_HMAC_KEY_ID: ${{ env.EVIDENCE_HMAC_KEY_ID }}
 
       - name: Require Evidence Signing for Immutable Upload
-        if: secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != ''
+        if: env.AWS_ROLE_ARN != '' && env.AWS_REGION != '' && env.EVIDENCE_BUCKET != ''
         run: |
-          if [ -z "${{ secrets.EVIDENCE_HMAC_KEY }}" ]; then
+          if [ -z "${{ env.EVIDENCE_HMAC_KEY }}" ]; then
             echo "EVIDENCE_HMAC_KEY must be configured when uploading evidence to immutable storage."
             exit 1
           fi
@@ -125,17 +138,17 @@ jobs:
             governance/evidence-manifest.json
 
       - name: Configure AWS Credentials (OIDC)
-        if: secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != ''
+        if: env.AWS_ROLE_ARN != '' && env.AWS_REGION != '' && env.EVIDENCE_BUCKET != ''
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Upload Governance Evidence to Immutable Store (S3)
-        if: secrets.AWS_ROLE_ARN != '' && secrets.AWS_REGION != '' && secrets.EVIDENCE_BUCKET != ''
+        if: env.AWS_ROLE_ARN != '' && env.AWS_REGION != '' && env.EVIDENCE_BUCKET != ''
         env:
-          EVIDENCE_BUCKET: ${{ secrets.EVIDENCE_BUCKET }}
-          EVIDENCE_PREFIX: ${{ secrets.EVIDENCE_PREFIX }}
+          EVIDENCE_BUCKET: ${{ env.EVIDENCE_BUCKET }}
+          EVIDENCE_PREFIX: ${{ env.EVIDENCE_PREFIX }}
           GIT_SHA: ${{ github.sha }}
           RUN_ID: ${{ github.run_id }}
         run: |
@@ -146,9 +159,9 @@ jobs:
           echo "Uploaded."
 
       - name: Alert on Governance Failure (Webhook)
-        if: failure() && secrets.ALERT_WEBHOOK_URL != ''
+        if: failure() && env.ALERT_WEBHOOK_URL != ''
         env:
-          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+          ALERT_WEBHOOK_URL: ${{ env.ALERT_WEBHOOK_URL }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")

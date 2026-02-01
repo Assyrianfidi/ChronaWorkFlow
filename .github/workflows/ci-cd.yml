@@ -14,11 +14,6 @@ permissions:
 
 env:
   NODE_VERSION: 20
-  # Default values for local development (overridden by secrets in CI)
-  TEST_DB_NAME: test_db
-  TEST_DB_USER: test_user
-  TEST_DB_HOST: localhost
-  TEST_DB_PORT: 5432
   REDIS_HOST: localhost
   REDIS_PORT: 6379
 
@@ -28,23 +23,24 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
-      DATABASE_URL: postgresql://${{ secrets.TEST_DB_USER || env.TEST_DB_USER }}:${{ secrets.TEST_DB_PASSWORD || 'test_password' }}@${{ env.TEST_DB_HOST }}:${{ env.TEST_DB_PORT }}/${{ env.TEST_DB_NAME }}
-      REDIS_URL: redis://${{ env.REDIS_HOST }}:${{ env.REDIS_PORT }}
+      DATABASE_URL: postgresql://test_user@localhost:5432/test_db
+      REDIS_URL: redis://localhost:6379
+      TZ: UTC
 
     services:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_PASSWORD: ${{ secrets.TEST_DB_PASSWORD || 'test_password' }}
-          POSTGRES_DB: ${{ env.TEST_DB_NAME }}
-          POSTGRES_USER: ${{ secrets.TEST_DB_USER || env.TEST_DB_USER }}
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
         ports:
-          - ${{ env.TEST_DB_PORT }}:5432
+          - 5432:5432
 
       redis:
         image: redis:7-alpine
@@ -58,7 +54,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        node-version: 20
         cache: npm
 
     - name: Verify Workflow Script Alignment (no CI drift)
@@ -85,6 +81,9 @@ jobs:
     - name: Run TypeScript checks
       run: npm run typecheck
 
+    - name: Run verify:types (tsc --noEmit)
+      run: npm run verify:types
+
     - name: Verify Observability Invariants
       run: npm run verify:observability-invariants
 
@@ -93,9 +92,12 @@ jobs:
 
     - name: Run backend tests
       run: npm run test:backend
-      env:
-        DATABASE_URL: ${{ env.DATABASE_URL }}
-        REDIS_URL: ${{ env.REDIS_URL }}
+
+    - name: STEP 9 - Production Validation (tenant/RBAC/flags/audit)
+      run: bash scripts/ci-production-validation.sh
+
+    - name: STEP 10 - Compliance Validation (controls/evidence/policies)
+      run: bash scripts/ci-compliance-validation.sh
 
     - name: Verify Release Guard
       run: npm run verify:release-guard
@@ -114,7 +116,7 @@ jobs:
   build-and-deploy-staging:
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
 
     steps:
     - name: Checkout code
@@ -123,7 +125,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        node-version: 20
         cache: npm
 
     - name: Install dependencies
@@ -149,11 +151,26 @@ jobs:
         # Add your staging deployment commands here
         # e.g., docker-compose up -d for staging environment
 
-  # Build and Deploy to Production
-  build-and-deploy-production:
-    needs: test
+  # Production Readiness Checks
+  production-readiness:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
     - name: Checkout code
@@ -162,7 +179,55 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        node-version: 20
+        cache: npm
+
+    - name: Cache Docker layers
+      uses: actions/cache@v4
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Setup Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      with:
+        driver-opts: |
+          image=moby/buildkit:buildx-stable-1
+          buildkitd-flags=--allow-insecure-entitlement security.insecure --registry-insecure
+
+    - name: Make production check script executable
+      run: chmod +x scripts/ci-production-check.sh
+
+    - name: Run production readiness checks
+      run: npm run ci:production-check
+
+    - name: STEP 9 - Production Validation (tenant/RBAC/flags/audit)
+      run: bash scripts/ci-production-validation.sh
+
+    - name: STEP 10 - Compliance Validation (controls/evidence/policies)
+      run: bash scripts/ci-compliance-validation.sh
+
+  # Build and Deploy to Production
+  build-and-deploy-production:
+    needs: [test, production-readiness]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    env:
+      PRODUCTION_DATABASE_URL: ${{ secrets['PRODUCTION_DATABASE_URL'] }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
         cache: npm
 
     - name: Install dependencies
@@ -185,7 +250,7 @@ jobs:
     - name: Run database migrations
       run: npm run db:push
       env:
-        DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        DATABASE_URL: ${{ env.PRODUCTION_DATABASE_URL }}
         NODE_ENV: production
 
     - name: Deploy to production
@@ -206,7 +271,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        node-version: 20
         cache: npm
 
     - name: Install dependencies
@@ -242,7 +307,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
+        node-version: 20
         cache: npm
 
     - name: Install dependencies

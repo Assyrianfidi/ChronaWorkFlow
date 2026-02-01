@@ -356,7 +356,10 @@ describe("Performance Layer Tests", () => {
       const endTimer = PerformanceMonitor.startTimer("test-operation");
 
       // Simulate some work
+      jest.useFakeTimers();
       setTimeout(() => {}, 10);
+      jest.advanceTimersByTime(10);
+      jest.useRealTimers();
 
       const metric = endTimer();
 

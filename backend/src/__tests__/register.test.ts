@@ -43,7 +43,8 @@ let app: any;
 
 beforeAll(async () => {
   const express = (await import("express")).default;
-  const { authRoutes } = await import("../routes/auth.routes");
+  const authRoutesMod = await import("../routes/auth.routes.ts");
+  const authRoutes = (authRoutesMod as any).authRoutes ?? (authRoutesMod as any).default;
   const { errorHandler, notFound } = await import("../middleware/errorHandler");
 
   app = express();

@@ -1,35 +1,24 @@
 import request from 'supertest';
+import express from "express";
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
-import { createTestUser, getAuthToken } from '../test-utils';
+import { getAuthToken } from '../test-utils';
+import * as inventoryController from "../../controllers/inventory.controller.new";
+import type { Request, Response, NextFunction } from "express";
 
-const { mockPrisma } = vi.hoisted(() => {
-  const mockPrisma = {
-    inventory: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      count: vi.fn(),
-    },
-    inventoryHistory: {
-      create: vi.fn(),
-      findMany: vi.fn(),
-    },
-    user: {
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      deleteMany: vi.fn(),
-    },
+const { inventoryServiceMock } = vi.hoisted(() => {
+  const inventoryServiceMock = {
+    getInventoryItems: vi.fn(),
+    createInventoryItem: vi.fn(),
   };
 
-  return { mockPrisma };
+  return { inventoryServiceMock };
 });
 
-vi.mock('../../prisma', () => ({ prisma: mockPrisma }));
+vi.mock('../../services/inventory.service', () => ({
+  inventoryService: inventoryServiceMock,
+}));
 
 let app: any;
-let prisma: any;
 
 describe('Inventory Routes', () => {
   let authToken: string;
@@ -42,20 +31,33 @@ describe('Inventory Routes', () => {
   };
 
   beforeAll(async () => {
-    const prismaMod = await import('../../prisma');
-    prisma = prismaMod.prisma;
-
-    const appMod = await import('../../app');
-    app = appMod.app ?? appMod.default;
-
-    // Create a test user and get auth token
-    await createTestUser(testUser);
     authToken = await getAuthToken(testUser.email, testUser.password);
+
+    const testAuth = (req: any, res: any, next: any) => {
+      const authHeader = req.headers?.authorization;
+      if (!authHeader || !String(authHeader).startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      req.user = {
+        id: testUser.id,
+        email: testUser.email,
+        role: testUser.role,
+        tenantId: testUser.tenantId,
+      };
+      next();
+    };
+
+    app = express();
+    app.use(express.json());
+    app.get('/api/inventory', testAuth, (req: Request, res: Response, next: NextFunction) =>
+      inventoryController.getInventory(req, res, next),
+    );
+    app.post('/api/inventory', testAuth, (req: Request, res: Response, next: NextFunction) =>
+      inventoryController.createInventoryItem(req, res, next),
+    );
   });
 
   afterAll(async () => {
-    // Clean up test data
-    await prisma.user.deleteMany({});
     vi.clearAllMocks();
   });
 
@@ -66,8 +68,15 @@ describe('Inventory Routes', () => {
         { id: '2', name: 'Item 2', quantity: 20, tenantId: testUser.tenantId },
       ];
 
-      (prisma.inventory.findMany as any).mockResolvedValue(mockItems);
-      (prisma.inventory.count as any).mockResolvedValue(2);
+      inventoryServiceMock.getInventoryItems.mockResolvedValue({
+        items: mockItems,
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 2,
+          totalPages: 1,
+        },
+      });
 
       const response = await request(app)
         .get('/api/inventory')
@@ -107,8 +116,7 @@ describe('Inventory Routes', () => {
         updatedAt: new Date().toISOString(),
       };
 
-      (prisma.inventory.create as any).mockResolvedValue(createdItem);
-      (prisma.inventoryHistory.create as any).mockResolvedValue({ id: 'hist-1' });
+      inventoryServiceMock.createInventoryItem.mockResolvedValue(createdItem);
 
       const response = await request(app)
         .post('/api/inventory')

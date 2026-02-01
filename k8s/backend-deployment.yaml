@@ -7,7 +7,7 @@ metadata:
     app: accubooks-backend
     environment: production
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: accubooks-backend
@@ -20,7 +20,7 @@ spec:
       serviceAccountName: accubooks-backend-sa
       containers:
       - name: backend
-        image: BACKEND_IMAGE_PLACEHOLDER
+        image: 971551576768.dkr.ecr.ca-central-1.amazonaws.com/accubooks-backend@sha256:7affcd4bad2338de5966946efa16c9dfa6cf67b066a306918ea2d7363a5a4a61
         ports:
         - containerPort: 5000
           name: http
@@ -106,11 +106,11 @@ spec:
               key: smtp-pass
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "250m"
+            memory: "128Mi"
+            cpu: "100m"
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "256Mi"
+            cpu: "200m"
         livenessProbe:
           httpGet:
             path: /health

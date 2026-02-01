@@ -3,6 +3,9 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "../db";
 import { storage } from "../storage";
 import * as s from "../../shared/schema";
+import { ledgerEngine } from "../finance/ledger-engine.js";
+import { LedgerTransaction, stableId } from "../finance/ledger-invariants.js";
+import { DrizzlePeriodLocks } from "../finance/period-locks.js";
 
 type Money = string;
 
@@ -87,31 +90,20 @@ async function assertPeriodOpen(input: {
   operation: string;
   entityId: string;
 }) {
-  const { period, isClosed } = await getPeriodLockStatus(input.companyId, input.date);
-  if (!isClosed) return;
-
-  if (input.actor.isOwner) {
-    await storage.createAuditLog({
-      companyId: input.companyId,
-      userId: input.actor.userId,
-      action: "accounting.period.override",
-      entityType: "accounting_period",
-      entityId: period?.id ?? input.entityId,
-      changes: JSON.stringify({ operation: input.operation, date: input.date.toISOString() }),
-    });
-    return;
-  }
+  const locks = new DrizzlePeriodLocks();
+  const status = await locks.getPeriodStateForDate({ companyId: input.companyId, date: input.date });
+  if (!status.periodId || status.state === 'OPEN') return;
 
   await storage.createAuditLog({
     companyId: input.companyId,
     userId: input.actor.userId,
     action: "accounting.period.violation",
     entityType: "accounting_period",
-    entityId: period?.id ?? input.entityId,
-    changes: JSON.stringify({ operation: input.operation, date: input.date.toISOString() }),
+    entityId: status.periodId ?? input.entityId,
+    changes: JSON.stringify({ operation: input.operation, date: input.date.toISOString(), state: status.state }),
   });
 
-  throw new AccountingError(403, "Accounting period is closed");
+  throw new AccountingError(403, "Accounting period is not open");
 }
 
 export async function postJournalEntry(input: {
@@ -141,30 +133,63 @@ export async function postJournalEntry(input: {
     entityId: input.transaction.transactionNumber,
   });
 
-  const created = await db.transaction(async (tx) => {
-    const [newTransaction] = await tx
-      .insert(s.transactions)
-      .values({
-        ...input.transaction,
-        isVoid: false,
-        reversalOfTransactionId: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      } as any)
-      .returning();
+  const [company] = await db
+    .select({ currency: s.companies.currency })
+    .from(s.companies)
+    .where(eq(s.companies.id, input.transaction.companyId))
+    .limit(1);
 
-    if (input.lines.length > 0) {
-      await tx.insert(s.transactionLines).values(
-        input.lines.map((line) => ({
-          ...line,
-          transactionId: newTransaction.id,
-          createdAt: new Date(),
-        })) as any,
-      );
-    }
+  const currency = company?.currency ?? "USD";
 
-    return newTransaction;
-  });
+  const transactionNumber = String(input.transaction.transactionNumber);
+  const idempotencyKey = `journal:${transactionNumber}`;
+  const transactionId = stableId('txn', `${input.transaction.companyId}:${transactionNumber}:${idempotencyKey}`);
+
+  const txn: LedgerTransaction = {
+    companyId: input.transaction.companyId,
+    transactionId,
+    transactionNumber,
+    date: input.transaction.date as any,
+    type: String(input.transaction.type ?? 'journal_entry'),
+    description: (input.transaction.description as any) ?? null,
+    referenceNumber: (input.transaction.referenceNumber as any) ?? null,
+    createdBy: input.actor.userId,
+    idempotencyKey,
+    currency,
+    reversalOfTransactionId: null,
+    lines: input.lines.flatMap((l: any) => {
+      const debit = (l.debit ?? '0').toString();
+      const credit = (l.credit ?? '0').toString();
+      const hasDebit = debit !== '0' && debit !== '0.00';
+      const hasCredit = credit !== '0' && credit !== '0.00';
+
+      if (hasDebit === hasCredit) {
+        throw new AccountingError(400, 'Each line must have exactly one of debit or credit');
+      }
+
+      const side = hasDebit ? 'DEBIT' : 'CREDIT';
+      const amount = hasDebit ? debit : credit;
+      const seed = `${input.transaction.companyId}:${transactionId}:${l.accountId}:${side}:${amount}:${currency}:${l.description ?? ''}`;
+
+      return [{
+        companyId: input.transaction.companyId,
+        transactionId,
+        lineId: stableId('line', seed),
+        accountId: String(l.accountId),
+        side,
+        amount,
+        currency,
+        description: (l.description as any) ?? null,
+      }];
+    }),
+  };
+
+  const posted = await ledgerEngine.post(txn);
+
+  const created = await storage.getTransaction(posted.transactionId);
+  if (!created) {
+    throw new AccountingError(500, 'Ledger post succeeded but transaction was not found');
+  }
 
   await storage.createAuditLog({
     companyId: created.companyId,
@@ -228,40 +253,60 @@ export async function voidByReversal(input: {
 
   const reversalNumber = `${original.transactionNumber}-REV-${original.id.slice(0, 8)}`;
 
-  const reversal = await db.transaction(async (tx) => {
-    const [revTxn] = await tx
-      .insert(s.transactions)
-      .values({
+  const [company] = await db
+    .select({ currency: s.companies.currency })
+    .from(s.companies)
+    .where(eq(s.companies.id, original.companyId))
+    .limit(1);
+
+  const currency = company?.currency ?? 'USD';
+  const idempotencyKey = `void:${original.id}`;
+  const reversalTxnId = stableId('txn', `${original.companyId}:${reversalNumber}:${idempotencyKey}`);
+
+  const reversalTxn: LedgerTransaction = {
+    companyId: original.companyId,
+    transactionId: reversalTxnId,
+    transactionNumber: reversalNumber,
+    date: new Date(original.date as any),
+    type: String(original.type ?? 'journal_entry'),
+    description: `Reversal of ${original.transactionNumber}`,
+    referenceNumber: (original.referenceNumber as any) ?? null,
+    createdBy: input.actor.userId,
+    idempotencyKey,
+    currency,
+    reversalOfTransactionId: original.id,
+    lines: lines.flatMap((l: any) => {
+      const debit = (l.debit ?? '0').toString();
+      const credit = (l.credit ?? '0').toString();
+      const hasDebit = debit !== '0' && debit !== '0.00';
+      const hasCredit = credit !== '0' && credit !== '0.00';
+
+      if (hasDebit === hasCredit) {
+        return [];
+      }
+
+      const side = hasDebit ? 'CREDIT' : 'DEBIT';
+      const amount = hasDebit ? debit : credit;
+      const seed = `${original.companyId}:${reversalTxnId}:${l.accountId}:${side}:${amount}:${currency}:${l.description ?? ''}`;
+
+      return [{
         companyId: original.companyId,
-        transactionNumber: reversalNumber,
-        date: original.date as any,
-        type: original.type as any,
-        description: `Reversal of ${original.transactionNumber}`,
-        referenceNumber: original.referenceNumber,
-        totalAmount: original.totalAmount,
-        reversalOfTransactionId: original.id,
-        isVoid: false,
-        createdBy: input.actor.userId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      } as any)
-      .returning();
+        transactionId: reversalTxnId,
+        lineId: stableId('line', seed),
+        accountId: String(l.accountId),
+        side,
+        amount,
+        currency,
+        description: (l.description as any) ?? null,
+      }];
+    }),
+  };
 
-    if (lines.length) {
-      await tx.insert(s.transactionLines).values(
-        lines.map((l) => ({
-          transactionId: revTxn.id,
-          accountId: l.accountId,
-          debit: l.credit,
-          credit: l.debit,
-          description: l.description,
-          createdAt: new Date(),
-        })) as any,
-      );
-    }
-
-    return revTxn;
-  });
+  const posted = await ledgerEngine.post(reversalTxn);
+  const reversal = await storage.getTransaction(posted.transactionId);
+  if (!reversal) {
+    throw new AccountingError(500, 'Ledger reversal succeeded but reversal transaction was not found');
+  }
 
   await storage.createAuditLog({
     companyId: input.companyId,
@@ -311,14 +356,16 @@ export async function closeAccountingPeriod(input: {
     throw new AccountingError(500, "Failed to create or load accounting period");
   }
 
-  await db.insert(s.accountingPeriodLocks).values({
+  const locks = new DrizzlePeriodLocks();
+  const correlationId = stableId('period', `${input.companyId}:${existing.id}:SOFT_CLOSED:${input.actor.userId}`);
+  await locks.transitionPeriod({
     companyId: input.companyId,
     periodId: existing.id,
-    action: "close",
+    nextState: 'SOFT_CLOSED',
+    actorId: input.actor.userId,
+    correlationId,
     reason: input.reason ?? null,
-    actorUserId: input.actor.userId,
-    createdAt: new Date(),
-  } as any);
+  });
 
   await storage.createAuditLog({
     companyId: input.companyId,
@@ -338,14 +385,16 @@ export async function openAccountingPeriod(input: {
   actor: Actor;
   reason?: string | null;
 }) {
-  await db.insert(s.accountingPeriodLocks).values({
+  const locks = new DrizzlePeriodLocks();
+  const correlationId = stableId('period', `${input.companyId}:${input.periodId}:OPEN:${input.actor.userId}`);
+  await locks.transitionPeriod({
     companyId: input.companyId,
     periodId: input.periodId,
-    action: "open",
+    nextState: 'OPEN',
+    actorId: input.actor.userId,
+    correlationId,
     reason: input.reason ?? null,
-    actorUserId: input.actor.userId,
-    createdAt: new Date(),
-  } as any);
+  });
 
   await storage.createAuditLog({
     companyId: input.companyId,

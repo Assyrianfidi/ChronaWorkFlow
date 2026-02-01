@@ -3,16 +3,17 @@ import nodemailer from "nodemailer";
 import * as fs from "fs";
 import * as path from "path";
 import { promisify } from "util";
+import { vi } from "vitest";
 
 var sendMailMock: jest.Mock;
 
-jest.mock("nodemailer", () => {
-  sendMailMock = jest.fn();
+vi.mock("nodemailer", () => {
+  sendMailMock = vi.fn();
 
   return {
     __esModule: true,
     default: {
-      createTransport: jest.fn(() => ({
+      createTransport: vi.fn(() => ({
         sendMail: sendMailMock,
       })),
     },

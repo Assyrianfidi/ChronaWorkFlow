@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { storage } from "./storage";
 import bcrypt from "bcrypt";
+import { postJournalEntry } from "./services/accounting.service";
 
 async function seed() {
   console.log("🌱 Starting database seed...");
@@ -349,10 +350,12 @@ async function seed() {
 
     // Create balanced transactions
     console.log("\nCreating transactions...");
+
+    const seedActor = { userId: user.id, isOwner: true } as any;
     
     // Transaction 1: Initial investment
-    await storage.createTransaction(
-      {
+    await postJournalEntry({
+      transaction: {
         companyId: company.id,
         transactionNumber: "JE-1001",
         date: new Date("2024-01-01"),
@@ -360,16 +363,17 @@ async function seed() {
         description: "Initial owner investment",
         totalAmount: "50000.00",
         createdBy: user.id,
-      },
-      [
-        { accountId: cash.id, debit: "50000.00", credit: "0", description: "Cash received" },
-        { accountId: ownersEquity.id, debit: "0", credit: "50000.00", description: "Owner investment" },
-      ]
-    );
+      } as any,
+      lines: [
+        { accountId: cash.id, debit: "50000.00", credit: "0", description: "Cash received" } as any,
+        { accountId: ownersEquity.id, debit: "0", credit: "50000.00", description: "Owner investment" } as any,
+      ],
+      actor: seedActor,
+    } as any);
 
     // Transaction 2: Purchase equipment
-    await storage.createTransaction(
-      {
+    await postJournalEntry({
+      transaction: {
         companyId: company.id,
         transactionNumber: "JE-1002",
         date: new Date("2024-01-02"),
@@ -377,16 +381,17 @@ async function seed() {
         description: "Purchase office equipment",
         totalAmount: "28500.00",
         createdBy: user.id,
-      },
-      [
-        { accountId: equipment.id, debit: "28500.00", credit: "0", description: "Office equipment" },
-        { accountId: cash.id, debit: "0", credit: "28500.00", description: "Cash payment" },
-      ]
-    );
+      } as any,
+      lines: [
+        { accountId: equipment.id, debit: "28500.00", credit: "0", description: "Office equipment" } as any,
+        { accountId: cash.id, debit: "0", credit: "28500.00", description: "Cash payment" } as any,
+      ],
+      actor: seedActor,
+    } as any);
 
     // Transaction 3: Purchase furniture
-    await storage.createTransaction(
-      {
+    await postJournalEntry({
+      transaction: {
         companyId: company.id,
         transactionNumber: "JE-1003",
         date: new Date("2024-01-03"),
@@ -394,16 +399,17 @@ async function seed() {
         description: "Purchase office furniture",
         totalAmount: "11740.20",
         createdBy: user.id,
-      },
-      [
-        { accountId: furniture.id, debit: "11740.20", credit: "0", description: "Office furniture" },
-        { accountId: cash.id, debit: "0", credit: "11740.20", description: "Cash payment" },
-      ]
-    );
+      } as any,
+      lines: [
+        { accountId: furniture.id, debit: "11740.20", credit: "0", description: "Office furniture" } as any,
+        { accountId: cash.id, debit: "0", credit: "11740.20", description: "Cash payment" } as any,
+      ],
+      actor: seedActor,
+    } as any);
 
     // Transaction 4: Purchase inventory
-    await storage.createTransaction(
-      {
+    await postJournalEntry({
+      transaction: {
         companyId: company.id,
         transactionNumber: "JE-1004",
         date: new Date("2024-01-04"),
@@ -411,16 +417,17 @@ async function seed() {
         description: "Purchase initial inventory",
         totalAmount: "21840.30",
         createdBy: user.id,
-      },
-      [
-        { accountId: inventory.id, debit: "21840.30", credit: "0", description: "Inventory purchase" },
-        { accountId: cash.id, debit: "0", credit: "21840.30", description: "Cash payment" },
-      ]
-    );
+      } as any,
+      lines: [
+        { accountId: inventory.id, debit: "21840.30", credit: "0", description: "Inventory purchase" } as any,
+        { accountId: cash.id, debit: "0", credit: "21840.30", description: "Cash payment" } as any,
+      ],
+      actor: seedActor,
+    } as any);
 
     // Transaction 5: January rent
-    await storage.createTransaction(
-      {
+    await postJournalEntry({
+      transaction: {
         companyId: company.id,
         transactionNumber: "JE-1005",
         date: new Date("2024-01-05"),
@@ -428,17 +435,18 @@ async function seed() {
         description: "January rent payment",
         totalAmount: "2500.00",
         createdBy: user.id,
-      },
-      [
-        { accountId: rent.id, debit: "2500.00", credit: "0", description: "January rent" },
-        { accountId: cash.id, debit: "0", credit: "2500.00", description: "Cash payment" },
-      ]
-    );
+      } as any,
+      lines: [
+        { accountId: rent.id, debit: "2500.00", credit: "0", description: "January rent" } as any,
+        { accountId: cash.id, debit: "0", credit: "2500.00", description: "Cash payment" } as any,
+      ],
+      actor: seedActor,
+    } as any);
 
     // Transaction 6-9: Monthly payroll
     for (let month = 1; month <= 4; month++) {
-      await storage.createTransaction(
-        {
+      await postJournalEntry({
+        transaction: {
           companyId: company.id,
           transactionNumber: `JE-100${5 + month}`,
           date: new Date(`2024-0${month}-15`),
@@ -446,17 +454,18 @@ async function seed() {
           description: `Payroll - Month ${month}`,
           totalAmount: "18000.00",
           createdBy: user.id,
-        },
-        [
-          { accountId: salaries.id, debit: "18000.00", credit: "0", description: "Payroll expense" },
-          { accountId: cash.id, debit: "0", credit: "18000.00", description: "Cash payment" },
-        ]
-      );
+        } as any,
+        lines: [
+          { accountId: salaries.id, debit: "18000.00", credit: "0", description: "Payroll expense" } as any,
+          { accountId: cash.id, debit: "0", credit: "18000.00", description: "Cash payment" } as any,
+        ],
+        actor: seedActor,
+      } as any);
     }
 
     // Transaction 10: Utility bill
-    await storage.createTransaction(
-      {
+    await postJournalEntry({
+      transaction: {
         companyId: company.id,
         transactionNumber: "JE-1010",
         date: new Date("2024-01-10"),
@@ -464,12 +473,13 @@ async function seed() {
         description: "Utility bill payment",
         totalAmount: "5200.00",
         createdBy: user.id,
-      },
-      [
-        { accountId: utilities.id, debit: "5200.00", credit: "0", description: "Utilities" },
-        { accountId: cash.id, debit: "0", credit: "5200.00", description: "Cash payment" },
-      ]
-    );
+      } as any,
+      lines: [
+        { accountId: utilities.id, debit: "5200.00", credit: "0", description: "Utilities" } as any,
+        { accountId: cash.id, debit: "0", credit: "5200.00", description: "Cash payment" } as any,
+      ],
+      actor: seedActor,
+    } as any);
 
     console.log("✅ Created 10 balanced transactions");
 
@@ -516,8 +526,8 @@ async function seed() {
     });
 
     // Create corresponding transaction for payment
-    await storage.createTransaction(
-      {
+    await postJournalEntry({
+      transaction: {
         companyId: company.id,
         transactionNumber: "JE-1011",
         date: new Date("2024-01-15"),
@@ -525,12 +535,13 @@ async function seed() {
         description: `Payment received - ${invoice1.invoiceNumber}`,
         totalAmount: "5420.00",
         createdBy: user.id,
-      },
-      [
-        { accountId: cash.id, debit: "5420.00", credit: "0", description: "Cash received" },
-        { accountId: salesRevenue.id, debit: "0", credit: "5420.00", description: "Revenue earned" },
-      ]
-    );
+      } as any,
+      lines: [
+        { accountId: cash.id, debit: "5420.00", credit: "0", description: "Cash received" } as any,
+        { accountId: salesRevenue.id, debit: "0", credit: "5420.00", description: "Revenue earned" } as any,
+      ],
+      actor: seedActor,
+    } as any);
 
     // Invoice 2 - Sent, not paid
     await storage.createInvoice(
@@ -649,53 +660,56 @@ async function seed() {
     // Create some expense transactions to balance the books
     console.log("\nCreating additional expense transactions...");
 
-    await storage.createTransaction(
-      {
+    await postJournalEntry({
+      transaction: {
         companyId: company.id,
         transactionNumber: "JE-1012",
         date: new Date("2024-01-20"),
-        type: "journal_entry",
+        type: "expense",
         description: "Office supplies purchase",
-        totalAmount: "3420.00",
+        totalAmount: "1250.75",
         createdBy: user.id,
-      },
-      [
-        { accountId: officeSupplies.id, debit: "3420.00", credit: "0", description: "Office supplies" },
-        { accountId: cash.id, debit: "0", credit: "3420.00", description: "Cash payment" },
-      ]
-    );
+      } as any,
+      lines: [
+        { accountId: officeSupplies.id, debit: "1250.75", credit: "0", description: "Office supplies" } as any,
+        { accountId: cash.id, debit: "0", credit: "1250.75", description: "Cash payment" } as any,
+      ],
+      actor: seedActor,
+    } as any);
 
-    await storage.createTransaction(
-      {
+    await postJournalEntry({
+      transaction: {
         companyId: company.id,
         transactionNumber: "JE-1013",
-        date: new Date("2024-01-22"),
-        type: "journal_entry",
+        date: new Date("2024-02-05"),
+        type: "expense",
         description: "Marketing campaign",
-        totalAmount: "15600.00",
+        totalAmount: "3750.00",
         createdBy: user.id,
-      },
-      [
-        { accountId: marketing.id, debit: "15600.00", credit: "0", description: "Marketing expense" },
-        { accountId: cash.id, debit: "0", credit: "15600.00", description: "Cash payment" },
-      ]
-    );
+      } as any,
+      lines: [
+        { accountId: marketing.id, debit: "3750.00", credit: "0", description: "Marketing expense" } as any,
+        { accountId: cash.id, debit: "0", credit: "3750.00", description: "Cash payment" } as any,
+      ],
+      actor: seedActor,
+    } as any);
 
-    await storage.createTransaction(
-      {
+    await postJournalEntry({
+      transaction: {
         companyId: company.id,
         transactionNumber: "JE-1014",
         date: new Date("2024-01-25"),
-        type: "journal_entry",
+        type: "expense",
         description: "Professional services - Legal & Accounting",
         totalAmount: "12680.00",
         createdBy: user.id,
-      },
-      [
-        { accountId: professionalServices.id, debit: "12680.00", credit: "0", description: "Professional fees" },
-        { accountId: cash.id, debit: "0", credit: "12680.00", description: "Cash payment" },
-      ]
-    );
+      } as any,
+      lines: [
+        { accountId: professionalServices.id, debit: "12680.00", credit: "0", description: "Professional fees" } as any,
+        { accountId: cash.id, debit: "0", credit: "12680.00", description: "Cash payment" } as any,
+      ],
+      actor: seedActor,
+    } as any);
 
     // Create some bank transactions for reconciliation demo
     console.log("\nCreating bank transactions for reconciliation...");

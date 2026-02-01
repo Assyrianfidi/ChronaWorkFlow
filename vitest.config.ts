@@ -111,6 +111,13 @@ export default defineConfig({
           pool: 'threads',
           environment: 'node',
           setupFiles: ['./server/test/setup.ts'],
+          exclude: [
+            'backend/src/__tests__/e2e/**',
+            'backend/**/__tests__/e2e/**',
+            'backend/**/e2e/**',
+            'backend/node_modules/**',
+            '**/backend/node_modules/**'
+          ],
           include: [
             'server/**/*.test.ts',
             'server/**/*.test.tsx',

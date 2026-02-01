@@ -1,0 +1,116 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-network-policy
+  namespace: accubooks-prod
+  labels:
+    app: accubooks-backend
+    environment: production
+spec:
+  podSelector:
+    matchLabels:
+      app: accubooks-backend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow traffic only from frontend pods
+  - from:
+    - podSelector:
+        matchLabels:
+          app: accubooks-frontend
+    ports:
+    - protocol: TCP
+      port: 5000
+  # Allow health checks from kube-system (for probes)
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: TCP
+      port: 5000
+  egress:
+  # Allow DNS resolution
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow RDS database access (external to cluster)
+  - to:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow Redis access (external to cluster)
+  - to:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow HTTPS for external API calls (Stripe, email, etc.)
+  - to:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 443
+  # Allow HTTP for external services
+  - to:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-network-policy
+  namespace: accubooks-prod
+  labels:
+    app: accubooks-frontend
+    environment: production
+spec:
+  podSelector:
+    matchLabels:
+      app: accubooks-frontend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow traffic from anywhere (LoadBalancer)
+  - from:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  # Allow DNS resolution
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow backend API calls
+  - to:
+    - podSelector:
+        matchLabels:
+          app: accubooks-backend
+    ports:
+    - protocol: TCP
+      port: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: accubooks-prod
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress

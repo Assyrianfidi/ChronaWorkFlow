@@ -7,11 +7,16 @@ on:
     branches: [ main, develop ]
   schedule:
     # Run E2E tests daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    - cron: 0 2 * * *
+
+permissions:
+  contents: read
 
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     
     strategy:
       matrix:
@@ -31,8 +36,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
 
       - name: Verify Workflow Script Alignment (no CI drift)
         run: npm run verify:workflow-scripts
@@ -62,7 +67,7 @@ jobs:
         run: |
           # Start PostgreSQL
           docker run -d --name accubooks-e2e-db \
-            -e POSTGRES_PASSWORD=accubooks_e2e_password \
+            -e POSTGRES_HOST_AUTH_METHOD=trust \
             -e POSTGRES_USER=accubooks_e2e \
             -e POSTGRES_DB=accubooks_e2e \
             -p 5433:5432 \
@@ -108,7 +113,7 @@ jobs:
       - name: Run E2E tests
         env:
           NODE_ENV: test
-          DATABASE_URL: postgres://accubooks_e2e:accubooks_e2e_password@localhost:5433/accubooks_e2e
+          DATABASE_URL: postgres://accubooks_e2e@localhost:5433/accubooks_e2e
           AUTH_MODE: mock
           FEATURE_FLAGS: all_on
           AI_MODE: stub
@@ -221,8 +226,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -286,8 +291,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
 
       - name: Install dependencies
         run: npm ci

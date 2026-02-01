@@ -2,7 +2,7 @@ import express from "express";
 import { logEvent, recordRequest } from "../shared/logging";
 import { newRequestId } from "./runtime/audit-log";
 import { authenticate } from "./middleware/authenticate";
-import { authorizeRequest } from "./middleware/authorize";
+import { authorizeRequest, enforceCompanyIsolation } from "./middleware/authorize";
 import { enforceBillingStatus } from "./middleware/billing-status";
 import { enforcePlanLimits } from "./middleware/plan-limits";
 
@@ -23,11 +23,6 @@ declare global {
 
 export function createApp() {
   const app = express();
-
-  app.get("/api/health", (req, res) => {
-    console.log("Health check endpoint hit");
-    res.json({ status: "ok", message: "AccuBooks API is healthy" });
-  });
 
   app.get("/", (req, res) => {
     res.json({ status: "ok", message: "AccuBooks API is running" });
@@ -77,7 +72,23 @@ export function createApp() {
     next();
   });
 
-  app.use("/api", authenticate(), authorizeRequest(), enforceBillingStatus(), enforcePlanLimits());
+  app.use(
+    "/api",
+    authenticate(),
+    enforceCompanyIsolation(),
+    authorizeRequest(),
+    enforceBillingStatus(),
+    enforcePlanLimits(),
+  );
+
+  app.get("/api/health", (req, res) => {
+    console.log("Health check endpoint hit");
+    res.json({ status: "ok", message: "AccuBooks API is healthy" });
+  });
 
   return app;
 }
+
+export const app = createApp();
+
+export default app;

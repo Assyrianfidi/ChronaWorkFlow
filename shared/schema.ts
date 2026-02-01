@@ -202,6 +202,19 @@ export const payrollTransactions = pgTable("payroll_transactions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Payroll Executions (idempotency tracking)
+export const payrollExecutions = pgTable("payroll_executions", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  payRunId: varchar("pay_run_id", { length: 36 }).notNull().references(() => payRuns.id),
+  targetStatus: text("target_status").notNull(),
+  executedAt: timestamp("executed_at").defaultNow().notNull(),
+  executedBy: varchar("executed_by", { length: 36 }).notNull().references(() => users.id),
+});
+
+export type PayrollExecution = typeof payrollExecutions.$inferSelect;
+export type InsertPayrollExecution = typeof payrollExecutions.$inferInsert;
+
 // Inventory Module Schemas
 
 // Inventory Items
@@ -463,6 +476,19 @@ export const invoiceItems = pgTable("invoice_items", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Invoice Finalizations (idempotency tracking)
+export const invoiceFinalizations = pgTable("invoice_finalizations", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  invoiceId: varchar("invoice_id", { length: 36 }).notNull().references(() => invoices.id),
+  targetStatus: text("target_status").notNull(),
+  finalizedAt: timestamp("finalized_at").defaultNow().notNull(),
+  finalizedBy: varchar("finalized_by", { length: 36 }).notNull().references(() => users.id),
+});
+
+export type InvoiceFinalization = typeof invoiceFinalizations.$inferSelect;
+export type InsertInvoiceFinalization = typeof invoiceFinalizations.$inferInsert;
+
 // Payments
 export const payments = pgTable("payments", {
   id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
@@ -494,6 +520,44 @@ export const bankTransactions = pgTable("bank_transactions", {
   importBatchId: varchar("import_batch_id", { length: 36 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+// Ledger Reconciliations (idempotency tracking)
+export const ledgerReconciliations = pgTable("ledger_reconciliations", {
+  id: varchar("id", { length: 36 }).primaryKey(),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  bankTransactionId: varchar("bank_transaction_id", { length: 36 }).notNull().references(() => bankTransactions.id),
+  reconciledAmount: numeric("reconciled_amount", { precision: 15, scale: 2 }).notNull(),
+  reconciledAt: timestamp("reconciled_at").defaultNow().notNull(),
+  reconciledBy: varchar("reconciled_by", { length: 36 }).notNull().references(() => users.id),
+});
+
+export type LedgerReconciliation = typeof ledgerReconciliations.$inferSelect;
+export type InsertLedgerReconciliation = typeof ledgerReconciliations.$inferInsert;
+
+// Idempotent Write Audit Log (observability & compliance)
+export const idempotentWriteAuditLog = pgTable("idempotent_write_audit_log", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  operationName: text("operation_name").notNull(),
+  operationType: text("operation_type").notNull(), // 'financial' or 'high-risk'
+  deterministicId: varchar("deterministic_id", { length: 36 }).notNull(),
+  companyId: varchar("company_id", { length: 36 }).notNull(),
+  userId: varchar("user_id", { length: 36 }),
+  status: text("status").notNull(), // 'new', 'replayed', 'failed'
+  executionDurationMs: integer("execution_duration_ms").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  requestId: varchar("request_id", { length: 36 }),
+  idempotencyKey: text("idempotency_key").notNull(),
+  routePath: text("route_path"),
+  httpMethod: text("http_method"),
+  workflowsTriggered: integer("workflows_triggered").default(0).notNull(),
+  sideEffectsExecuted: boolean("side_effects_executed").default(false).notNull(),
+  errorMessage: text("error_message"),
+  metadata: text("metadata"), // JSON string
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type IdempotentWriteAuditLog = typeof idempotentWriteAuditLog.$inferSelect;
+export type InsertIdempotentWriteAuditLog = typeof idempotentWriteAuditLog.$inferInsert;
 
 // Projects table
 export const projects = pgTable("projects", {
@@ -1002,6 +1066,19 @@ export const usageMetrics = pgTable("usage_metrics", {
     table.billingPeriodStart,
     table.billingPeriodEnd,
   ),
+}));
+
+export const onboardingRuns = pgTable("onboarding_runs", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  adminUserId: varchar("admin_user_id", { length: 36 }).notNull().references(() => users.id),
+  steps: jsonb("steps").notNull(),
+  status: text("status").default("in_progress").notNull(),
+  integrityHash: text("integrity_hash").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueCompanyOnboardingRun: uniqueIndex("unique_company_onboarding_run").on(table.companyId),
 }));
 
 export const aiUsageLogs = pgTable("ai_usage_logs", {
@@ -1684,6 +1761,12 @@ export const insertStripeWebhookEventSchema = createInsertSchema(stripeWebhookEv
   processedAt: true
 });
 
+export const insertOnboardingRunSchema = createInsertSchema(onboardingRuns).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertAiPricingConfigSchema = createInsertSchema(aiPricingConfig).omit({
   updatedAt: true
 });
@@ -1774,6 +1857,9 @@ export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
 
 export type StripeWebhookEvent = typeof stripeWebhookEvents.$inferSelect;
 export type InsertStripeWebhookEvent = z.infer<typeof insertStripeWebhookEventSchema>;
+
+export type OnboardingRun = typeof onboardingRuns.$inferSelect;
+export type InsertOnboardingRun = z.infer<typeof insertOnboardingRunSchema>;
 
 export type AiPricingConfig = typeof aiPricingConfig.$inferSelect;
 export type InsertAiPricingConfig = z.infer<typeof insertAiPricingConfigSchema>;

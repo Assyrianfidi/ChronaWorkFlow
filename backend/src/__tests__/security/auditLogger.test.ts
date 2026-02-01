@@ -2,6 +2,7 @@ import request from "supertest";
 import express from "express";
 import AuditLoggerService from "../../services/auditLogger.service";
 import MonitoringService from "../../services/monitoring.service";
+import { vi } from "vitest";
 import {
   logAuthEvent,
   logDataEvent,
@@ -11,39 +12,39 @@ import {
 } from "../../middleware/security/auditLogger.middleware";
 
 // Mock the services
-jest.mock("../../services/auditLogger.service", () => ({
+vi.mock("../../services/auditLogger.service", () => ({
   __esModule: true,
   default: {
-    setPrismaInstance: jest.fn(),
-    logAuthEvent: jest.fn(),
-    logDataEvent: jest.fn(),
-    logSecurityEvent: jest.fn(),
-    logSystemEvent: jest.fn(),
-    triggerSecurityAlert: jest.fn(),
-    getAuditLogs: jest.fn(),
-    getSecurityAlerts: jest.fn(),
-    acknowledgeAlert: jest.fn(),
-    getAuditStatistics: jest.fn(),
-    exportAuditLogs: jest.fn(),
+    setPrismaInstance: vi.fn(),
+    logAuthEvent: vi.fn(),
+    logDataEvent: vi.fn(),
+    logSecurityEvent: vi.fn(),
+    logSystemEvent: vi.fn(),
+    triggerSecurityAlert: vi.fn(),
+    getAuditLogs: vi.fn(),
+    getSecurityAlerts: vi.fn(),
+    acknowledgeAlert: vi.fn(),
+    getAuditStatistics: vi.fn(),
+    exportAuditLogs: vi.fn(),
   },
 }));
 
 const MockedAuditLoggerService = AuditLoggerService as any;
 
 // Create mock functions for MonitoringService methods
-jest.mock("../../services/monitoring.service", () => {
+vi.mock("../../services/monitoring.service", () => {
   const __mocks = {
-    initializeMetrics: jest.fn(),
-    getMetrics: jest.fn(),
-    recordRequestMetrics: jest.fn(),
-    recordAuthMetrics: jest.fn(),
-    recordSecurityMetrics: jest.fn(),
-    getHealthStatus: jest.fn(),
-    triggerAlert: jest.fn(),
-    getAlerts: jest.fn(),
-    acknowledgeAlert: jest.fn(),
-    getPerformanceReport: jest.fn(),
-    cleanup: jest.fn(),
+    initializeMetrics: vi.fn(),
+    getMetrics: vi.fn(),
+    recordRequestMetrics: vi.fn(),
+    recordAuthMetrics: vi.fn(),
+    recordSecurityMetrics: vi.fn(),
+    getHealthStatus: vi.fn(),
+    triggerAlert: vi.fn(),
+    getAlerts: vi.fn(),
+    acknowledgeAlert: vi.fn(),
+    getPerformanceReport: vi.fn(),
+    cleanup: vi.fn(),
   };
 
   class MonitoringServiceMock {
@@ -67,8 +68,8 @@ jest.mock("../../services/monitoring.service", () => {
   };
 });
 
-const monitoringServiceModule = jest.requireMock(
-  "../../services/monitoring.service",
+const monitoringServiceModule = await import(
+  "../../services/monitoring.service"
 ) as any;
 const monitoringServiceMocks = monitoringServiceModule.__mocks;
 
@@ -88,7 +89,7 @@ describe("Audit Logger Middleware", () => {
   let app: express.Application;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     MockedAuditLoggerService.getAuditLogs.mockReturnValue([]);
     MockedAuditLoggerService.getSecurityAlerts.mockReturnValue([]);
@@ -271,7 +272,7 @@ describe("Monitoring Service", () => {
   let mockMonitoringService: any;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockGetMetrics.mockReturnValue({
       requests: {
         total: 0,
@@ -422,7 +423,7 @@ describe("Monitoring Service", () => {
 
 describe("Audit Logger Service", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("Auth Event Logging", () => {

@@ -1,1 +1,1 @@
-export * from "./databaseSecurity.middleware";
+export * from "./databaseSecurity.middleware.ts";

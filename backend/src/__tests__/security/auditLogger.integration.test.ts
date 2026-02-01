@@ -72,22 +72,20 @@ describe("Audit Logger Integration Tests", () => {
     });
 
     app.get("/slow", (req, res, next) => {
-      // Simulate slow response with proper async handling
-      setTimeout(() => {
+      setImmediate(() => {
         try {
           res.json({ success: true, message: "Slow response" });
         } catch (error) {
           next(error);
         }
-      }, 50); // Reduced timeout to speed up tests
+      });
     });
   });
 
   afterAll(async () => {
     // Clean up environment
     delete process.env.NODE_ENV;
-    // Wait a bit for any async operations to complete
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise<void>((resolve) => setImmediate(resolve));
   });
 
   describe("Basic Functionality", () => {
@@ -193,7 +191,7 @@ describe("Audit Logger Integration Tests", () => {
       // Run the middleware stack
       await new Promise<void>((resolve) => {
         executeStack();
-        setTimeout(resolve, 100);
+        setImmediate(resolve);
       });
 
       // Verify middleware was called (should have called next)

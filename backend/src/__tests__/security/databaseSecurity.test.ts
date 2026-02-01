@@ -1,6 +1,7 @@
 import request from "supertest";
 import express from "express";
 import DatabaseSecurityService from "../../services/databaseSecurity.service";
+import { vi } from "vitest";
 import {
   requireDatabasePermission,
   validateDatabaseConstraints,
@@ -9,7 +10,7 @@ import {
 } from "../../middleware/security/databaseSecurity.middleware";
 
 // Mock Prisma Client
-jest.mock("@prisma/client", () => ({
+vi.mock("@prisma/client", () => ({
   PrismaClient: jest.fn().mockImplementation(() => ({
     user: {
       findFirst: jest.fn(),
@@ -47,7 +48,7 @@ jest.mock("@prisma/client", () => ({
 }));
 
 // Mock roles constants
-jest.mock("../../constants/roles", () => ({
+vi.mock("../../constants/roles", () => ({
   ROLES: {
     ADMIN: "ADMIN",
     MANAGER: "MANAGER",

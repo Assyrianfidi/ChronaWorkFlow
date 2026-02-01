@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
 import { RateLimiter } from "../utils/rateLimiter";
 import { CacheEngine } from "../utils/cacheEngine";
+import { vi } from "vitest";
 
-jest.mock("../utils/cacheEngine", () => ({
+vi.mock("../utils/cacheEngine", () => ({
   CacheEngine: {
-    checkRateLimit: jest.fn(),
-    exists: jest.fn(),
-    incr: jest.fn(),
-    set: jest.fn(),
-    del: jest.fn(),
+    checkRateLimit: vi.fn(),
+    exists: vi.fn(),
+    incr: vi.fn(),
+    set: vi.fn(),
+    del: vi.fn(),
   },
 }));
 
@@ -25,8 +26,8 @@ const createRequest = (userId: number | string) =>
 
 describe("RateLimiter", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.useRealTimers();
+    vi.clearAllMocks();
+    vi.useRealTimers();
     cacheMock.checkRateLimit.mockResolvedValue({
       allowed: true,
       remaining: 4,
@@ -49,8 +50,8 @@ describe("RateLimiter", () => {
     });
 
     it("throws ApiError with retry message when limit is exceeded", async () => {
-      jest.useFakeTimers();
-      jest.setSystemTime(1_000_000);
+      vi.useFakeTimers();
+      vi.setSystemTime(1_000_000);
 
       const resetTime = Date.now() + 12_345;
       cacheMock.checkRateLimit.mockResolvedValueOnce({
@@ -60,8 +61,8 @@ describe("RateLimiter", () => {
       });
 
       const req = createRequest(2);
-      const res = { set: jest.fn().mockReturnThis() } as unknown as Response;
-      const next = jest.fn();
+      const res = { set: vi.fn().mockReturnThis() } as unknown as Response;
+      const next = vi.fn();
 
       await expect(
         RateLimiter.perUserLimit("auth")(req, res, next),
@@ -88,11 +89,11 @@ describe("RateLimiter", () => {
       cacheMock.incr.mockImplementation(async () => ++burstCount);
 
       const middleware = RateLimiter.burstControl(2, 5);
-      await middleware(makeReq(), {} as Response, jest.fn());
-      await middleware(makeReq(), {} as Response, jest.fn());
+      await middleware(makeReq(), {} as Response, vi.fn());
+      await middleware(makeReq(), {} as Response, vi.fn());
 
       await expect(
-        middleware(makeReq(), {} as Response, jest.fn()),
+        middleware(makeReq(), {} as Response, vi.fn()),
       ).rejects.toThrow("Burst limit exceeded. Cooldown activated for 5 seconds.");
 
       expect(cacheMock.set).toHaveBeenCalledWith("cooldown:user1", true, 5);
@@ -106,11 +107,30 @@ describe("RateLimiter", () => {
 
       const middleware = RateLimiter.burstControl(1, 2);
       await expect(
-        middleware(makeReq(), {} as Response, jest.fn()),
+        middleware(makeReq(), {} as Response, vi.fn()),
       ).rejects.toThrow("Too many requests. Please wait before trying again.");
 
       inCooldown = false;
-      await middleware(makeReq(), {} as Response, jest.fn());
+      await middleware(makeReq(), {} as Response, vi.fn());
+    });
+
+    it("fails closed when cache backend errors", async () => {
+      cacheMock.exists.mockRejectedValueOnce(new Error('cache_down'));
+      const middleware = RateLimiter.burstControl(1, 2);
+      await expect(middleware(makeReq(), {} as Response, vi.fn())).rejects.toThrow('cache_down');
+    });
+  });
+
+  describe("fail-closed behavior", () => {
+    it("fails closed when rate limit backend errors", async () => {
+      cacheMock.checkRateLimit.mockRejectedValueOnce(new Error('cache_down'));
+
+      const req = createRequest(1);
+      const res = { set: vi.fn().mockReturnThis() } as unknown as Response;
+      const next = vi.fn();
+
+      await expect(RateLimiter.perUserLimit("auth")(req, res, next)).rejects.toThrow('cache_down');
+      expect(next).not.toHaveBeenCalled();
     });
   });
 });

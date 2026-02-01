@@ -8,7 +8,7 @@ import {
   forgotPassword,
   resetPassword,
   verifyEmail,
-} from "../controllers/auth.controller";
+} from "../controllers/auth.controller.ts";
 import { auth, authorizeRoles } from "../middleware/auth";
 import { ROLES } from "../constants/roles";
 

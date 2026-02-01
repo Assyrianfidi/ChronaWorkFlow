@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
+REPORT_DIR="${REPORT_DIR:-./reports}"
+REPORT_FILE="$REPORT_DIR/compliance-validation-report.json"
+mkdir -p "$REPORT_DIR"
+
+export REPORT_DIR REPORT_FILE
+
+NODE_ENV="${NODE_ENV:-test}"
+export NODE_ENV
+
+GATES='{}'
+export GATES
+
+set_gate() {
+  local key="$1"
+  local value="$2"
+  GATES=$(node -e "const g=JSON.parse(process.env.GATES||'{}'); g[process.argv[1]]=process.argv[2]; process.stdout.write(JSON.stringify(g));" "$key" "$value")
+  export GATES
+}
+
+fail() {
+  local msg="$1"
+  node -e "
+const fs=require('fs');
+const report={status:'FAILED', finishedAt:new Date().toISOString(), message:process.env.FAIL_MSG, gates:JSON.parse(process.env.GATES||'{}')};
+fs.mkdirSync(process.env.REPORT_DIR,{recursive:true});
+fs.writeFileSync(process.env.REPORT_FILE, JSON.stringify(report,null,2));
+" >/dev/null 2>&1 || true
+  echo "ERROR: $msg" >&2
+  exit 1
+}
+
+run_gate() {
+  local name="$1"
+  shift
+  echo "==== Compliance Gate: $name ===="
+  if "$@"; then
+    set_gate "$name" "PASS"
+  else
+    set_gate "$name" "FAIL"
+    export FAIL_MSG="$name failed"
+    fail "$name failed"
+  fi
+}
+
+run_gate "controls:mapping" node -e "
+const fs=require('fs');
+const p='server/compliance/control-mapping.json';
+const j=JSON.parse(fs.readFileSync(p,'utf8'));
+if(!Array.isArray(j.controls)) throw new Error('controls missing');
+const ids=new Set(j.controls.map(c=>c.controlId));
+const required=['ACCU-CONTROL-001','ACCU-CONTROL-002','ACCU-CONTROL-003','ACCU-CONTROL-004','ACCU-CONTROL-005','ACCU-CONTROL-006','ACCU-CONTROL-007','ACCU-CONTROL-008','ACCU-CONTROL-009'];
+for(const id of required){ if(!ids.has(id)) throw new Error('missing '+id); }
+"
+
+run_gate "compliance:test" npx vitest run --project server server/compliance/compliance.test.ts
+
+node -e "
+const fs=require('fs');
+const report={status:'PASSED', finishedAt:new Date().toISOString(), gates:JSON.parse(process.env.GATES||'{}')};
+fs.mkdirSync(process.env.REPORT_DIR,{recursive:true});
+fs.writeFileSync(process.env.REPORT_FILE, JSON.stringify(report,null,2));
+"
+
+echo "==== Compliance validation PASSED ===="
+echo "Report: $REPORT_FILE"

@@ -1,0 +1,177 @@
+{
+  "version": "v1",
+  "generatedAt": "1970-01-01T00:00:00.000Z",
+  "frameworks": {
+    "SOC2": { "domains": ["Security", "Availability", "Confidentiality"] },
+    "ISO27001": { "domains": ["AnnexA"] },
+    "GDPR": { "domains": ["DataProtection"] },
+    "CCPA": { "domains": ["Privacy"] },
+    "SOX": { "domains": ["FinancialControls"] }
+  },
+  "controls": [
+    {
+      "controlId": "ACCU-CONTROL-001",
+      "name": "Tenant Isolation Enforcement",
+      "owner": "Security Engineering",
+      "automated": true,
+      "evidenceSources": [
+        "server/tenant/tenant-isolation.ts",
+        "server/tenant/tenant-context.ts",
+        "tests/integration/e2e-integration.test.ts"
+      ],
+      "mappings": {
+        "SOC2": ["CC6.1", "CC6.6"],
+        "ISO27001": ["A.5.15", "A.8.2"],
+        "GDPR": ["Art.5(1)(f)", "Art.32"],
+        "CCPA": ["1798.150"],
+        "SOX": ["ITGC-Access"]
+      }
+    },
+    {
+      "controlId": "ACCU-CONTROL-002",
+      "name": "RBAC Authorization Guard",
+      "owner": "Platform Engineering",
+      "automated": true,
+      "evidenceSources": [
+        "server/auth/authorization-engine.ts",
+        "server/auth/authorization-guards.ts",
+        "server/auth/tenant-permissions.ts",
+        "tests/integration/e2e-integration.test.ts"
+      ],
+      "mappings": {
+        "SOC2": ["CC6.2", "CC6.3"],
+        "ISO27001": ["A.5.15", "A.5.18"],
+        "GDPR": ["Art.25", "Art.32"],
+        "CCPA": ["1798.100"],
+        "SOX": ["ITGC-Access"]
+      }
+    },
+    {
+      "controlId": "ACCU-CONTROL-003",
+      "name": "Immutable Audit Logging (Hash-Chained)",
+      "owner": "Security Engineering",
+      "automated": true,
+      "evidenceSources": [
+        "server/compliance/immutable-audit-log.ts",
+        "shared/schema.ts"
+      ],
+      "mappings": {
+        "SOC2": ["CC7.2", "CC7.3"],
+        "ISO27001": ["A.8.15", "A.8.16"],
+        "GDPR": ["Art.5(2)", "Art.30", "Art.32"],
+        "CCPA": ["1798.150"],
+        "SOX": ["ITGC-Audit", "SOX-404"]
+      }
+    },
+    {
+      "controlId": "ACCU-CONTROL-004",
+      "name": "Dangerous Operations Approval Workflow",
+      "owner": "Platform Engineering",
+      "automated": true,
+      "evidenceSources": [
+        "server/enterprise/dangerous-operations.ts",
+        "server/enterprise/approval-workflows.ts"
+      ],
+      "mappings": {
+        "SOC2": ["CC6.6", "CC8.1"],
+        "ISO27001": ["A.5.17", "A.8.9"],
+        "GDPR": ["Art.32"],
+        "CCPA": ["1798.100"],
+        "SOX": ["SOX-302", "SOX-404"]
+      }
+    },
+    {
+      "controlId": "ACCU-CONTROL-005",
+      "name": "Retention Policy + Legal Hold Enforcement",
+      "owner": "Compliance",
+      "automated": true,
+      "evidenceSources": [
+        "server/compliance/retention-legal-hold.ts",
+        "server/compliance/legal-hold.ts"
+      ],
+      "mappings": {
+        "SOC2": ["CC8.1"],
+        "ISO27001": ["A.8.10"],
+        "GDPR": ["Art.5(1)(e)", "Art.17"],
+        "CCPA": ["1798.105"],
+        "SOX": ["ITGC-Retention"]
+      }
+    },
+    {
+      "controlId": "ACCU-CONTROL-006",
+      "name": "Data Subject Rights Workflows (GDPR/CCPA)",
+      "owner": "Compliance",
+      "automated": true,
+      "evidenceSources": [
+        "server/compliance/data-rights-engine.ts",
+        "server/compliance/tenant-data-export.ts",
+        "server/compliance/data-rights-approvals.ts"
+      ],
+      "mappings": {
+        "SOC2": ["CC6.1", "CC6.7"],
+        "ISO27001": ["A.5.34"],
+        "GDPR": ["Art.15", "Art.16", "Art.17", "Art.20"],
+        "CCPA": ["1798.100", "1798.105", "1798.110"],
+        "SOX": ["ITGC-Retention"]
+      }
+    },
+    {
+      "controlId": "ACCU-CONTROL-007",
+      "name": "Compliance Evidence Chain + Snapshots + Export",
+      "owner": "Security Engineering",
+      "automated": true,
+      "evidenceSources": [
+        "server/compliance/evidence-store.ts",
+        "server/compliance/evidence-engine.ts",
+        "server/compliance/evidence-snapshots.ts",
+        "server/compliance/evidence-export.ts",
+        "server/compliance/audit-vault.ts"
+      ],
+      "mappings": {
+        "SOC2": ["CC7.2", "CC7.3"],
+        "ISO27001": ["A.8.15", "A.8.16"],
+        "GDPR": ["Art.5(2)", "Art.30"],
+        "CCPA": ["1798.150"],
+        "SOX": ["ITGC-Audit"]
+      }
+    },
+    {
+      "controlId": "ACCU-CONTROL-008",
+      "name": "External Auditor Read-Only Access (Scoped)",
+      "owner": "Compliance",
+      "automated": true,
+      "evidenceSources": [
+        "server/compliance/auditor-access.ts",
+        "server/compliance/audit-vault.ts"
+      ],
+      "mappings": {
+        "SOC2": ["CC1.2", "CC6.2"],
+        "ISO27001": ["A.5.19", "A.5.20"],
+        "GDPR": ["Art.32"],
+        "CCPA": ["1798.100"],
+        "SOX": ["SOX-404"]
+      }
+    },
+    {
+      "controlId": "ACCU-CONTROL-009",
+      "name": "System-Backed Policy Artifacts (Versioned)",
+      "owner": "Legal",
+      "automated": true,
+      "evidenceSources": [
+        "server/compliance/policy-engine.ts",
+        "server/compliance/policies/DPA.md",
+        "server/compliance/policies/PRIVACY_POLICY.md",
+        "server/compliance/policies/SECURITY_POLICY.md",
+        "server/compliance/policies/INCIDENT_RESPONSE_POLICY.md",
+        "server/compliance/policies/ACCESS_CONTROL_POLICY.md"
+      ],
+      "mappings": {
+        "SOC2": ["CC1.1", "CC2.1"],
+        "ISO27001": ["A.5.1"],
+        "GDPR": ["Art.12", "Art.13", "Art.14"],
+        "CCPA": ["1798.100"],
+        "SOX": ["ITGC-Policy"]
+      }
+    }
+  ]
+}

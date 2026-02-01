@@ -41,6 +41,12 @@ jobs:
       - name: Run TypeScript checks
         run: npm run typecheck
 
+      - name: Run verify:types (tsc --noEmit)
+        run: npm run verify:types
+
+      - name: Run backend tests
+        run: npm run test:backend
+
       - name: Verify Observability Invariants
         run: npm run verify:observability-invariants
 

@@ -4,6 +4,7 @@ import { db } from "../db";
 import { jobService } from "../jobs/service";
 import { storage } from "../storage";
 import * as s from "../../shared/schema";
+import { assertCompanyScope } from "../runtime/request-context";
 
 type WorkflowStep = {
   key: string;
@@ -91,6 +92,7 @@ export async function createWorkflowDefinition(input: {
   description?: string | null;
   createdBy: string;
 }) {
+  assertCompanyScope(input.companyId);
   const [row] = await db
     .insert(s.workflowDefinitions)
     .values({
@@ -115,6 +117,7 @@ export async function publishWorkflowVersion(input: {
   metadataJson?: unknown;
   actorUserId: string;
 }) {
+  assertCompanyScope(input.companyId);
   const [{ maxVersionRaw }] = await db
     .select({ maxVersionRaw: sql<string>`coalesce(max(${s.workflowDefinitionVersions.version}), '0')` })
     .from(s.workflowDefinitionVersions)
@@ -457,6 +460,7 @@ export async function resumeAfterApproval(input: {
   actorRoles: string[];
   reason?: string | null;
 }) {
+  assertCompanyScope(input.companyId);
   const [approval] = await db
     .select()
     .from(s.workflowApprovals)
@@ -555,6 +559,7 @@ export async function scheduleTimer(input: {
   fireAt: Date;
   actorUserId?: string | null;
 }) {
+  assertCompanyScope(input.companyId);
   const [instance] = await db
     .select()
     .from(s.workflowInstances)
@@ -623,6 +628,7 @@ export async function fireTimer(input: {
   workflowTimerId: string;
   workflowInstanceId: string;
 }) {
+  assertCompanyScope(input.companyId);
   const [timer] = await db
     .select()
     .from(s.workflowTimers)
@@ -674,6 +680,7 @@ export async function cancelWorkflowInstance(input: {
   actorUserId?: string | null;
   reason?: string | null;
 }) {
+  assertCompanyScope(input.companyId);
   const [instance] = await db
     .select()
     .from(s.workflowInstances)
@@ -721,6 +728,7 @@ export async function getWorkflowInstanceDetail(input: {
   companyId: string;
   instanceId: string;
 }) {
+  assertCompanyScope(input.companyId);
   const [instance] = await db
     .select()
     .from(s.workflowInstances)
@@ -750,6 +758,7 @@ export async function getWorkflowInstanceDetail(input: {
 }
 
 export async function listWorkflowDefinitions(input: { companyId: string }) {
+  assertCompanyScope(input.companyId);
   const defs = await db
     .select()
     .from(s.workflowDefinitions)

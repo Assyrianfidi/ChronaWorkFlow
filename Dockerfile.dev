@@ -3,35 +3,33 @@ FROM node:20-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
-# Install system dependencies including debugging tools
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    git \
-    curl \
-    tzdata \
-    dumb-init \
-    net-tools \
-    procps \
-    iputils-ping \
+# Install system dependencies including build + debugging tools
+ RUN apt-get update && apt-get install -y \
+     python3 \
+     make \
+     g++ \
+     git \
+     curl \
+     tzdata \
+     dumb-init \
+     net-tools \
+     procps \
+     iputils-ping \
     dnsutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
 
-# Set npm registry and install dependencies
-RUN npm config set registry https://registry.npmjs.org/ && \
-    npm install -g tsx && \
-    npm install express cors --no-fund --no-audit
+# Install dependencies (includes dev deps for start:dev)
+RUN npm config set registry https://registry.npmjs.org/ && npm install
 
 # Copy app source
 COPY . .
 
-# Expose port
+# Expose API port
 EXPOSE 5000
 
-# Start the app with auto-restart on file changes
-CMD ["tsx", "watch", "--clear-screen=false", "src/index.ts"]
+# Start the canonical API server in dev mode
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["npm", "run", "start:dev"]
