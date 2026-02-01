@@ -1,0 +1,190 @@
+version: '3.9'
+
+# AccuBooks Local Development Environment
+# One-command startup: docker compose -f docker-compose.local.yml up
+# This file provides a complete local development environment with:
+# - PostgreSQL database with auto-migrations
+# - Redis cache
+# - Backend API with hot-reload
+# - Frontend app with hot-reload
+# - Health checks for all services
+# - Automatic seed data on first run
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: accubooks-postgres-local
+    environment:
+      POSTGRES_USER: ${DB_USER:-accubooks}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-accubooks_dev_password}
+      POSTGRES_DB: ${DB_NAME:-accubooks_dev}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-accubooks} -d ${DB_NAME:-accubooks_dev}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: accubooks-redis-local
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-accubooks_redis_dev}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        NODE_ENV: development
+    container_name: accubooks-backend-local
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    environment:
+      # Node Environment
+      NODE_ENV: development
+      PORT: 5000
+      
+      # Database Configuration
+      DATABASE_URL: postgresql://${DB_USER:-accubooks}:${DB_PASSWORD:-accubooks_dev_password}@postgres:5432/${DB_NAME:-accubooks_dev}?schema=public
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-accubooks}
+      DB_PASSWORD: ${DB_PASSWORD:-accubooks_dev_password}
+      DB_NAME: ${DB_NAME:-accubooks_dev}
+      
+      # Redis Configuration
+      REDIS_URL: redis://:${REDIS_PASSWORD:-accubooks_redis_dev}@redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-accubooks_redis_dev}
+      
+      # Authentication
+      JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_change_in_production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev_refresh_secret_change_in_production}
+      SESSION_SECRET: ${SESSION_SECRET:-dev_session_secret_change_in_production}
+      
+      # URLs
+      FRONTEND_URL: http://localhost:3000
+      API_URL: http://localhost:5000
+      
+      # Auto-Bootstrap
+      AUTO_MIGRATE: "true"
+      AUTO_SEED: "true"
+      
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      
+    volumes:
+      - ./server:/app/server:delegated
+      - ./prisma:/app/prisma:delegated
+      - ./package.json:/app/package.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - backend_node_modules:/app/node_modules
+    working_dir: /app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+    command: npm run dev
+
+  # Frontend App
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+      args:
+        NODE_ENV: development
+    container_name: accubooks-frontend-local
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: development
+      VITE_API_URL: http://localhost:5000
+      VITE_APP_NAME: AccuBooks
+      PORT: 3000
+    volumes:
+      - ./client/src:/app/src:delegated
+      - ./client/public:/app/public:delegated
+      - ./client/index.html:/app/index.html:ro
+      - ./client/vite.config.ts:/app/vite.config.ts:ro
+      - ./client/tsconfig.json:/app/tsconfig.json:ro
+      - ./client/package.json:/app/package.json:ro
+      - frontend_node_modules:/app/node_modules
+    working_dir: /app
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - accubooks-network
+    stdin_open: true
+    tty: true
+    command: npm run dev -- --host 0.0.0.0
+
+volumes:
+  postgres_data:
+    name: accubooks_postgres_data_local
+    driver: local
+  redis_data:
+    name: accubooks_redis_data_local
+    driver: local
+  backend_node_modules:
+    name: accubooks_backend_node_modules_local
+    driver: local
+  frontend_node_modules:
+    name: accubooks_frontend_node_modules_local
+    driver: local
+
+networks:
+  accubooks-network:
+    name: accubooks-network-local
+    driver: bridge
+
+# Usage:
+# 1. Start everything: docker compose -f docker-compose.local.yml up
+# 2. Start in background: docker compose -f docker-compose.local.yml up -d
+# 3. View logs: docker compose -f docker-compose.local.yml logs -f
+# 4. Stop everything: docker compose -f docker-compose.local.yml down
+# 5. Reset everything: docker compose -f docker-compose.local.yml down -v
+# 6. Rebuild: docker compose -f docker-compose.local.yml up --build
