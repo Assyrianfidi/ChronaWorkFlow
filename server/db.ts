@@ -6,6 +6,7 @@ import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
 import ws from "ws";
 import * as schema from "../shared/schema";
 import { getDatabaseConfig } from "./config/env-validation";
+import { getDatabasePoolConfig } from "./config/database-pool";
 
 const connectionString = getDatabaseConfig();
 
@@ -16,11 +17,16 @@ function isNeonConnectionString(url: string): boolean {
 }
 
 export const pool = (() => {
+  const poolConfig = {
+    connectionString,
+    ...getDatabasePoolConfig(),
+  };
+
   if (isNeonConnectionString(connectionString)) {
     neonConfig.webSocketConstructor = ws;
-    return new NeonPool({ connectionString });
+    return new NeonPool(poolConfig);
   }
-  return new PgPool({ connectionString });
+  return new PgPool(poolConfig);
 })();
 
 export const db = (() => {
