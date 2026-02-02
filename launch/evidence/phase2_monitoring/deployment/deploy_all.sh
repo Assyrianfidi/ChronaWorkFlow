@@ -15,7 +15,14 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-PROJECT_ROOT="C:/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks"
+# Detect if running in WSL and convert path accordingly
+if grep -qi microsoft /proc/version 2>/dev/null; then
+    # Running in WSL - convert Windows path to WSL path
+    PROJECT_ROOT="/mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks"
+else
+    # Running in native Linux or Mac
+    PROJECT_ROOT="C:/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks"
+fi
 MONITORING_DIR="/opt/accubooks/monitoring"
 PROMETHEUS_VERSION="2.45.0"
 ALERTMANAGER_VERSION="0.26.0"

@@ -38,3 +38,169 @@ Started: Mon Feb  2 01:02:58 PST 2026
 [0;34m[2/8] Starting AccuBooks Backend[0m
 ================================
 [0;31m✗[0m Backend directory not found at C:/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/server
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 01:24:28 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v18.19.1
+[0;31m✗[0m Node.js v20+ required. Current: v18.19.1
+[0;34mℹ[0m Upgrade guide: NODE_UPGRADE_GUIDE.md
+[0;32m✓[0m npm installed: 9.2.0
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[1;33m⚠[0m Port 3000 is already in use
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;31m✗[0m Missing required dependencies. Please install them first.
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 01:40:27 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;31m✗[0m Node.js not installed
+[0;31m✗[0m npm not installed
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[1;33m⚠[0m Port 3000 is already in use
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;31m✗[0m Missing required dependencies. Please install them first.
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 01:55:55 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v18.19.1
+[0;31m✗[0m Node.js v20+ required. Current: v18.19.1
+[0;34mℹ[0m Upgrade guide: NODE_UPGRADE_GUIDE.md
+[0;32m✓[0m npm installed: 9.2.0
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[1;33m⚠[0m Port 3000 is already in use
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;31m✗[0m Missing required dependencies. Please install them first.
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 01:57:34 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v18.19.1
+[0;31m✗[0m Node.js v20+ required. Current: v18.19.1
+[0;34mℹ[0m Upgrade guide: NODE_UPGRADE_GUIDE.md
+[0;32m✓[0m npm installed: 9.2.0
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[1;33m⚠[0m Port 3000 is already in use
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;31m✗[0m Missing required dependencies. Please install them first.
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 02:00:03 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v20.20.0
+[0;32m✓[0m npm installed: 10.8.2
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[1;33m⚠[0m Port 3000 is already in use
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;32m✓[0m All prerequisites met
+
+[0;34m[2/8] Starting AccuBooks Backend[0m
+================================
+[0;31m✗[0m Backend directory not found at C:/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/server
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 02:02:13 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v20.20.0
+[0;32m✓[0m npm installed: 10.8.2
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[1;33m⚠[0m Port 3000 is already in use
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;32m✓[0m All prerequisites met
+
+[0;34m[2/8] Starting AccuBooks Backend[0m
+================================
+[0;31m✗[0m Backend directory not found at C:/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/server
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 02:03:02 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v20.20.0
+[0;32m✓[0m npm installed: 10.8.2
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[0;32m✓[0m Port 3000 is available
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;32m✓[0m All prerequisites met
+
+[0;34m[2/8] Starting AccuBooks Backend[0m
+================================
+[0;31m✗[0m Backend directory not found at C:/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/server
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 02:07:25 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v20.20.0
+[0;32m✓[0m npm installed: 10.8.2
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[0;32m✓[0m Port 3000 is available
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;32m✓[0m All prerequisites met
+
+[0;34m[2/8] Starting AccuBooks Backend[0m
+================================
+[0;31m✗[0m Backend directory not found at C:/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/server
