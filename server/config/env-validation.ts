@@ -30,6 +30,17 @@ const RECOMMENDED_ENV_VARS = [
   'PLAID_SECRET'
 ];
 
+// Safe defaults for optional configurations
+const SAFE_DEFAULTS = {
+  REDIS_HOST: 'localhost',
+  REDIS_PORT: '6379',
+  REDIS_PASSWORD: '',
+  PORT: '5000',
+  HOSTNAME: '0.0.0.0',
+  NODE_ENV: 'development',
+  SLOW_REQUEST_MS: '1500',
+};
+
 // Frontend-specific environment variables (VITE_ prefixed)
 const FRONTEND_ENV_VARS = [
   'VITE_API_URL',
@@ -43,6 +54,13 @@ const FRONTEND_ENV_VARS = [
 export function validateEnvironmentVariables(): void {
   const missing: string[] = [];
   const warnings: string[] = [];
+
+  // Apply safe defaults for optional configurations
+  for (const [key, defaultValue] of Object.entries(SAFE_DEFAULTS)) {
+    if (!process.env[key]) {
+      process.env[key] = defaultValue;
+    }
+  }
 
   // Check required variables
   for (const envVar of REQUIRED_ENV_VARS) {
