@@ -188,7 +188,7 @@ start_backend() {
     
     # Start backend in background
     print_info "Starting backend on port $BACKEND_PORT..."
-    npm run dev > "$PROJECT_ROOT/backend.log" 2>&1 &
+    npm run start:dev > "$PROJECT_ROOT/backend.log" 2>&1 &
     BACKEND_PID=$!
     echo $BACKEND_PID > "$PROJECT_ROOT/backend.pid"
     
