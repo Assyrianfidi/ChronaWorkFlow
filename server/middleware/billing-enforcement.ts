@@ -11,7 +11,7 @@ export type PlanLimitAction =
   | "ai_request"
   | "api_request";
 
-function getCompanyIdFromRequest(req: any): string | null {
+export function getCompanyIdFromRequest(req: any): string | null {
   const q = req.query?.companyId;
   if (typeof q === "string" && q) return q;
 
