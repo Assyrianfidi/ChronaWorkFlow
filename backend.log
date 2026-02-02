@@ -7,9 +7,9 @@
 [33m[nodemon] watching path(s): *.*[39m
 [33m[nodemon] watching extensions: ts,json[39m
 [32m[nodemon] starting `tsx server/index.ts`[39m
-[dotenv@17.2.3] injecting env (131) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (131) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
 Connecting to Redis at: localhost port: 6379
-[2026-02-02T22:08:02.147Z] INFO: Stripe initialized 
+[2026-02-02T22:13:25.068Z] INFO: Stripe initialized 
 ⚠️  Environment variable warnings:
    - Recommended variable OWNER_EMAIL is not set
    - Recommended variable REDIS_PASSWORD is not set
@@ -73,28 +73,6 @@ Error: connect ECONNREFUSED 127.0.0.1:6379
 }
 ⚠️  Redis unavailable: Connection is closed.
 ⚠️  Job queues will be disabled. Backend will continue without background jobs.
-🟡 Registered high-risk route: POST /api/customers [createCustomer] (HIGH)
-🟡 Registered high-risk route: PATCH /api/customers/:id [updateCustomer] (HIGH)
-✓ Registered financial route: POST /api/payments [createPayment]
-✓ Registered financial route: POST /api/bank-transactions/import [importBankTransactions]
-✓ Registered financial route: POST /api/bank-transactions/:id/reconcile [reconcileBankTransaction]
-🔴 Registered high-risk route: POST /api/payroll/employees [createEmployee] (CRITICAL)
-✓ Registered financial route: PATCH /api/payroll/employees/:id [updateEmployee]
-✓ Registered financial route: POST /api/payroll/deductions [createDeduction]
-✓ Registered financial route: POST /api/payroll/employee-deductions [createEmployeeDeduction]
-✓ Registered financial route: POST /api/payroll/periods [createPayrollPeriod]
-✓ Registered financial route: POST /api/payroll/time-entries [createTimeEntry]
-✓ Registered financial route: POST /api/payroll/time-entries/:id/approve [approveTimeEntry]
-✓ Registered financial route: POST /api/payroll/pay-runs [createPayRun]
-✓ Registered financial route: PATCH /api/payroll/pay-runs/:id/status [updatePayRunStatus]
-✓ Registered financial route: POST /api/payroll/tax-forms [createTaxForm]
-🟡 Registered high-risk route: POST /api/inventory/items [createInventoryItem] (HIGH)
-🟡 Registered high-risk route: PATCH /api/inventory/items/:id [updateInventoryItem] (HIGH)
-✓ Registered financial route: PATCH /api/inventory/items/:id/quantity [updateInventoryQuantity]
-✓ Registered financial route: POST /api/inventory/purchase-orders [createPurchaseOrder]
-✓ Registered financial route: PATCH /api/inventory/purchase-orders/:id/status [updatePurchaseOrderStatus]
-✓ Registered financial route: POST /api/inventory/adjustments [createInventoryAdjustment]
-✅ API routes registered successfully
 Redis connection error: connect ECONNREFUSED 127.0.0.1:6379
 Error: connect ECONNREFUSED 127.0.0.1:6379
     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
@@ -144,9 +122,31 @@ Error: connect ECONNREFUSED 127.0.0.1:6379
   address: '127.0.0.1',
   port: 6379
 }
+🟡 Registered high-risk route: POST /api/customers [createCustomer] (HIGH)
+🟡 Registered high-risk route: PATCH /api/customers/:id [updateCustomer] (HIGH)
+✓ Registered financial route: POST /api/payments [createPayment]
+✓ Registered financial route: POST /api/bank-transactions/import [importBankTransactions]
+✓ Registered financial route: POST /api/bank-transactions/:id/reconcile [reconcileBankTransaction]
+🔴 Registered high-risk route: POST /api/payroll/employees [createEmployee] (CRITICAL)
+✓ Registered financial route: PATCH /api/payroll/employees/:id [updateEmployee]
+✓ Registered financial route: POST /api/payroll/deductions [createDeduction]
+✓ Registered financial route: POST /api/payroll/employee-deductions [createEmployeeDeduction]
+✓ Registered financial route: POST /api/payroll/periods [createPayrollPeriod]
+✓ Registered financial route: POST /api/payroll/time-entries [createTimeEntry]
+✓ Registered financial route: POST /api/payroll/time-entries/:id/approve [approveTimeEntry]
+✓ Registered financial route: POST /api/payroll/pay-runs [createPayRun]
+✓ Registered financial route: PATCH /api/payroll/pay-runs/:id/status [updatePayRunStatus]
+✓ Registered financial route: POST /api/payroll/tax-forms [createTaxForm]
+🟡 Registered high-risk route: POST /api/inventory/items [createInventoryItem] (HIGH)
+🟡 Registered high-risk route: PATCH /api/inventory/items/:id [updateInventoryItem] (HIGH)
+✓ Registered financial route: PATCH /api/inventory/items/:id/quantity [updateInventoryQuantity]
+✓ Registered financial route: POST /api/inventory/purchase-orders [createPurchaseOrder]
+✓ Registered financial route: PATCH /api/inventory/purchase-orders/:id/status [updatePurchaseOrderStatus]
+✓ Registered financial route: POST /api/inventory/adjustments [createInventoryAdjustment]
+✅ API routes registered successfully
  AccuBooks server running on http://localhost:5000
 Environment: development
-Startup duration: 182ms
+Startup duration: 223ms
 Redis connection error: connect ECONNREFUSED 127.0.0.1:6379
 Error: connect ECONNREFUSED 127.0.0.1:6379
     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
@@ -294,6 +294,5 @@ Error: connect ECONNREFUSED 127.0.0.1:6379
   address: '127.0.0.1',
   port: 6379
 }
-[2026-02-02T22:08:04.456Z] WARN: Redis connection closed. Job queues disabled. 
-[2026-02-02T22:08:04.457Z] WARN: Redis not available. Skipping job queue initialization. 
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"7df34e74-c019-4d27-9877-899b6b788ffd","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":9},"timestamp":"2026-02-02T22:08:04.751Z","environment":"development"}
+[2026-02-02T22:13:27.185Z] WARN: Redis connection closed. Job queues disabled. 
+[2026-02-02T22:13:27.186Z] WARN: Redis not available. Skipping job queue initialization. 
