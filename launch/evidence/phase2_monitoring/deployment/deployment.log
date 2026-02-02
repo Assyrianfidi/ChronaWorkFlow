@@ -50,3 +50,55 @@ Started: Mon Feb  2 02:23:32 PST 2026
 [0;34mℹ[0m Waiting for backend to start...
 [0;31m✗[0m Backend failed to start within 30 seconds
 [0;34mℹ[0m Check logs: /mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/backend.log
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 02:27:23 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v20.20.0
+[0;32m✓[0m npm installed: 10.8.2
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[0;32m✓[0m Port 3000 is available
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;32m✓[0m All prerequisites met
+
+[0;34m[2/8] Starting AccuBooks Backend[0m
+================================
+[0;32m✓[0m Backend dependencies already installed
+[0;34mℹ[0m Starting backend on port 5000...
+[0;34mℹ[0m Waiting for backend to start...
+[0;31m✗[0m Backend failed to start within 30 seconds
+[0;34mℹ[0m Check logs: /mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/backend.log
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 12:00:34 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v20.20.0
+[0;32m✓[0m npm installed: 10.8.2
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[0;32m✓[0m Port 3000 is available
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;32m✓[0m All prerequisites met
+
+[0;34m[2/8] Starting AccuBooks Backend[0m
+================================
+[0;32m✓[0m Backend dependencies already installed
+[0;34mℹ[0m Starting backend on port 5000...
+[0;34mℹ[0m Waiting for backend to start...
+[0;31m✗[0m Backend failed to start within 30 seconds
+[0;34mℹ[0m Check logs: /mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/backend.log

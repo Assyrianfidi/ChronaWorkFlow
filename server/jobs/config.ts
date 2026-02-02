@@ -10,23 +10,46 @@ export const redis = new IORedis({
   retryDelayOnFailover: 100,
   enableReadyCheck: false,
   maxRetriesPerRequest: null,
-  connectTimeout: 10000, // 10 seconds
+  connectTimeout: 5000, // 5 seconds (reduced from 10)
   lazyConnect: true, // Don't connect immediately
+  retryStrategy: (times: number) => {
+    // Stop retrying after 3 attempts
+    if (times > 3) {
+      console.warn('⚠️  Redis connection failed after 3 attempts. Job queues will be disabled.');
+      return null; // Stop retrying
+    }
+    return Math.min(times * 100, 2000); // Exponential backoff
+  },
 } as any);
+
+// Track Redis connection status
+let redisConnected = false;
 
 // Handle Redis connection events
 redis.on('connect', () => {
-  console.log('Redis connected successfully');
+  console.log('✅ Redis connected successfully');
+  redisConnected = true;
 });
 
-redis.on('error', (err) => {
-  console.error('Redis connection error:', err);
+redis.on('error', (err: any) => {
+  // Suppress timeout errors to avoid log spam
+  if (err.code !== 'ETIMEDOUT' && err.code !== 'EAI_AGAIN') {
+    console.error('Redis connection error:', err.message);
+  }
 });
 
-// Connect to Redis
+redis.on('close', () => {
+  redisConnected = false;
+});
+
+// Connect to Redis with graceful failure
 redis.connect().catch(err => {
-  console.error('Failed to connect to Redis:', err);
+  console.warn('⚠️  Redis unavailable:', err.message);
+  console.warn('⚠️  Job queues will be disabled. Backend will continue without background jobs.');
 });
+
+// Export connection status checker
+export const isRedisConnected = () => redisConnected;
 
 // Job queue configurations
 export const JOB_QUEUES = {
