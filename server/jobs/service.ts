@@ -8,11 +8,55 @@ export class JobService {
   private queueEvents: Map<string, QueueEvents> = new Map();
   private jobStats: Map<string, JobStats> = new Map();
   private workerStats: Map<string, WorkerStats> = new Map();
+  private initialized: boolean = false;
+  private redisAvailable: boolean = false;
 
   constructor() {
+    // Delay initialization to allow Redis connection to be established
+    this.initializeAsync().catch(err => {
+      logger.warn('Job service initialization failed:', err.message);
+      logger.warn('Job queues will be disabled. Backend will continue without background jobs.');
+    });
+  }
+
+  private async initializeAsync() {
+    // Wait for Redis connection to be ready or fail
+    await this.waitForRedis(5000); // 5 second timeout
+    
+    if (!this.redisAvailable) {
+      logger.warn('Redis not available. Skipping job queue initialization.');
+      return;
+    }
+
     this.initializeQueues();
     this.startWorkers();
     this.setupQueueEvents();
+    this.initialized = true;
+  }
+
+  private async waitForRedis(timeoutMs: number): Promise<void> {
+    const startTime = Date.now();
+    
+    while (Date.now() - startTime < timeoutMs) {
+      if (redis.status === 'ready' || redis.status === 'connect') {
+        this.redisAvailable = true;
+        logger.info('Redis connection confirmed. Initializing job queues.');
+        return;
+      }
+      
+      if (redis.status === 'end' || redis.status === 'close') {
+        this.redisAvailable = false;
+        logger.warn('Redis connection closed. Job queues disabled.');
+        return;
+      }
+      
+      // Wait 100ms before checking again
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    // Timeout reached
+    this.redisAvailable = false;
+    logger.warn('Redis connection timeout. Job queues disabled.');
   }
 
   async initialize(): Promise<void> {
@@ -28,43 +72,55 @@ export class JobService {
   }
 
   private startWorkers() {
+    if (!this.redisAvailable) {
+      logger.warn('Redis not available. Skipping worker initialization.');
+      return;
+    }
+
     logger.info('Starting job workers...');
 
     Object.values(JOB_QUEUES).forEach(queueName => {
-      const worker = new Worker(queueName, this.createJobProcessor(queueName), {
-        connection: redis,
-        concurrency: 1, // We'll handle concurrency in the processor
-      });
+      try {
+        const worker = new Worker(queueName, this.createJobProcessor(queueName), {
+          connection: redis,
+          concurrency: 1, // We'll handle concurrency in the processor
+        });
 
-      worker.on('completed', (job: Job) => {
-        logger.info(`Job ${job.id} completed in queue ${queueName}`);
-        this.updateJobStats(queueName, 'completed');
-        this.updateWorkerStats(worker, 'processed');
-      });
+        worker.on('completed', (job: Job) => {
+          logger.info(`Job ${job.id} completed in queue ${queueName}`);
+          this.updateJobStats(queueName, 'completed');
+          this.updateWorkerStats(worker, 'processed');
+        });
 
-      worker.on('failed', (job: Job | undefined, err: Error) => {
-        if (job) {
-          logger.error(`Job ${job.id} failed in queue ${queueName}:`, err);
-        } else {
-          logger.error(`Job failed in queue ${queueName}:`, err);
-        }
-        this.updateJobStats(queueName, 'failed');
-        this.updateWorkerStats(worker, 'failed');
-      });
+        worker.on('failed', (job: Job | undefined, err: Error) => {
+          if (job) {
+            logger.error(`Job ${job.id} failed in queue ${queueName}:`, err);
+          } else {
+            logger.error(`Job failed in queue ${queueName}:`, err);
+          }
+          this.updateJobStats(queueName, 'failed');
+          this.updateWorkerStats(worker, 'failed');
+        });
 
-      worker.on('error', (err: Error) => {
-        logger.error(`Worker error in queue ${queueName}:`, err);
-      });
+        worker.on('error', (err: Error) => {
+          // Suppress Redis connection errors after initialization
+          if (!err.message.includes('ECONNREFUSED') && !err.message.includes('Connection is closed')) {
+            logger.error(`Worker error in queue ${queueName}:`, err);
+          }
+        });
 
-      this.workers.set(queueName, worker);
-      this.workerStats.set(queueName, {
-        workerId: worker.id,
-        queueName,
-        status: 'idle',
-        processed: 0,
-        failed: 0,
-        uptime: Date.now(),
-      });
+        this.workers.set(queueName, worker);
+        this.workerStats.set(queueName, {
+          workerId: worker.id,
+          queueName,
+          status: 'idle',
+          processed: 0,
+          failed: 0,
+          uptime: Date.now(),
+        });
+      } catch (error) {
+        logger.warn(`Failed to start worker for queue ${queueName}:`, error instanceof Error ? error.message : 'Unknown error');
+      }
     });
   }
 
@@ -112,34 +168,43 @@ export class JobService {
   }
 
   private setupQueueEvents() {
+    if (!this.redisAvailable) {
+      logger.warn('Redis not available. Skipping queue events setup.');
+      return;
+    }
+
     Object.values(JOB_QUEUES).forEach(queueName => {
-      const queueEvents = new QueueEvents(queueName, { connection: redis });
+      try {
+        const queueEvents = new QueueEvents(queueName, { connection: redis });
 
-      queueEvents.on('waiting', () => {
-        this.updateJobStats(queueName, 'waiting');
-      });
+        queueEvents.on('waiting', () => {
+          this.updateJobStats(queueName, 'waiting');
+        });
 
-      queueEvents.on('active', () => {
-        this.updateJobStats(queueName, 'active');
-      });
+        queueEvents.on('active', () => {
+          this.updateJobStats(queueName, 'active');
+        });
 
-      queueEvents.on('completed', () => {
-        this.updateJobStats(queueName, 'completed');
-      });
+        queueEvents.on('completed', () => {
+          this.updateJobStats(queueName, 'completed');
+        });
 
-      queueEvents.on('failed', () => {
-        this.updateJobStats(queueName, 'failed');
-      });
+        queueEvents.on('failed', () => {
+          this.updateJobStats(queueName, 'failed');
+        });
 
-      queueEvents.on('delayed', () => {
-        this.updateJobStats(queueName, 'delayed');
-      });
+        queueEvents.on('delayed', () => {
+          this.updateJobStats(queueName, 'delayed');
+        });
 
-      queueEvents.on('paused', () => {
-        this.updateJobStats(queueName, 'paused');
-      });
+        queueEvents.on('paused', () => {
+          this.updateJobStats(queueName, 'paused');
+        });
 
-      this.queueEvents.set(queueName, queueEvents);
+        this.queueEvents.set(queueName, queueEvents);
+      } catch (error) {
+        logger.warn(`Failed to setup queue events for ${queueName}:`, error instanceof Error ? error.message : 'Unknown error');
+      }
     });
   }
 
@@ -206,6 +271,11 @@ export class JobService {
   }
 
   private async addJob(queueName: string, jobName: string, data: any, delay = 0) {
+    if (!this.initialized || !this.redisAvailable) {
+      logger.warn(`Cannot add job to queue ${queueName}: Job service not initialized or Redis unavailable`);
+      throw new Error('Job service not available');
+    }
+
     const queue = queues.find(q => q.name === queueName);
     if (!queue) {
       throw new Error(`Queue ${queueName} not found`);
@@ -282,23 +352,26 @@ export class JobService {
   }
 
   // Health check
-  async healthCheck(): Promise<{ status: string; redis: boolean; queues: Record<string, boolean> }> {
+  async healthCheck(): Promise<{ status: string; redis: boolean; queues: Record<string, boolean>; initialized: boolean }> {
     const redisConnected = redis.status === 'ready';
     const queueHealth: Record<string, boolean> = {};
 
-    for (const queue of queues) {
-      try {
-        await queue.getWaiting();
-        queueHealth[queue.name] = true;
-      } catch (error) {
-        queueHealth[queue.name] = false;
+    if (this.initialized && this.redisAvailable) {
+      for (const queue of queues) {
+        try {
+          await queue.getWaiting();
+          queueHealth[queue.name] = true;
+        } catch (error) {
+          queueHealth[queue.name] = false;
+        }
       }
     }
 
     return {
-      status: redisConnected && Object.values(queueHealth).every(h => h) ? 'healthy' : 'unhealthy',
+      status: this.initialized && redisConnected && Object.values(queueHealth).every(h => h) ? 'healthy' : 'degraded',
       redis: redisConnected,
       queues: queueHealth,
+      initialized: this.initialized,
     };
   }
 
