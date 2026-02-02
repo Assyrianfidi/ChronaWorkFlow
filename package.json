@@ -223,7 +223,7 @@
     "dotenv-cli": "^7.3.0",
     "drizzle-kit": "^0.31.6",
     "envalid": "^8.1.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.25.12",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
@@ -264,6 +264,7 @@
     "typescript": "5.3.3"
   },
   "optionalDependencies": {
+    "@esbuild/linux-x64": "^0.27.2",
     "@rollup/rollup-win32-x64-msvc": "^4.57.1",
     "bufferutil": "^4.0.8"
   },
