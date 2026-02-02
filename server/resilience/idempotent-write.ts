@@ -168,7 +168,7 @@ export async function withIdempotentWrite<TEntity>(
 
   try {
     // Execute within atomic transaction
-    const result = await db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx: any) => {
       // Check if operation already performed
       const existing = await config.checkExisting(tx);
 

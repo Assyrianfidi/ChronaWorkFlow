@@ -582,3 +582,84 @@ Started: Mon Feb  2 13:26:54 PST 2026
 {"level":"info","component":"server.http","message":"request","data":{"requestId":"28f5cd51-3fe1-484b-8f10-b98fb82b4f01","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:27:52.918Z","environment":"development"}
 {"level":"info","component":"server.http","message":"request","data":{"requestId":"2d89e838-f043-4799-80fa-985ff87494b9","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:27:53.957Z","environment":"development"}
 {"level":"info","component":"server.http","message":"request","data":{"requestId":"de30a766-72e5-4d5d-a113-823361dbcfd5","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:54.998Z","environment":"development"}
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 13:30:19 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v20.20.0
+[0;32m✓[0m npm installed: 10.8.2
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[0;32m✓[0m Port 5000 is available
+[0;32m✓[0m Port 3000 is available
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;32m✓[0m All prerequisites met
+
+[0;34m[2/8] Starting AccuBooks Backend[0m
+================================
+[0;32m✓[0m Backend dependencies already installed
+[0;34mℹ[0m Starting backend on port 5000...
+[0;34mℹ[0m Waiting for backend to start...
+[0;34mℹ[0m Still waiting... (10/60s)
+[0;34mℹ[0m Still waiting... (20/60s)
+[0;34mℹ[0m Still waiting... (30/60s)
+[0;34mℹ[0m Still waiting... (40/60s)
+[0;34mℹ[0m Still waiting... (50/60s)
+[0;34mℹ[0m Still waiting... (60/60s)
+[0;31m✗[0m Backend failed to start within 60 seconds
+[0;34mℹ[0m Check logs: /mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/backend.log
+
+[0;34mℹ[0m Last 20 lines of backend.log:
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"04a9a658-95a0-405f-87cf-b4f9f9dd9c32","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:00.423Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"a0a544b9-e289-4c5c-bc85-6f4c9005db20","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:31:01.458Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"e5e3e290-517a-4047-bf3c-8706a7f4df35","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:31:02.493Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"377498fe-cd71-425e-b961-874fca38a98e","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:03.534Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"a91289b2-88b0-4758-ac93-c52918afe59d","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:04.558Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"29694759-33f5-418f-af60-39887fec8fe5","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:05.586Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"72b93da5-cbf1-4ff9-839e-cd44b6de88b6","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:06.627Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"ae4cff83-a027-4502-8167-df36af73e54f","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:31:07.665Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"133ec02d-23e1-4e4e-b3ee-640db74d82b8","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:08.005Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"ca65ae6e-af87-4792-b423-95910ef2fab3","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:31:09.045Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"696c7301-2088-4e3c-9e96-68a275aa13e0","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:31:10.084Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"21583489-bac2-4346-b362-7dbdeff37b86","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:11.119Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"2810ebd4-7d3b-4b78-9f65-611c5e10893e","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:12.162Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"2e5c417b-004f-4151-8f0f-099e03fbf65b","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:13.198Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"b720fcaa-28ac-4b45-ae3b-ebc7725e5e78","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:31:14.235Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"998e1c29-98e6-4abd-ad01-67f3f8e719ec","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:15.271Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"8d627e23-6824-454e-846c-9b5fa5858972","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:31:16.309Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"ab572ea0-92f6-4d1d-b048-773ab39ed778","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:17.350Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"91a217fc-7e27-4c2b-b509-443ed75d4237","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:18.388Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"baaf0621-2e2b-4427-b189-6be1483cf88d","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:31:19.427Z","environment":"development"}
+[0;34m========================================[0m
+[0;34mACCUBOOKS PHASE 2 MONITORING DEPLOYMENT[0m
+[0;34m========================================[0m
+Started: Mon Feb  2 13:39:17 PST 2026
+
+
+[0;34m[1/8] Checking Prerequisites[0m
+================================
+[0;32m✓[0m Node.js installed: v20.20.0
+[0;32m✓[0m npm installed: 10.8.2
+[0;32m✓[0m curl installed
+[0;32m✓[0m wget installed
+[0;32m✓[0m sudo access available
+[1;33m⚠[0m Port 5000 is already in use
+[0;32m✓[0m Port 3000 is available
+[0;32m✓[0m Port 9090 is available
+[0;32m✓[0m Port 9093 is available
+[0;32m✓[0m All prerequisites met
+
+[0;34m[2/8] Starting AccuBooks Backend[0m
+================================
+[0;32m✓[0m Backend dependencies already installed
+[1;33m⚠[0m Backend already running on port 5000
+
+[0;34m[3/8] Verifying Backend Endpoints[0m
+================================
+[0;31m✗[0m Health endpoint not responding

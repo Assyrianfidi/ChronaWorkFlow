@@ -242,7 +242,7 @@ export interface IStorage {
   getInvoicesByCompany(companyId: string): Promise<Invoice[]>;
   getInvoiceWithItems(id: string): Promise<{ invoice: Invoice; items: InvoiceItem[] } | undefined>;
   getInvoiceWithItemsByCompany(companyId: string, id: string): Promise<{ invoice: Invoice; items: InvoiceItem[] } | undefined>;
-  createInvoice(invoice: InsertInvoice, items: InsertInvoiceItem[], idempotencyKey: string): Promise<Invoice>;
+  createInvoice(invoice: InsertInvoice, items: InsertInvoiceItem[], idempotencyKey: string): Promise<{ invoice: Invoice; replayed: boolean }>;
   updateInvoice(id: string, updates: Partial<InsertInvoice>): Promise<Invoice | undefined>;
   updateInvoiceStatus(id: string, status: string): Promise<void>;
 

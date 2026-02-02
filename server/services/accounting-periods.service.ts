@@ -23,7 +23,7 @@ export async function lockAccountingPeriod(
   actorUserId: string,
   reason: string
 ): Promise<void> {
-  await db.transaction(async (tx) => {
+  await db.transaction(async (tx: any) => {
     const existingPeriod = await tx
       .select()
       .from(s.accountingPeriods)
@@ -51,7 +51,7 @@ export async function unlockAccountingPeriod(
   actorUserId: string,
   reason: string
 ): Promise<void> {
-  await db.transaction(async (tx) => {
+  await db.transaction(async (tx: any) => {
     const existingPeriod = await tx
       .select()
       .from(s.accountingPeriods)
