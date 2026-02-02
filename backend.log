@@ -7,9 +7,9 @@
 [33m[nodemon] watching path(s): *.*[39m
 [33m[nodemon] watching extensions: ts,json[39m
 [32m[nodemon] starting `tsx server/index.ts`[39m
-[dotenv@17.2.3] injecting env (131) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (131) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
 Connecting to Redis at: localhost port: 6379
-[2026-02-02T21:24:07.746Z] INFO: Stripe initialized 
+[2026-02-02T21:27:22.045Z] INFO: Stripe initialized 
 ⚠️  Environment variable warnings:
    - Recommended variable OWNER_EMAIL is not set
    - Recommended variable REDIS_PASSWORD is not set
@@ -122,31 +122,6 @@ Error: connect ECONNREFUSED 127.0.0.1:6379
   address: '127.0.0.1',
   port: 6379
 }
-🟡 Registered high-risk route: POST /api/customers [createCustomer] (HIGH)
-🟡 Registered high-risk route: PATCH /api/customers/:id [updateCustomer] (HIGH)
-✓ Registered financial route: POST /api/payments [createPayment]
-✓ Registered financial route: POST /api/bank-transactions/import [importBankTransactions]
-✓ Registered financial route: POST /api/bank-transactions/:id/reconcile [reconcileBankTransaction]
-🔴 Registered high-risk route: POST /api/payroll/employees [createEmployee] (CRITICAL)
-✓ Registered financial route: PATCH /api/payroll/employees/:id [updateEmployee]
-✓ Registered financial route: POST /api/payroll/deductions [createDeduction]
-✓ Registered financial route: POST /api/payroll/employee-deductions [createEmployeeDeduction]
-✓ Registered financial route: POST /api/payroll/periods [createPayrollPeriod]
-✓ Registered financial route: POST /api/payroll/time-entries [createTimeEntry]
-✓ Registered financial route: POST /api/payroll/time-entries/:id/approve [approveTimeEntry]
-✓ Registered financial route: POST /api/payroll/pay-runs [createPayRun]
-✓ Registered financial route: PATCH /api/payroll/pay-runs/:id/status [updatePayRunStatus]
-✓ Registered financial route: POST /api/payroll/tax-forms [createTaxForm]
-🟡 Registered high-risk route: POST /api/inventory/items [createInventoryItem] (HIGH)
-🟡 Registered high-risk route: PATCH /api/inventory/items/:id [updateInventoryItem] (HIGH)
-✓ Registered financial route: PATCH /api/inventory/items/:id/quantity [updateInventoryQuantity]
-✓ Registered financial route: POST /api/inventory/purchase-orders [createPurchaseOrder]
-✓ Registered financial route: PATCH /api/inventory/purchase-orders/:id/status [updatePurchaseOrderStatus]
-✓ Registered financial route: POST /api/inventory/adjustments [createInventoryAdjustment]
-✅ API routes registered successfully
- AccuBooks server running on http://localhost:5000
-Environment: development
-Startup duration: 383ms
 Redis connection error: connect ECONNREFUSED 127.0.0.1:6379
 Error: connect ECONNREFUSED 127.0.0.1:6379
     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
@@ -196,6 +171,31 @@ Error: connect ECONNREFUSED 127.0.0.1:6379
   address: '127.0.0.1',
   port: 6379
 }
+🟡 Registered high-risk route: POST /api/customers [createCustomer] (HIGH)
+🟡 Registered high-risk route: PATCH /api/customers/:id [updateCustomer] (HIGH)
+✓ Registered financial route: POST /api/payments [createPayment]
+✓ Registered financial route: POST /api/bank-transactions/import [importBankTransactions]
+✓ Registered financial route: POST /api/bank-transactions/:id/reconcile [reconcileBankTransaction]
+🔴 Registered high-risk route: POST /api/payroll/employees [createEmployee] (CRITICAL)
+✓ Registered financial route: PATCH /api/payroll/employees/:id [updateEmployee]
+✓ Registered financial route: POST /api/payroll/deductions [createDeduction]
+✓ Registered financial route: POST /api/payroll/employee-deductions [createEmployeeDeduction]
+✓ Registered financial route: POST /api/payroll/periods [createPayrollPeriod]
+✓ Registered financial route: POST /api/payroll/time-entries [createTimeEntry]
+✓ Registered financial route: POST /api/payroll/time-entries/:id/approve [approveTimeEntry]
+✓ Registered financial route: POST /api/payroll/pay-runs [createPayRun]
+✓ Registered financial route: PATCH /api/payroll/pay-runs/:id/status [updatePayRunStatus]
+✓ Registered financial route: POST /api/payroll/tax-forms [createTaxForm]
+🟡 Registered high-risk route: POST /api/inventory/items [createInventoryItem] (HIGH)
+🟡 Registered high-risk route: PATCH /api/inventory/items/:id [updateInventoryItem] (HIGH)
+✓ Registered financial route: PATCH /api/inventory/items/:id/quantity [updateInventoryQuantity]
+✓ Registered financial route: POST /api/inventory/purchase-orders [createPurchaseOrder]
+✓ Registered financial route: PATCH /api/inventory/purchase-orders/:id/status [updatePurchaseOrderStatus]
+✓ Registered financial route: POST /api/inventory/adjustments [createInventoryAdjustment]
+✅ API routes registered successfully
+ AccuBooks server running on http://localhost:5000
+Environment: development
+Startup duration: 602ms
 Redis connection error: connect ECONNREFUSED 127.0.0.1:6379
 Error: connect ECONNREFUSED 127.0.0.1:6379
     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
@@ -294,30 +294,35 @@ Error: connect ECONNREFUSED 127.0.0.1:6379
   address: '127.0.0.1',
   port: 6379
 }
-[2026-02-02T21:24:09.873Z] WARN: Redis connection closed. Job queues disabled. 
-[2026-02-02T21:24:09.875Z] WARN: Redis not available. Skipping job queue initialization. 
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"cde2e308-a724-4063-a559-3ddf16e9cd02","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":8},"timestamp":"2026-02-02T21:24:10.502Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"71a4e799-4565-4fb0-a67a-cbbe6efcc3ce","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:24:11.533Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"05938568-2680-471f-8751-c709974652a0","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:24:12.577Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"6869716b-771c-4a11-885c-dda16506a527","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:13.615Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"f021500b-68ce-4bb4-8bf7-bc2dd6eb9988","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:24:14.652Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"ec11bda0-09d6-49b6-bfdb-a5eae6fe9a2d","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:15.697Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"b933f167-6000-4a41-940f-c8d656554374","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:16.732Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"50223883-f024-481d-90f1-25ea47d5a52b","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:17.778Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"2e0e901f-1ab3-4947-965b-48e7957dfb0f","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:24:18.026Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"7d827d00-26f3-4fe4-a36c-123392ac763e","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:19.062Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"8043167f-45cf-4a4e-8038-f3ab129f7018","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:20.106Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"0c2c937f-884a-4923-bf5f-6aac86fca8ae","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:24:21.143Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"2243b0ed-f2da-4733-abb9-1ebcda03d95e","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:24:22.180Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"95707907-68e1-4495-98e5-4e5de1f401f8","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:24:23.210Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"157d1c4e-b0a1-4077-97b6-4ca37d32a75d","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:24.242Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"b9af0e56-6e5f-4d7e-b138-036c3c90758f","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:25.284Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"c0e91b94-4c66-4d27-a150-6b2797ddd40e","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:26.315Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"6d3e01f5-bdff-4e5e-8ff3-699462a9d230","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:27.350Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"9d88ea14-6fea-47c8-ba9f-1acd5c8e3a0c","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:28.393Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"2b44d26b-f223-4b7a-9941-78abaa7a6610","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:29.421Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"89052324-eeca-46eb-9706-0d86645490c1","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:24:30.445Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"5f37b7a6-bacb-4dc7-afc6-985d105db3f8","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:31.484Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"6ae64fa7-6828-4838-9dd8-a25eed06e0b5","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:32.521Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"92e7ddec-8c71-4380-ae07-bccbca75f2be","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:33.562Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"2eacd539-297b-4b9b-8e3d-b4e914729a6a","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:24:34.602Z","environment":"development"}
+[2026-02-02T21:27:24.871Z] WARN: Redis connection closed. Job queues disabled. 
+[2026-02-02T21:27:24.873Z] WARN: Redis not available. Skipping job queue initialization. 
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"cf53ab09-9911-4375-87ed-18d7ab469f39","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":6},"timestamp":"2026-02-02T21:27:25.670Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"1396d96e-d2b7-4f7f-90ad-8ad5bc46319d","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:27:26.709Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"e0b50fc2-5f34-4942-bf1e-438b26868c64","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:26.996Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"b0963dc1-6a42-4461-b485-d74723545872","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:28.037Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"bd45a414-2b36-4ed3-8540-ed1a3fe8feae","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:29.074Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"e494eaec-4cd1-408f-8099-2248846c577e","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:30.120Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"01e4f9b5-7b6b-476a-91cf-02b495f9bdc8","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:31.145Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"de43aa2c-66c5-4589-94e4-55f286914fea","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:32.182Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"a9e1075a-a11d-45ac-a500-181d8fa9cb99","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:33.214Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"e0dad9bc-01da-4c19-9947-990166b724ab","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:34.241Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"daf15a4c-d432-4f0c-b900-4bad65fcfb8d","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:35.292Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"0f35a9b0-7e04-4140-9fcb-8e01bb62d933","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:27:36.328Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"2bb6f020-3712-402f-9723-05f5a73b8bcc","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:27:37.361Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"ff4d6086-00cb-41c7-94f9-4b3519381e3e","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:27:38.400Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"7c97b7da-bfcc-41c9-8e60-48f0ebc28dee","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:39.439Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"b4305078-6642-4915-ba36-67814431a109","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:40.472Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"af745320-86ae-4485-9392-f605d7abd899","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:41.511Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"c1d9a7c7-eff0-4561-8f60-5e591d3833f1","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:27:42.548Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"7389873e-f3bb-45d9-9ce9-15d9fd3421e6","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:27:43.579Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"479ef1c0-bc7e-466e-85cc-361bf96830ba","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:44.608Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"26b53781-7c29-4adf-95aa-f9efd8458ca3","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:45.651Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"f5d41f60-d82c-4bd0-901c-326d49e9c2b1","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:46.692Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"a1d17f02-69e9-40e0-9630-711c0f949345","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:47.729Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"c7715c35-014e-45ea-9bc4-de4a5d8bf7fd","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:48.767Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"1e33daf8-ca18-415c-9fbe-34df38160c25","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:49.806Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"ed4164d3-c7dc-48c3-b483-01b264e6fd1a","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:50.847Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"c5ee8623-9a47-45d4-8f43-72476da2c446","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:51.878Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"28f5cd51-3fe1-484b-8f10-b98fb82b4f01","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:27:52.918Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"2d89e838-f043-4799-80fa-985ff87494b9","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T21:27:53.957Z","environment":"development"}
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"de30a766-72e5-4d5d-a113-823361dbcfd5","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T21:27:54.998Z","environment":"development"}
