@@ -86,6 +86,11 @@ export function createApp() {
     res.json({ status: "ok", message: "AccuBooks API is healthy" });
   });
 
+  // Import and register database error handler
+  // This must be done after all routes are registered
+  const { databaseErrorHandler } = require("./middleware/database-guard");
+  app.use(databaseErrorHandler);
+
   return app;
 }
 

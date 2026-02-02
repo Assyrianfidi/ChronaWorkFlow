@@ -4,6 +4,7 @@ import { metrics } from "./utils/metrics.js";
 import { shutdownManager, dbManager, connectionTrackingMiddleware, observabilityMiddleware } from "./utils/graceful-shutdown.js";
 import { createApp } from "./app.js";
 import { registerAllRoutes } from "./routes/index.js";
+import { initializeDatabase, isDatabaseAvailable, getDatabaseStatus } from "./db.js";
 
 // Record startup time
 const appStartTime = Date.now();
@@ -22,22 +23,35 @@ const app = createApp();
 app.use(observabilityMiddleware());
 app.use(connectionTrackingMiddleware());
 
-// Preserve non-API operational endpoints alongside the API
+// Initialize database connection (non-blocking)
+const dbResult = await initializeDatabase();
+if (!dbResult.success) {
+  console.warn('⚠️  Starting server without database connection');
+  console.warn('⚠️  Database error:', dbResult.error);
+}
+
+// Register comprehensive monitoring routes
+import monitoringRoutes from "./api/monitoring.routes.js";
+app.use("/api/monitoring", monitoringRoutes);
+
+// Legacy health and metrics endpoints (redirect to new routes)
 app.get("/health", (_req, res) => {
-  res.status(200).json({
-    status: "ok",
-    service: "accubooks",
-    env: process.env.NODE_ENV || "development",
-  });
+  res.redirect(301, "/api/monitoring/health");
 });
 
-app.get("/metrics", (req, res) => {
-  const handler = metrics.getMetricsHandler();
-  return handler(req, res);
+app.get("/metrics", (_req, res) => {
+  res.redirect(301, "/api/monitoring/metrics");
 });
 
 // Register all API routes (legacy + workflow routes) on the canonical app
-await registerAllRoutes(app);
+// Wrap in try-catch to prevent route registration failures from crashing startup
+try {
+  await registerAllRoutes(app);
+  console.log('✅ API routes registered successfully');
+} catch (error) {
+  console.error('❌ Failed to register some routes:', error instanceof Error ? error.message : error);
+  console.warn('⚠️  Server will start with limited functionality');
+}
 
 const server = app.listen(PORT, HOST, () => {
   const startupDuration = Date.now() - appStartTime;
@@ -61,10 +75,14 @@ const server = app.listen(PORT, HOST, () => {
 server.on('error', (error: any) => {
   if (error.code === 'EADDRINUSE') {
     logger.error('Port already in use', error, { port: PORT });
+    console.error(`❌ FATAL: Port ${PORT} is already in use. Cannot start server.`);
+    console.error('   Please stop the existing process or use a different port.');
+    process.exit(1); // This is acceptable - cannot run without a port
   } else {
     logger.error('Server error', error);
+    console.error('❌ FATAL: Server failed to start:', error.message);
+    process.exit(1); // This is acceptable - server cannot start
   }
-  process.exit(1);
 });
 
 // Register database connections for graceful shutdown
@@ -85,7 +103,20 @@ process.on('SIGINT', () => {
 // Handle uncaught exceptions
 process.on('uncaughtException', (error: Error) => {
   logger.error('Uncaught exception', error, { type: 'uncaught_exception' });
-  process.exit(1);
+  console.error('❌ UNCAUGHT EXCEPTION:', error.message);
+  console.error('   Stack:', error.stack);
+  
+  // In production, attempt graceful shutdown instead of immediate exit
+  if (process.env.NODE_ENV === 'production') {
+    console.error('⚠️  Attempting graceful shutdown...');
+    shutdownManager.initiateShutdown('uncaughtException').catch(() => {
+      console.error('❌ Graceful shutdown failed, forcing exit');
+      process.exit(1);
+    });
+  } else {
+    // In development, exit immediately for faster debugging
+    process.exit(1);
+  }
 });
 
 // Handle unhandled promise rejections
@@ -94,5 +125,16 @@ process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
     type: 'unhandled_rejection',
     promise: promise.toString()
   });
-  process.exit(1);
+  console.error('❌ UNHANDLED REJECTION:', String(reason));
+  
+  // Log but don't crash - unhandled rejections should not take down the server
+  // This is a critical production-readiness improvement
+  console.warn('⚠️  Server continuing despite unhandled rejection');
+  console.warn('⚠️  This should be investigated and fixed');
+  
+  // Only exit in development for debugging
+  if (process.env.NODE_ENV !== 'production') {
+    console.error('   Exiting in development mode for debugging');
+    process.exit(1);
+  }
 });

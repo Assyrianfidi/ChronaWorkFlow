@@ -192,20 +192,55 @@ start_backend() {
     BACKEND_PID=$!
     echo $BACKEND_PID > "$PROJECT_ROOT/backend.pid"
     
-    # Wait for backend to start
+    # Wait for backend to be ready
     print_info "Waiting for backend to start..."
-    local retries=0
-    while [ $retries -lt 30 ]; do
-        if curl -s http://localhost:$BACKEND_PORT/api/monitoring/health >/dev/null 2>&1; then
-            print_status "Backend started successfully (PID: $BACKEND_PID)"
-            return 0
+    local max_wait=60
+    local waited=0
+    local health_endpoint="http://localhost:$BACKEND_PORT/api/monitoring/health"
+    
+    while [ $waited -lt $max_wait ]; do
+        # Try new monitoring endpoint first, fallback to legacy
+        local response=$(curl -s "$health_endpoint" 2>/dev/null || curl -s "http://localhost:$BACKEND_PORT/health" 2>/dev/null)
+        
+        if [ -n "$response" ]; then
+            # Check if response contains status
+            if echo "$response" | grep -q '"status"'; then
+                local status=$(echo "$response" | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+                
+                if [ "$status" = "healthy" ] || [ "$status" = "degraded" ]; then
+                    print_status "Backend started successfully (status: $status)"
+                    
+                    # Show dependency status if degraded
+                    if [ "$status" = "degraded" ]; then
+                        print_warning "Backend running in degraded mode"
+                        print_info "Some dependencies may be unavailable"
+                        echo "$response" | grep -o '"dependencies":{[^}]*}' || true
+                    fi
+                    
+                    return 0
+                fi
+            fi
         fi
+        
         sleep 1
-        retries=$((retries + 1))
+        waited=$((waited + 1))
+        
+        # Show progress every 10 seconds
+        if [ $((waited % 10)) -eq 0 ]; then
+            print_info "Still waiting... ($waited/${max_wait}s)"
+        fi
     done
     
-    print_error "Backend failed to start within 30 seconds"
+    print_error "Backend failed to start within $max_wait seconds"
     print_info "Check logs: $PROJECT_ROOT/backend.log"
+    
+    # Show last 20 lines of log for quick diagnosis
+    if [ -f "$PROJECT_ROOT/backend.log" ]; then
+        echo ""
+        print_info "Last 20 lines of backend.log:"
+        tail -n 20 "$PROJECT_ROOT/backend.log"
+    fi
+    
     return 1
 }
 
