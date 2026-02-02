@@ -5,6 +5,7 @@ import { authenticate } from "./middleware/authenticate";
 import { authorizeRequest, enforceCompanyIsolation } from "./middleware/authorize";
 import { enforceBillingStatus } from "./middleware/billing-status";
 import { enforcePlanLimits } from "./middleware/plan-limits";
+import monitoringRoutes from "./api/monitoring.routes.js";
 
 declare module "http" {
   interface IncomingMessage {
@@ -36,6 +37,9 @@ export function createApp() {
     }),
   );
   app.use(express.urlencoded({ extended: false }));
+
+  // Register monitoring routes FIRST - these must be publicly accessible
+  app.use("/api/monitoring", monitoringRoutes);
 
   app.use((req, res, next) => {
     const requestId = newRequestId();

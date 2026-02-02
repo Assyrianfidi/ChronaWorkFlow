@@ -19,11 +19,6 @@ const { port: PORT, hostname: HOST } = getServerConfig();
 
 const app = createApp();
 
-// Register monitoring routes BEFORE any middleware that requires authentication
-// These endpoints must be publicly accessible for health checks and metrics scraping
-import monitoringRoutes from "./api/monitoring.routes.js";
-app.use("/api/monitoring", monitoringRoutes);
-
 // Canonical observability/connection tracking in the actual runtime server
 app.use(observabilityMiddleware());
 app.use(connectionTrackingMiddleware());

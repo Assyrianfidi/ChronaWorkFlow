@@ -7,9 +7,9 @@
 [33m[nodemon] watching path(s): *.*[39m
 [33m[nodemon] watching extensions: ts,json[39m
 [32m[nodemon] starting `tsx server/index.ts`[39m
-[dotenv@17.2.3] injecting env (131) from .env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.2.3] injecting env (131) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
 Connecting to Redis at: localhost port: 6379
-[2026-02-02T22:04:14.629Z] INFO: Stripe initialized 
+[2026-02-02T22:08:02.147Z] INFO: Stripe initialized 
 ⚠️  Environment variable warnings:
    - Recommended variable OWNER_EMAIL is not set
    - Recommended variable REDIS_PASSWORD is not set
@@ -73,55 +73,6 @@ Error: connect ECONNREFUSED 127.0.0.1:6379
 }
 ⚠️  Redis unavailable: Connection is closed.
 ⚠️  Job queues will be disabled. Backend will continue without background jobs.
-Redis connection error: connect ECONNREFUSED 127.0.0.1:6379
-Error: connect ECONNREFUSED 127.0.0.1:6379
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
-  errno: -111,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '127.0.0.1',
-  port: 6379
-}
-Error: connect ECONNREFUSED 127.0.0.1:6379
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
-  errno: -111,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '127.0.0.1',
-  port: 6379
-}
-Error: connect ECONNREFUSED 127.0.0.1:6379
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
-  errno: -111,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '127.0.0.1',
-  port: 6379
-}
-Error: connect ECONNREFUSED 127.0.0.1:6379
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
-  errno: -111,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '127.0.0.1',
-  port: 6379
-}
-Error: connect ECONNREFUSED 127.0.0.1:6379
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
-  errno: -111,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '127.0.0.1',
-  port: 6379
-}
-Error: connect ECONNREFUSED 127.0.0.1:6379
-    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
-  errno: -111,
-  code: 'ECONNREFUSED',
-  syscall: 'connect',
-  address: '127.0.0.1',
-  port: 6379
-}
 🟡 Registered high-risk route: POST /api/customers [createCustomer] (HIGH)
 🟡 Registered high-risk route: PATCH /api/customers/:id [updateCustomer] (HIGH)
 ✓ Registered financial route: POST /api/payments [createPayment]
@@ -195,7 +146,56 @@ Error: connect ECONNREFUSED 127.0.0.1:6379
 }
  AccuBooks server running on http://localhost:5000
 Environment: development
-Startup duration: 614ms
+Startup duration: 182ms
+Redis connection error: connect ECONNREFUSED 127.0.0.1:6379
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -111,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -111,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -111,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -111,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -111,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -111,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
 Redis connection error: connect ECONNREFUSED 127.0.0.1:6379
 Error: connect ECONNREFUSED 127.0.0.1:6379
     at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
@@ -294,22 +294,6 @@ Error: connect ECONNREFUSED 127.0.0.1:6379
   address: '127.0.0.1',
   port: 6379
 }
-[2026-02-02T22:04:17.432Z] WARN: Redis connection closed. Job queues disabled. 
-[2026-02-02T22:04:17.438Z] WARN: Redis not available. Skipping job queue initialization. 
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"497c4629-56f1-4757-88b0-a2c28f079559","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":7},"timestamp":"2026-02-02T22:04:17.869Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"199008c9-9b6f-4bda-9235-53bf3d05c2ff","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T22:04:19.908Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"5a2a557e-330a-4b7a-954c-5dca021e707b","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T22:04:21.213Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"f25ab525-ed9b-43ea-b604-8dc567a63583","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T22:04:23.269Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"6b4e9f9b-824f-457d-b697-9079fe4dd60f","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T22:04:25.312Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"1aa96c2d-739d-45f8-ac54-a9ed8653de1a","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T22:04:27.351Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"8eedf70e-4fe4-4009-8050-7261caa1093f","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T22:04:29.393Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"52f65f43-dc34-4a75-8155-4542d4b9c5a1","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T22:04:31.455Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"a976ce35-1d76-4a3d-8e0a-2d7454fa41d5","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T22:04:33.505Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"4468cd83-ea24-438e-8afb-f052e7c94de9","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T22:04:35.562Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"1a8034c7-2544-432f-a043-b05621155b80","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T22:04:37.605Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"89dd0e98-2a57-4511-8d61-3d4d4b37797a","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T22:04:39.640Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"9a7802d6-bb8f-4516-870a-caa92989c45c","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T22:04:41.676Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"f11d7173-27ec-4dd5-92aa-ab6f3b25b25d","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T22:04:43.740Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"673f422a-6df1-4a60-889c-bb225bc998c4","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":2},"timestamp":"2026-02-02T22:04:45.785Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"b160ce83-eb63-4944-be71-e888bed2d876","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T22:04:47.827Z","environment":"development"}
-{"level":"info","component":"server.http","message":"request","data":{"requestId":"052b05ec-795b-4b6d-8ef2-4cb11ce0839f","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":1},"timestamp":"2026-02-02T22:04:49.868Z","environment":"development"}
+[2026-02-02T22:08:04.456Z] WARN: Redis connection closed. Job queues disabled. 
+[2026-02-02T22:08:04.457Z] WARN: Redis not available. Skipping job queue initialization. 
+{"level":"info","component":"server.http","message":"request","data":{"requestId":"7df34e74-c019-4d27-9877-899b6b788ffd","method":"GET","path":"/api/monitoring/health","statusCode":401,"durationMs":9},"timestamp":"2026-02-02T22:08:04.751Z","environment":"development"}
