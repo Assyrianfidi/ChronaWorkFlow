@@ -242,7 +242,7 @@ export interface IStorage {
   getInvoicesByCompany(companyId: string): Promise<Invoice[]>;
   getInvoiceWithItems(id: string): Promise<{ invoice: Invoice; items: InvoiceItem[] } | undefined>;
   getInvoiceWithItemsByCompany(companyId: string, id: string): Promise<{ invoice: Invoice; items: InvoiceItem[] } | undefined>;
-  createInvoice(invoice: InsertInvoice, items: InsertInvoiceItem[]): Promise<Invoice>;
+  createInvoice(invoice: InsertInvoice, items: InsertInvoiceItem[], idempotencyKey: string): Promise<Invoice>;
   updateInvoice(id: string, updates: Partial<InsertInvoice>): Promise<Invoice | undefined>;
   updateInvoiceStatus(id: string, status: string): Promise<void>;
 
@@ -412,7 +412,7 @@ export class DatabaseStorage implements IStorage {
       .groupBy(accounts.id)
       .orderBy(accounts.name);
 
-    return rows.map((r) => ({
+    return rows.map((r: any) => ({
       ...r.account,
       balance: r.computedBalance,
     }));
@@ -628,7 +628,7 @@ export class DatabaseStorage implements IStorage {
     reason: string
   ): Promise<void> {
     forbidUnscopedWrite("updateInventoryQuantity");
-    await db.transaction(async (tx) => {
+    await db.transaction(async (tx: any) => {
       // Update the inventory quantity
       await tx
         .update(inventoryItems)
@@ -660,7 +660,7 @@ export class DatabaseStorage implements IStorage {
     createdBy: string,
   ): Promise<void> {
     enforceWriteCompanyScope(companyId, "updateInventoryQuantity");
-    await db.transaction(async (tx) => {
+    await db.transaction(async (tx: any) => {
       const [itemRow] = await tx
         .select({ quantityOnHand: inventoryItems.quantityOnHand })
         .from(inventoryItems)
@@ -732,7 +732,7 @@ export class DatabaseStorage implements IStorage {
     items: InsertPurchaseOrderItem[]
   ): Promise<PurchaseOrder> {
     enforceWriteCompanyScope((order as any)?.companyId, "createPurchaseOrder");
-    return db.transaction(async (tx) => {
+    return db.transaction(async (tx: any) => {
       // Insert the purchase order
       const [newOrder] = await tx
         .insert(purchaseOrders)
@@ -1034,7 +1034,7 @@ export class DatabaseStorage implements IStorage {
     details: InsertPayRunDetail[]
   ): Promise<PayRun> {
     enforceWriteCompanyScope((payRun as any)?.companyId, "createPayRun");
-    return db.transaction(async (tx) => {
+    return db.transaction(async (tx: any) => {
       // Insert the pay run
       const [newPayRun] = await tx
         .insert(payRuns)
@@ -1097,7 +1097,7 @@ export class DatabaseStorage implements IStorage {
     const deterministicId = deterministicUuidV4(`company:${companyId}:op:executePayroll:key:${key}`);
 
     try {
-      const result = await db.transaction(async (tx) => {
+      const result = await db.transaction(async (tx: any) => {
         const [existingPayRun] = await tx
           .select()
           .from(payRuns)
@@ -1252,7 +1252,7 @@ export class DatabaseStorage implements IStorage {
     const deterministicId = deterministicUuidV4(`company:${companyId}:op:createInvoice:key:${key}`);
 
     try {
-      const result = await db.transaction(async (tx) => {
+      const result = await db.transaction(async (tx: any) => {
         const [newInvoice] = await tx
           .insert(invoices)
           .values({
@@ -1347,7 +1347,7 @@ export class DatabaseStorage implements IStorage {
     const deterministicId = deterministicUuidV4(`company:${companyId}:op:finalizeInvoice:key:${key}`);
 
     try {
-      const result = await db.transaction(async (tx) => {
+      const result = await db.transaction(async (tx: any) => {
         const [existingInvoice] = await tx
           .select()
           .from(invoices)
@@ -1443,7 +1443,7 @@ export class DatabaseStorage implements IStorage {
       idempotencyKey,
       entityId: invoiceId,
 
-      checkExisting: async (tx) => {
+      checkExisting: async (tx: any) => {
         // Generate the same deterministic ID to check for existing payment
         const deterministicId = deterministicUuidV4(`company:${companyId}:op:createPayment:key:${idempotencyKey.trim()}`);
         const [existing] = await tx
@@ -1454,7 +1454,7 @@ export class DatabaseStorage implements IStorage {
         return existing || null;
       },
 
-      executeWrite: async (tx) => {
+      executeWrite: async (tx: any) => {
         const deterministicId = deterministicUuidV4(`company:${companyId}:op:createPayment:key:${idempotencyKey.trim()}`);
         
         const [newPayment] = await tx
@@ -1565,7 +1565,7 @@ export class DatabaseStorage implements IStorage {
     const deterministicId = deterministicUuidV4(`company:${companyId}:op:reconcileLedger:key:${key}`);
 
     try {
-      const result = await db.transaction(async (tx) => {
+      const result = await db.transaction(async (tx: any) => {
         const [existingBankTxn] = await tx
           .select()
           .from(s.bankTransactions)
