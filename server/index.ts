@@ -53,6 +53,11 @@ try {
   console.warn('⚠️  Server will start with limited functionality');
 }
 
+// Register database error handler after all routes
+// This catches database errors and returns 503 instead of crashing
+const { databaseErrorHandler } = await import("./middleware/database-guard.js");
+app.use(databaseErrorHandler);
+
 const server = app.listen(PORT, HOST, () => {
   const startupDuration = Date.now() - appStartTime;
 

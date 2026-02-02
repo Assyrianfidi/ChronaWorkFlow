@@ -7,47 +7,12 @@
 [33m[nodemon] watching path(s): *.*[39m
 [33m[nodemon] watching extensions: ts,json[39m
 [32m[nodemon] starting `tsx server/index.ts`[39m
-
-node:internal/modules/run_main:123
-    triggerUncaughtException(
-    ^
-Error [TransformError]: 
-You installed esbuild for another platform than the one you're currently using.
-This won't work because esbuild is written with native code and needs to
-install a platform-specific binary executable.
-
-Specifically the "@esbuild/win32-x64" package is present but this platform
-needs the "@esbuild/linux-x64" package instead. People often get into this
-situation by installing esbuild on Windows or macOS and copying "node_modules"
-into a Docker image that runs Linux, or by copying "node_modules" between
-Windows and WSL environments.
-
-If you are installing with npm, you can try not copying the "node_modules"
-directory when you copy the files over, and running "npm ci" or "npm install"
-on the destination platform after the copy. Or you could consider using yarn
-instead of npm which has built-in support for installing a package on multiple
-platforms simultaneously.
-
-If you are installing with yarn, you can try listing both this platform and the
-other platform in your ".yarnrc.yml" file using the "supportedArchitectures"
-feature: https://yarnpkg.com/configuration/yarnrc/#supportedArchitectures
-Keep in mind that this means multiple copies of esbuild will be present.
-
-Another alternative is to use the "esbuild-wasm" package instead, which works
-the same way on all platforms. But it comes with a heavy performance cost and
-can sometimes be 10x slower than the "esbuild" package, so you may also not
-want to do that.
-
-    at generateBinPath (/mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/node_modules/esbuild/lib/main.js:1739:17)
-    at esbuildCommandAndArgs (/mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/node_modules/esbuild/lib/main.js:1820:33)
-    at ensureServiceIsRunning (/mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/node_modules/esbuild/lib/main.js:1977:25)
-    at transform (/mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/node_modules/esbuild/lib/main.js:1878:37)
-    at file:///mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/node_modules/tsx/dist/index-7AaEi15b.mjs:14:2865
-    at applyTransformers (file:///mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/node_modules/tsx/dist/index-7AaEi15b.mjs:14:1266)
-    at transform (file:///mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/node_modules/tsx/dist/index-7AaEi15b.mjs:14:2812)
-    at load (file:///mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/node_modules/tsx/dist/esm/index.mjs?1770066230911:2:2348)
-    at async nextLoad (node:internal/modules/esm/hooks:864:22)
-    at async Hooks.load (node:internal/modules/esm/hooks:451:20)
-
-Node.js v20.20.0
-[31m[nodemon] app crashed - waiting for file changes before starting...[39m
+[dotenv@17.2.3] injecting env (131) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+[2026-02-02T21:17:00.616Z] ERROR: Uncaught exception [type=uncaught_exception]
+ReferenceError: require is not defined in ES module scope, you can use import instead
+    at createApp (/mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/server/app.ts:91:36)
+    at <anonymous> (/mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/server/app.ts:97:20)
+    at ModuleJob.run (node:internal/modules/esm/module_job:325:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+[32m[nodemon] clean exit - waiting for changes before restart[39m
