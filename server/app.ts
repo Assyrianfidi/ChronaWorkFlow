@@ -37,6 +37,12 @@ export function createApp() {
   );
   app.use(express.urlencoded({ extended: false }));
 
+  // Register monitoring routes BEFORE authentication middleware
+  // These endpoints must be publicly accessible for health checks
+  import("./api/monitoring.routes.js").then(({ default: monitoringRoutes }) => {
+    app.use("/api/monitoring", monitoringRoutes);
+  });
+
   app.use((req, res, next) => {
     const requestId = newRequestId();
     req.requestId = requestId;

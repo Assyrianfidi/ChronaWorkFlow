@@ -30,19 +30,6 @@ if (!dbResult.success) {
   console.warn('⚠️  Database error:', dbResult.error);
 }
 
-// Register comprehensive monitoring routes
-import monitoringRoutes from "./api/monitoring.routes.js";
-app.use("/api/monitoring", monitoringRoutes);
-
-// Legacy health and metrics endpoints (redirect to new routes)
-app.get("/health", (_req, res) => {
-  res.redirect(301, "/api/monitoring/health");
-});
-
-app.get("/metrics", (_req, res) => {
-  res.redirect(301, "/api/monitoring/metrics");
-});
-
 // Register all API routes (legacy + workflow routes) on the canonical app
 // Wrap in try-catch to prevent route registration failures from crashing startup
 try {
