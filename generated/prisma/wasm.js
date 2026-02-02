@@ -101,6 +101,7 @@ exports.Prisma.UserScalarFieldEnum = {
   image: 'image',
   password: 'password',
   role: 'role',
+  tenantId: 'tenantId',
   isActive: 'isActive',
   lastLogin: 'lastLogin',
   refreshToken: 'refreshToken',
@@ -145,9 +146,374 @@ exports.Prisma.VerificationTokenScalarFieldEnum = {
   expires: 'expires'
 };
 
+exports.Prisma.TenantScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  subdomain: 'subdomain',
+  customDomain: 'customDomain',
+  logo: 'logo',
+  favicon: 'favicon',
+  theme: 'theme',
+  featureFlags: 'featureFlags',
+  settings: 'settings',
+  plan: 'plan',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DashboardLayoutScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  role: 'role',
+  tenantId: 'tenantId',
+  name: 'name',
+  isDefault: 'isDefault',
+  layout: 'layout',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  action: 'action',
+  resource: 'resource',
+  resourceId: 'resourceId',
+  allowed: 'allowed',
+  reason: 'reason',
+  metadata: 'metadata',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AnalyticsEventScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  eventType: 'eventType',
+  featureFlag: 'featureFlag',
+  featureName: 'featureName',
+  userId: 'userId',
+  userRole: 'userRole',
+  tenantId: 'tenantId',
+  sessionId: 'sessionId',
+  metadata: 'metadata',
+  timestamp: 'timestamp',
+  serverTimestamp: 'serverTimestamp',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent'
+};
+
+exports.Prisma.AutomationRuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  triggerType: 'triggerType',
+  triggerConfig: 'triggerConfig',
+  conditions: 'conditions',
+  actions: 'actions',
+  status: 'status',
+  isTemplate: 'isTemplate',
+  requiresApproval: 'requiresApproval',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  lastTriggered: 'lastTriggered',
+  executionCount: 'executionCount',
+  successCount: 'successCount',
+  failureCount: 'failureCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AutomationExecutionScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  tenantId: 'tenantId',
+  status: 'status',
+  triggeredBy: 'triggeredBy',
+  triggerData: 'triggerData',
+  conditionsEvaluated: 'conditionsEvaluated',
+  conditionsMet: 'conditionsMet',
+  actionsExecuted: 'actionsExecuted',
+  isDryRun: 'isDryRun',
+  errorMessage: 'errorMessage',
+  executionTime: 'executionTime',
+  retryCount: 'retryCount',
+  nextRetryAt: 'nextRetryAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SmartInsightScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  insightType: 'insightType',
+  severity: 'severity',
+  title: 'title',
+  description: 'description',
+  explanation: 'explanation',
+  confidence: 'confidence',
+  metadata: 'metadata',
+  relatedEntities: 'relatedEntities',
+  actionable: 'actionable',
+  suggestedActions: 'suggestedActions',
+  dismissedBy: 'dismissedBy',
+  dismissedAt: 'dismissedAt',
+  dismissReason: 'dismissReason',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+};
+
+exports.Prisma.AutomationTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  category: 'category',
+  triggerType: 'triggerType',
+  triggerConfig: 'triggerConfig',
+  conditions: 'conditions',
+  actions: 'actions',
+  requiredPlan: 'requiredPlan',
+  popularity: 'popularity',
+  isPublic: 'isPublic',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AutomationUsageMetricScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  ruleId: 'ruleId',
+  executionId: 'executionId',
+  actionType: 'actionType',
+  success: 'success',
+  executionTime: 'executionTime',
+  costImpact: 'costImpact',
+  businessImpact: 'businessImpact',
+  timestamp: 'timestamp'
+};
+
+exports.Prisma.PaymentMethodScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  customerId: 'customerId',
+  type: 'type',
+  isDefault: 'isDefault',
+  token: 'token',
+  last4: 'last4',
+  brand: 'brand',
+  expiryMonth: 'expiryMonth',
+  expiryYear: 'expiryYear',
+  accountType: 'accountType',
+  routingNumber: 'routingNumber',
+  nickname: 'nickname',
+  billingAddress: 'billingAddress',
+  metadata: 'metadata',
+  isActive: 'isActive',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  paymentMethodId: 'paymentMethodId',
+  invoiceId: 'invoiceId',
+  type: 'type',
+  status: 'status',
+  amount: 'amount',
+  currency: 'currency',
+  description: 'description',
+  processorId: 'processorId',
+  processorStatus: 'processorStatus',
+  processorResponse: 'processorResponse',
+  automationRuleId: 'automationRuleId',
+  automationExecutionId: 'automationExecutionId',
+  isAutomated: 'isAutomated',
+  scheduledFor: 'scheduledFor',
+  processedAt: 'processedAt',
+  retryCount: 'retryCount',
+  maxRetries: 'maxRetries',
+  nextRetryAt: 'nextRetryAt',
+  reconciledAt: 'reconciledAt',
+  ledgerEntryId: 'ledgerEntryId',
+  processingFee: 'processingFee',
+  netAmount: 'netAmount',
+  isDisputed: 'isDisputed',
+  disputeReason: 'disputeReason',
+  disputedAt: 'disputedAt',
+  requiresApproval: 'requiresApproval',
+  approvedBy: 'approvedBy',
+  approvedAt: 'approvedAt',
+  metadata: 'metadata',
+  failureReason: 'failureReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentReconciliationScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  tenantId: 'tenantId',
+  status: 'status',
+  ledgerEntryId: 'ledgerEntryId',
+  accountId: 'accountId',
+  matchedAmount: 'matchedAmount',
+  variance: 'variance',
+  varianceReason: 'varianceReason',
+  reconciledBy: 'reconciledBy',
+  reconciledAt: 'reconciledAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentExplainabilityScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  tenantId: 'tenantId',
+  trigger: 'trigger',
+  triggerDetails: 'triggerDetails',
+  conditionsMet: 'conditionsMet',
+  amountCalculation: 'amountCalculation',
+  baseAmount: 'baseAmount',
+  adjustments: 'adjustments',
+  confidenceScore: 'confidenceScore',
+  safeguards: 'safeguards',
+  riskFactors: 'riskFactors',
+  approvalRequired: 'approvalRequired',
+  approvalStatus: 'approvalStatus',
+  businessImpact: 'businessImpact',
+  estimatedTimeSaved: 'estimatedTimeSaved',
+  explanation: 'explanation',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CashControlRuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  ruleType: 'ruleType',
+  config: 'config',
+  conditions: 'conditions',
+  isActive: 'isActive',
+  requiresApproval: 'requiresApproval',
+  executionCount: 'executionCount',
+  successCount: 'successCount',
+  failureCount: 'failureCount',
+  totalAmountProcessed: 'totalAmountProcessed',
+  createdBy: 'createdBy',
+  lastExecuted: 'lastExecuted',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CashControlExecutionScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  tenantId: 'tenantId',
+  status: 'status',
+  triggerData: 'triggerData',
+  conditionsEvaluated: 'conditionsEvaluated',
+  paymentId: 'paymentId',
+  amount: 'amount',
+  success: 'success',
+  errorMessage: 'errorMessage',
+  executionTime: 'executionTime',
+  isDryRun: 'isDryRun',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PaymentAnalyticsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  paymentId: 'paymentId',
+  eventType: 'eventType',
+  amount: 'amount',
+  processingFee: 'processingFee',
+  isAutomated: 'isAutomated',
+  automationRuleId: 'automationRuleId',
+  timeToCash: 'timeToCash',
+  retryCount: 'retryCount',
+  revenueImpact: 'revenueImpact',
+  timestamp: 'timestamp'
+};
+
+exports.Prisma.FinancialForecastScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  forecastType: 'forecastType',
+  value: 'value',
+  unit: 'unit',
+  confidenceScore: 'confidenceScore',
+  forecastDate: 'forecastDate',
+  forecastHorizon: 'forecastHorizon',
+  formula: 'formula',
+  assumptions: 'assumptions',
+  dataSources: 'dataSources',
+  historicalBaseline: 'historicalBaseline',
+  calculatedAt: 'calculatedAt'
+};
+
+exports.Prisma.ScenarioScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  scenarioType: 'scenarioType',
+  config: 'config',
+  baselineRunway: 'baselineRunway',
+  projectedRunway: 'projectedRunway',
+  runwayChange: 'runwayChange',
+  riskLevel: 'riskLevel',
+  riskScore: 'riskScore',
+  successProbability: 'successProbability',
+  topRiskDrivers: 'topRiskDrivers',
+  criticalAssumptions: 'criticalAssumptions',
+  cashFlowImpact: 'cashFlowImpact',
+  automationImpact: 'automationImpact',
+  paymentImpact: 'paymentImpact',
+  recommendations: 'recommendations',
+  createdBy: 'createdBy',
+  isArchived: 'isArchived',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ScenarioAnalyticsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  scenarioId: 'scenarioId',
+  eventType: 'eventType',
+  scenarioType: 'scenarioType',
+  decisionMade: 'decisionMade',
+  decisionOutcome: 'decisionOutcome',
+  riskAvoided: 'riskAvoided',
+  upgradeTriggered: 'upgradeTriggered',
+  planBefore: 'planBefore',
+  planAfter: 'planAfter',
+  timeToDecision: 'timeToDecision',
+  timestamp: 'timestamp'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -159,22 +525,196 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
 exports.Role = exports.$Enums.Role = {
-  USER: 'USER',
+  OWNER: 'OWNER',
   ADMIN: 'ADMIN',
   MANAGER: 'MANAGER',
-  CASHIER: 'CASHIER',
-  INVENTORY_MANAGER: 'INVENTORY_MANAGER',
   ACCOUNTANT: 'ACCOUNTANT',
-  CUSTOMER_SERVICE: 'CUSTOMER_SERVICE',
+  AUDITOR: 'AUDITOR',
+  INVENTORY_MANAGER: 'INVENTORY_MANAGER',
+  STAFF: 'STAFF',
   VIEWER: 'VIEWER'
+};
+
+exports.SubscriptionPlan = exports.$Enums.SubscriptionPlan = {
+  FREE: 'FREE',
+  STARTER: 'STARTER',
+  PROFESSIONAL: 'PROFESSIONAL',
+  ENTERPRISE: 'ENTERPRISE'
+};
+
+exports.TenantStatus = exports.$Enums.TenantStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  TRIAL: 'TRIAL',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.AutomationTriggerType = exports.$Enums.AutomationTriggerType = {
+  INVOICE_OVERDUE: 'INVOICE_OVERDUE',
+  CASH_BALANCE_THRESHOLD: 'CASH_BALANCE_THRESHOLD',
+  EXPENSE_ANOMALY: 'EXPENSE_ANOMALY',
+  REVENUE_DROP: 'REVENUE_DROP',
+  REVENUE_INCREASE: 'REVENUE_INCREASE',
+  MONTH_END: 'MONTH_END',
+  QUARTER_END: 'QUARTER_END',
+  YEAR_END: 'YEAR_END',
+  SCHEDULED_DAILY: 'SCHEDULED_DAILY',
+  SCHEDULED_WEEKLY: 'SCHEDULED_WEEKLY',
+  SCHEDULED_MONTHLY: 'SCHEDULED_MONTHLY',
+  MANUAL: 'MANUAL',
+  TRANSACTION_CREATED: 'TRANSACTION_CREATED',
+  PAYMENT_RECEIVED: 'PAYMENT_RECEIVED',
+  PAYMENT_FAILED: 'PAYMENT_FAILED',
+  BUDGET_EXCEEDED: 'BUDGET_EXCEEDED',
+  LOW_INVENTORY: 'LOW_INVENTORY',
+  LATE_PAYMENT_PATTERN: 'LATE_PAYMENT_PATTERN'
+};
+
+exports.AutomationActionType = exports.$Enums.AutomationActionType = {
+  SEND_EMAIL: 'SEND_EMAIL',
+  SEND_IN_APP_NOTIFICATION: 'SEND_IN_APP_NOTIFICATION',
+  GENERATE_REPORT: 'GENERATE_REPORT',
+  LOCK_ACTION: 'LOCK_ACTION',
+  FLAG_TRANSACTION: 'FLAG_TRANSACTION',
+  CREATE_TASK: 'CREATE_TASK',
+  NOTIFY_ROLE: 'NOTIFY_ROLE',
+  WEBHOOK: 'WEBHOOK',
+  UPDATE_FIELD: 'UPDATE_FIELD',
+  CREATE_APPROVAL_REQUEST: 'CREATE_APPROVAL_REQUEST'
+};
+
+exports.AutomationStatus = exports.$Enums.AutomationStatus = {
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  DRAFT: 'DRAFT',
+  ARCHIVED: 'ARCHIVED'
+};
+
+exports.AutomationExecutionStatus = exports.$Enums.AutomationExecutionStatus = {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.InsightType = exports.$Enums.InsightType = {
+  EXPENSE_ANOMALY: 'EXPENSE_ANOMALY',
+  CASH_FLOW_WARNING: 'CASH_FLOW_WARNING',
+  REVENUE_TREND: 'REVENUE_TREND',
+  PAYMENT_PATTERN: 'PAYMENT_PATTERN',
+  BUDGET_ALERT: 'BUDGET_ALERT',
+  PROFITABILITY_CHANGE: 'PROFITABILITY_CHANGE',
+  SEASONAL_PATTERN: 'SEASONAL_PATTERN',
+  VENDOR_RISK: 'VENDOR_RISK'
+};
+
+exports.InsightSeverity = exports.$Enums.InsightSeverity = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  CRITICAL: 'CRITICAL'
+};
+
+exports.PaymentMethodType = exports.$Enums.PaymentMethodType = {
+  ACH: 'ACH',
+  CREDIT_CARD: 'CREDIT_CARD',
+  DEBIT_CARD: 'DEBIT_CARD',
+  BANK_ACCOUNT: 'BANK_ACCOUNT'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED',
+  DISPUTED: 'DISPUTED',
+  REQUIRES_ACTION: 'REQUIRES_ACTION'
+};
+
+exports.PaymentType = exports.$Enums.PaymentType = {
+  INVOICE_PAYMENT: 'INVOICE_PAYMENT',
+  VENDOR_PAYMENT: 'VENDOR_PAYMENT',
+  TAX_RESERVE: 'TAX_RESERVE',
+  REFUND: 'REFUND',
+  MANUAL: 'MANUAL'
+};
+
+exports.ReconciliationStatus = exports.$Enums.ReconciliationStatus = {
+  PENDING: 'PENDING',
+  MATCHED: 'MATCHED',
+  UNMATCHED: 'UNMATCHED',
+  DISPUTED: 'DISPUTED',
+  RESOLVED: 'RESOLVED'
+};
+
+exports.CashControlRuleType = exports.$Enums.CashControlRuleType = {
+  AUTO_COLLECT_OVERDUE: 'AUTO_COLLECT_OVERDUE',
+  RETRY_FAILED_PAYMENT: 'RETRY_FAILED_PAYMENT',
+  AUTO_RESERVE_TAXES: 'AUTO_RESERVE_TAXES',
+  AUTO_PAY_VENDOR: 'AUTO_PAY_VENDOR',
+  PAUSE_ON_DISPUTE: 'PAUSE_ON_DISPUTE',
+  SCHEDULE_PAYMENT: 'SCHEDULE_PAYMENT'
+};
+
+exports.ForecastType = exports.$Enums.ForecastType = {
+  CASH_RUNWAY: 'CASH_RUNWAY',
+  BURN_RATE: 'BURN_RATE',
+  REVENUE_GROWTH: 'REVENUE_GROWTH',
+  EXPENSE_TRAJECTORY: 'EXPENSE_TRAJECTORY',
+  PAYMENT_INFLOW: 'PAYMENT_INFLOW'
+};
+
+exports.ScenarioType = exports.$Enums.ScenarioType = {
+  HIRING: 'HIRING',
+  LARGE_PURCHASE: 'LARGE_PURCHASE',
+  REVENUE_CHANGE: 'REVENUE_CHANGE',
+  PAYMENT_DELAY: 'PAYMENT_DELAY',
+  AUTOMATION_CHANGE: 'AUTOMATION_CHANGE',
+  CUSTOM: 'CUSTOM'
+};
+
+exports.RiskLevel = exports.$Enums.RiskLevel = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
 };
 
 exports.Prisma.ModelName = {
   User: 'User',
   Account: 'Account',
   Session: 'Session',
-  VerificationToken: 'VerificationToken'
+  VerificationToken: 'VerificationToken',
+  Tenant: 'Tenant',
+  DashboardLayout: 'DashboardLayout',
+  AuditLog: 'AuditLog',
+  AnalyticsEvent: 'AnalyticsEvent',
+  AutomationRule: 'AutomationRule',
+  AutomationExecution: 'AutomationExecution',
+  SmartInsight: 'SmartInsight',
+  AutomationTemplate: 'AutomationTemplate',
+  AutomationUsageMetric: 'AutomationUsageMetric',
+  PaymentMethod: 'PaymentMethod',
+  Payment: 'Payment',
+  PaymentReconciliation: 'PaymentReconciliation',
+  PaymentExplainability: 'PaymentExplainability',
+  CashControlRule: 'CashControlRule',
+  CashControlExecution: 'CashControlExecution',
+  PaymentAnalytics: 'PaymentAnalytics',
+  FinancialForecast: 'FinancialForecast',
+  Scenario: 'Scenario',
+  ScenarioAnalytics: 'ScenarioAnalytics'
 };
 /**
  * Create the Client
@@ -187,7 +727,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\FidiMyProjects2025\\Software_Projects\\AccuBooks\\AccuBooks\\generated\\prisma",
+      "value": "/mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -196,12 +736,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "debian-openssl-3.0.x",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\FidiMyProjects2025\\Software_Projects\\AccuBooks\\AccuBooks\\prisma\\schema.prisma",
+    "sourceFilePath": "/mnt/c/FidiMyProjects2025/Software_Projects/AccuBooks/AccuBooks/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -215,6 +755,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -223,13 +764,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DIRECT_URL\")\n}\n\n// Authentication models\nenum Role {\n  USER\n  ADMIN\n  MANAGER\n  CASHIER\n  INVENTORY_MANAGER\n  ACCOUNTANT\n  CUSTOMER_SERVICE\n  VIEWER\n}\n\nmodel User {\n  id               String    @id @default(cuid())\n  name             String?\n  email            String?   @unique\n  emailVerified    DateTime? @map(\"email_verified\")\n  image            String?\n  password         String?   @db.Text\n  role             Role      @default(USER)\n  isActive         Boolean   @default(true) @map(\"is_active\")\n  lastLogin        DateTime? @map(\"last_login\")\n  refreshToken     String?   @map(\"refresh_token\") @db.Text\n  resetToken       String?   @map(\"reset_token\") @db.Text\n  resetTokenExpiry DateTime? @map(\"reset_token_expiry\")\n  accounts         Account[]\n  sessions         Session[]\n  createdAt        DateTime  @default(now()) @map(\"created_at\")\n  updatedAt        DateTime  @updatedAt @map(\"updated_at\")\n  createdBy        String?   @map(\"created_by\")\n  updatedBy        String?   @map(\"updated_by\")\n  deletedAt        DateTime? @map(\"deleted_at\")\n\n  @@map(\"users\")\n}\n\nmodel Account {\n  id                String  @id @default(cuid())\n  userId            String  @map(\"user_id\")\n  type              String\n  provider          String\n  providerAccountId String  @map(\"provider_account_id\")\n  refreshToken      String? @map(\"refresh_token\") @db.Text\n  accessToken       String? @map(\"access_token\") @db.Text\n  expiresAt         Int?    @map(\"expires_at\")\n  tokenType         String? @map(\"token_type\")\n  scope             String?\n  idToken           String? @map(\"id_token\") @db.Text\n  sessionState      String? @map(\"session_state\")\n  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([provider, providerAccountId])\n  @@map(\"accounts\")\n}\n\nmodel Session {\n  id           String   @id @default(cuid())\n  sessionToken String   @unique @map(\"session_token\") @db.Text\n  userId       String   @map(\"user_id\")\n  expires      DateTime\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  ipAddress    String?  @map(\"ip_address\")\n  userAgent    String?  @map(\"user_agent\") @db.Text\n  createdAt    DateTime @default(now()) @map(\"created_at\")\n  updatedAt    DateTime @updatedAt @map(\"updated_at\")\n\n  @@map(\"sessions\")\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n  @@map(\"verification_tokens\")\n}\n",
-  "inlineSchemaHash": "77ccf0793a24d4826bf91361aa632c20e492c7f04528bbc777c871ad3547ee14",
+  "inlineSchema": "// This is your Prisma schema file\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DIRECT_URL\")\n}\n\n// Authentication models\nenum Role {\n  OWNER\n  ADMIN\n  MANAGER\n  ACCOUNTANT\n  AUDITOR\n  INVENTORY_MANAGER\n  STAFF\n  VIEWER\n}\n\nenum SubscriptionPlan {\n  FREE\n  STARTER\n  PROFESSIONAL\n  ENTERPRISE\n}\n\nenum TenantStatus {\n  ACTIVE\n  SUSPENDED\n  TRIAL\n  CANCELLED\n}\n\nmodel User {\n  id               String            @id @default(cuid())\n  name             String?\n  email            String?           @unique\n  emailVerified    DateTime?         @map(\"email_verified\")\n  image            String?\n  password         String?           @db.Text\n  role             Role              @default(VIEWER)\n  tenantId         String            @map(\"tenant_id\")\n  isActive         Boolean           @default(true) @map(\"is_active\")\n  lastLogin        DateTime?         @map(\"last_login\")\n  refreshToken     String?           @map(\"refresh_token\") @db.Text\n  resetToken       String?           @map(\"reset_token\") @db.Text\n  resetTokenExpiry DateTime?         @map(\"reset_token_expiry\")\n  accounts         Account[]\n  sessions         Session[]\n  dashboardLayouts DashboardLayout[]\n  auditLogs        AuditLog[]\n  tenant           Tenant            @relation(fields: [tenantId], references: [id])\n  createdAt        DateTime          @default(now()) @map(\"created_at\")\n  updatedAt        DateTime          @updatedAt @map(\"updated_at\")\n  createdBy        String?           @map(\"created_by\")\n  updatedBy        String?           @map(\"updated_by\")\n  deletedAt        DateTime?         @map(\"deleted_at\")\n\n  @@index([tenantId])\n  @@index([email])\n  @@map(\"users\")\n}\n\nmodel Account {\n  id                String  @id @default(cuid())\n  userId            String  @map(\"user_id\")\n  type              String\n  provider          String\n  providerAccountId String  @map(\"provider_account_id\")\n  refreshToken      String? @map(\"refresh_token\") @db.Text\n  accessToken       String? @map(\"access_token\") @db.Text\n  expiresAt         Int?    @map(\"expires_at\")\n  tokenType         String? @map(\"token_type\")\n  scope             String?\n  idToken           String? @map(\"id_token\") @db.Text\n  sessionState      String? @map(\"session_state\")\n  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([provider, providerAccountId])\n  @@map(\"accounts\")\n}\n\nmodel Session {\n  id           String   @id @default(cuid())\n  sessionToken String   @unique @map(\"session_token\") @db.Text\n  userId       String   @map(\"user_id\")\n  expires      DateTime\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  ipAddress    String?  @map(\"ip_address\")\n  userAgent    String?  @map(\"user_agent\") @db.Text\n  createdAt    DateTime @default(now()) @map(\"created_at\")\n  updatedAt    DateTime @updatedAt @map(\"updated_at\")\n\n  @@map(\"sessions\")\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n  @@map(\"verification_tokens\")\n}\n\n// Multi-Tenant System\nmodel Tenant {\n  id                     String                  @id @default(cuid())\n  name                   String\n  subdomain              String                  @unique\n  customDomain           String?                 @unique @map(\"custom_domain\")\n  logo                   Json? // { light: string, dark: string }\n  favicon                String?\n  theme                  Json? // Theme colors and typography\n  featureFlags           Json                    @default(\"{}\") @map(\"feature_flags\")\n  settings               Json                    @default(\"{}\") // Tenant-specific settings\n  plan                   SubscriptionPlan        @default(FREE)\n  status                 TenantStatus            @default(TRIAL)\n  users                  User[]\n  dashboardLayouts       DashboardLayout[]\n  auditLogs              AuditLog[]\n  analyticsEvents        AnalyticsEvent[]\n  automationRules        AutomationRule[]\n  automationExecutions   AutomationExecution[]\n  smartInsights          SmartInsight[]\n  automationMetrics      AutomationUsageMetric[]\n  paymentMethods         PaymentMethod[]\n  payments               Payment[]\n  paymentReconciliations PaymentReconciliation[]\n  paymentExplainability  PaymentExplainability[]\n  cashControlRules       CashControlRule[]\n  cashControlExecutions  CashControlExecution[]\n  paymentAnalytics       PaymentAnalytics[]\n  financialForecasts     FinancialForecast[]\n  scenarios              Scenario[]\n  scenarioAnalytics      ScenarioAnalytics[]\n  createdAt              DateTime                @default(now()) @map(\"created_at\")\n  updatedAt              DateTime                @updatedAt @map(\"updated_at\")\n\n  @@index([subdomain])\n  @@index([status])\n  @@map(\"tenants\")\n}\n\n// Dashboard Composition System\nmodel DashboardLayout {\n  id        String   @id @default(cuid())\n  userId    String?  @map(\"user_id\") // Null for role defaults\n  role      Role? // Null for user-specific layouts\n  tenantId  String   @map(\"tenant_id\")\n  name      String\n  isDefault Boolean  @default(false) @map(\"is_default\")\n  layout    Json // { desktop: [], tablet: [], mobile: [] }\n  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)\n  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  @@unique([userId, tenantId])\n  @@unique([role, tenantId, isDefault])\n  @@index([tenantId])\n  @@index([userId])\n  @@index([role])\n  @@map(\"dashboard_layouts\")\n}\n\n// RBAC Audit Logging\nmodel AuditLog {\n  id         String   @id @default(cuid())\n  tenantId   String   @map(\"tenant_id\")\n  userId     String   @map(\"user_id\")\n  action     String // Permission name or action type\n  resource   String? // Resource type (invoice, report, etc.)\n  resourceId String?  @map(\"resource_id\")\n  allowed    Boolean // true = allowed, false = denied\n  reason     String? // Denial reason if applicable\n  metadata   Json? // Additional context\n  ipAddress  String?  @map(\"ip_address\")\n  userAgent  String?  @map(\"user_agent\") @db.Text\n  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  createdAt  DateTime @default(now()) @map(\"created_at\")\n\n  @@index([tenantId, createdAt])\n  @@index([userId, createdAt])\n  @@index([action])\n  @@index([allowed])\n  @@map(\"audit_logs\")\n}\n\n// Feature Flag Analytics\nmodel AnalyticsEvent {\n  id              String   @id @default(cuid())\n  eventId         String   @unique @map(\"event_id\") // Client-generated ID\n  eventType       String   @map(\"event_type\") // VIEWED, CLICKED, USED\n  featureFlag     String   @map(\"feature_flag\")\n  featureName     String   @map(\"feature_name\")\n  userId          String   @map(\"user_id\")\n  userRole        Role     @map(\"user_role\")\n  tenantId        String   @map(\"tenant_id\")\n  sessionId       String   @map(\"session_id\")\n  metadata        Json? // Additional event data\n  timestamp       DateTime // Client timestamp\n  serverTimestamp DateTime @default(now()) @map(\"server_timestamp\")\n  ipAddress       String?  @map(\"ip_address\")\n  userAgent       String?  @map(\"user_agent\") @db.Text\n  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n\n  @@index([tenantId, timestamp])\n  @@index([featureFlag, timestamp])\n  @@index([userId, timestamp])\n  @@index([eventType])\n  @@map(\"analytics_events\")\n}\n\n// Finance Automation & Intelligence Engine\n\nenum AutomationTriggerType {\n  INVOICE_OVERDUE\n  CASH_BALANCE_THRESHOLD\n  EXPENSE_ANOMALY\n  REVENUE_DROP\n  REVENUE_INCREASE\n  MONTH_END\n  QUARTER_END\n  YEAR_END\n  SCHEDULED_DAILY\n  SCHEDULED_WEEKLY\n  SCHEDULED_MONTHLY\n  MANUAL\n  TRANSACTION_CREATED\n  PAYMENT_RECEIVED\n  PAYMENT_FAILED\n  BUDGET_EXCEEDED\n  LOW_INVENTORY\n  LATE_PAYMENT_PATTERN\n}\n\nenum AutomationActionType {\n  SEND_EMAIL\n  SEND_IN_APP_NOTIFICATION\n  GENERATE_REPORT\n  LOCK_ACTION\n  FLAG_TRANSACTION\n  CREATE_TASK\n  NOTIFY_ROLE\n  WEBHOOK\n  UPDATE_FIELD\n  CREATE_APPROVAL_REQUEST\n}\n\nenum AutomationStatus {\n  ACTIVE\n  PAUSED\n  DRAFT\n  ARCHIVED\n}\n\nenum AutomationExecutionStatus {\n  PENDING\n  RUNNING\n  SUCCESS\n  FAILED\n  SKIPPED\n  CANCELLED\n}\n\nenum InsightType {\n  EXPENSE_ANOMALY\n  CASH_FLOW_WARNING\n  REVENUE_TREND\n  PAYMENT_PATTERN\n  BUDGET_ALERT\n  PROFITABILITY_CHANGE\n  SEASONAL_PATTERN\n  VENDOR_RISK\n}\n\nenum InsightSeverity {\n  INFO\n  WARNING\n  CRITICAL\n}\n\nmodel AutomationRule {\n  id               String                @id @default(cuid())\n  tenantId         String                @map(\"tenant_id\")\n  name             String\n  description      String?               @db.Text\n  triggerType      AutomationTriggerType @map(\"trigger_type\")\n  triggerConfig    Json                  @map(\"trigger_config\") // Trigger-specific configuration\n  conditions       Json                  @default(\"[]\") // Array of condition objects with AND/OR logic\n  actions          Json                  @default(\"[]\") // Array of action objects\n  status           AutomationStatus      @default(DRAFT)\n  isTemplate       Boolean               @default(false) @map(\"is_template\")\n  requiresApproval Boolean               @default(false) @map(\"requires_approval\")\n  createdBy        String                @map(\"created_by\")\n  updatedBy        String?               @map(\"updated_by\")\n  lastTriggered    DateTime?             @map(\"last_triggered\")\n  executionCount   Int                   @default(0) @map(\"execution_count\")\n  successCount     Int                   @default(0) @map(\"success_count\")\n  failureCount     Int                   @default(0) @map(\"failure_count\")\n  tenant           Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  executions       AutomationExecution[]\n  createdAt        DateTime              @default(now()) @map(\"created_at\")\n  updatedAt        DateTime              @updatedAt @map(\"updated_at\")\n\n  @@index([tenantId, status])\n  @@index([triggerType])\n  @@index([status])\n  @@map(\"automation_rules\")\n}\n\nmodel AutomationExecution {\n  id                  String                    @id @default(cuid())\n  ruleId              String                    @map(\"rule_id\")\n  tenantId            String                    @map(\"tenant_id\")\n  status              AutomationExecutionStatus @default(PENDING)\n  triggeredBy         String?                   @map(\"triggered_by\") // User ID if manual\n  triggerData         Json                      @map(\"trigger_data\") // Context data that triggered the rule\n  conditionsEvaluated Json                      @map(\"conditions_evaluated\") // Results of condition checks\n  conditionsMet       Boolean                   @map(\"conditions_met\")\n  actionsExecuted     Json                      @default(\"[]\") @map(\"actions_executed\") // Results of each action\n  isDryRun            Boolean                   @default(false) @map(\"is_dry_run\")\n  errorMessage        String?                   @map(\"error_message\") @db.Text\n  executionTime       Int?                      @map(\"execution_time\") // Milliseconds\n  retryCount          Int                       @default(0) @map(\"retry_count\")\n  nextRetryAt         DateTime?                 @map(\"next_retry_at\")\n  completedAt         DateTime?                 @map(\"completed_at\")\n  rule                AutomationRule            @relation(fields: [ruleId], references: [id], onDelete: Cascade)\n  tenant              Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  createdAt           DateTime                  @default(now()) @map(\"created_at\")\n\n  @@index([tenantId, createdAt])\n  @@index([ruleId, status])\n  @@index([status, nextRetryAt])\n  @@map(\"automation_executions\")\n}\n\nmodel SmartInsight {\n  id               String          @id @default(cuid())\n  tenantId         String          @map(\"tenant_id\")\n  insightType      InsightType     @map(\"insight_type\")\n  severity         InsightSeverity @default(INFO)\n  title            String\n  description      String          @db.Text\n  explanation      String          @db.Text // Why this was flagged\n  confidence       Float           @default(1.0) // 0.0 to 1.0\n  metadata         Json            @default(\"{}\") // Supporting data, calculations\n  relatedEntities  Json            @default(\"[]\") @map(\"related_entities\") // IDs of invoices, transactions, etc.\n  actionable       Boolean         @default(true)\n  suggestedActions Json            @default(\"[]\") @map(\"suggested_actions\")\n  dismissedBy      String?         @map(\"dismissed_by\")\n  dismissedAt      DateTime?       @map(\"dismissed_at\")\n  dismissReason    String?         @map(\"dismiss_reason\") @db.Text\n  tenant           Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  createdAt        DateTime        @default(now()) @map(\"created_at\")\n  expiresAt        DateTime?       @map(\"expires_at\")\n\n  @@index([tenantId, createdAt])\n  @@index([insightType, severity])\n  @@index([dismissedAt])\n  @@map(\"smart_insights\")\n}\n\nmodel AutomationTemplate {\n  id            String                @id @default(cuid())\n  name          String\n  description   String                @db.Text\n  category      String // \"Cash Flow\", \"Invoicing\", \"Expense Management\", etc.\n  triggerType   AutomationTriggerType @map(\"trigger_type\")\n  triggerConfig Json                  @map(\"trigger_config\")\n  conditions    Json                  @default(\"[]\")\n  actions       Json                  @default(\"[]\")\n  requiredPlan  SubscriptionPlan      @map(\"required_plan\") // Minimum plan required\n  popularity    Int                   @default(0) // Usage count\n  isPublic      Boolean               @default(true) @map(\"is_public\")\n  createdBy     String                @map(\"created_by\")\n  createdAt     DateTime              @default(now()) @map(\"created_at\")\n  updatedAt     DateTime              @updatedAt @map(\"updated_at\")\n\n  @@index([category])\n  @@index([requiredPlan])\n  @@map(\"automation_templates\")\n}\n\nmodel AutomationUsageMetric {\n  id             String   @id @default(cuid())\n  tenantId       String   @map(\"tenant_id\")\n  ruleId         String   @map(\"rule_id\")\n  executionId    String   @map(\"execution_id\")\n  actionType     String   @map(\"action_type\")\n  success        Boolean\n  executionTime  Int      @map(\"execution_time\") // Milliseconds\n  costImpact     Float?   @map(\"cost_impact\") // Estimated cost saved/incurred\n  businessImpact Json?    @map(\"business_impact\") // Metrics like time saved, errors prevented\n  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  timestamp      DateTime @default(now())\n\n  @@index([tenantId, timestamp])\n  @@index([ruleId])\n  @@map(\"automation_usage_metrics\")\n}\n\n// Embedded Payments & Cash Control Engine\n\nenum PaymentMethodType {\n  ACH\n  CREDIT_CARD\n  DEBIT_CARD\n  BANK_ACCOUNT\n}\n\nenum PaymentStatus {\n  PENDING\n  PROCESSING\n  SUCCEEDED\n  FAILED\n  CANCELLED\n  REFUNDED\n  PARTIALLY_REFUNDED\n  DISPUTED\n  REQUIRES_ACTION\n}\n\nenum PaymentType {\n  INVOICE_PAYMENT\n  VENDOR_PAYMENT\n  TAX_RESERVE\n  REFUND\n  MANUAL\n}\n\nenum ReconciliationStatus {\n  PENDING\n  MATCHED\n  UNMATCHED\n  DISPUTED\n  RESOLVED\n}\n\nenum CashControlRuleType {\n  AUTO_COLLECT_OVERDUE\n  RETRY_FAILED_PAYMENT\n  AUTO_RESERVE_TAXES\n  AUTO_PAY_VENDOR\n  PAUSE_ON_DISPUTE\n  SCHEDULE_PAYMENT\n}\n\nmodel PaymentMethod {\n  id         String            @id @default(cuid())\n  tenantId   String            @map(\"tenant_id\")\n  customerId String?           @map(\"customer_id\") // Customer/vendor ID\n  type       PaymentMethodType\n  isDefault  Boolean           @default(false) @map(\"is_default\")\n\n  // Tokenized data (PCI-safe)\n  token       String  @unique // Payment processor token\n  last4       String? @map(\"last_4\") // Last 4 digits for display\n  brand       String? // Card brand or bank name\n  expiryMonth Int?    @map(\"expiry_month\")\n  expiryYear  Int?    @map(\"expiry_year\")\n\n  // Bank account details (tokenized)\n  accountType   String? @map(\"account_type\") // checking, savings\n  routingNumber String? @map(\"routing_number\") // Masked\n\n  // Metadata\n  nickname       String?\n  billingAddress Json?   @map(\"billing_address\")\n  metadata       Json    @default(\"{}\")\n\n  // Status\n  isActive   Boolean   @default(true) @map(\"is_active\")\n  verifiedAt DateTime? @map(\"verified_at\")\n\n  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  payments Payment[]\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  @@index([tenantId, customerId])\n  @@index([token])\n  @@map(\"payment_methods\")\n}\n\nmodel Payment {\n  id              String  @id @default(cuid())\n  tenantId        String  @map(\"tenant_id\")\n  paymentMethodId String? @map(\"payment_method_id\")\n  invoiceId       String? @map(\"invoice_id\")\n\n  // Payment details\n  type        PaymentType\n  status      PaymentStatus @default(PENDING)\n  amount      Float\n  currency    String        @default(\"USD\")\n  description String?       @db.Text\n\n  // Processing\n  processorId       String? @map(\"processor_id\") // Stripe/Plaid ID\n  processorStatus   String? @map(\"processor_status\")\n  processorResponse Json?   @map(\"processor_response\")\n\n  // Automation context\n  automationRuleId      String? @map(\"automation_rule_id\")\n  automationExecutionId String? @map(\"automation_execution_id\")\n  isAutomated           Boolean @default(false) @map(\"is_automated\")\n\n  // Scheduling\n  scheduledFor DateTime? @map(\"scheduled_for\")\n  processedAt  DateTime? @map(\"processed_at\")\n\n  // Retry logic\n  retryCount  Int       @default(0) @map(\"retry_count\")\n  maxRetries  Int       @default(3) @map(\"max_retries\")\n  nextRetryAt DateTime? @map(\"next_retry_at\")\n\n  // Reconciliation\n  reconciledAt  DateTime? @map(\"reconciled_at\")\n  ledgerEntryId String?   @map(\"ledger_entry_id\")\n\n  // Fees & impact\n  processingFee Float? @map(\"processing_fee\")\n  netAmount     Float? @map(\"net_amount\")\n\n  // Dispute handling\n  isDisputed    Boolean   @default(false) @map(\"is_disputed\")\n  disputeReason String?   @map(\"dispute_reason\") @db.Text\n  disputedAt    DateTime? @map(\"disputed_at\")\n\n  // Approval workflow\n  requiresApproval Boolean   @default(false) @map(\"requires_approval\")\n  approvedBy       String?   @map(\"approved_by\")\n  approvedAt       DateTime? @map(\"approved_at\")\n\n  // Metadata\n  metadata      Json    @default(\"{}\")\n  failureReason String? @map(\"failure_reason\") @db.Text\n\n  tenant         Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  paymentMethod  PaymentMethod?         @relation(fields: [paymentMethodId], references: [id])\n  reconciliation PaymentReconciliation?\n  explainability PaymentExplainability?\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  @@index([tenantId, status])\n  @@index([invoiceId])\n  @@index([automationRuleId])\n  @@index([scheduledFor])\n  @@index([status, nextRetryAt])\n  @@map(\"payments\")\n}\n\nmodel PaymentReconciliation {\n  id        String @id @default(cuid())\n  paymentId String @unique @map(\"payment_id\")\n  tenantId  String @map(\"tenant_id\")\n\n  status ReconciliationStatus @default(PENDING)\n\n  // Ledger matching\n  ledgerEntryId String? @map(\"ledger_entry_id\")\n  accountId     String? @map(\"account_id\")\n\n  // Matching details\n  matchedAmount  Float?  @map(\"matched_amount\")\n  variance       Float? // Difference if any\n  varianceReason String? @map(\"variance_reason\") @db.Text\n\n  // Reconciliation metadata\n  reconciledBy String?   @map(\"reconciled_by\")\n  reconciledAt DateTime? @map(\"reconciled_at\")\n  notes        String?   @db.Text\n\n  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)\n  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  @@index([tenantId, status])\n  @@index([ledgerEntryId])\n  @@map(\"payment_reconciliations\")\n}\n\nmodel PaymentExplainability {\n  id        String @id @default(cuid())\n  paymentId String @unique @map(\"payment_id\")\n  tenantId  String @map(\"tenant_id\")\n\n  // Trigger explanation\n  trigger        String // \"automation_rule\" | \"manual\" | \"scheduled\"\n  triggerDetails Json   @map(\"trigger_details\")\n\n  // Conditions met\n  conditionsMet Json @map(\"conditions_met\")\n\n  // Amount calculation\n  amountCalculation String @map(\"amount_calculation\") @db.Text\n  baseAmount        Float  @map(\"base_amount\")\n  adjustments       Json   @default(\"[]\")\n\n  // Confidence & safeguards\n  confidenceScore Float @map(\"confidence_score\")\n  safeguards      Json  @default(\"[]\")\n  riskFactors     Json  @default(\"[]\") @map(\"risk_factors\")\n\n  // Approval status\n  approvalRequired Boolean @map(\"approval_required\")\n  approvalStatus   String? @map(\"approval_status\")\n\n  // Business impact\n  businessImpact     Json @map(\"business_impact\")\n  estimatedTimeSaved Int? @map(\"estimated_time_saved\") // Minutes\n\n  // Plain English explanation\n  explanation String @db.Text\n\n  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)\n  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n\n  @@index([tenantId])\n  @@map(\"payment_explainability\")\n}\n\nmodel CashControlRule {\n  id       String @id @default(cuid())\n  tenantId String @map(\"tenant_id\")\n\n  name        String\n  description String?             @db.Text\n  ruleType    CashControlRuleType @map(\"rule_type\")\n\n  // Configuration\n  config     Json @default(\"{}\")\n  conditions Json @default(\"[]\")\n\n  // Status\n  isActive         Boolean @default(true) @map(\"is_active\")\n  requiresApproval Boolean @default(false) @map(\"requires_approval\")\n\n  // Execution stats\n  executionCount       Int   @default(0) @map(\"execution_count\")\n  successCount         Int   @default(0) @map(\"success_count\")\n  failureCount         Int   @default(0) @map(\"failure_count\")\n  totalAmountProcessed Float @default(0) @map(\"total_amount_processed\")\n\n  // Metadata\n  createdBy    String    @map(\"created_by\")\n  lastExecuted DateTime? @map(\"last_executed\")\n\n  tenant     Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  executions CashControlExecution[]\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  @@index([tenantId, isActive])\n  @@index([ruleType])\n  @@map(\"cash_control_rules\")\n}\n\nmodel CashControlExecution {\n  id       String @id @default(cuid())\n  ruleId   String @map(\"rule_id\")\n  tenantId String @map(\"tenant_id\")\n\n  status String // SUCCESS, FAILED, SKIPPED\n\n  // Execution context\n  triggerData         Json @map(\"trigger_data\")\n  conditionsEvaluated Json @map(\"conditions_evaluated\")\n\n  // Payment created\n  paymentId String? @map(\"payment_id\")\n  amount    Float?\n\n  // Results\n  success       Boolean\n  errorMessage  String? @map(\"error_message\") @db.Text\n  executionTime Int?    @map(\"execution_time\") // Milliseconds\n\n  // Dry run\n  isDryRun Boolean @default(false) @map(\"is_dry_run\")\n\n  rule   CashControlRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)\n  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n\n  @@index([tenantId, createdAt])\n  @@index([ruleId, status])\n  @@map(\"cash_control_executions\")\n}\n\nmodel PaymentAnalytics {\n  id       String @id @default(cuid())\n  tenantId String @map(\"tenant_id\")\n\n  // Metrics\n  paymentId String? @map(\"payment_id\")\n  eventType String  @map(\"event_type\") // PAYMENT_INITIATED, PAYMENT_SUCCEEDED, etc.\n\n  amount        Float?\n  processingFee Float? @map(\"processing_fee\")\n\n  // Automation context\n  isAutomated      Boolean @map(\"is_automated\")\n  automationRuleId String? @map(\"automation_rule_id\")\n\n  // Performance\n  timeToCash Int? @map(\"time_to_cash\") // Seconds from invoice to payment\n  retryCount Int? @map(\"retry_count\")\n\n  // Business impact\n  revenueImpact Float? @map(\"revenue_impact\")\n\n  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  timestamp DateTime @default(now())\n\n  @@index([tenantId, timestamp])\n  @@index([eventType])\n  @@map(\"payment_analytics\")\n}\n\n// Predictive Financial Control & Scenario Intelligence Engine\n\nenum ForecastType {\n  CASH_RUNWAY\n  BURN_RATE\n  REVENUE_GROWTH\n  EXPENSE_TRAJECTORY\n  PAYMENT_INFLOW\n}\n\nenum ScenarioType {\n  HIRING\n  LARGE_PURCHASE\n  REVENUE_CHANGE\n  PAYMENT_DELAY\n  AUTOMATION_CHANGE\n  CUSTOM\n}\n\nenum RiskLevel {\n  LOW\n  MEDIUM\n  HIGH\n  CRITICAL\n}\n\nmodel FinancialForecast {\n  id           String       @id @default(cuid())\n  tenantId     String       @map(\"tenant_id\")\n  forecastType ForecastType @map(\"forecast_type\")\n\n  // Forecast results\n  value           Float\n  unit            String // \"days\", \"months\", \"dollars\", \"percentage\"\n  confidenceScore Float  @map(\"confidence_score\") // 0-100\n\n  // Time range\n  forecastDate    DateTime @map(\"forecast_date\")\n  forecastHorizon Int      @map(\"forecast_horizon\") // Days into future\n\n  // Explainability\n  formula            String @db.Text\n  assumptions        Json   @default(\"[]\")\n  dataSources        Json   @default(\"[]\") @map(\"data_sources\")\n  historicalBaseline Json?  @map(\"historical_baseline\")\n\n  // Metadata\n  calculatedAt DateTime @default(now()) @map(\"calculated_at\")\n\n  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n\n  @@index([tenantId, forecastType])\n  @@index([forecastDate])\n  @@map(\"financial_forecasts\")\n}\n\nmodel Scenario {\n  id       String @id @default(cuid())\n  tenantId String @map(\"tenant_id\")\n\n  name         String\n  description  String?      @db.Text\n  scenarioType ScenarioType @map(\"scenario_type\")\n\n  // Scenario configuration\n  config Json @default(\"{}\")\n\n  // Results\n  baselineRunway  Float? @map(\"baseline_runway\") // Days\n  projectedRunway Float? @map(\"projected_runway\") // Days\n  runwayChange    Float? @map(\"runway_change\") // Days difference\n\n  riskLevel          RiskLevel? @map(\"risk_level\")\n  riskScore          Float?     @map(\"risk_score\") // 0-100\n  successProbability Float?     @map(\"success_probability\") // 0-100\n\n  // Risk analysis\n  topRiskDrivers      Json @default(\"[]\") @map(\"top_risk_drivers\")\n  criticalAssumptions Json @default(\"[]\") @map(\"critical_assumptions\")\n\n  // Impact analysis\n  cashFlowImpact   Json? @map(\"cash_flow_impact\")\n  automationImpact Json? @map(\"automation_impact\")\n  paymentImpact    Json? @map(\"payment_impact\")\n\n  // Recommendations\n  recommendations Json @default(\"[]\")\n\n  // Metadata\n  createdBy  String  @map(\"created_by\")\n  isArchived Boolean @default(false) @map(\"is_archived\")\n\n  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n\n  createdAt DateTime @default(now()) @map(\"created_at\")\n  updatedAt DateTime @updatedAt @map(\"updated_at\")\n\n  @@index([tenantId, scenarioType])\n  @@index([createdBy])\n  @@map(\"scenarios\")\n}\n\nmodel ScenarioAnalytics {\n  id         String  @id @default(cuid())\n  tenantId   String  @map(\"tenant_id\")\n  scenarioId String? @map(\"scenario_id\")\n\n  eventType    String  @map(\"event_type\") // SCENARIO_CREATED, DECISION_INFLUENCED, etc.\n  scenarioType String? @map(\"scenario_type\")\n\n  // Decision tracking\n  decisionMade    Boolean? @map(\"decision_made\")\n  decisionOutcome String?  @map(\"decision_outcome\")\n  riskAvoided     Boolean? @map(\"risk_avoided\")\n\n  // Upgrade tracking\n  upgradeTriggered Boolean? @map(\"upgrade_triggered\")\n  planBefore       String?  @map(\"plan_before\")\n  planAfter        String?  @map(\"plan_after\")\n\n  // Performance\n  timeToDecision Int? @map(\"time_to_decision\") // Seconds\n\n  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  timestamp DateTime @default(now())\n\n  @@index([tenantId, timestamp])\n  @@index([eventType])\n  @@map(\"scenario_analytics\")\n}\n",
+  "inlineSchemaHash": "24b03b6b79b08f62f99d3c09a892097c6efb790d093615e55a8df8418f4890c4",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"email_verified\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_active\"},{\"name\":\"lastLogin\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"last_login\"},{\"name\":\"refreshToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"refresh_token\"},{\"name\":\"resetToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"reset_token\"},{\"name\":\"resetTokenExpiry\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"reset_token_expiry\"},{\"name\":\"accounts\",\"kind\":\"object\",\"type\":\"Account\",\"relationName\":\"AccountToUser\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"SessionToUser\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"createdBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"created_by\"},{\"name\":\"updatedBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"updated_by\"},{\"name\":\"deletedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"deleted_at\"}],\"dbName\":\"users\"},\"Account\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"provider\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"providerAccountId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"provider_account_id\"},{\"name\":\"refreshToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"refresh_token\"},{\"name\":\"accessToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"access_token\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"expires_at\"},{\"name\":\"tokenType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"token_type\"},{\"name\":\"scope\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"idToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"id_token\"},{\"name\":\"sessionState\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"session_state\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AccountToUser\"}],\"dbName\":\"accounts\"},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sessionToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"session_token\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"expires\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SessionToUser\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"ip_address\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_agent\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"sessions\"},\"VerificationToken\":{\"fields\":[{\"name\":\"identifier\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"verification_tokens\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"email_verified\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_active\"},{\"name\":\"lastLogin\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"last_login\"},{\"name\":\"refreshToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"refresh_token\"},{\"name\":\"resetToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"reset_token\"},{\"name\":\"resetTokenExpiry\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"reset_token_expiry\"},{\"name\":\"accounts\",\"kind\":\"object\",\"type\":\"Account\",\"relationName\":\"AccountToUser\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"SessionToUser\"},{\"name\":\"dashboardLayouts\",\"kind\":\"object\",\"type\":\"DashboardLayout\",\"relationName\":\"DashboardLayoutToUser\"},{\"name\":\"auditLogs\",\"kind\":\"object\",\"type\":\"AuditLog\",\"relationName\":\"AuditLogToUser\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"TenantToUser\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"},{\"name\":\"createdBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"created_by\"},{\"name\":\"updatedBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"updated_by\"},{\"name\":\"deletedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"deleted_at\"}],\"dbName\":\"users\"},\"Account\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"provider\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"providerAccountId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"provider_account_id\"},{\"name\":\"refreshToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"refresh_token\"},{\"name\":\"accessToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"access_token\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"expires_at\"},{\"name\":\"tokenType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"token_type\"},{\"name\":\"scope\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"idToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"id_token\"},{\"name\":\"sessionState\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"session_state\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AccountToUser\"}],\"dbName\":\"accounts\"},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sessionToken\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"session_token\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"expires\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SessionToUser\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"ip_address\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_agent\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"sessions\"},\"VerificationToken\":{\"fields\":[{\"name\":\"identifier\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"verification_tokens\"},\"Tenant\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"subdomain\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"customDomain\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"custom_domain\"},{\"name\":\"logo\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"favicon\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"theme\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"featureFlags\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"feature_flags\"},{\"name\":\"settings\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"plan\",\"kind\":\"enum\",\"type\":\"SubscriptionPlan\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"TenantStatus\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"TenantToUser\"},{\"name\":\"dashboardLayouts\",\"kind\":\"object\",\"type\":\"DashboardLayout\",\"relationName\":\"DashboardLayoutToTenant\"},{\"name\":\"auditLogs\",\"kind\":\"object\",\"type\":\"AuditLog\",\"relationName\":\"AuditLogToTenant\"},{\"name\":\"analyticsEvents\",\"kind\":\"object\",\"type\":\"AnalyticsEvent\",\"relationName\":\"AnalyticsEventToTenant\"},{\"name\":\"automationRules\",\"kind\":\"object\",\"type\":\"AutomationRule\",\"relationName\":\"AutomationRuleToTenant\"},{\"name\":\"automationExecutions\",\"kind\":\"object\",\"type\":\"AutomationExecution\",\"relationName\":\"AutomationExecutionToTenant\"},{\"name\":\"smartInsights\",\"kind\":\"object\",\"type\":\"SmartInsight\",\"relationName\":\"SmartInsightToTenant\"},{\"name\":\"automationMetrics\",\"kind\":\"object\",\"type\":\"AutomationUsageMetric\",\"relationName\":\"AutomationUsageMetricToTenant\"},{\"name\":\"paymentMethods\",\"kind\":\"object\",\"type\":\"PaymentMethod\",\"relationName\":\"PaymentMethodToTenant\"},{\"name\":\"payments\",\"kind\":\"object\",\"type\":\"Payment\",\"relationName\":\"PaymentToTenant\"},{\"name\":\"paymentReconciliations\",\"kind\":\"object\",\"type\":\"PaymentReconciliation\",\"relationName\":\"PaymentReconciliationToTenant\"},{\"name\":\"paymentExplainability\",\"kind\":\"object\",\"type\":\"PaymentExplainability\",\"relationName\":\"PaymentExplainabilityToTenant\"},{\"name\":\"cashControlRules\",\"kind\":\"object\",\"type\":\"CashControlRule\",\"relationName\":\"CashControlRuleToTenant\"},{\"name\":\"cashControlExecutions\",\"kind\":\"object\",\"type\":\"CashControlExecution\",\"relationName\":\"CashControlExecutionToTenant\"},{\"name\":\"paymentAnalytics\",\"kind\":\"object\",\"type\":\"PaymentAnalytics\",\"relationName\":\"PaymentAnalyticsToTenant\"},{\"name\":\"financialForecasts\",\"kind\":\"object\",\"type\":\"FinancialForecast\",\"relationName\":\"FinancialForecastToTenant\"},{\"name\":\"scenarios\",\"kind\":\"object\",\"type\":\"Scenario\",\"relationName\":\"ScenarioToTenant\"},{\"name\":\"scenarioAnalytics\",\"kind\":\"object\",\"type\":\"ScenarioAnalytics\",\"relationName\":\"ScenarioAnalyticsToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"tenants\"},\"DashboardLayout\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isDefault\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_default\"},{\"name\":\"layout\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"DashboardLayoutToUser\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"DashboardLayoutToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"dashboard_layouts\"},\"AuditLog\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"action\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"resource\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"resourceId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"resource_id\"},{\"name\":\"allowed\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"reason\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"ip_address\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_agent\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AuditLogToUser\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"AuditLogToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"}],\"dbName\":\"audit_logs\"},\"AnalyticsEvent\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"eventId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"event_id\"},{\"name\":\"eventType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"event_type\"},{\"name\":\"featureFlag\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"feature_flag\"},{\"name\":\"featureName\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"feature_name\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_id\"},{\"name\":\"userRole\",\"kind\":\"enum\",\"type\":\"Role\",\"dbName\":\"user_role\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"sessionId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"session_id\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"serverTimestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"server_timestamp\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"ip_address\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"user_agent\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"AnalyticsEventToTenant\"}],\"dbName\":\"analytics_events\"},\"AutomationRule\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggerType\",\"kind\":\"enum\",\"type\":\"AutomationTriggerType\",\"dbName\":\"trigger_type\"},{\"name\":\"triggerConfig\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"trigger_config\"},{\"name\":\"conditions\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"actions\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"AutomationStatus\"},{\"name\":\"isTemplate\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_template\"},{\"name\":\"requiresApproval\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"requires_approval\"},{\"name\":\"createdBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"created_by\"},{\"name\":\"updatedBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"updated_by\"},{\"name\":\"lastTriggered\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"last_triggered\"},{\"name\":\"executionCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"execution_count\"},{\"name\":\"successCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"success_count\"},{\"name\":\"failureCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"failure_count\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"AutomationRuleToTenant\"},{\"name\":\"executions\",\"kind\":\"object\",\"type\":\"AutomationExecution\",\"relationName\":\"AutomationExecutionToAutomationRule\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"automation_rules\"},\"AutomationExecution\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"ruleId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"rule_id\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"AutomationExecutionStatus\"},{\"name\":\"triggeredBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"triggered_by\"},{\"name\":\"triggerData\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"trigger_data\"},{\"name\":\"conditionsEvaluated\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"conditions_evaluated\"},{\"name\":\"conditionsMet\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"conditions_met\"},{\"name\":\"actionsExecuted\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"actions_executed\"},{\"name\":\"isDryRun\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_dry_run\"},{\"name\":\"errorMessage\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"error_message\"},{\"name\":\"executionTime\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"execution_time\"},{\"name\":\"retryCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"retry_count\"},{\"name\":\"nextRetryAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"next_retry_at\"},{\"name\":\"completedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"completed_at\"},{\"name\":\"rule\",\"kind\":\"object\",\"type\":\"AutomationRule\",\"relationName\":\"AutomationExecutionToAutomationRule\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"AutomationExecutionToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"}],\"dbName\":\"automation_executions\"},\"SmartInsight\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"insightType\",\"kind\":\"enum\",\"type\":\"InsightType\",\"dbName\":\"insight_type\"},{\"name\":\"severity\",\"kind\":\"enum\",\"type\":\"InsightSeverity\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"explanation\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"confidence\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"relatedEntities\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"related_entities\"},{\"name\":\"actionable\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"suggestedActions\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"suggested_actions\"},{\"name\":\"dismissedBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"dismissed_by\"},{\"name\":\"dismissedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"dismissed_at\"},{\"name\":\"dismissReason\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"dismiss_reason\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"SmartInsightToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"expires_at\"}],\"dbName\":\"smart_insights\"},\"AutomationTemplate\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggerType\",\"kind\":\"enum\",\"type\":\"AutomationTriggerType\",\"dbName\":\"trigger_type\"},{\"name\":\"triggerConfig\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"trigger_config\"},{\"name\":\"conditions\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"actions\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"requiredPlan\",\"kind\":\"enum\",\"type\":\"SubscriptionPlan\",\"dbName\":\"required_plan\"},{\"name\":\"popularity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"isPublic\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_public\"},{\"name\":\"createdBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"created_by\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"automation_templates\"},\"AutomationUsageMetric\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"ruleId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"rule_id\"},{\"name\":\"executionId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"execution_id\"},{\"name\":\"actionType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"action_type\"},{\"name\":\"success\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"executionTime\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"execution_time\"},{\"name\":\"costImpact\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"cost_impact\"},{\"name\":\"businessImpact\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"business_impact\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"AutomationUsageMetricToTenant\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"automation_usage_metrics\"},\"PaymentMethod\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"customerId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"customer_id\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"PaymentMethodType\"},{\"name\":\"isDefault\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_default\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"last4\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"last_4\"},{\"name\":\"brand\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiryMonth\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"expiry_month\"},{\"name\":\"expiryYear\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"expiry_year\"},{\"name\":\"accountType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"account_type\"},{\"name\":\"routingNumber\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"routing_number\"},{\"name\":\"nickname\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"billingAddress\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"billing_address\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_active\"},{\"name\":\"verifiedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"verified_at\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"PaymentMethodToTenant\"},{\"name\":\"payments\",\"kind\":\"object\",\"type\":\"Payment\",\"relationName\":\"PaymentToPaymentMethod\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"payment_methods\"},\"Payment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"paymentMethodId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"payment_method_id\"},{\"name\":\"invoiceId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"invoice_id\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"PaymentType\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"currency\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"processorId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"processor_id\"},{\"name\":\"processorStatus\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"processor_status\"},{\"name\":\"processorResponse\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"processor_response\"},{\"name\":\"automationRuleId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"automation_rule_id\"},{\"name\":\"automationExecutionId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"automation_execution_id\"},{\"name\":\"isAutomated\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_automated\"},{\"name\":\"scheduledFor\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"scheduled_for\"},{\"name\":\"processedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"processed_at\"},{\"name\":\"retryCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"retry_count\"},{\"name\":\"maxRetries\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"max_retries\"},{\"name\":\"nextRetryAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"next_retry_at\"},{\"name\":\"reconciledAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"reconciled_at\"},{\"name\":\"ledgerEntryId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"ledger_entry_id\"},{\"name\":\"processingFee\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"processing_fee\"},{\"name\":\"netAmount\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"net_amount\"},{\"name\":\"isDisputed\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_disputed\"},{\"name\":\"disputeReason\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"dispute_reason\"},{\"name\":\"disputedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"disputed_at\"},{\"name\":\"requiresApproval\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"requires_approval\"},{\"name\":\"approvedBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"approved_by\"},{\"name\":\"approvedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"approved_at\"},{\"name\":\"metadata\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"failureReason\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"failure_reason\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"PaymentToTenant\"},{\"name\":\"paymentMethod\",\"kind\":\"object\",\"type\":\"PaymentMethod\",\"relationName\":\"PaymentToPaymentMethod\"},{\"name\":\"reconciliation\",\"kind\":\"object\",\"type\":\"PaymentReconciliation\",\"relationName\":\"PaymentToPaymentReconciliation\"},{\"name\":\"explainability\",\"kind\":\"object\",\"type\":\"PaymentExplainability\",\"relationName\":\"PaymentToPaymentExplainability\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"payments\"},\"PaymentReconciliation\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"paymentId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"payment_id\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ReconciliationStatus\"},{\"name\":\"ledgerEntryId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"ledger_entry_id\"},{\"name\":\"accountId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"account_id\"},{\"name\":\"matchedAmount\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"matched_amount\"},{\"name\":\"variance\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"varianceReason\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"variance_reason\"},{\"name\":\"reconciledBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"reconciled_by\"},{\"name\":\"reconciledAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"reconciled_at\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payment\",\"kind\":\"object\",\"type\":\"Payment\",\"relationName\":\"PaymentToPaymentReconciliation\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"PaymentReconciliationToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"payment_reconciliations\"},\"PaymentExplainability\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"paymentId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"payment_id\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"trigger\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggerDetails\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"trigger_details\"},{\"name\":\"conditionsMet\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"conditions_met\"},{\"name\":\"amountCalculation\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"amount_calculation\"},{\"name\":\"baseAmount\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"base_amount\"},{\"name\":\"adjustments\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"confidenceScore\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"confidence_score\"},{\"name\":\"safeguards\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"riskFactors\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"risk_factors\"},{\"name\":\"approvalRequired\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"approval_required\"},{\"name\":\"approvalStatus\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"approval_status\"},{\"name\":\"businessImpact\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"business_impact\"},{\"name\":\"estimatedTimeSaved\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"estimated_time_saved\"},{\"name\":\"explanation\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"payment\",\"kind\":\"object\",\"type\":\"Payment\",\"relationName\":\"PaymentToPaymentExplainability\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"PaymentExplainabilityToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"}],\"dbName\":\"payment_explainability\"},\"CashControlRule\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"ruleType\",\"kind\":\"enum\",\"type\":\"CashControlRuleType\",\"dbName\":\"rule_type\"},{\"name\":\"config\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"conditions\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_active\"},{\"name\":\"requiresApproval\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"requires_approval\"},{\"name\":\"executionCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"execution_count\"},{\"name\":\"successCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"success_count\"},{\"name\":\"failureCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"failure_count\"},{\"name\":\"totalAmountProcessed\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"total_amount_processed\"},{\"name\":\"createdBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"created_by\"},{\"name\":\"lastExecuted\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"last_executed\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"CashControlRuleToTenant\"},{\"name\":\"executions\",\"kind\":\"object\",\"type\":\"CashControlExecution\",\"relationName\":\"CashControlExecutionToCashControlRule\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"cash_control_rules\"},\"CashControlExecution\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"ruleId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"rule_id\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"triggerData\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"trigger_data\"},{\"name\":\"conditionsEvaluated\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"conditions_evaluated\"},{\"name\":\"paymentId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"payment_id\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"success\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"errorMessage\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"error_message\"},{\"name\":\"executionTime\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"execution_time\"},{\"name\":\"isDryRun\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_dry_run\"},{\"name\":\"rule\",\"kind\":\"object\",\"type\":\"CashControlRule\",\"relationName\":\"CashControlExecutionToCashControlRule\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"CashControlExecutionToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"}],\"dbName\":\"cash_control_executions\"},\"PaymentAnalytics\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"paymentId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"payment_id\"},{\"name\":\"eventType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"event_type\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"processingFee\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"processing_fee\"},{\"name\":\"isAutomated\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_automated\"},{\"name\":\"automationRuleId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"automation_rule_id\"},{\"name\":\"timeToCash\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"time_to_cash\"},{\"name\":\"retryCount\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"retry_count\"},{\"name\":\"revenueImpact\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"revenue_impact\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"PaymentAnalyticsToTenant\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"payment_analytics\"},\"FinancialForecast\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"forecastType\",\"kind\":\"enum\",\"type\":\"ForecastType\",\"dbName\":\"forecast_type\"},{\"name\":\"value\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"unit\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"confidenceScore\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"confidence_score\"},{\"name\":\"forecastDate\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"forecast_date\"},{\"name\":\"forecastHorizon\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"forecast_horizon\"},{\"name\":\"formula\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"assumptions\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"dataSources\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"data_sources\"},{\"name\":\"historicalBaseline\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"historical_baseline\"},{\"name\":\"calculatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"calculated_at\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"FinancialForecastToTenant\"}],\"dbName\":\"financial_forecasts\"},\"Scenario\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"scenarioType\",\"kind\":\"enum\",\"type\":\"ScenarioType\",\"dbName\":\"scenario_type\"},{\"name\":\"config\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"baselineRunway\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"baseline_runway\"},{\"name\":\"projectedRunway\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"projected_runway\"},{\"name\":\"runwayChange\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"runway_change\"},{\"name\":\"riskLevel\",\"kind\":\"enum\",\"type\":\"RiskLevel\",\"dbName\":\"risk_level\"},{\"name\":\"riskScore\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"risk_score\"},{\"name\":\"successProbability\",\"kind\":\"scalar\",\"type\":\"Float\",\"dbName\":\"success_probability\"},{\"name\":\"topRiskDrivers\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"top_risk_drivers\"},{\"name\":\"criticalAssumptions\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"critical_assumptions\"},{\"name\":\"cashFlowImpact\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"cash_flow_impact\"},{\"name\":\"automationImpact\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"automation_impact\"},{\"name\":\"paymentImpact\",\"kind\":\"scalar\",\"type\":\"Json\",\"dbName\":\"payment_impact\"},{\"name\":\"recommendations\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdBy\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"created_by\"},{\"name\":\"isArchived\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"is_archived\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"ScenarioToTenant\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"created_at\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"updated_at\"}],\"dbName\":\"scenarios\"},\"ScenarioAnalytics\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"tenant_id\"},{\"name\":\"scenarioId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"scenario_id\"},{\"name\":\"eventType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"event_type\"},{\"name\":\"scenarioType\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"scenario_type\"},{\"name\":\"decisionMade\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"decision_made\"},{\"name\":\"decisionOutcome\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"decision_outcome\"},{\"name\":\"riskAvoided\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"risk_avoided\"},{\"name\":\"upgradeTriggered\",\"kind\":\"scalar\",\"type\":\"Boolean\",\"dbName\":\"upgrade_triggered\"},{\"name\":\"planBefore\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"plan_before\"},{\"name\":\"planAfter\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"plan_after\"},{\"name\":\"timeToDecision\",\"kind\":\"scalar\",\"type\":\"Int\",\"dbName\":\"time_to_decision\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"ScenarioAnalyticsToTenant\"},{\"name\":\"timestamp\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"scenario_analytics\"}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

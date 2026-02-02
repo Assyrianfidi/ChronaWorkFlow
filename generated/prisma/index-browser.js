@@ -129,6 +129,7 @@ exports.Prisma.UserScalarFieldEnum = {
   image: 'image',
   password: 'password',
   role: 'role',
+  tenantId: 'tenantId',
   isActive: 'isActive',
   lastLogin: 'lastLogin',
   refreshToken: 'refreshToken',
@@ -173,9 +174,374 @@ exports.Prisma.VerificationTokenScalarFieldEnum = {
   expires: 'expires'
 };
 
+exports.Prisma.TenantScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  subdomain: 'subdomain',
+  customDomain: 'customDomain',
+  logo: 'logo',
+  favicon: 'favicon',
+  theme: 'theme',
+  featureFlags: 'featureFlags',
+  settings: 'settings',
+  plan: 'plan',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DashboardLayoutScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  role: 'role',
+  tenantId: 'tenantId',
+  name: 'name',
+  isDefault: 'isDefault',
+  layout: 'layout',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  action: 'action',
+  resource: 'resource',
+  resourceId: 'resourceId',
+  allowed: 'allowed',
+  reason: 'reason',
+  metadata: 'metadata',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AnalyticsEventScalarFieldEnum = {
+  id: 'id',
+  eventId: 'eventId',
+  eventType: 'eventType',
+  featureFlag: 'featureFlag',
+  featureName: 'featureName',
+  userId: 'userId',
+  userRole: 'userRole',
+  tenantId: 'tenantId',
+  sessionId: 'sessionId',
+  metadata: 'metadata',
+  timestamp: 'timestamp',
+  serverTimestamp: 'serverTimestamp',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent'
+};
+
+exports.Prisma.AutomationRuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  triggerType: 'triggerType',
+  triggerConfig: 'triggerConfig',
+  conditions: 'conditions',
+  actions: 'actions',
+  status: 'status',
+  isTemplate: 'isTemplate',
+  requiresApproval: 'requiresApproval',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy',
+  lastTriggered: 'lastTriggered',
+  executionCount: 'executionCount',
+  successCount: 'successCount',
+  failureCount: 'failureCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AutomationExecutionScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  tenantId: 'tenantId',
+  status: 'status',
+  triggeredBy: 'triggeredBy',
+  triggerData: 'triggerData',
+  conditionsEvaluated: 'conditionsEvaluated',
+  conditionsMet: 'conditionsMet',
+  actionsExecuted: 'actionsExecuted',
+  isDryRun: 'isDryRun',
+  errorMessage: 'errorMessage',
+  executionTime: 'executionTime',
+  retryCount: 'retryCount',
+  nextRetryAt: 'nextRetryAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SmartInsightScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  insightType: 'insightType',
+  severity: 'severity',
+  title: 'title',
+  description: 'description',
+  explanation: 'explanation',
+  confidence: 'confidence',
+  metadata: 'metadata',
+  relatedEntities: 'relatedEntities',
+  actionable: 'actionable',
+  suggestedActions: 'suggestedActions',
+  dismissedBy: 'dismissedBy',
+  dismissedAt: 'dismissedAt',
+  dismissReason: 'dismissReason',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+};
+
+exports.Prisma.AutomationTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  category: 'category',
+  triggerType: 'triggerType',
+  triggerConfig: 'triggerConfig',
+  conditions: 'conditions',
+  actions: 'actions',
+  requiredPlan: 'requiredPlan',
+  popularity: 'popularity',
+  isPublic: 'isPublic',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AutomationUsageMetricScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  ruleId: 'ruleId',
+  executionId: 'executionId',
+  actionType: 'actionType',
+  success: 'success',
+  executionTime: 'executionTime',
+  costImpact: 'costImpact',
+  businessImpact: 'businessImpact',
+  timestamp: 'timestamp'
+};
+
+exports.Prisma.PaymentMethodScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  customerId: 'customerId',
+  type: 'type',
+  isDefault: 'isDefault',
+  token: 'token',
+  last4: 'last4',
+  brand: 'brand',
+  expiryMonth: 'expiryMonth',
+  expiryYear: 'expiryYear',
+  accountType: 'accountType',
+  routingNumber: 'routingNumber',
+  nickname: 'nickname',
+  billingAddress: 'billingAddress',
+  metadata: 'metadata',
+  isActive: 'isActive',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  paymentMethodId: 'paymentMethodId',
+  invoiceId: 'invoiceId',
+  type: 'type',
+  status: 'status',
+  amount: 'amount',
+  currency: 'currency',
+  description: 'description',
+  processorId: 'processorId',
+  processorStatus: 'processorStatus',
+  processorResponse: 'processorResponse',
+  automationRuleId: 'automationRuleId',
+  automationExecutionId: 'automationExecutionId',
+  isAutomated: 'isAutomated',
+  scheduledFor: 'scheduledFor',
+  processedAt: 'processedAt',
+  retryCount: 'retryCount',
+  maxRetries: 'maxRetries',
+  nextRetryAt: 'nextRetryAt',
+  reconciledAt: 'reconciledAt',
+  ledgerEntryId: 'ledgerEntryId',
+  processingFee: 'processingFee',
+  netAmount: 'netAmount',
+  isDisputed: 'isDisputed',
+  disputeReason: 'disputeReason',
+  disputedAt: 'disputedAt',
+  requiresApproval: 'requiresApproval',
+  approvedBy: 'approvedBy',
+  approvedAt: 'approvedAt',
+  metadata: 'metadata',
+  failureReason: 'failureReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentReconciliationScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  tenantId: 'tenantId',
+  status: 'status',
+  ledgerEntryId: 'ledgerEntryId',
+  accountId: 'accountId',
+  matchedAmount: 'matchedAmount',
+  variance: 'variance',
+  varianceReason: 'varianceReason',
+  reconciledBy: 'reconciledBy',
+  reconciledAt: 'reconciledAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PaymentExplainabilityScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  tenantId: 'tenantId',
+  trigger: 'trigger',
+  triggerDetails: 'triggerDetails',
+  conditionsMet: 'conditionsMet',
+  amountCalculation: 'amountCalculation',
+  baseAmount: 'baseAmount',
+  adjustments: 'adjustments',
+  confidenceScore: 'confidenceScore',
+  safeguards: 'safeguards',
+  riskFactors: 'riskFactors',
+  approvalRequired: 'approvalRequired',
+  approvalStatus: 'approvalStatus',
+  businessImpact: 'businessImpact',
+  estimatedTimeSaved: 'estimatedTimeSaved',
+  explanation: 'explanation',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CashControlRuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  ruleType: 'ruleType',
+  config: 'config',
+  conditions: 'conditions',
+  isActive: 'isActive',
+  requiresApproval: 'requiresApproval',
+  executionCount: 'executionCount',
+  successCount: 'successCount',
+  failureCount: 'failureCount',
+  totalAmountProcessed: 'totalAmountProcessed',
+  createdBy: 'createdBy',
+  lastExecuted: 'lastExecuted',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CashControlExecutionScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  tenantId: 'tenantId',
+  status: 'status',
+  triggerData: 'triggerData',
+  conditionsEvaluated: 'conditionsEvaluated',
+  paymentId: 'paymentId',
+  amount: 'amount',
+  success: 'success',
+  errorMessage: 'errorMessage',
+  executionTime: 'executionTime',
+  isDryRun: 'isDryRun',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PaymentAnalyticsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  paymentId: 'paymentId',
+  eventType: 'eventType',
+  amount: 'amount',
+  processingFee: 'processingFee',
+  isAutomated: 'isAutomated',
+  automationRuleId: 'automationRuleId',
+  timeToCash: 'timeToCash',
+  retryCount: 'retryCount',
+  revenueImpact: 'revenueImpact',
+  timestamp: 'timestamp'
+};
+
+exports.Prisma.FinancialForecastScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  forecastType: 'forecastType',
+  value: 'value',
+  unit: 'unit',
+  confidenceScore: 'confidenceScore',
+  forecastDate: 'forecastDate',
+  forecastHorizon: 'forecastHorizon',
+  formula: 'formula',
+  assumptions: 'assumptions',
+  dataSources: 'dataSources',
+  historicalBaseline: 'historicalBaseline',
+  calculatedAt: 'calculatedAt'
+};
+
+exports.Prisma.ScenarioScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  scenarioType: 'scenarioType',
+  config: 'config',
+  baselineRunway: 'baselineRunway',
+  projectedRunway: 'projectedRunway',
+  runwayChange: 'runwayChange',
+  riskLevel: 'riskLevel',
+  riskScore: 'riskScore',
+  successProbability: 'successProbability',
+  topRiskDrivers: 'topRiskDrivers',
+  criticalAssumptions: 'criticalAssumptions',
+  cashFlowImpact: 'cashFlowImpact',
+  automationImpact: 'automationImpact',
+  paymentImpact: 'paymentImpact',
+  recommendations: 'recommendations',
+  createdBy: 'createdBy',
+  isArchived: 'isArchived',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ScenarioAnalyticsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  scenarioId: 'scenarioId',
+  eventType: 'eventType',
+  scenarioType: 'scenarioType',
+  decisionMade: 'decisionMade',
+  decisionOutcome: 'decisionOutcome',
+  riskAvoided: 'riskAvoided',
+  upgradeTriggered: 'upgradeTriggered',
+  planBefore: 'planBefore',
+  planAfter: 'planAfter',
+  timeToDecision: 'timeToDecision',
+  timestamp: 'timestamp'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -187,22 +553,183 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
 exports.Role = exports.$Enums.Role = {
-  USER: 'USER',
+  OWNER: 'OWNER',
   ADMIN: 'ADMIN',
   MANAGER: 'MANAGER',
-  CASHIER: 'CASHIER',
-  INVENTORY_MANAGER: 'INVENTORY_MANAGER',
   ACCOUNTANT: 'ACCOUNTANT',
-  CUSTOMER_SERVICE: 'CUSTOMER_SERVICE',
+  AUDITOR: 'AUDITOR',
+  INVENTORY_MANAGER: 'INVENTORY_MANAGER',
+  STAFF: 'STAFF',
   VIEWER: 'VIEWER'
+};
+
+exports.SubscriptionPlan = exports.$Enums.SubscriptionPlan = {
+  FREE: 'FREE',
+  STARTER: 'STARTER',
+  PROFESSIONAL: 'PROFESSIONAL',
+  ENTERPRISE: 'ENTERPRISE'
+};
+
+exports.TenantStatus = exports.$Enums.TenantStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  TRIAL: 'TRIAL',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.AutomationTriggerType = exports.$Enums.AutomationTriggerType = {
+  INVOICE_OVERDUE: 'INVOICE_OVERDUE',
+  CASH_BALANCE_THRESHOLD: 'CASH_BALANCE_THRESHOLD',
+  EXPENSE_ANOMALY: 'EXPENSE_ANOMALY',
+  REVENUE_DROP: 'REVENUE_DROP',
+  REVENUE_INCREASE: 'REVENUE_INCREASE',
+  MONTH_END: 'MONTH_END',
+  QUARTER_END: 'QUARTER_END',
+  YEAR_END: 'YEAR_END',
+  SCHEDULED_DAILY: 'SCHEDULED_DAILY',
+  SCHEDULED_WEEKLY: 'SCHEDULED_WEEKLY',
+  SCHEDULED_MONTHLY: 'SCHEDULED_MONTHLY',
+  MANUAL: 'MANUAL',
+  TRANSACTION_CREATED: 'TRANSACTION_CREATED',
+  PAYMENT_RECEIVED: 'PAYMENT_RECEIVED',
+  PAYMENT_FAILED: 'PAYMENT_FAILED',
+  BUDGET_EXCEEDED: 'BUDGET_EXCEEDED',
+  LOW_INVENTORY: 'LOW_INVENTORY',
+  LATE_PAYMENT_PATTERN: 'LATE_PAYMENT_PATTERN'
+};
+
+exports.AutomationStatus = exports.$Enums.AutomationStatus = {
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  DRAFT: 'DRAFT',
+  ARCHIVED: 'ARCHIVED'
+};
+
+exports.AutomationExecutionStatus = exports.$Enums.AutomationExecutionStatus = {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.InsightType = exports.$Enums.InsightType = {
+  EXPENSE_ANOMALY: 'EXPENSE_ANOMALY',
+  CASH_FLOW_WARNING: 'CASH_FLOW_WARNING',
+  REVENUE_TREND: 'REVENUE_TREND',
+  PAYMENT_PATTERN: 'PAYMENT_PATTERN',
+  BUDGET_ALERT: 'BUDGET_ALERT',
+  PROFITABILITY_CHANGE: 'PROFITABILITY_CHANGE',
+  SEASONAL_PATTERN: 'SEASONAL_PATTERN',
+  VENDOR_RISK: 'VENDOR_RISK'
+};
+
+exports.InsightSeverity = exports.$Enums.InsightSeverity = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  CRITICAL: 'CRITICAL'
+};
+
+exports.PaymentMethodType = exports.$Enums.PaymentMethodType = {
+  ACH: 'ACH',
+  CREDIT_CARD: 'CREDIT_CARD',
+  DEBIT_CARD: 'DEBIT_CARD',
+  BANK_ACCOUNT: 'BANK_ACCOUNT'
+};
+
+exports.PaymentType = exports.$Enums.PaymentType = {
+  INVOICE_PAYMENT: 'INVOICE_PAYMENT',
+  VENDOR_PAYMENT: 'VENDOR_PAYMENT',
+  TAX_RESERVE: 'TAX_RESERVE',
+  REFUND: 'REFUND',
+  MANUAL: 'MANUAL'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED',
+  DISPUTED: 'DISPUTED',
+  REQUIRES_ACTION: 'REQUIRES_ACTION'
+};
+
+exports.ReconciliationStatus = exports.$Enums.ReconciliationStatus = {
+  PENDING: 'PENDING',
+  MATCHED: 'MATCHED',
+  UNMATCHED: 'UNMATCHED',
+  DISPUTED: 'DISPUTED',
+  RESOLVED: 'RESOLVED'
+};
+
+exports.CashControlRuleType = exports.$Enums.CashControlRuleType = {
+  AUTO_COLLECT_OVERDUE: 'AUTO_COLLECT_OVERDUE',
+  RETRY_FAILED_PAYMENT: 'RETRY_FAILED_PAYMENT',
+  AUTO_RESERVE_TAXES: 'AUTO_RESERVE_TAXES',
+  AUTO_PAY_VENDOR: 'AUTO_PAY_VENDOR',
+  PAUSE_ON_DISPUTE: 'PAUSE_ON_DISPUTE',
+  SCHEDULE_PAYMENT: 'SCHEDULE_PAYMENT'
+};
+
+exports.ForecastType = exports.$Enums.ForecastType = {
+  CASH_RUNWAY: 'CASH_RUNWAY',
+  BURN_RATE: 'BURN_RATE',
+  REVENUE_GROWTH: 'REVENUE_GROWTH',
+  EXPENSE_TRAJECTORY: 'EXPENSE_TRAJECTORY',
+  PAYMENT_INFLOW: 'PAYMENT_INFLOW'
+};
+
+exports.ScenarioType = exports.$Enums.ScenarioType = {
+  HIRING: 'HIRING',
+  LARGE_PURCHASE: 'LARGE_PURCHASE',
+  REVENUE_CHANGE: 'REVENUE_CHANGE',
+  PAYMENT_DELAY: 'PAYMENT_DELAY',
+  AUTOMATION_CHANGE: 'AUTOMATION_CHANGE',
+  CUSTOM: 'CUSTOM'
+};
+
+exports.RiskLevel = exports.$Enums.RiskLevel = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
 };
 
 exports.Prisma.ModelName = {
   User: 'User',
   Account: 'Account',
   Session: 'Session',
-  VerificationToken: 'VerificationToken'
+  VerificationToken: 'VerificationToken',
+  Tenant: 'Tenant',
+  DashboardLayout: 'DashboardLayout',
+  AuditLog: 'AuditLog',
+  AnalyticsEvent: 'AnalyticsEvent',
+  AutomationRule: 'AutomationRule',
+  AutomationExecution: 'AutomationExecution',
+  SmartInsight: 'SmartInsight',
+  AutomationTemplate: 'AutomationTemplate',
+  AutomationUsageMetric: 'AutomationUsageMetric',
+  PaymentMethod: 'PaymentMethod',
+  Payment: 'Payment',
+  PaymentReconciliation: 'PaymentReconciliation',
+  PaymentExplainability: 'PaymentExplainability',
+  CashControlRule: 'CashControlRule',
+  CashControlExecution: 'CashControlExecution',
+  PaymentAnalytics: 'PaymentAnalytics',
+  FinancialForecast: 'FinancialForecast',
+  Scenario: 'Scenario',
+  ScenarioAnalytics: 'ScenarioAnalytics'
 };
 
 /**

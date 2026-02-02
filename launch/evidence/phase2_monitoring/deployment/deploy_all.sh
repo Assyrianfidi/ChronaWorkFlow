@@ -89,7 +89,16 @@ check_prerequisites() {
     
     # Check Node.js
     if command_exists node; then
-        print_status "Node.js installed: $(node --version)"
+        local node_version=$(node --version)
+        local node_major=$(echo "$node_version" | cut -d'v' -f2 | cut -d'.' -f1)
+        print_status "Node.js installed: $node_version"
+        
+        # Check if Node.js version is v20+
+        if [ "$node_major" -lt 20 ]; then
+            print_error "Node.js v20+ required. Current: $node_version"
+            print_info "Upgrade guide: NODE_UPGRADE_GUIDE.md"
+            missing_deps=1
+        fi
     else
         print_error "Node.js not installed"
         missing_deps=1
