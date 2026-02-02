@@ -72,8 +72,16 @@ export function createApp() {
     next();
   });
 
+  // Apply authentication middleware to all /api routes EXCEPT /api/monitoring
   app.use(
     "/api",
+    (req, res, next) => {
+      // Skip authentication for monitoring endpoints
+      if (req.path.startsWith('/monitoring')) {
+        return next();
+      }
+      next();
+    },
     authenticate(),
     enforceCompanyIsolation(),
     authorizeRequest(),
