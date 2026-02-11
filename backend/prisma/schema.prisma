@@ -9,215 +9,101 @@ datasource db {
 }
 
 model User {
-  id                 Int                    @id @default(autoincrement())
-  name               String
-  email              String                 @unique(map: "users_email_unique")
-  password           String
-  isActive           Boolean                @default(true)
-  createdAt          DateTime               @default(now())
-  updatedAt          DateTime               @updatedAt
-  lastLogin          DateTime?
-  passwordChangedAt  DateTime?
-  role               Role                   @default(USER)
-  currentCompanyId   String?
-  deletedAt          DateTime?
-  cancelAtPeriodEnd  Boolean                @default(false)
-  lastPaymentAt      DateTime?
-  planType           String?
-  stripeCustomerId   String?                @unique
-  subscriptionId     String?                @unique
-  subscriptionStatus String?
-  companies          CompanyMember[]
-  documents          Document[]
-  inventoryHistory   InventoryHistory[]
-  inventoryItems     InventoryItem[]        @relation("CreatedBy")
-  reports            ReconciliationReport[]
-  refreshTokens      RefreshToken[]
-  userFeatures        UserFeature[]
-  currentCompany     Company?               @relation("UserCurrentCompany", fields: [currentCompanyId], references: [id])
+  id                                                            Int                           @id @default(autoincrement())
+  email                                                         String                        @unique
+  name                                                          String?
+  password                                                      String?
+  role                                                          Role                          @default(USER)
+  lastLogin                                                     DateTime?
+  currentCompanyId                                              String?
+  createdAt                                                     DateTime                      @default(now())
+  updatedAt                                                     DateTime                      @updatedAt
+  isActive                                                      Boolean                       @default(true)
+  agency_client_relationships                                   agency_client_relationships[]
+  ai_insights                                                   ai_insights[]
+  api_usage_records                                             api_usage_records[]
+  audit_logs                                                    AuditLog[]
+  automation_proposals_automation_proposals_approvedByIdTousers automation_proposals[]        @relation("automation_proposals_approvedByIdTousers")
+  automation_proposals_automation_proposals_createdByIdTousers  automation_proposals[]        @relation("automation_proposals_createdByIdTousers")
+  automation_proposals_automation_proposals_executedByIdTousers automation_proposals[]        @relation("automation_proposals_executedByIdTousers")
+  automation_proposals_automation_proposals_rejectedByIdTousers automation_proposals[]        @relation("automation_proposals_rejectedByIdTousers")
+  companies                                                     CompanyMember[]
+  executive_alerts_executive_alerts_acknowledgedByTousers       executive_alerts[]            @relation("executive_alerts_acknowledgedByTousers")
+  executive_alerts_executive_alerts_escalatedToTousers          executive_alerts[]            @relation("executive_alerts_escalatedToTousers")
+  executive_alerts_executive_alerts_resolvedByTousers           executive_alerts[]            @relation("executive_alerts_resolvedByTousers")
+  feature_usage                                                 feature_usage[]
+  founder_audit_logs                                            founder_audit_logs[]
+  founder_control_actions                                       founder_control_actions[]
+  organization_users                                            organization_users[]
+  predictive_metrics                                            predictive_metrics[]
+  suspicious_activities                                         suspicious_activities[]
+  usage_frequency_metrics                                       usage_frequency_metrics[]
+  user_activity_logs                                            user_activity_logs[]
+  user_sessions                                                 user_sessions[]
 
-  @@index([role])
-  @@index([isActive])
-  @@index([currentCompanyId])
   @@map("users")
 }
 
-model UserFeature {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  featureName String
-  enabled     Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, featureName])
-  @@index([userId])
-  @@index([featureName])
-  @@map("user_features")
-}
-
-model RoleFeature {
-  id          Int      @id @default(autoincrement())
-  role        Role
-  featureName String
-  enabled     Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([role, featureName])
-  @@index([role])
-  @@index([featureName])
-  @@map("role_features")
-}
-
-model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tokenHash String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([expiresAt])
-  @@map("refresh_tokens")
-}
-
 model ReconciliationReport {
-  id        Int      @id @default(autoincrement())
-  title     String
-  amount    Float
-  userId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
+  id          String   @id
+  companyId   String
+  reportType  String
+  data        Json
+  generatedAt DateTime @default(now())
+  companies   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  @@unique([title, userId], name: "title_userId")
-  @@index([userId])
-  @@index([createdAt])
   @@map("reconciliation_reports")
 }
 
-model Category {
-  id          Int             @id @default(autoincrement())
-  name        String          @unique
-  description String?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  deletedAt   DateTime?
-  items       InventoryItem[]
-
-  @@index([name])
-  @@map("categories")
-}
-
-model Supplier {
-  id        Int             @id @default(autoincrement())
-  name      String
-  email     String?
-  phone     String?
-  address   String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  deletedAt DateTime?
-  items     InventoryItem[]
-
-  @@index([name])
-  @@index([email])
-  @@map("suppliers")
-}
-
-model InventoryItem {
-  id           String             @id @default(uuid())
-  name         String
-  description  String?
-  sku          String             @unique
-  barcode      String?            @unique
-  categoryId   Int?
-  supplierId   Int?
-  quantity     Int                @default(0)
-  unit         String
-  costPrice    Decimal            @default(0)
-  sellingPrice Decimal            @default(0)
-  reorderPoint Int                @default(0)
-  location     String?
-  notes        String?
-  isActive     Boolean            @default(true)
-  tenantId     String
-  createdById  Int
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  deletedAt    DateTime?
-  history      InventoryHistory[]
-  category     Category?          @relation(fields: [categoryId], references: [id])
-  createdBy    User               @relation("CreatedBy", fields: [createdById], references: [id])
-  supplier     Supplier?          @relation(fields: [supplierId], references: [id])
-
-  @@index([sku])
-  @@index([barcode])
-  @@index([categoryId])
-  @@index([supplierId])
-  @@index([tenantId])
-  @@index([isActive])
-  @@map("inventory_items")
-}
-
-model InventoryHistory {
-  id               Int                  @id @default(autoincrement())
-  itemId           String
-  quantity         Int
-  previousQuantity Int
-  type             InventoryHistoryType
-  referenceId      String?
-  notes            String?
-  createdById      Int
-  createdAt        DateTime             @default(now())
-  createdBy        User                 @relation(fields: [createdById], references: [id])
-  item             InventoryItem        @relation(fields: [itemId], references: [id])
-
-  @@index([itemId])
-  @@index([type])
-  @@index([referenceId])
-  @@index([createdAt])
-  @@map("inventory_history")
-}
-
 model Company {
-  id           String          @id @default(uuid())
-  name         String
-  description  String?
-  logo         String?
-  website      String?
-  isActive     Boolean         @default(true)
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  deletedAt    DateTime?
-  accounts     Account[]
-  clients      Client[]
-  members      CompanyMember[]
-  invoices     Invoice[]
-  transactions Transaction[]
-  currentUsers User[]          @relation("UserCurrentCompany")
+  id                                                                                 String                          @id @default(uuid())
+  name                                                                               String
+  createdAt                                                                          DateTime                        @default(now())
+  updatedAt                                                                          DateTime                        @updatedAt
+  isActive                                                                           Boolean                         @default(true)
+  accounts                                                                           Account[]
+  agency_client_relationships_agency_client_relationships_agencyCompanyIdTocompanies agency_client_relationships[]   @relation("agency_client_relationships_agencyCompanyIdTocompanies")
+  agency_client_relationships_agency_client_relationships_clientCompanyIdTocompanies agency_client_relationships[]   @relation("agency_client_relationships_clientCompanyIdTocompanies")
+  ai_insights                                                                        ai_insights[]
+  automation_proposals                                                               automation_proposals[]
+  billing_status                                                                     billing_status?
+  churn_retention_analytics                                                          churn_retention_analytics[]
+  members                                                                            CompanyMember[]
+  customer_health_scores                                                             customer_health_scores[]
+  dashboard_metrics_cache                                                            dashboard_metrics_cache[]
+  executive_alerts                                                                   executive_alerts[]
+  executive_analytics_snapshots                                                      executive_analytics_snapshots[]
+  executive_kpi_snapshots                                                            executive_kpi_snapshots[]
+  feature_adoption_metrics                                                           feature_adoption_metrics[]
+  feature_usage                                                                      feature_usage[]
+  founder_audit_logs                                                                 founder_audit_logs[]
+  founder_control_states                                                             founder_control_states?
+  invoice_risk_analytics                                                             invoice_risk_analytics[]
+  invoices                                                                           Invoice[]
+  payments                                                                           Payment[]
+  predictive_metrics                                                                 predictive_metrics[]
+  reconciliation_reports                                                             ReconciliationReport[]
+  revenue_analytics                                                                  revenue_analytics[]
+  suspicious_activities                                                              suspicious_activities[]
+  transactions                                                                       Transaction[]
+  trend_patterns                                                                     trend_patterns[]
+  usage_frequency_metrics                                                            usage_frequency_metrics[]
+  user_activity_logs                                                                 user_activity_logs[]
 
-  @@index([name])
-  @@index([isActive])
   @@map("companies")
 }
 
 model CompanyMember {
-  id        String   @id @default(uuid())
-  companyId String
+  id        String     @id @default(uuid())
   userId    Int
-  role      String   @default("MEMBER")
-  joinedAt  DateTime @default(now())
-  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId String
+  role      MemberRole @default(MEMBER)
+  joinedAt  DateTime   @default(now())
+  isActive  Boolean    @default(true)
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([companyId, userId])
-  @@index([userId])
-  @@index([role])
+  @@unique([userId, companyId])
   @@map("company_members")
 }
 
@@ -233,39 +119,30 @@ model Account {
   isActive         Boolean           @default(true)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
-  deletedAt        DateTime?
   company          Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
   parent           Account?          @relation("AccountHierarchy", fields: [parentId], references: [id])
   children         Account[]         @relation("AccountHierarchy")
-  invoiceItems     InvoiceItem[]
   transactionLines TransactionLine[]
 
   @@unique([companyId, code])
-  @@index([companyId])
-  @@index([type])
-  @@index([parentId])
-  @@index([isActive])
-  @@index([name])
   @@map("accounts")
 }
 
 model Transaction {
   id                String            @id @default(uuid())
-  transactionNumber String            @unique
+  companyId         String
+  transactionNumber String
   date              DateTime
   type              TransactionType
-  totalAmount       Decimal
   description       String?
-  companyId         String
+  referenceNumber   String?
+  totalAmount       Decimal
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   lines             TransactionLine[]
   company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  @@index([companyId])
-  @@index([date])
-  @@index([type])
-  @@index([transactionNumber])
+  @@unique([companyId, transactionNumber])
   @@map("transactions")
 }
 
@@ -276,221 +153,819 @@ model TransactionLine {
   debit         Decimal     @default(0)
   credit        Decimal     @default(0)
   description   String?
-  account       Account     @relation(fields: [accountId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime
+  account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade)
   transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
 
-  @@index([transactionId])
-  @@index([accountId])
   @@map("transaction_lines")
 }
 
 model Invoice {
-  id            String        @id @default(uuid())
-  invoiceNumber String        @unique
-  date          DateTime
-  dueDate       DateTime
-  totalAmount   Decimal
-  status        InvoiceStatus @default(DRAFT)
-  companyId     String
-  clientId      String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  items         InvoiceItem[]
-  client        Client?       @relation(fields: [clientId], references: [id])
-  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  id              String         @id @default(uuid())
+  companyId       String
+  billingStatusId String
+  invoiceNumber   String         @unique
+  amount          Float
+  currency        String         @default("USD")
+  status          InvoiceStatus  @default(PENDING)
+  issuedAt        DateTime       @default(now())
+  dueAt           DateTime
+  paidAt          DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  billing_status  billing_status @relation(fields: [billingStatusId], references: [id])
+  company         Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  payments        Payment[]
 
-  @@index([companyId])
-  @@index([status])
-  @@index([date])
   @@map("invoices")
 }
 
-model InvoiceItem {
-  id          String  @id @default(uuid())
-  invoiceId   String
-  description String
-  quantity    Decimal
-  unitPrice   Decimal
-  totalAmount Decimal
-  accountId   String
-  account     Account @relation(fields: [accountId], references: [id])
-  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-
-  @@index([invoiceId])
-  @@index([accountId])
-  @@map("invoice_items")
-}
-
-model Client {
-  id        String    @id @default(uuid())
-  name      String
-  email     String?
-  phone     String?
-  address   String?
-  companyId String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  invoices  Invoice[]
-
-  @@index([companyId])
-  @@map("clients")
-}
-
-model Activity {
-  id          String   @id @default(uuid())
-  type        String
-  action      String
-  userId      String
-  userName    String
-  description String
-  metadata    Json?
-  timestamp   DateTime @default(now())
-
-  @@map("activities")
-}
-
-model ActivityNotification {
-  id         String   @id @default(uuid())
-  userId     String
-  activityId String
-  isRead     Boolean  @default(false)
-  createdAt  DateTime @default(now())
-
-  @@map("activity_notifications")
-}
-
-model ActivityAggregation {
-  id           String   @id @default(uuid())
-  userId       String
-  activityType String
-  count        Int      @default(0)
-  lastActivity DateTime @default(now())
-
-  @@map("activity_aggregations")
-}
-
-model NotificationPreference {
-  id      String  @id @default(uuid())
-  userId  String
-  type    String
-  enabled Boolean @default(true)
-
-  @@map("notification_preferences")
-}
-
-model ActivityStream {
-  id        String   @id @default(uuid())
-  userId    String
-  event     String
-  data      Json?
-  timestamp DateTime @default(now())
-  processed Boolean  @default(false)
-
-  @@map("activity_streams")
-}
-
-model Customer {
-  id                 String   @id @default(uuid())
-  companyName        String?
-  firstName          String?
-  lastName           String?
-  email              String?  @unique
-  phone              String?
-  address            Json?
-  province           String?
-  country            String?
-  defaultTaxSettings Json?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  @@map("customers")
-}
-
-model Product {
-  id           String   @id @default(uuid())
-  sku          String   @unique
-  name         String
-  description  String?
-  unitPrice    Int
-  taxInclusive Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@map("products")
-}
-
 model Payment {
-  id             String        @id @default(uuid())
-  invoiceId      String
-  amount         Int
-  method         PaymentMethod
-  transactionRef String?
-  paidAt         DateTime      @default(now())
-  metadata       Json?
+  id              String         @id @default(uuid())
+  companyId       String
+  billingStatusId String
+  invoiceId       String?
+  amount          Float
+  currency        String         @default("USD")
+  status          PaymentStatus  @default(PENDING)
+  paymentMethod   String?
+  transactionId   String?
+  processedAt     DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime
+  billing_status  billing_status @relation(fields: [billingStatusId], references: [id])
+  companies       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoices        Invoice?       @relation(fields: [invoiceId], references: [id])
 
   @@map("payments")
 }
 
-model AccountEntry {
-  id            String   @id @default(uuid())
-  refId         String
-  refType       String
-  debitAccount  String
-  creditAccount String
-  amount        Int
-  description   String
-  createdAt     DateTime @default(now())
-
-  @@map("account_entries")
-}
-
 model Document {
-  id           String           @id @default(uuid())
-  userId       Int
-  fileName     String
-  originalName String
-  mimeType     String
-  size         Int
-  category     DocumentCategory
-  filePath     String
-  description  String?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             Int           @id @default(autoincrement())
+  name           String
+  fileName       String
+  filePath       String
+  fileSize       Int
+  mimeType       String
+  organizationId Int
+  category       String?
+  uploadedBy     Int
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organizations  organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  @@index([category])
+  @@index([organizationId])
   @@map("documents")
 }
 
-model TaxRule {
-  id         String   @id @default(uuid())
-  name       String
-  regionCode String
-  rate       Float
-  isCompound Boolean  @default(false)
-  createdAt  DateTime @default(now())
+model AuditLog {
+  id             Int           @id @default(autoincrement())
+  organizationId Int
+  userId         Int
+  action         String
+  resourceType   String
+  resourceId     Int?
+  changes        Json?
+  ipAddress      String?
+  userAgent      String?
+  timestamp      DateTime      @default(now())
+  organizations  organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  users          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("tax_rules")
+  @@index([userId])
+  @@index([action])
+  @@index([organizationId])
+  @@index([timestamp])
+  @@map("audit_logs")
+}
+
+model agency_client_relationships {
+  id                                                               String             @id
+  agencyCompanyId                                                  String
+  clientCompanyId                                                  String
+  relationshipType                                                 RelationshipType   @default(BOOKKEEPING)
+  status                                                           RelationshipStatus @default(ACTIVE)
+  monthlyFee                                                       Float?
+  accessLevel                                                      AccessLevel        @default(STANDARD)
+  assignedAccountantId                                             Int?
+  startDate                                                        DateTime
+  endDate                                                          DateTime?
+  contractTerms                                                    String?
+  metadata                                                         Json?
+  createdAt                                                        DateTime           @default(now())
+  updatedAt                                                        DateTime
+  companies_agency_client_relationships_agencyCompanyIdTocompanies Company            @relation("agency_client_relationships_agencyCompanyIdTocompanies", fields: [agencyCompanyId], references: [id], onDelete: Cascade)
+  users                                                            User?              @relation(fields: [assignedAccountantId], references: [id])
+  companies_agency_client_relationships_clientCompanyIdTocompanies Company            @relation("agency_client_relationships_clientCompanyIdTocompanies", fields: [clientCompanyId], references: [id], onDelete: Cascade)
+
+  @@unique([agencyCompanyId, clientCompanyId])
+  @@index([agencyCompanyId])
+  @@index([assignedAccountantId])
+  @@index([clientCompanyId])
+  @@index([status])
+}
+
+model ai_insights {
+  id                   String                 @id
+  insightType          InsightType
+  title                String
+  summary              String
+  confidence           Float
+  severity             InsightSeverity
+  priority             String?
+  category             String?
+  entityType           String?
+  entityId             String?
+  entityName           String?
+  timeHorizon          String?
+  recommendedActions   String[]
+  dataSources          String[]
+  generatedAt          DateTime               @default(now())
+  expiresAt            DateTime?
+  reviewedBy           Int?
+  reviewNotes          String?
+  status               InsightStatus          @default(ACTIVE)
+  signalScore          Int?
+  companies            Company?               @relation(fields: [entityId], references: [id])
+  users                User?                  @relation(fields: [reviewedBy], references: [id])
+  automation_proposals automation_proposals[]
+}
+
+model api_usage_records {
+  id             Int           @id @default(autoincrement())
+  organizationId Int
+  userId         Int
+  endpoint       String
+  method         String
+  statusCode     Int
+  timestamp      DateTime      @default(now())
+  duration       Int
+  organizations  organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  users          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([timestamp])
+  @@index([userId])
+}
+
+model automation_proposals {
+  id                                             String                   @id
+  tenantId                                       String
+  insightId                                      String
+  type                                           AutomationProposalType   @default(GENERAL)
+  actionType                                     AutomationActionType
+  actionCategory                                 AutomationCategory       @default(GOVERNANCE)
+  title                                          String?
+  description                                    String?
+  status                                         AutomationProposalStatus @default(PENDING)
+  confidence                                     Float?
+  severity                                       InsightSeverity
+  evidence                                       String[]
+  recommendedActions                             String[]
+  rollbackPlan                                   String?
+  riskAssessment                                 String?
+  projectedOutcome                               String?
+  requiresFounderApproval                        Boolean                  @default(true)
+  canAutoExecute                                 Boolean                  @default(false)
+  metadata                                       Json?
+  createdAt                                      DateTime                 @default(now())
+  updatedAt                                      DateTime
+  expiresAt                                      DateTime
+  executedAt                                     DateTime?
+  rejectedAt                                     DateTime?
+  approvedAt                                     DateTime?
+  executedById                                   Int?
+  approvedById                                   Int?
+  rejectedById                                   Int?
+  createdById                                    Int?
+  users_automation_proposals_approvedByIdTousers User?                    @relation("automation_proposals_approvedByIdTousers", fields: [approvedById], references: [id])
+  users_automation_proposals_createdByIdTousers  User?                    @relation("automation_proposals_createdByIdTousers", fields: [createdById], references: [id])
+  users_automation_proposals_executedByIdTousers User?                    @relation("automation_proposals_executedByIdTousers", fields: [executedById], references: [id])
+  ai_insights                                    ai_insights              @relation(fields: [insightId], references: [id])
+  users_automation_proposals_rejectedByIdTousers User?                    @relation("automation_proposals_rejectedByIdTousers", fields: [rejectedById], references: [id])
+  companies                                      Company                  @relation(fields: [tenantId], references: [id])
+}
+
+model automation_rules {
+  id             Int           @id @default(autoincrement())
+  name           String
+  description    String?
+  organizationId Int
+  triggerType    String
+  conditions     Json
+  actions        Json
+  isActive       Boolean       @default(true)
+  executionCount Int           @default(0)
+  lastExecutedAt DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime
+  organizations  organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([isActive])
+  @@index([organizationId])
+}
+
+model billing_status {
+  id                 String            @id
+  companyId          String            @unique
+  billingStatus      BillingStatusEnum @default(DELINQUENT)
+  paymentStatus      PaymentStatus     @default(CURRENT)
+  planType           String?
+  failedPayments     Int               @default(0)
+  lastBillingDate    DateTime?
+  nextBillingDate    DateTime?
+  outstandingBalance Float             @default(0)
+  currency           String            @default("USD")
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime
+  lastUpdatedAt      DateTime?
+  companies          Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoices           Invoice[]
+  payments           Payment[]
+}
+
+model churn_retention_analytics {
+  id                  String   @id
+  companyId           String
+  periodStart         DateTime
+  periodEnd           DateTime
+  startingCustomers   Int      @default(0)
+  newCustomers        Int      @default(0)
+  churnedCustomers    Int      @default(0)
+  endingCustomers     Int      @default(0)
+  churnRate           Float    @default(0)
+  churnCount          Int      @default(0)
+  voluntaryChurn      Int      @default(0)
+  involuntaryChurn    Int      @default(0)
+  retentionRate       Float    @default(0)
+  cohortRetentionRate Float    @default(0)
+  churnedMrr          Float    @default(0)
+  retainedMrr         Float    @default(0)
+  expansionMrr        Float    @default(0)
+  atRiskCustomers     Int      @default(0)
+  atRiskRevenue       Float    @default(0)
+  metadata            Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime
+  companies           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, periodStart, periodEnd])
+  @@index([churnRate])
+  @@index([companyId])
+  @@index([periodStart])
+}
+
+model custom_reports {
+  id                Int           @id @default(autoincrement())
+  name              String
+  description       String?
+  organizationId    Int
+  reportType        String
+  filters           Json
+  columns           Json
+  aggregations      Json?
+  isScheduled       Boolean       @default(false)
+  scheduleFrequency String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime
+  lastRunAt         DateTime?
+  organizations     organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model customer_health_scores {
+  id                    String    @id
+  companyId             String
+  customerId            String
+  healthScore           Float     @default(0)
+  healthGrade           String    @default("UNKNOWN")
+  riskLevel             String    @default("LOW")
+  paymentHealthScore    Float     @default(0)
+  engagementScore       Float     @default(0)
+  usageScore            Float     @default(0)
+  supportScore          Float     @default(0)
+  churnRiskScore        Float     @default(0)
+  paymentRiskScore      Float     @default(0)
+  scoreTrend            String    @default("STABLE")
+  trendVelocity         Float     @default(0)
+  lastActivityAt        DateTime?
+  daysSinceLastActivity Int       @default(0)
+  totalLifetimeValue    Float     @default(0)
+  metadata              Json?
+  calculatedAt          DateTime  @default(now())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime
+  companies             Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, customerId])
+  @@index([calculatedAt])
+  @@index([companyId])
+  @@index([healthGrade])
+  @@index([healthScore])
+  @@index([riskLevel])
+}
+
+model dashboard_metrics_cache {
+  id            String        @id
+  companyId     String
+  dashboardType DashboardType
+  metricKey     String
+  metricValue   Json
+  calculatedAt  DateTime      @default(now())
+  expiresAt     DateTime
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+  companies     Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, dashboardType, metricKey])
+  @@index([companyId, dashboardType])
+  @@index([expiresAt])
+}
+
+model departments {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  code               String
+  organizationId     Int
+  managerId          Int?
+  monthlyBudget      Decimal?             @db.Decimal(15, 2)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  organizations      organizations        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization_users organization_users[]
+
+  @@unique([organizationId, code])
+  @@index([organizationId])
+}
+
+model executive_alerts {
+  id                                           String        @id
+  companyId                                    String
+  alertType                                    AlertType
+  severity                                     AlertSeverity
+  title                                        String
+  description                                  String?
+  affectedEntityType                           String?
+  affectedEntityId                             String?
+  metricValue                                  Float?
+  thresholdValue                               Float?
+  recommendedAction                            String?
+  status                                       AlertStatus   @default(ACTIVE)
+  acknowledgedBy                               Int?
+  acknowledgedAt                               DateTime?
+  resolvedBy                                   Int?
+  resolvedAt                                   DateTime?
+  escalatedTo                                  Int?
+  escalatedAt                                  DateTime?
+  metadata                                     Json?
+  createdAt                                    DateTime      @default(now())
+  updatedAt                                    DateTime
+  users_executive_alerts_acknowledgedByTousers User?         @relation("executive_alerts_acknowledgedByTousers", fields: [acknowledgedBy], references: [id])
+  companies                                    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  users_executive_alerts_escalatedToTousers    User?         @relation("executive_alerts_escalatedToTousers", fields: [escalatedTo], references: [id])
+  users_executive_alerts_resolvedByTousers     User?         @relation("executive_alerts_resolvedByTousers", fields: [resolvedBy], references: [id])
+
+  @@index([alertType])
+  @@index([companyId])
+  @@index([createdAt])
+  @@index([severity])
+  @@index([status])
+}
+
+model executive_analytics_snapshots {
+  id                     String   @id
+  companyId              String
+  snapshotDate           DateTime
+  totalRevenue           Float    @default(0)
+  revenueGrowthRate      Float    @default(0)
+  mrr                    Float    @default(0)
+  arr                    Float    @default(0)
+  totalCustomers         Int      @default(0)
+  activeCustomers        Int      @default(0)
+  churnRate              Float    @default(0)
+  retentionRate          Float    @default(0)
+  avgCustomerHealthScore Float    @default(0)
+  atRiskCustomers        Int      @default(0)
+  healthyCustomers       Int      @default(0)
+  totalActiveUsers       Int      @default(0)
+  avgFeatureAdoptionRate Float    @default(0)
+  powerUserPercentage    Float    @default(0)
+  totalRiskRevenue       Float    @default(0)
+  highRiskInvoices       Int      @default(0)
+  activeCriticalPatterns Int      @default(0)
+  activeHighPatterns     Int      @default(0)
+  metadata               Json?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime
+  companies              Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, snapshotDate])
+  @@index([companyId])
+  @@index([snapshotDate])
+}
+
+model executive_kpi_snapshots {
+  id                  String   @id
+  companyId           String
+  snapshotDate        DateTime
+  mrr                 Float    @default(0)
+  arr                 Float    @default(0)
+  activeCustomers     Int      @default(0)
+  churnRate           Float    @default(0)
+  retentionRate       Float    @default(0)
+  revenueAtRisk       Float    @default(0)
+  netRevenueRetention Float    @default(0)
+  arpu                Float    @default(0)
+  ltv                 Float    @default(0)
+  cac                 Float?
+  grossMargin         Float?
+  burnRate            Float?
+  runway              Int?
+  metadata            Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime
+  companies           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, snapshotDate])
+  @@index([companyId])
+  @@index([snapshotDate])
+}
+
+model feature_adoption_metrics {
+  id                    String    @id
+  companyId             String
+  featureName           String
+  totalUsers            Int       @default(0)
+  activeUsers           Int       @default(0)
+  adoptionRate          Float     @default(0)
+  totalUsageCount       Int       @default(0)
+  dailyAvgUsage         Float     @default(0)
+  weeklyAvgUsage        Float     @default(0)
+  monthlyAvgUsage       Float     @default(0)
+  powerUserCount        Int       @default(0)
+  casualUserCount       Int       @default(0)
+  inactiveUserCount     Int       @default(0)
+  adoptionTrend         String    @default("STABLE")
+  usageTrend            String    @default("STABLE")
+  avgTimeToAdoptionDays Float     @default(0)
+  firstUsedAt           DateTime?
+  lastUsedAt            DateTime?
+  metadata              Json?
+  calculatedAt          DateTime  @default(now())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime
+  companies             Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, featureName])
+  @@index([adoptionRate])
+  @@index([adoptionTrend])
+  @@index([calculatedAt])
+  @@index([companyId])
+}
+
+model feature_usage {
+  id            String   @id
+  companyId     String
+  featureName   String
+  usageCount    Int      @default(0)
+  lastUsedAt    DateTime @default(now())
+  metadata      Json?
+  userId        Int?
+  totalDuration Float?
+  companies     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  users         User?    @relation(fields: [userId], references: [id])
+
+  @@unique([companyId, featureName])
+}
+
+model founder_audit_logs {
+  id          String   @id
+  userId      Int?
+  resourceId  String
+  action      String
+  details     Json?
+  timestamp   DateTime @default(now())
+  ipAddress   String?
+  userAgent   String?
+  isActive    Boolean  @default(true)
+  actorUserId Int?
+  companies   Company  @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  users       User?    @relation(fields: [userId], references: [id])
+}
+
+model founder_control_actions {
+  id         String               @id
+  actionType FounderControlAction
+  targetId   String
+  executedBy Int
+  status     ControlStatus        @default(PENDING)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime
+  users      User                 @relation(fields: [executedBy], references: [id])
+}
+
+model founder_control_states {
+  id                   String   @id
+  companyId            String   @unique
+  automationEnabled    Boolean  @default(false)
+  riskThreshold        String   @default("MEDIUM")
+  autoExecuteThreshold Float    @default(0.9)
+  humanOverrideEnabled Boolean  @default(true)
+  auditLevel           String   @default("FULL")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime
+  companies            Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model invoice_risk_analytics {
+  id                             String    @id
+  companyId                      String
+  invoiceId                      String
+  paymentRiskScore               Float     @default(0)
+  collectionRiskScore            Float     @default(0)
+  overallRiskLevel               String    @default("LOW")
+  daysOverdue                    Int       @default(0)
+  overdueAmount                  Float     @default(0)
+  customerPaymentHistoryScore    Float     @default(0)
+  customerHealthScore            Float     @default(0)
+  predictedPaymentDate           DateTime?
+  predictedCollectionProbability Float     @default(0)
+  recommendedAction              String?
+  lastPaymentAttemptAt           DateTime?
+  paymentAttemptsCount           Int       @default(0)
+  metadata                       Json?
+  calculatedAt                   DateTime  @default(now())
+  createdAt                      DateTime  @default(now())
+  updatedAt                      DateTime
+  companies                      Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, invoiceId])
+  @@index([companyId])
+  @@index([daysOverdue])
+  @@index([overallRiskLevel])
+  @@index([paymentRiskScore])
+}
+
+model organization_users {
+  id               Int           @id @default(autoincrement())
+  userId           Int
+  organizationId   Int
+  organizationRole String
+  departmentId     Int?
+  isActive         Boolean       @default(true)
+  joinedAt         DateTime      @default(now())
+  departments      departments?  @relation(fields: [departmentId], references: [id])
+  organizations    organizations @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  users            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+  @@index([organizationRole])
+  @@index([userId])
+}
+
+model organizations {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  slug               String               @unique
+  domain             String?
+  subscriptionId     Int?                 @unique
+  tenantId           String               @unique
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  isActive           Boolean              @default(true)
+  api_usage_records  api_usage_records[]
+  audit_logs         AuditLog[]
+  automation_rules   automation_rules[]
+  custom_reports     custom_reports[]
+  departments        departments[]
+  documents          Document[]
+  organization_users organization_users[]
+  subscriptions      subscriptions?       @relation(fields: [subscriptionId], references: [id])
+
+  @@index([subscriptionId])
+  @@index([tenantId])
+}
+
+model platform_metrics {
+  id                   Int      @id @default(autoincrement())
+  date                 DateTime @unique
+  totalOrganizations   Int      @default(0)
+  activeOrganizations  Int      @default(0)
+  newOrganizations     Int      @default(0)
+  churnedOrganizations Int      @default(0)
+  totalUsers           Int      @default(0)
+  activeUsers          Int      @default(0)
+  mrr                  Int      @default(0)
+  arr                  Int      @default(0)
+  starterCount         Int      @default(0)
+  professionalCount    Int      @default(0)
+  businessSuiteCount   Int      @default(0)
+  enterpriseCount      Int      @default(0)
+  churnRate            Float    @default(0)
+  conversionRate       Float    @default(0)
+  createdAt            DateTime @default(now())
+
+  @@index([date])
+}
+
+model predictive_metrics {
+  id                 String               @id
+  companyId          String
+  userId             Int?
+  metricType         PredictiveMetricType
+  metricName         String
+  score              Float
+  confidence         Float                @default(0.0)
+  severity           AlertSeverity
+  churnRisk          Float?
+  revenueImpact      Float?
+  timeHorizon        String?
+  affectedEntityType String?
+  affectedEntityId   String?
+  metadata           Json?
+  calculatedAt       DateTime             @default(now())
+  expiresAt          DateTime?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  companies          Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  users              User?                @relation(fields: [userId], references: [id])
+
+  @@index([calculatedAt])
+  @@index([churnRisk])
+  @@index([companyId])
+  @@index([metricType])
+  @@index([severity])
+}
+
+model revenue_analytics {
+  id                    String   @id
+  companyId             String
+  periodStart           DateTime
+  periodEnd             DateTime
+  totalRevenue          Float    @default(0)
+  recurringRevenue      Float    @default(0)
+  oneTimeRevenue        Float    @default(0)
+  revenueGrowthRate     Float    @default(0)
+  revenueGrowthAmount   Float    @default(0)
+  newCustomerRevenue    Float    @default(0)
+  expansionRevenue      Float    @default(0)
+  contractionRevenue    Float    @default(0)
+  churnedRevenue        Float    @default(0)
+  netRevenueRetention   Float    @default(0)
+  grossRevenueRetention Float    @default(0)
+  metadata              Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime
+  companies             Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, periodStart, periodEnd])
+  @@index([companyId])
+  @@index([createdAt])
+  @@index([periodStart, periodEnd])
+}
+
+model subscriptions {
+  id                    Int            @id @default(autoincrement())
+  tier                  String
+  billingCycle          String
+  status                String
+  stripeSubscriptionId  String?        @unique
+  stripeCustomerId      String?
+  stripePriceId         String?
+  stripeProductId       String?
+  currentPeriodStart    DateTime?
+  currentPeriodEnd      DateTime?
+  trialStart            DateTime?
+  trialEnd              DateTime?
+  canceledAt            DateTime?
+  seatCount             Int            @default(1)
+  seatLimit             Int            @default(2)
+  invoiceCountThisMonth Int            @default(0)
+  storageUsedMB         Int            @default(0)
+  apiCallsToday         Int            @default(0)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime
+  organizations         organizations?
+
+  @@index([status])
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+}
+
+model suspicious_activities {
+  id           String                 @id
+  userId       Int?
+  companyId    String?
+  activityType SuspiciousActivityType @default(FAILED_LOGIN_SPIKE)
+  description  String
+  severity     ActivitySeverity       @default(LOW)
+  detectedAt   DateTime               @default(now())
+  resolvedAt   DateTime?
+  metadata     Json?
+  evidence     Json?
+  isActive     Boolean?               @default(true)
+  companies    Company?               @relation(fields: [companyId], references: [id])
+  users        User?                  @relation(fields: [userId], references: [id])
+}
+
+model trend_patterns {
+  id                  String    @id
+  companyId           String
+  patternType         String
+  patternCategory     String
+  severity            String    @default("LOW")
+  detectedAt          DateTime  @default(now())
+  patternStart        DateTime?
+  patternEnd          DateTime?
+  baselineValue       Float?
+  currentValue        Float?
+  deviationPercentage Float?
+  confidenceScore     Float     @default(0)
+  description         String?
+  potentialCauses     String[]
+  recommendedActions  String[]
+  status              String    @default("ACTIVE")
+  resolvedAt          DateTime?
+  metadata            Json?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime
+  companies           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([detectedAt])
+  @@index([patternType])
+  @@index([severity])
+  @@index([status])
+}
+
+model usage_frequency_metrics {
+  id                        String    @id
+  companyId                 String
+  userId                    Int
+  dailySessions             Int       @default(0)
+  weeklySessions            Int       @default(0)
+  monthlySessions           Int       @default(0)
+  avgSessionDurationMinutes Float     @default(0)
+  totalActions              Int       @default(0)
+  uniqueFeaturesUsed        Int       @default(0)
+  featureDiversityScore     Float     @default(0)
+  userSegment               String    @default("CASUAL")
+  engagementLevel           String    @default("LOW")
+  frequencyTrend            String    @default("STABLE")
+  engagementTrend           String    @default("STABLE")
+  lastSessionAt             DateTime?
+  daysSinceLastSession      Int       @default(0)
+  metadata                  Json?
+  calculatedAt              DateTime  @default(now())
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime
+  companies                 Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  users                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, userId])
+  @@index([calculatedAt])
+  @@index([companyId])
+  @@index([userId])
+  @@index([userSegment])
+}
+
+model user_activity_logs {
+  id        String   @id
+  userId    Int
+  companyId String
+  action    String
+  details   Json?
+  timestamp DateTime @default(now())
+  sessionId String?
+  companies Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  users     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model user_sessions {
+  id           String    @id
+  userId       Int
+  sessionToken String    @unique
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+  isActive     Boolean?  @default(true)
+  startTime    DateTime?
+  duration     Float?
+  totalActions Int?      @default(0)
+  companyId    String?
+  users        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
   USER
   ADMIN
   MANAGER
+  FOUNDER
   AUDITOR
-  INVENTORY_MANAGER
-}
-
-enum InventoryHistoryType {
-  INITIAL
-  RECEIVED
-  SOLD
-  ADJUSTMENT
-  RETURNED
-  DAMAGED
-  DELETED
-  TRANSFER_IN
-  TRANSFER_OUT
+  OWNER
 }
 
 enum TransactionType {
@@ -500,10 +975,13 @@ enum TransactionType {
   BILL
   EXPENSE
   ADJUSTMENT
+  JOURNAL
+  TRANSFER
 }
 
 enum InvoiceStatus {
   DRAFT
+  PENDING
   SENT
   PAID
   OVERDUE
@@ -516,72 +994,284 @@ enum AccountType {
   EQUITY
   REVENUE
   EXPENSE
-}
-
-enum PaymentMethod {
-  CASH
-  CREDIT_CARD
-  BANK_TRANSFER
-  CHECK
-  ONLINE
-}
-
-enum DocumentCategory {
-  INVOICE
-  RECEIPT
-  CONTRACT
   OTHER
 }
 
-model StripeWebhookEvent {
-  id          Int      @id @default(autoincrement())
-  eventId     String   @unique
-  eventType   String
-  processed   Boolean  @default(false)
-  processedAt DateTime?
-  payload     Json
-  createdAt   DateTime @default(now())
-
-  @@index([eventId])
-  @@index([eventType])
-  @@index([processed])
-  @@map("stripe_webhook_events")
+enum AccessLevel {
+  READ_ONLY
+  STANDARD
+  ELEVATED
+  FULL_ACCESS
+  ADMIN
 }
 
-model AuditLog {
-  id          Int      @id @default(autoincrement())
-  userId      Int?
-  userEmail   String?
-  userRole    String?
-  action      String
-  resource    String
-  resourceId  String?
-  details     String?
-  ipAddress   String?
-  userAgent   String?
-  status      String   @default("success")
-  errorMessage String?
-  metadata    Json?
-  createdAt   DateTime @default(now())
-
-  @@index([userId])
-  @@index([action])
-  @@index([resource])
-  @@index([status])
-  @@index([createdAt])
-  @@map("audit_logs")
+enum ActivitySeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }
 
-enum AuditAction {
-  LOGIN
-  LOGOUT
-  CREATE
-  UPDATE
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+  ESCALATED
+  DISMISSED
+  EXPIRED
+}
+
+enum AlertType {
+  CHURN_WARNING
+  REVENUE_DROP
+  PAYMENT_FAILURE
+  USAGE_DECLINE
+  ENGAGEMENT_DROP
+  COMPLIANCE_ISSUE
+  SECURITY_THREAT
+  PERFORMANCE_DEGRADATION
+  BUDGET_OVERRUN
+  CASH_FLOW_ALERT
+  CONTRACT_EXPIRATION
+  RENEWAL_OPPORTUNITY
+}
+
+enum ApiUsage {
+  GET
+  POST
+  PUT
   DELETE
-  SUSPEND
-  ACTIVATE
-  RESET_PASSWORD
-  EMERGENCY_ACTION
-  BILLING_PAUSE
-  MAINTENANCE_MODE
+  PATCH
+}
+
+enum AuditStatus {
+  ACTIVE
+  ARCHIVED
+  DELETED
+}
+
+enum AutomationActionType {
+  SOFT_LOCK_TENANT
+  PAUSE_BILLING
+  FLAG_COMPLIANCE_REVIEW
+  TRIGGER_UPGRADE_OUTREACH
+  RECOMMEND_SEAT_GROWTH
+  CREATE_RETENTION_WORKFLOW
+  TRIGGER_MAINTENANCE_WINDOW
+  REQUEST_FOUNDER_REVIEW
+  FORCE_LOGOUT_SESSIONS
+  SIMULATE_INTERVENTION
+  INITIATE_REVENUE_RECOVERY
+  STABILIZE_CASH_FLOW
+  INTERVENE_DELINQUENCY
+  RESCUE_CHURN_RISK
+  CONTAIN_FRAUD_THREAT
+}
+
+enum AutomationCategory {
+  GOVERNANCE_ENFORCEMENT
+  GROWTH_EXPANSION
+  RETENTION_CHURN
+  OPERATIONAL_RISK
+  GOVERNANCE
+  BILLING
+  RISK
+  TRUST_SAFETY
+  CUSTOMER_SUCCESS
+  REVENUE
+  CASHFLOW
+  COMPLIANCE
+  OPERATIONS
+  PERFORMANCE
+  MAINTENANCE
+  SECURITY
+  GENERAL
+}
+
+enum AutomationProposalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXECUTED
+  EXPIRED
+  CANCELLED
+  SIMULATION
+}
+
+enum AutomationProposalType {
+  REVENUE_RECOVERY
+  CASHFLOW_STABILIZATION
+  CUSTOMER_INTERVENTION
+  CHURN_PREVENTION
+  FRAUD_CONTAINMENT
+  GENERAL
+}
+
+enum BillingStatusEnum {
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELLED
+  TRIAL
+  DELINQUENT
+}
+
+enum ControlStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXECUTED
+  FAILED
+  CANCELLED
+}
+
+enum ControlTargetType {
+  USER
+  TENANT
+}
+
+enum DashboardType {
+  OWNER
+  CFO
+  CONTROLLER
+  ACCOUNTANT
+  PROJECT_MANAGER
+  EXTERNAL_ACCOUNTANT
+  AGENCY
+  VENDOR
+  CUSTOMER
+  EXECUTIVE_SUMMARY
+}
+
+enum ExecutionMode {
+  SIMULATION_ONLY
+  HUMAN_APPROVED
+  AUTO_EXECUTE
+}
+
+enum FounderControlAction {
+  FORCE_LOGOUT
+  FREEZE_TENANT
+  SUSPEND_BILLING
+  ENABLE_FEATURE
+  DISABLE_FEATURE
+  ENABLE_AUTOMATION
+  DISABLE_AUTOMATION
+  ADJUST_RISK_THRESHOLD
+  FORCE_EXECUTION
+  ROLLBACK_ACTION
+  HALT_ADAPTIVE_ENGINE
+  APPROVE_MODEL_CHANGE
+  REJECT_MODEL_CHANGE
+  APPROVE_ENUM_VALUE_MIGRATION
+}
+
+enum FounderControlType {
+  FORCE_LOGOUT_USER
+  FREEZE_TENANT
+  SUSPEND_BILLING_ACCESS
+}
+
+enum FounderDecisionImpact {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum InsightSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum InsightStatus {
+  ACTIVE
+  REVIEWED
+  EXECUTED
+  EXPIRED
+  ARCHIVED
+}
+
+enum InsightType {
+  RISK_BRIEFING
+  GROWTH_SIGNAL
+  CHURN_PREDICTION
+  USAGE_PATTERN
+  BILLING_ANOMALY
+  COMPLIANCE_ISSUE
+  AUTOMATION_SUGGESTION
+}
+
+enum MemberRole {
+  MEMBER
+  ADMIN
+  OWNER
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+  CURRENT
+  PARTIAL
+  PAID
+}
+
+enum PredictiveMetricType {
+  CHURN_RISK
+  REVENUE_FORECAST
+  CASH_FLOW_PREDICTION
+  CUSTOMER_LIFETIME_VALUE
+  EXPANSION_OPPORTUNITY
+  RETENTION_SCORE
+  ENGAGEMENT_SCORE
+  HEALTH_SCORE
+  PAYMENT_RISK
+  USAGE_TREND
+}
+
+enum RelationshipStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
+  TERMINATED
+  EXPIRED
+}
+
+enum RelationshipType {
+  BOOKKEEPING
+  TAX_PREPARATION
+  AUDIT
+  CONSULTING
+  FULL_SERVICE
+  ADVISORY
+}
+
+enum SuspiciousActivityType {
+  UNUSUAL_LOGIN
+  MULTIPLE_FAILED_LOGINS
+  LARGE_TRANSACTION
+  UNEXPECTED_ACCESS
+  SUSPICIOUS_IP
+  FAILED_LOGIN_SPIKE
+  IMPOSSIBLE_TRAVEL
+  API_ABUSE
+  PERMISSION_ESCALATION
+  BILLING_TAMPER
+  DATA_EXPORT_SPIKE
+  SESSION_HIJACK
+  MULTI_ACCOUNT_ACTIVITY
+  GENERAL_ANOMALY
 }
