@@ -4,7 +4,7 @@ import { invoicesService, type Invoice } from "@/services/invoices.service";
 import { companiesService } from "@/services/companies.service";
 import { Button } from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import Label from "@/components/ui/label";
+import Label from "@/components/ui/Label";
 import { toast } from "sonner";
 import {
   Table,
@@ -13,14 +13,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/Table";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/Dialog";
 import { InvoiceForm } from "./InvoiceForm";
 import { Pencil, Trash2, Plus, Search, Filter } from "lucide-react";
 import type { CreateInvoiceFormData } from "@/schemas/invoice.schema";

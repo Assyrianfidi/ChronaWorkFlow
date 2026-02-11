@@ -11,14 +11,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/Table";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/Dialog";
 import { UserForm } from "./UserForm";
 import { Pencil, Trash2, Plus, Search } from "lucide-react";
 import type { CreateUserFormData } from "@/schemas/user.schema";

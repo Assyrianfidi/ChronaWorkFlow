@@ -6,7 +6,7 @@ import {
 } from "@/schemas/company.schema";
 import { Button } from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import Label from "@/components/ui/label";
+import Label from "@/components/ui/Label";
 
 interface CompanyFormProps {
   onSubmit: (data: CreateCompanyFormData) => void;

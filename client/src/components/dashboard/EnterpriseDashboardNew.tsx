@@ -22,7 +22,7 @@ import {
   type Column,
 } from "@/components/ui/EnterpriseDataTable";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
-import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
 interface EnterpriseDashboardNewProps {

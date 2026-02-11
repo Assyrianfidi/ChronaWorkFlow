@@ -12,11 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@/components/ui/Dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import Label from "@/components/ui/Label";
 import Input from "@/components/ui/Input";
-import { Slider } from "@/components/ui/slider";
+import { Slider } from "@/components/ui/Slider";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/Badge";

@@ -8,15 +8,15 @@ import { useQuery } from "@tanstack/react-query";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Badge } from "@/components/ui/Badge";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+} from "@/components/ui/Popover";
+import { Calendar } from "@/components/ui/Calendar";
 import { CalendarIcon } from "lucide-react";
 import {
   Table,
@@ -25,7 +25,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/Table";
 import {
   BarChart,
   Bar,
@@ -52,7 +52,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import { useView } from "@/contexts/ViewContext";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/Alert";
 import { DateRange } from "react-day-picker";
 
 interface ReportLine {

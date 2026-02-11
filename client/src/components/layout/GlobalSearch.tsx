@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/Dialog";
 import Input from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { ScrollArea } from "@/components/ui/ScrollArea";

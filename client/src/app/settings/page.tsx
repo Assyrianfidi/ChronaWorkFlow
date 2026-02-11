@@ -8,7 +8,7 @@ import EnterpriseDataTable, {
 } from "@/components/ui/EnterpriseDataTable";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
 import { EnterpriseInput } from "@/components/ui/EnterpriseInput";
-import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
   Users,
   Plus,

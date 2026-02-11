@@ -9,15 +9,15 @@ import { api } from "@/lib/api";
 import { useToast } from "@/hooks/useToast";
 import { useView } from "@/contexts/ViewContext";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/Dialog";
 import {
   Table,
   TableBody,
@@ -25,7 +25,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/Table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,9 +38,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/Select";
 import { Badge } from "@/components/ui/Badge";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/components/ui/Switch";
 import {
   ChevronRight,
   ChevronDown,
