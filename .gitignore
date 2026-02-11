@@ -135,6 +135,7 @@ coverage/
 *.config.js
 *.config.ts
 !vite.config.ts
+!**/theme.config.ts
 tsconfig*.json
 jest.config.*
 .eslintrc.*
