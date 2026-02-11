@@ -21,14 +21,8 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-      minify: "terser",
+      minify: "esbuild",
       sourcemap: !isProduction,
-      terserOptions: {
-        compress: {
-          drop_console: isProduction,
-          drop_debugger: true,
-        },
-      },
     },
   
   // Security headers
