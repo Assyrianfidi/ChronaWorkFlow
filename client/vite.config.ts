@@ -16,8 +16,8 @@ export default defineConfig(({ mode }) => {
           manualChunks: {
             vendor: ["react", "react-dom"],
             router: ["react-router-dom"],
-            ui: ["@headlessui/react", "@heroicons/react"],
-            utils: ["lodash", "date-fns", "clsx"],
+            ui: ["@heroicons/react"],
+            utils: ["date-fns", "clsx"],
           },
         },
       },
