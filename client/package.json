@@ -20,7 +20,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:accessibility": "vitest run src/__tests__/accessibility --coverage",
-    "prepare": "husky install",
+    "prepare": "echo 'Skipping Husky in production build'",
     "security:audit": "npm audit --audit-level moderate",
     "security:check": "npm audit --audit-level high",
     "security:fix": "npm audit fix",

@@ -126,4 +126,5 @@ export function getCurrentCompanyId(): string {
 }
 
 // Export the axios instance for direct use if needed
+export { api };
 export default api;

@@ -14,4 +14,5 @@ const LoadingSpinner = ({ fullScreen = false }: LoadingSpinnerProps) => {
   );
 };
 
+export { LoadingSpinner };
 export default LoadingSpinner;
