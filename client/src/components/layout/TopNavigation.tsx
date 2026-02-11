@@ -80,7 +80,9 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
       if (!showNotifications) return;
       requestAnimationFrame(() => {
         notificationsMenuRef.current
-          ?.querySelector<HTMLElement>("button,[href],[tabindex]:not([tabindex='-1'])")
+          ?.querySelector<HTMLElement>(
+            "button,[href],[tabindex]:not([tabindex='-1'])",
+          )
           ?.focus();
       });
     }, [showNotifications]);
@@ -89,7 +91,9 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
       if (!showUserMenu) return;
       requestAnimationFrame(() => {
         userMenuRef.current
-          ?.querySelector<HTMLElement>("button,[href],[tabindex]:not([tabindex='-1'])")
+          ?.querySelector<HTMLElement>(
+            "button,[href],[tabindex]:not([tabindex='-1'])",
+          )
           ?.focus();
       });
     }, [showUserMenu]);
@@ -196,7 +200,9 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
 
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                <span className="text-accent-foreground font-bold text-sm">A</span>
+                <span className="text-accent-foreground font-bold text-sm">
+                  A
+                </span>
               </div>
               <h1 className="text-xl font-bold">AccuBooks</h1>
             </div>
@@ -289,7 +295,9 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
                               aria-hidden="true"
                               className={cn(
                                 "w-2 h-2 rounded-full mt-2",
-                                notification.read ? "bg-muted-foreground/40" : "bg-accent",
+                                notification.read
+                                  ? "bg-muted-foreground/40"
+                                  : "bg-accent",
                               )}
                             />
                             <div className="flex-1">
@@ -352,7 +360,9 @@ const TopNavigation = React.forwardRef<HTMLDivElement, TopNavigationProps>(
                 >
                   <div className="p-3 border-b border-border">
                     <p className="font-medium text-foreground">Admin User</p>
-                    <p className="text-xs text-muted-foreground">admin@accubooks.com</p>
+                    <p className="text-xs text-muted-foreground">
+                      admin@accubooks.com
+                    </p>
                   </div>
                   <div className="py-2">
                     {userMenuItems.map((item, index) => (

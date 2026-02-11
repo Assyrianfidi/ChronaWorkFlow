@@ -3,21 +3,21 @@
  * Full-featured COA management with hierarchical display
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-import { useToast } from '@/hooks/useToast';
-import { useView } from '@/contexts/ViewContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import React, { useState, useEffect, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { useToast } from "@/hooks/useToast";
+import { useView } from "@/contexts/ViewContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -25,22 +25,22 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import {
   ChevronRight,
   ChevronDown,
@@ -52,15 +52,15 @@ import {
   Calculator,
   Building2,
   FileSpreadsheet,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Types
 interface Account {
   id: string;
   code: string;
   name: string;
-  type: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+  type: "asset" | "liability" | "equity" | "revenue" | "expense";
   subtype?: string;
   parentId?: string | null;
   isBankAccount: boolean;
@@ -79,7 +79,7 @@ interface Account {
 interface CreateAccountData {
   code: string;
   name: string;
-  type: Account['type'];
+  type: Account["type"];
   subtype?: string;
   parentId?: string;
   isBankAccount?: boolean;
@@ -92,36 +92,72 @@ interface CreateAccountData {
 }
 
 const ACCOUNT_TYPES = [
-  { value: 'asset', label: 'Asset', color: 'bg-blue-100 text-blue-800' },
-  { value: 'liability', label: 'Liability', color: 'bg-red-100 text-red-800' },
-  { value: 'equity', label: 'Equity', color: 'bg-green-100 text-green-800' },
-  { value: 'revenue', label: 'Revenue', color: 'bg-emerald-100 text-emerald-800' },
-  { value: 'expense', label: 'Expense', color: 'bg-orange-100 text-orange-800' },
+  { value: "asset", label: "Asset", color: "bg-blue-100 text-blue-800" },
+  { value: "liability", label: "Liability", color: "bg-red-100 text-red-800" },
+  { value: "equity", label: "Equity", color: "bg-green-100 text-green-800" },
+  {
+    value: "revenue",
+    label: "Revenue",
+    color: "bg-emerald-100 text-emerald-800",
+  },
+  {
+    value: "expense",
+    label: "Expense",
+    color: "bg-orange-100 text-orange-800",
+  },
 ];
 
 const ACCOUNT_SUBTYPES: Record<string, string[]> = {
-  asset: ['current_asset', 'long_term_asset', 'contra_asset', 'bank', 'accounts_receivable', 'inventory', 'fixed_asset'],
-  liability: ['current_liability', 'long_term_liability', 'accounts_payable', 'credit_card', 'payroll_liability'],
-  equity: ['equity', 'retained_earnings', 'owner_equity', 'dividend'],
-  revenue: ['operating_revenue', 'non_operating_revenue', 'sales', 'service_revenue'],
-  expense: ['cogs', 'operating_expense', 'payroll_expense', 'marketing', 'rent', 'utilities'],
+  asset: [
+    "current_asset",
+    "long_term_asset",
+    "contra_asset",
+    "bank",
+    "accounts_receivable",
+    "inventory",
+    "fixed_asset",
+  ],
+  liability: [
+    "current_liability",
+    "long_term_liability",
+    "accounts_payable",
+    "credit_card",
+    "payroll_liability",
+  ],
+  equity: ["equity", "retained_earnings", "owner_equity", "dividend"],
+  revenue: [
+    "operating_revenue",
+    "non_operating_revenue",
+    "sales",
+    "service_revenue",
+  ],
+  expense: [
+    "cogs",
+    "operating_expense",
+    "payroll_expense",
+    "marketing",
+    "rent",
+    "utilities",
+  ],
 };
 
 export const ChartOfAccounts: React.FC = () => {
   const { toast } = useToast();
   const { mainView, mainViewConfig } = useView();
   const queryClient = useQueryClient();
-  const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
+  const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(
+    new Set(),
+  );
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedType, setSelectedType] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState<string>("all");
 
   // Fetch accounts
   const { data: accounts = [], isLoading } = useQuery({
-    queryKey: ['accounts'],
+    queryKey: ["accounts"],
     queryFn: async () => {
-      const response = await api.get('/ledger/accounts');
+      const response = await api.get("/ledger/accounts");
       return response.data.data;
     },
   });
@@ -129,38 +165,45 @@ export const ChartOfAccounts: React.FC = () => {
   // Create account mutation
   const createMutation = useMutation({
     mutationFn: async (data: CreateAccountData) => {
-      const response = await api.post('/ledger/accounts', data);
+      const response = await api.post("/ledger/accounts", data);
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
       setIsCreateDialogOpen(false);
       toast({
-        title: 'Account created',
-        description: 'The account has been added to your Chart of Accounts.',
+        title: "Account created",
+        description: "The account has been added to your Chart of Accounts.",
       });
     },
     onError: (error: any) => {
       toast({
-        title: 'Error creating account',
-        description: error.response?.data?.error?.message || 'An error occurred',
-        variant: 'destructive',
+        title: "Error creating account",
+        description:
+          error.response?.data?.error?.message || "An error occurred",
+        variant: "destructive",
       });
     },
   });
 
   // Update account mutation
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<CreateAccountData> }) => {
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<CreateAccountData>;
+    }) => {
       const response = await api.patch(`/ledger/accounts/${id}`, data);
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
       setEditingAccount(null);
       toast({
-        title: 'Account updated',
-        description: 'Changes have been saved.',
+        title: "Account updated",
+        description: "Changes have been saved.",
       });
     },
   });
@@ -194,17 +237,17 @@ export const ChartOfAccounts: React.FC = () => {
   // Filter and build hierarchy
   const hierarchicalAccounts = React.useMemo(() => {
     let filtered = accounts;
-    
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = accounts.filter(
         (acc: Account) =>
           acc.name.toLowerCase().includes(query) ||
-          acc.code.toLowerCase().includes(query)
+          acc.code.toLowerCase().includes(query),
       );
     }
-    
-    if (selectedType !== 'all') {
+
+    if (selectedType !== "all") {
       filtered = filtered.filter((acc: Account) => acc.type === selectedType);
     }
 
@@ -245,8 +288,8 @@ export const ChartOfAccounts: React.FC = () => {
       <React.Fragment key={account.id}>
         <TableRow
           className={cn(
-            'hover:bg-muted/50 cursor-pointer',
-            !account.isActive && 'opacity-50'
+            "hover:bg-muted/50 cursor-pointer",
+            !account.isActive && "opacity-50",
           )}
           style={{ paddingLeft: `${account.level * 24}px` }}
         >
@@ -284,19 +327,38 @@ export const ChartOfAccounts: React.FC = () => {
             </div>
           </TableCell>
           <TableCell>
-            <Badge className={cn('text-xs', typeConfig?.color)}>
+            <Badge className={cn("text-xs", typeConfig?.color)}>
               {typeConfig?.label}
             </Badge>
           </TableCell>
           <TableCell className="text-right font-mono">
-            ${account.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            $
+            {account.balance.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+            })}
           </TableCell>
           <TableCell>
             <div className="flex gap-1">
-              {account.trackLocation && <Badge variant="outline" className="text-xs">Loc</Badge>}
-              {account.trackDepartment && <Badge variant="outline" className="text-xs">Dept</Badge>}
-              {account.trackProject && <Badge variant="outline" className="text-xs">Proj</Badge>}
-              {account.trackClass && <Badge variant="outline" className="text-xs">Class</Badge>}
+              {account.trackLocation && (
+                <Badge variant="outline" className="text-xs">
+                  Loc
+                </Badge>
+              )}
+              {account.trackDepartment && (
+                <Badge variant="outline" className="text-xs">
+                  Dept
+                </Badge>
+              )}
+              {account.trackProject && (
+                <Badge variant="outline" className="text-xs">
+                  Proj
+                </Badge>
+              )}
+              {account.trackClass && (
+                <Badge variant="outline" className="text-xs">
+                  Class
+                </Badge>
+              )}
             </div>
           </TableCell>
           <TableCell className="text-right">
@@ -326,20 +388,21 @@ export const ChartOfAccounts: React.FC = () => {
                   }}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  {account.isActive ? 'Deactivate' : 'Activate'}
+                  {account.isActive ? "Deactivate" : "Activate"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </TableCell>
         </TableRow>
-        {hasChildren && isExpanded &&
+        {hasChildren &&
+          isExpanded &&
           account.children!.map((child) => renderAccountRow(child))}
       </React.Fragment>
     );
   };
 
   // Accountant view shows additional columns and features
-  const isAccountantView = mainView === 'accountant';
+  const isAccountantView = mainView === "accountant";
 
   return (
     <div className="space-y-6">
@@ -347,10 +410,11 @@ export const ChartOfAccounts: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            {mainViewConfig.terminology.accounting || 'Chart of Accounts'}
+            {mainViewConfig.terminology.accounting || "Chart of Accounts"}
           </h1>
           <p className="text-muted-foreground">
-            Manage your {mainView === 'business' ? 'money accounts' : 'General Ledger'}
+            Manage your{" "}
+            {mainView === "business" ? "money accounts" : "General Ledger"}
           </p>
         </div>
         <div className="flex gap-2">
@@ -369,7 +433,10 @@ export const ChartOfAccounts: React.FC = () => {
             <FileSpreadsheet className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
@@ -435,7 +502,10 @@ export const ChartOfAccounts: React.FC = () => {
               </TableRow>
             ) : hierarchicalAccounts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell
+                  colSpan={7}
+                  className="text-center py-8 text-muted-foreground"
+                >
                   No accounts found. Create your first account to get started.
                 </TableCell>
               </TableRow>
@@ -448,7 +518,10 @@ export const ChartOfAccounts: React.FC = () => {
 
       {/* Edit Dialog */}
       {editingAccount && (
-        <Dialog open={!!editingAccount} onOpenChange={() => setEditingAccount(null)}>
+        <Dialog
+          open={!!editingAccount}
+          onOpenChange={() => setEditingAccount(null)}
+        >
           <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>Edit Account</DialogTitle>
@@ -474,20 +547,24 @@ interface AccountFormProps {
   isLoading: boolean;
 }
 
-const AccountForm: React.FC<AccountFormProps> = ({ account, onSubmit, isLoading }) => {
+const AccountForm: React.FC<AccountFormProps> = ({
+  account,
+  onSubmit,
+  isLoading,
+}) => {
   const [formData, setFormData] = useState<CreateAccountData>({
-    code: account?.code || '',
-    name: account?.name || '',
-    type: account?.type || 'asset',
-    subtype: account?.subtype || '',
+    code: account?.code || "",
+    name: account?.name || "",
+    type: account?.type || "asset",
+    subtype: account?.subtype || "",
     parentId: account?.parentId || undefined,
     isBankAccount: account?.isBankAccount || false,
-    taxCode: account?.taxCode || '',
+    taxCode: account?.taxCode || "",
     trackLocation: account?.trackLocation || false,
     trackDepartment: account?.trackDepartment || false,
     trackProject: account?.trackProject || false,
     trackClass: account?.trackClass || false,
-    description: account?.description || '',
+    description: account?.description || "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -525,7 +602,7 @@ const AccountForm: React.FC<AccountFormProps> = ({ account, onSubmit, isLoading 
           <Label htmlFor="type">Account Type</Label>
           <Select
             value={formData.type}
-            onValueChange={(value: Account['type']) =>
+            onValueChange={(value: Account["type"]) =>
               setFormData({ ...formData, type: value })
             }
           >
@@ -545,7 +622,9 @@ const AccountForm: React.FC<AccountFormProps> = ({ account, onSubmit, isLoading 
           <Label htmlFor="subtype">Subtype</Label>
           <Select
             value={formData.subtype}
-            onValueChange={(value) => setFormData({ ...formData, subtype: value })}
+            onValueChange={(value) =>
+              setFormData({ ...formData, subtype: value })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Select subtype" />
@@ -553,7 +632,9 @@ const AccountForm: React.FC<AccountFormProps> = ({ account, onSubmit, isLoading 
             <SelectContent>
               {ACCOUNT_SUBTYPES[formData.type]?.map((subtype) => (
                 <SelectItem key={subtype} value={subtype}>
-                  {subtype.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                  {subtype
+                    .replace(/_/g, " ")
+                    .replace(/\b\w/g, (l) => l.toUpperCase())}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -566,7 +647,9 @@ const AccountForm: React.FC<AccountFormProps> = ({ account, onSubmit, isLoading 
         <Input
           id="description"
           value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
           placeholder="Optional description"
         />
       </div>
@@ -632,7 +715,11 @@ const AccountForm: React.FC<AccountFormProps> = ({ account, onSubmit, isLoading 
 
       <div className="flex justify-end gap-2 pt-4">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Saving...' : account ? 'Update Account' : 'Create Account'}
+          {isLoading
+            ? "Saving..."
+            : account
+              ? "Update Account"
+              : "Create Account"}
         </Button>
       </div>
     </form>

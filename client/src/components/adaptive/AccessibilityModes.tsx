@@ -615,15 +615,14 @@ export function AccessibilityControls() {
         {/* Toggle Options */}
         <div className="space-y-2">
           <label className="flex items-center gap-2">
-            
-        <label htmlFor="input-lkis53m7d" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-lkis53m7d"
+            <label htmlFor="input-lkis53m7d" className="sr-only">
+              Checkbox
+            </label>
+            <input
+              id="input-lkis53m7d"
               type="checkbox"
               checked={config.focusVisible}
-              onChange={(e) =>
-       updateConfig({ focusVisible: e.target.checked })}
+              onChange={(e) => updateConfig({ focusVisible: e.target.checked })}
               className="rounded"
             />
             <span className="text-sm text-gray-700 dark:text-gray-300">
@@ -632,15 +631,14 @@ export function AccessibilityControls() {
           </label>
 
           <label className="flex items-center gap-2">
-            
-        <label htmlFor="input-fq5qqbaj0" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-fq5qqbaj0"
+            <label htmlFor="input-fq5qqbaj0" className="sr-only">
+              Checkbox
+            </label>
+            <input
+              id="input-fq5qqbaj0"
               type="checkbox"
               checked={config.reducedMotion}
               onChange={(e) =>
-      
                 updateConfig({ reducedMotion: e.target.checked })
               }
               className="rounded"
@@ -651,15 +649,14 @@ export function AccessibilityControls() {
           </label>
 
           <label className="flex items-center gap-2">
-            
-        <label htmlFor="input-o5381n3cg" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-o5381n3cg"
+            <label htmlFor="input-o5381n3cg" className="sr-only">
+              Checkbox
+            </label>
+            <input
+              id="input-o5381n3cg"
               type="checkbox"
               checked={config.screenReaderOptimized}
               onChange={(e) =>
-      
                 updateConfig({ screenReaderOptimized: e.target.checked })
               }
               className="rounded"
@@ -670,15 +667,14 @@ export function AccessibilityControls() {
           </label>
 
           <label className="flex items-center gap-2">
-            
-        <label htmlFor="input-jkm6maweb" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-jkm6maweb"
+            <label htmlFor="input-jkm6maweb" className="sr-only">
+              Checkbox
+            </label>
+            <input
+              id="input-jkm6maweb"
               type="checkbox"
               checked={config.keyboardNavigation}
               onChange={(e) =>
-      
                 updateConfig({ keyboardNavigation: e.target.checked })
               }
               className="rounded"

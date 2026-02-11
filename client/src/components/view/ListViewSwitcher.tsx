@@ -3,28 +3,28 @@
  * Switch between Compact, Expanded, Grid, and Card list views
  */
 
-import React from 'react';
-import { useView } from '@/contexts/ViewContext';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import {
-  AlignJustify,
-  List,
-  Table,
-  LayoutGrid,
-} from 'lucide-react';
-import { LIST_VIEWS } from '@/config/view.config';
+import React from "react";
+import { useView } from "@/contexts/ViewContext";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { AlignJustify, List, Table, LayoutGrid } from "lucide-react";
+import { LIST_VIEWS } from "@/config/view.config";
 
 export const ListViewSwitcher: React.FC = () => {
   const { listView, setListView } = useView();
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
-      case 'AlignJustify': return AlignJustify;
-      case 'List': return List;
-      case 'Table': return Table;
-      case 'LayoutGrid': return LayoutGrid;
-      default: return List;
+      case "AlignJustify":
+        return AlignJustify;
+      case "List":
+        return List;
+      case "Table":
+        return Table;
+      case "LayoutGrid":
+        return LayoutGrid;
+      default:
+        return List;
     }
   };
 
@@ -37,12 +37,9 @@ export const ListViewSwitcher: React.FC = () => {
         return (
           <Button
             key={view.id}
-            variant={isActive ? 'secondary' : 'ghost'}
+            variant={isActive ? "secondary" : "ghost"}
             size="icon"
-            className={cn(
-              'h-7 w-7',
-              isActive && 'bg-secondary'
-            )}
+            className={cn("h-7 w-7", isActive && "bg-secondary")}
             onClick={() => setListView(view.id)}
             title={`${view.name} - ${view.description}`}
           >

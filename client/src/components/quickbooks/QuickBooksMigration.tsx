@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -7,11 +7,11 @@ import {
   RefreshCw,
   Upload,
   XCircle,
-} from 'lucide-react';
+} from "lucide-react";
 
-import Button from '@/components/ui/Button';
+import Button from "@/components/ui/Button";
 
-type MigrationPhase = 'pending' | 'importing' | 'completed' | 'failed';
+type MigrationPhase = "pending" | "importing" | "completed" | "failed";
 
 type MigrationStatus = {
   status: MigrationPhase;
@@ -36,7 +36,7 @@ type MigrationResult = {
   warnings: string[];
 };
 
-const SUPPORTED_EXTS = ['.qbo', '.ofx', '.qfx', '.iif'] as const;
+const SUPPORTED_EXTS = [".qbo", ".ofx", ".qfx", ".iif"] as const;
 
 export const QuickBooksMigration: React.FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -47,12 +47,16 @@ export const QuickBooksMigration: React.FC = () => {
   const [result, setResult] = useState<MigrationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const accept = useMemo(() => SUPPORTED_EXTS.join(','), []);
+  const accept = useMemo(() => SUPPORTED_EXTS.join(","), []);
 
   const validateAndSetFile = useCallback((nextFile: File) => {
-    const ext = nextFile.name.toLowerCase().slice(nextFile.name.lastIndexOf('.'));
+    const ext = nextFile.name
+      .toLowerCase()
+      .slice(nextFile.name.lastIndexOf("."));
     if (!SUPPORTED_EXTS.includes(ext as (typeof SUPPORTED_EXTS)[number])) {
-      setError(`Invalid file type. Supported formats: ${SUPPORTED_EXTS.join(', ')}`);
+      setError(
+        `Invalid file type. Supported formats: ${SUPPORTED_EXTS.join(", ")}`,
+      );
       return;
     }
 
@@ -99,32 +103,33 @@ export const QuickBooksMigration: React.FC = () => {
 
     setError(null);
     setStatus({
-      status: 'pending',
+      status: "pending",
       progress: 0,
-      currentStep: 'Preparing upload…',
+      currentStep: "Preparing upload…",
       itemsProcessed: 0,
       totalItems: 0,
     });
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
-    const ext = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
-    const endpoint = ext === '.iif' ? '/api/migration/iif' : '/api/migration/qbo';
+    const ext = file.name.toLowerCase().slice(file.name.lastIndexOf("."));
+    const endpoint =
+      ext === ".iif" ? "/api/migration/iif" : "/api/migration/qbo";
 
     try {
       setStatus({
-        status: 'importing',
+        status: "importing",
         progress: 35,
-        currentStep: 'Uploading and importing…',
+        currentStep: "Uploading and importing…",
         itemsProcessed: 0,
         totalItems: 0,
       });
 
       const response = await fetch(endpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: formData,
       });
@@ -134,44 +139,52 @@ export const QuickBooksMigration: React.FC = () => {
       if (data.success) {
         setResult(data.data);
         setStatus({
-          status: 'completed',
+          status: "completed",
           progress: 100,
-          currentStep: 'Migration complete',
+          currentStep: "Migration complete",
           itemsProcessed: data.data.summary.transactionsImported,
           totalItems: data.data.summary.transactionsImported,
         });
       } else {
-        setError(data.error || 'Migration failed');
+        setError(data.error || "Migration failed");
         setStatus((prev) =>
-          prev ? { ...prev, status: 'failed', currentStep: 'Migration failed' } : null,
+          prev
+            ? { ...prev, status: "failed", currentStep: "Migration failed" }
+            : null,
         );
       }
     } catch {
-      setError('Failed to connect to server');
+      setError("Failed to connect to server");
       setStatus((prev) =>
-        prev ? { ...prev, status: 'failed', currentStep: 'Migration failed' } : null,
+        prev
+          ? { ...prev, status: "failed", currentStep: "Migration failed" }
+          : null,
       );
     }
   };
 
   const uploadSurface = useMemo(() => {
-    if (isDragging) return 'border-primary bg-muted/60';
-    if (file) return 'border-primary bg-muted';
-    return 'border-border bg-card hover:bg-muted/30';
+    if (isDragging) return "border-primary bg-muted/60";
+    if (file) return "border-primary bg-muted";
+    return "border-border bg-card hover:bg-muted/30";
   }, [file, isDragging]);
 
-  if (status && status.status !== 'completed' && status.status !== 'failed') {
+  if (status && status.status !== "completed" && status.status !== "failed") {
     return (
       <div className="rounded-xl border border-border bg-card shadow-soft p-8 text-center">
         <RefreshCw className="h-12 w-12 text-primary animate-spin mx-auto" />
-        <div className="mt-4 text-lg font-semibold text-foreground">{status.currentStep}</div>
+        <div className="mt-4 text-lg font-semibold text-foreground">
+          {status.currentStep}
+        </div>
         <div className="mt-6 h-3 w-full rounded-full bg-muted overflow-hidden">
           <div
             className="h-3 bg-primary transition-all duration-500"
             style={{ width: `${status.progress}%` }}
           />
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">{status.progress}%</div>
+        <div className="mt-2 text-xs text-muted-foreground">
+          {status.progress}%
+        </div>
       </div>
     );
   }
@@ -186,12 +199,12 @@ export const QuickBooksMigration: React.FC = () => {
             <XCircle className="h-14 w-14 text-destructive mx-auto" />
           )}
           <div className="mt-4 text-2xl font-semibold text-foreground">
-            {result.success ? 'Migration Complete' : 'Migration Failed'}
+            {result.success ? "Migration Complete" : "Migration Failed"}
           </div>
           <div className="mt-2 text-sm text-muted-foreground">
             {result.success
               ? `Completed in ${result.durationMinutes.toFixed(1)} minutes`
-              : 'Please review errors and try again'}
+              : "Please review errors and try again"}
           </div>
 
           {result.success && (
@@ -206,7 +219,9 @@ export const QuickBooksMigration: React.FC = () => {
                 <div className="text-2xl font-semibold text-foreground">
                   {result.summary.transactionsImported}
                 </div>
-                <div className="text-sm text-muted-foreground">Transactions</div>
+                <div className="text-sm text-muted-foreground">
+                  Transactions
+                </div>
               </div>
               <div className="rounded-lg border border-border bg-muted p-4">
                 <div className="text-2xl font-semibold text-foreground">
@@ -227,7 +242,7 @@ export const QuickBooksMigration: React.FC = () => {
             <Button
               type="button"
               onClick={() => {
-                window.location.href = '/dashboard';
+                window.location.href = "/dashboard";
               }}
             >
               Go to Dashboard
@@ -293,7 +308,9 @@ export const QuickBooksMigration: React.FC = () => {
 
           {file ? (
             <div className="space-y-1">
-              <div className="text-base font-semibold text-foreground">{file.name}</div>
+              <div className="text-base font-semibold text-foreground">
+                {file.name}
+              </div>
               <div className="text-sm text-muted-foreground">
                 {(file.size / 1024 / 1024).toFixed(2)} MB
               </div>
@@ -303,7 +320,9 @@ export const QuickBooksMigration: React.FC = () => {
               <div className="text-base font-semibold text-foreground">
                 Drag and drop your file here
               </div>
-              <div className="text-sm text-muted-foreground">or click to browse</div>
+              <div className="text-sm text-muted-foreground">
+                or click to browse
+              </div>
             </div>
           )}
 
@@ -348,16 +367,21 @@ export const QuickBooksMigration: React.FC = () => {
           )}
 
           <div className="text-xs text-muted-foreground">
-            Supported: {SUPPORTED_EXTS.join(', ')}
+            Supported: {SUPPORTED_EXTS.join(", ")}
           </div>
         </div>
       </div>
 
       <div className="rounded-xl border border-border bg-card shadow-soft p-6">
-        <div className="text-base font-semibold text-foreground">Supported Formats</div>
+        <div className="text-base font-semibold text-foreground">
+          Supported Formats
+        </div>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
           {SUPPORTED_EXTS.map((ext) => (
-            <div key={ext} className="rounded-lg border border-border bg-muted p-3">
+            <div
+              key={ext}
+              className="rounded-lg border border-border bg-muted p-3"
+            >
               <div className="text-sm font-semibold text-foreground">{ext}</div>
               <div className="text-sm text-muted-foreground">
                 Export from QuickBooks or your bank and upload here.

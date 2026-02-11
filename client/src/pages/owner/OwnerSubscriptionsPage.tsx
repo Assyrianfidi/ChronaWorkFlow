@@ -4,7 +4,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { OwnerLayout } from "@/components/layout/OwnerLayout";
 import { DataTable } from "@/components/ui/DataTable";
 import Button from "@/components/ui/Button";
-import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/Select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Textarea } from "@/components/ui/Textarea";
 import {
@@ -17,7 +22,12 @@ import {
 } from "@/components/ui/Dialog";
 import { ownerApi } from "@/api";
 
-type SubscriptionStatus = "trialing" | "active" | "past_due" | "canceled" | "paused";
+type SubscriptionStatus =
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "paused";
 
 type SubscriptionRow = {
   subscription: {
@@ -99,7 +109,9 @@ export default function OwnerSubscriptionsPage() {
       return res.data;
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["owner-subscriptions"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["owner-subscriptions"],
+      });
       setOverrideOpen(false);
       setEditing(null);
     },
@@ -116,7 +128,10 @@ export default function OwnerSubscriptionsPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <div className="text-sm font-medium">Status</div>
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v)}>
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => setStatusFilter(v)}
+            >
               <SelectValue placeholder="All" />
               <SelectContent>
                 <SelectItem value="">All</SelectItem>
@@ -148,7 +163,8 @@ export default function OwnerSubscriptionsPage() {
             {
               key: "plan",
               title: "Plan",
-              render: (_v, row) => `${row.plan.code} (${row.plan.billingInterval})`,
+              render: (_v, row) =>
+                `${row.plan.code} (${row.plan.billingInterval})`,
             },
             {
               key: "status",
@@ -158,17 +174,20 @@ export default function OwnerSubscriptionsPage() {
             {
               key: "currentPeriodEnd",
               title: "Period ends",
-              render: (_v, row) => formatDate(row.subscription.currentPeriodEnd),
+              render: (_v, row) =>
+                formatDate(row.subscription.currentPeriodEnd),
             },
             {
               key: "ownerGrantedFree",
               title: "Free",
-              render: (_v, row) => (row.subscription.ownerGrantedFree ? "Yes" : "No"),
+              render: (_v, row) =>
+                row.subscription.ownerGrantedFree ? "Yes" : "No",
             },
             {
               key: "cancelAtPeriodEnd",
               title: "Cancel at end",
-              render: (_v, row) => (row.subscription.cancelAtPeriodEnd ? "Yes" : "No"),
+              render: (_v, row) =>
+                row.subscription.cancelAtPeriodEnd ? "Yes" : "No",
             },
             {
               key: "actions",
@@ -231,7 +250,9 @@ export default function OwnerSubscriptionsPage() {
                   {editing ? editing.company.name : "—"}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {editing ? `${editing.plan.code} • ${editing.subscription.id}` : ""}
+                  {editing
+                    ? `${editing.plan.code} • ${editing.subscription.id}`
+                    : ""}
                 </div>
               </div>
 
@@ -239,7 +260,9 @@ export default function OwnerSubscriptionsPage() {
                 <div className="text-sm font-medium">Status</div>
                 <Select
                   value={form.status}
-                  onValueChange={(v) => setForm((p) => ({ ...p, status: v as any }))}
+                  onValueChange={(v) =>
+                    setForm((p) => ({ ...p, status: v as any }))
+                  }
                 >
                   <SelectValue placeholder="Select status" />
                   <SelectContent>
@@ -279,7 +302,9 @@ export default function OwnerSubscriptionsPage() {
                 <Textarea
                   aria-label="Owner notes"
                   value={form.ownerNotes}
-                  onChange={(e) => setForm((p) => ({ ...p, ownerNotes: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, ownerNotes: e.target.value }))
+                  }
                   placeholder="Reason for override (visible in audit logs)"
                   className="min-h-[96px]"
                 />
@@ -296,7 +321,10 @@ export default function OwnerSubscriptionsPage() {
               >
                 Cancel
               </Button>
-              <Button onClick={() => updateMutation.mutate()} disabled={updateMutation.isPending}>
+              <Button
+                onClick={() => updateMutation.mutate()}
+                disabled={updateMutation.isPending}
+              >
                 {updateMutation.isPending ? "Saving…" : "Apply"}
               </Button>
             </DialogFooter>

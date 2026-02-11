@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { RealTimeAccessibilityMonitor } from './RealTimeAccessibilityMonitor';
+import { RealTimeAccessibilityMonitor } from "./RealTimeAccessibilityMonitor";
 
 const meta: Meta<typeof RealTimeAccessibilityMonitor> = {
   title: "Accessibility/RealTimeAccessibilityMonitor",

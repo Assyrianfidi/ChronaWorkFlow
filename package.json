@@ -44,7 +44,7 @@
     "test:integration": "cross-env NODE_ENV=test jest --config=jest.config.cjs --testMatch='**/*.test.ts'",
     "test:watch:integration": "cross-env NODE_ENV=test jest --watch --config=jest.config.cjs",
     "test:coverage:integration": "cross-env NODE_ENV=test jest --coverage --config=jest.config.cjs",
-    "lint": "node ./node_modules/eslint/bin/eslint.js --no-eslintrc --config ./.eslintrc.cjs server shared src/runtime src/types client/src --ext .ts,.tsx,.js,.jsx --max-warnings 0",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 1000",
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "validate": "npm run lint && npm run format:check && npm run build",

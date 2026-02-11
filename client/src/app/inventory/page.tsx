@@ -322,12 +322,15 @@ export default function InventoryPage() {
   const totalItemsCount = inventoryItems?.length ?? 0;
   const selectedCount = selectedItems.size;
   const allSelected = totalItemsCount > 0 && selectedCount === totalItemsCount;
-  const partiallySelected = selectedCount > 0 && selectedCount < totalItemsCount;
+  const partiallySelected =
+    selectedCount > 0 && selectedCount < totalItemsCount;
 
   const sortDirectionFor = useCallback(
     (column: "name" | "quantity" | "value") => {
       if (sortBy !== column) return "none" as const;
-      return sortOrder === "asc" ? ("ascending" as const) : ("descending" as const);
+      return sortOrder === "asc"
+        ? ("ascending" as const)
+        : ("descending" as const);
     },
     [sortBy, sortOrder],
   );

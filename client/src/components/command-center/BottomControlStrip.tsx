@@ -1,9 +1,9 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
-import { 
-  CheckCircle2, 
-  XCircle, 
-  RefreshCw, 
+import React from "react";
+import { cn } from "@/lib/utils";
+import {
+  CheckCircle2,
+  XCircle,
+  RefreshCw,
   Calculator,
   ArrowRight,
   TrendingUp,
@@ -12,14 +12,14 @@ import {
   Clock,
   Zap,
   Shield,
-  MessageSquare
-} from 'lucide-react';
+  MessageSquare,
+} from "lucide-react";
 
 interface SuggestedAction {
   id: string;
   label: string;
   icon: React.ReactNode;
-  variant: 'primary' | 'secondary' | 'danger' | 'warning';
+  variant: "primary" | "secondary" | "danger" | "warning";
   onClick: () => void;
 }
 
@@ -28,7 +28,7 @@ interface Simulation {
   title: string;
   currentValue: string;
   projectedValue: string;
-  impact: 'positive' | 'negative' | 'neutral';
+  impact: "positive" | "negative" | "neutral";
   description: string;
 }
 
@@ -43,7 +43,7 @@ interface Approval {
 }
 
 interface BottomControlStripProps {
-  context: 'overview' | 'department' | 'decision' | 'priority';
+  context: "overview" | "department" | "decision" | "priority";
   suggestedActions?: SuggestedAction[];
   simulations?: Simulation[];
   pendingApprovals?: Approval[];
@@ -52,41 +52,112 @@ interface BottomControlStripProps {
 
 const defaultActions: Record<string, SuggestedAction[]> = {
   overview: [
-    { id: 'refresh', label: 'Refresh Data', icon: <RefreshCw className="w-4 h-4" />, variant: 'secondary', onClick: () => {} },
-    { id: 'reports', label: 'View Reports', icon: <Calculator className="w-4 h-4" />, variant: 'secondary', onClick: () => {} },
-    { id: 'alert', label: 'Alert Team', icon: <MessageSquare className="w-4 h-4" />, variant: 'primary', onClick: () => {} },
+    {
+      id: "refresh",
+      label: "Refresh Data",
+      icon: <RefreshCw className="w-4 h-4" />,
+      variant: "secondary",
+      onClick: () => {},
+    },
+    {
+      id: "reports",
+      label: "View Reports",
+      icon: <Calculator className="w-4 h-4" />,
+      variant: "secondary",
+      onClick: () => {},
+    },
+    {
+      id: "alert",
+      label: "Alert Team",
+      icon: <MessageSquare className="w-4 h-4" />,
+      variant: "primary",
+      onClick: () => {},
+    },
   ],
   department: [
-    { id: 'details', label: 'View Details', icon: <ArrowRight className="w-4 h-4" />, variant: 'primary', onClick: () => {} },
-    { id: 'alert-dept', label: 'Alert Department', icon: <MessageSquare className="w-4 h-4" />, variant: 'warning', onClick: () => {} },
+    {
+      id: "details",
+      label: "View Details",
+      icon: <ArrowRight className="w-4 h-4" />,
+      variant: "primary",
+      onClick: () => {},
+    },
+    {
+      id: "alert-dept",
+      label: "Alert Department",
+      icon: <MessageSquare className="w-4 h-4" />,
+      variant: "warning",
+      onClick: () => {},
+    },
   ],
   decision: [
-    { id: 'simulate', label: 'Run Simulation', icon: <Calculator className="w-4 h-4" />, variant: 'secondary', onClick: () => {} },
-    { id: 'approve', label: 'Approve Action', icon: <CheckCircle2 className="w-4 h-4" />, variant: 'primary', onClick: () => {} },
-    { id: 'escalate', label: 'Escalate', icon: <Zap className="w-4 h-4" />, variant: 'warning', onClick: () => {} },
+    {
+      id: "simulate",
+      label: "Run Simulation",
+      icon: <Calculator className="w-4 h-4" />,
+      variant: "secondary",
+      onClick: () => {},
+    },
+    {
+      id: "approve",
+      label: "Approve Action",
+      icon: <CheckCircle2 className="w-4 h-4" />,
+      variant: "primary",
+      onClick: () => {},
+    },
+    {
+      id: "escalate",
+      label: "Escalate",
+      icon: <Zap className="w-4 h-4" />,
+      variant: "warning",
+      onClick: () => {},
+    },
   ],
   priority: [
-    { id: 'quick-approve', label: 'Quick Approve', icon: <CheckCircle2 className="w-4 h-4" />, variant: 'primary', onClick: () => {} },
-    { id: 'review', label: 'Review Details', icon: <ArrowRight className="w-4 h-4" />, variant: 'secondary', onClick: () => {} },
-    { id: 'delegate', label: 'Delegate', icon: <Shield className="w-4 h-4" />, variant: 'secondary', onClick: () => {} },
+    {
+      id: "quick-approve",
+      label: "Quick Approve",
+      icon: <CheckCircle2 className="w-4 h-4" />,
+      variant: "primary",
+      onClick: () => {},
+    },
+    {
+      id: "review",
+      label: "Review Details",
+      icon: <ArrowRight className="w-4 h-4" />,
+      variant: "secondary",
+      onClick: () => {},
+    },
+    {
+      id: "delegate",
+      label: "Delegate",
+      icon: <Shield className="w-4 h-4" />,
+      variant: "secondary",
+      onClick: () => {},
+    },
   ],
 };
 
 const variantStyles = {
-  primary: 'bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/25',
-  secondary: 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700',
-  danger: 'bg-rose-500 hover:bg-rose-400 text-white shadow-lg shadow-rose-500/25',
-  warning: 'bg-amber-500 hover:bg-amber-400 text-slate-900 shadow-lg shadow-amber-500/25',
+  primary:
+    "bg-indigo-500 hover:bg-indigo-400 text-white shadow-lg shadow-indigo-500/25",
+  secondary:
+    "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700",
+  danger:
+    "bg-rose-500 hover:bg-rose-400 text-white shadow-lg shadow-rose-500/25",
+  warning:
+    "bg-amber-500 hover:bg-amber-400 text-slate-900 shadow-lg shadow-amber-500/25",
 };
 
 export const BottomControlStrip: React.FC<BottomControlStripProps> = ({
-  context = 'overview',
+  context = "overview",
   suggestedActions,
   simulations,
   pendingApprovals,
   onActionClick,
 }) => {
-  const actions = suggestedActions || defaultActions[context] || defaultActions.overview;
+  const actions =
+    suggestedActions || defaultActions[context] || defaultActions.overview;
   const hasSimulations = simulations && simulations.length > 0;
   const hasApprovals = pendingApprovals && pendingApprovals.length > 0;
 
@@ -102,15 +173,20 @@ export const BottomControlStrip: React.FC<BottomControlStripProps> = ({
             {/* Left: Context Info */}
             <div className="flex items-center gap-4">
               <div className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800">
-                <span className="text-xs text-slate-500 uppercase tracking-wider">Context</span>
-                <span className="ml-2 text-sm font-medium text-slate-300 capitalize">{context}</span>
+                <span className="text-xs text-slate-500 uppercase tracking-wider">
+                  Context
+                </span>
+                <span className="ml-2 text-sm font-medium text-slate-300 capitalize">
+                  {context}
+                </span>
               </div>
 
               {hasApprovals && (
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30">
                   <Clock className="w-4 h-4 text-amber-400" />
                   <span className="text-sm text-amber-400">
-                    {pendingApprovals.length} pending approval{pendingApprovals.length > 1 ? 's' : ''}
+                    {pendingApprovals.length} pending approval
+                    {pendingApprovals.length > 1 ? "s" : ""}
                   </span>
                 </div>
               )}
@@ -124,26 +200,38 @@ export const BottomControlStrip: React.FC<BottomControlStripProps> = ({
                     key={sim.id}
                     className={cn(
                       "flex items-center gap-3 px-4 py-2 rounded-lg border backdrop-blur-sm",
-                      sim.impact === 'positive' ? 'bg-emerald-500/10 border-emerald-500/30' :
-                      sim.impact === 'negative' ? 'bg-rose-500/10 border-rose-500/30' :
-                      'bg-slate-800/50 border-slate-700'
+                      sim.impact === "positive"
+                        ? "bg-emerald-500/10 border-emerald-500/30"
+                        : sim.impact === "negative"
+                          ? "bg-rose-500/10 border-rose-500/30"
+                          : "bg-slate-800/50 border-slate-700",
                     )}
                   >
                     <div className="text-sm">
                       <span className="text-slate-400">{sim.title}:</span>
-                      <span className="ml-2 font-medium text-slate-200">{sim.currentValue}</span>
+                      <span className="ml-2 font-medium text-slate-200">
+                        {sim.currentValue}
+                      </span>
                       <ArrowRight className="inline w-3 h-3 mx-2 text-slate-500" />
-                      <span className={cn(
-                        "font-bold",
-                        sim.impact === 'positive' ? 'text-emerald-400' :
-                        sim.impact === 'negative' ? 'text-rose-400' :
-                        'text-slate-300'
-                      )}>
+                      <span
+                        className={cn(
+                          "font-bold",
+                          sim.impact === "positive"
+                            ? "text-emerald-400"
+                            : sim.impact === "negative"
+                              ? "text-rose-400"
+                              : "text-slate-300",
+                        )}
+                      >
                         {sim.projectedValue}
                       </span>
                     </div>
-                    {sim.impact === 'positive' && <TrendingUp className="w-4 h-4 text-emerald-400" />}
-                    {sim.impact === 'negative' && <TrendingDown className="w-4 h-4 text-rose-400" />}
+                    {sim.impact === "positive" && (
+                      <TrendingUp className="w-4 h-4 text-emerald-400" />
+                    )}
+                    {sim.impact === "negative" && (
+                      <TrendingDown className="w-4 h-4 text-rose-400" />
+                    )}
                   </div>
                 ))}
               </div>
@@ -157,7 +245,9 @@ export const BottomControlStrip: React.FC<BottomControlStripProps> = ({
                     <div className="text-sm">
                       <span className="text-slate-400">{approval.title}</span>
                       {approval.amount && (
-                        <span className="ml-2 font-medium text-slate-200">{approval.amount}</span>
+                        <span className="ml-2 font-medium text-slate-200">
+                          {approval.amount}
+                        </span>
                       )}
                     </div>
                     <button
@@ -189,7 +279,7 @@ export const BottomControlStrip: React.FC<BottomControlStripProps> = ({
                   }}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                    variantStyles[action.variant]
+                    variantStyles[action.variant],
                   )}
                 >
                   {action.icon}

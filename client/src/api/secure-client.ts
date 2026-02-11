@@ -65,7 +65,8 @@ const secureRequestInterceptor = (config: InternalAxiosRequestConfig) => {
   }
 
   (config as any).metadata = {
-    startTime: typeof performance !== "undefined" ? performance.now() : Date.now(),
+    startTime:
+      typeof performance !== "undefined" ? performance.now() : Date.now(),
   };
 
   return config;
@@ -73,17 +74,26 @@ const secureRequestInterceptor = (config: InternalAxiosRequestConfig) => {
 
 // Secure response interceptor
 const secureResponseInterceptor = (response: AxiosResponse) => {
-  const reqId = response?.headers?.[REQUEST_ID_HEADER] || response?.headers?.["x-request-id"];
+  const reqId =
+    response?.headers?.[REQUEST_ID_HEADER] ||
+    response?.headers?.["x-request-id"];
   safeStoreRequestId(reqId);
 
   const meta = (response.config as any)?.metadata;
   const startTime = meta?.startTime;
   if (typeof startTime === "number") {
-    const endTime = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const endTime =
+      typeof performance !== "undefined" ? performance.now() : Date.now();
     const durationMs = Math.max(0, endTime - startTime);
     const slowMs = Number((import.meta as any).env?.VITE_SLOW_API_MS || 1500);
-    const sampleRate = Number((import.meta as any).env?.VITE_PERF_SAMPLE_RATE || 0.05);
-    if (Number.isFinite(slowMs) && durationMs >= slowMs && shouldSample(sampleRate)) {
+    const sampleRate = Number(
+      (import.meta as any).env?.VITE_PERF_SAMPLE_RATE || 0.05,
+    );
+    if (
+      Number.isFinite(slowMs) &&
+      durationMs >= slowMs &&
+      shouldSample(sampleRate)
+    ) {
       console.warn("slow_api_call", {
         url: response.config?.url,
         method: response.config?.method,
@@ -110,7 +120,9 @@ const secureResponseInterceptor = (response: AxiosResponse) => {
 
 // Error interceptor with security handling
 const errorInterceptor = (error: any) => {
-  const reqId = error?.response?.headers?.[REQUEST_ID_HEADER] || error?.response?.headers?.["x-request-id"];
+  const reqId =
+    error?.response?.headers?.[REQUEST_ID_HEADER] ||
+    error?.response?.headers?.["x-request-id"];
   safeStoreRequestId(reqId);
 
   // Log security-relevant errors
@@ -121,11 +133,18 @@ const errorInterceptor = (error: any) => {
   const meta = error?.config?.metadata;
   const startTime = meta?.startTime;
   if (typeof startTime === "number") {
-    const endTime = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const endTime =
+      typeof performance !== "undefined" ? performance.now() : Date.now();
     const durationMs = Math.max(0, endTime - startTime);
     const slowMs = Number((import.meta as any).env?.VITE_SLOW_API_MS || 1500);
-    const sampleRate = Number((import.meta as any).env?.VITE_PERF_SAMPLE_RATE || 0.05);
-    if (Number.isFinite(slowMs) && durationMs >= slowMs && shouldSample(sampleRate)) {
+    const sampleRate = Number(
+      (import.meta as any).env?.VITE_PERF_SAMPLE_RATE || 0.05,
+    );
+    if (
+      Number.isFinite(slowMs) &&
+      durationMs >= slowMs &&
+      shouldSample(sampleRate)
+    ) {
       console.warn("slow_api_error", {
         url: error?.config?.url,
         method: error?.config?.method,

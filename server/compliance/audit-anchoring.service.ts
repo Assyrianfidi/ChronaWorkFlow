@@ -126,7 +126,7 @@ async function fetchUnanchoredEvents(
   startTime?: Date,
   endTime?: Date
 ): Promise<Array<{ id: string; hash: string; timestamp: Date }>> {
-  let query = `
+  const query = `
     SELECT id, hash, timestamp 
     FROM audit_logs 
     WHERE anchored = false OR anchored IS NULL

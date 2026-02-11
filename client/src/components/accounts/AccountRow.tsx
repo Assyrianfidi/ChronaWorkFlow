@@ -1,12 +1,12 @@
 import React from "react";
-import { TableRow, TableCell } from '../components/ui/table';
+import { TableRow, TableCell } from "../components/ui/table";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Badge } from '../components/ui/badge';
+import { Badge } from "../components/ui/badge";
 import {
   getAccountTypeLabel,
   getAccountTypeVariant,
-} from '../../types/accounts';
-import type { AccountWithChildren } from '../../types/accounts';
+} from "../../types/accounts";
+import type { AccountWithChildren } from "../../types/accounts";
 
 interface AccountRowProps {
   account: AccountWithChildren;

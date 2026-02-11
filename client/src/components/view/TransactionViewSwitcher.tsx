@@ -3,33 +3,33 @@
  * Switch between Classic, Simplified, and Split transaction views
  */
 
-import React from 'react';
-import { useView } from '@/contexts/ViewContext';
+import React from "react";
+import { useView } from "@/contexts/ViewContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/DropdownMenu';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import {
-  FormInput,
-  Minimize2,
-  Columns,
-  Check,
-} from 'lucide-react';
-import { TRANSACTION_VIEWS } from '@/config/view.config';
+} from "@/components/ui/DropdownMenu";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { FormInput, Minimize2, Columns, Check } from "lucide-react";
+import { TRANSACTION_VIEWS } from "@/config/view.config";
 
 export const TransactionViewSwitcher: React.FC = () => {
-  const { transactionView, setTransactionView, transactionViewConfig } = useView();
+  const { transactionView, setTransactionView, transactionViewConfig } =
+    useView();
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
-      case 'FormInput': return FormInput;
-      case 'Minimize2': return Minimize2;
-      case 'Columns': return Columns;
-      default: return FormInput;
+      case "FormInput":
+        return FormInput;
+      case "Minimize2":
+        return Minimize2;
+      case "Columns":
+        return Columns;
+      default:
+        return FormInput;
     }
   };
 
@@ -53,8 +53,8 @@ export const TransactionViewSwitcher: React.FC = () => {
               key={view.id}
               onClick={() => setTransactionView(view.id)}
               className={cn(
-                'flex items-center justify-between',
-                isActive && 'bg-primary/10'
+                "flex items-center justify-between",
+                isActive && "bg-primary/10",
               )}
             >
               <div className="flex items-center gap-2">

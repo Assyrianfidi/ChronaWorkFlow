@@ -3,7 +3,7 @@
  * Visual display of 30-day cash flow predictions
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 import {
   TrendingUp,
   TrendingDown,
@@ -15,9 +15,9 @@ import {
   Info,
   CheckCircle,
   XCircle,
-} from 'lucide-react';
+} from "lucide-react";
 
-import Button from '@/components/ui/Button';
+import Button from "@/components/ui/Button";
 
 interface DailyForecast {
   date: string;
@@ -29,7 +29,7 @@ interface DailyForecast {
 }
 
 interface RiskAssessment {
-  overallRisk: 'low' | 'medium' | 'high' | 'critical';
+  overallRisk: "low" | "medium" | "high" | "critical";
   cashRunwayDays: number;
   shortfallProbability: number;
   shortfallDate: string | null;
@@ -38,11 +38,11 @@ interface RiskAssessment {
 }
 
 interface ForecastInsight {
-  type: 'warning' | 'opportunity' | 'trend' | 'action';
+  type: "warning" | "opportunity" | "trend" | "action";
   title: string;
   description: string;
   impact: number;
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
 }
 
 interface ForecastData {
@@ -59,7 +59,7 @@ interface ForecastData {
   };
 }
 
-type Scenario = 'base' | 'conservative' | 'aggressive';
+type Scenario = "base" | "conservative" | "aggressive";
 type HorizonMonths = 3 | 6 | 12;
 
 type ForecastAssumptions = {
@@ -77,7 +77,10 @@ const DEFAULT_ASSUMPTIONS: ForecastAssumptions = {
   seasonalityEnabled: false,
 };
 
-const SCENARIO_DELTAS: Record<Scenario, { revDeltaPct: number; expDeltaPct: number }> = {
+const SCENARIO_DELTAS: Record<
+  Scenario,
+  { revDeltaPct: number; expDeltaPct: number }
+> = {
   base: { revDeltaPct: 0, expDeltaPct: 0 },
   conservative: { revDeltaPct: -1, expDeltaPct: 1 },
   aggressive: { revDeltaPct: 2, expDeltaPct: -0.5 },
@@ -98,9 +101,9 @@ function monthlyPctToDailyFactor(monthlyPct: number) {
 }
 
 function getConfidenceLabel(rangePct: number) {
-  if (rangePct <= 0.1) return 'High confidence';
-  if (rangePct <= 0.18) return 'Moderate confidence';
-  return 'Low confidence';
+  if (rangePct <= 0.1) return "High confidence";
+  if (rangePct <= 0.18) return "Moderate confidence";
+  return "Low confidence";
 }
 
 type ProjectionResult = {
@@ -110,7 +113,7 @@ type ProjectionResult = {
   projectedCashPosition: number;
   projectedLow: number;
   projectedHigh: number;
-  overallRisk: RiskAssessment['overallRisk'];
+  overallRisk: RiskAssessment["overallRisk"];
   dailyForecasts: DailyForecast[];
 };
 
@@ -118,11 +121,10 @@ export const CashFlowForecast: React.FC = () => {
   const [forecast, setForecast] = useState<ForecastData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [scenario, setScenario] = useState<Scenario>('base');
+  const [scenario, setScenario] = useState<Scenario>("base");
   const [horizonMonths, setHorizonMonths] = useState<HorizonMonths>(6);
-  const [assumptions, setAssumptions] = useState<ForecastAssumptions>(
-    DEFAULT_ASSUMPTIONS,
-  );
+  const [assumptions, setAssumptions] =
+    useState<ForecastAssumptions>(DEFAULT_ASSUMPTIONS);
 
   useEffect(() => {
     fetchForecast();
@@ -133,21 +135,24 @@ export const CashFlowForecast: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(`/api/ai/forecast?days=${BASE_FORECAST_DAYS}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+      const response = await fetch(
+        `/api/ai/forecast?days=${BASE_FORECAST_DAYS}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-      });
+      );
 
       const data = await response.json();
 
       if (data.success) {
         setForecast(data.data);
       } else {
-        setError(data.error || 'Failed to load forecast');
+        setError(data.error || "Failed to load forecast");
       }
     } catch (err) {
-      setError('Failed to connect to server');
+      setError("Failed to connect to server");
     } finally {
       setIsLoading(false);
     }
@@ -155,27 +160,28 @@ export const CashFlowForecast: React.FC = () => {
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
-      case 'low':
-        return 'bg-muted text-foreground';
-      case 'medium':
-        return 'bg-secondary text-secondary-foreground';
-      case 'high':
-        return 'bg-accent text-accent-foreground';
-      case 'critical':
-        return 'bg-accent text-accent-foreground';
-      default: return 'bg-muted text-muted-foreground';
+      case "low":
+        return "bg-muted text-foreground";
+      case "medium":
+        return "bg-secondary text-secondary-foreground";
+      case "high":
+        return "bg-accent text-accent-foreground";
+      case "critical":
+        return "bg-accent text-accent-foreground";
+      default:
+        return "bg-muted text-muted-foreground";
     }
   };
 
   const getInsightIcon = (type: string) => {
     switch (type) {
-      case 'warning':
+      case "warning":
         return <AlertTriangle className="w-5 h-5 text-muted-foreground" />;
-      case 'opportunity':
+      case "opportunity":
         return <TrendingUp className="w-5 h-5 text-muted-foreground" />;
-      case 'trend':
+      case "trend":
         return <TrendingDown className="w-5 h-5 text-muted-foreground" />;
-      case 'action':
+      case "action":
         return <ArrowRight className="w-5 h-5 text-muted-foreground" />;
       default:
         return <Info className="w-5 h-5 text-muted-foreground" />;
@@ -183,18 +189,18 @@ export const CashFlowForecast: React.FC = () => {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -234,13 +240,17 @@ export const CashFlowForecast: React.FC = () => {
 
     const baseAvgInflow =
       baseDays > 0
-        ? forecast.dailyForecasts.reduce((acc, d) => acc + d.projectedInflow, 0) /
-          baseDays
+        ? forecast.dailyForecasts.reduce(
+            (acc, d) => acc + d.projectedInflow,
+            0,
+          ) / baseDays
         : 0;
     const baseAvgOutflow =
       baseDays > 0
-        ? forecast.dailyForecasts.reduce((acc, d) => acc + d.projectedOutflow, 0) /
-          baseDays
+        ? forecast.dailyForecasts.reduce(
+            (acc, d) => acc + d.projectedOutflow,
+            0,
+          ) / baseDays
         : 0;
 
     let runningBalance = forecast.currentCashPosition;
@@ -251,41 +261,42 @@ export const CashFlowForecast: React.FC = () => {
       forecast.dailyForecasts[0]?.date ?? new Date().toISOString(),
     );
 
-    const dailyForecasts: DailyForecast[] = Array.from({ length: horizonDays }).map(
-      (_, i) => {
-        const baseDay = forecast.dailyForecasts[i];
-        if (baseDay) {
-          inflow = baseDay.projectedInflow;
-          outflow = baseDay.projectedOutflow;
-        } else {
-          inflow = inflow * inflowDailyFactor;
-          outflow = outflow * outflowDailyFactor;
-        }
+    const dailyForecasts: DailyForecast[] = Array.from({
+      length: horizonDays,
+    }).map((_, i) => {
+      const baseDay = forecast.dailyForecasts[i];
+      if (baseDay) {
+        inflow = baseDay.projectedInflow;
+        outflow = baseDay.projectedOutflow;
+      } else {
+        inflow = inflow * inflowDailyFactor;
+        outflow = outflow * outflowDailyFactor;
+      }
 
-        const seasonality = assumptions.seasonalityEnabled
-          ? 1 + SEASONALITY_AMPLITUDE * Math.sin((2 * Math.PI * i) / 365)
-          : 1;
+      const seasonality = assumptions.seasonalityEnabled
+        ? 1 + SEASONALITY_AMPLITUDE * Math.sin((2 * Math.PI * i) / 365)
+        : 1;
 
-        const projectedInflow = inflow * seasonality;
-        const projectedOutflow = outflow;
-        const netCashFlow = projectedInflow - projectedOutflow;
-        runningBalance = runningBalance + netCashFlow;
+      const projectedInflow = inflow * seasonality;
+      const projectedOutflow = outflow;
+      const netCashFlow = projectedInflow - projectedOutflow;
+      runningBalance = runningBalance + netCashFlow;
 
-        const d = new Date(start);
-        d.setDate(start.getDate() + i);
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
 
-        return {
-          date: d.toISOString().slice(0, 10),
-          projectedInflow,
-          projectedOutflow,
-          netCashFlow,
-          runningBalance,
-          confidence: clamp(avgConfidence - (i / horizonDays) * 0.2, 0.3, 0.95),
-        };
-      },
-    );
+      return {
+        date: d.toISOString().slice(0, 10),
+        projectedInflow,
+        projectedOutflow,
+        netCashFlow,
+        runningBalance,
+        confidence: clamp(avgConfidence - (i / horizonDays) * 0.2, 0.3, 0.95),
+      };
+    });
 
-    const projectedCashPosition = dailyForecasts[dailyForecasts.length - 1]?.runningBalance ??
+    const projectedCashPosition =
+      dailyForecasts[dailyForecasts.length - 1]?.runningBalance ??
       forecast.projectedCashPosition;
     const delta = Math.abs(projectedCashPosition) * rangePct;
 
@@ -295,14 +306,14 @@ export const CashFlowForecast: React.FC = () => {
       Number.POSITIVE_INFINITY,
     );
 
-    const overallRisk: RiskAssessment['overallRisk'] =
+    const overallRisk: RiskAssessment["overallRisk"] =
       projectedLow < 0 || minRunningBalance < 0
-        ? 'critical'
+        ? "critical"
         : minRunningBalance < forecast.currentCashPosition * 0.2
-          ? 'high'
+          ? "high"
           : minRunningBalance < forecast.currentCashPosition * 0.5
-            ? 'medium'
-            : 'low';
+            ? "medium"
+            : "low";
 
     return {
       horizonDays,
@@ -349,8 +360,9 @@ export const CashFlowForecast: React.FC = () => {
     projection?.projectedCashPosition ?? forecast.projectedCashPosition;
   const projectedLow = projection?.projectedLow ?? projectedCashPosition;
   const projectedHigh = projection?.projectedHigh ?? projectedCashPosition;
-  const confidenceLabel = projection?.confidenceLabel ?? 'Moderate confidence';
-  const overallRisk = projection?.overallRisk ?? forecast.riskAssessment.overallRisk;
+  const confidenceLabel = projection?.confidenceLabel ?? "Moderate confidence";
+  const overallRisk =
+    projection?.overallRisk ?? forecast.riskAssessment.overallRisk;
 
   const cashChange = projectedCashPosition - forecast.currentCashPosition;
   const cashChangePercent =
@@ -383,29 +395,31 @@ export const CashFlowForecast: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-muted rounded-lg p-4">
-            <div className="text-sm font-semibold text-foreground mb-3">Scenario</div>
+            <div className="text-sm font-semibold text-foreground mb-3">
+              Scenario
+            </div>
             <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
                 size="sm"
-                variant={scenario === 'base' ? 'secondary' : 'outline'}
-                onClick={() => setScenario('base')}
+                variant={scenario === "base" ? "secondary" : "outline"}
+                onClick={() => setScenario("base")}
               >
                 Base
               </Button>
               <Button
                 type="button"
                 size="sm"
-                variant={scenario === 'conservative' ? 'secondary' : 'outline'}
-                onClick={() => setScenario('conservative')}
+                variant={scenario === "conservative" ? "secondary" : "outline"}
+                onClick={() => setScenario("conservative")}
               >
                 Conservative
               </Button>
               <Button
                 type="button"
                 size="sm"
-                variant={scenario === 'aggressive' ? 'secondary' : 'outline'}
-                onClick={() => setScenario('aggressive')}
+                variant={scenario === "aggressive" ? "secondary" : "outline"}
+                onClick={() => setScenario("aggressive")}
               >
                 Aggressive
               </Button>
@@ -413,14 +427,16 @@ export const CashFlowForecast: React.FC = () => {
           </div>
 
           <div className="bg-muted rounded-lg p-4">
-            <div className="text-sm font-semibold text-foreground mb-3">Time horizon</div>
+            <div className="text-sm font-semibold text-foreground mb-3">
+              Time horizon
+            </div>
             <div className="flex flex-wrap gap-2">
               {[3, 6, 12].map((m) => (
                 <Button
                   key={m}
                   type="button"
                   size="sm"
-                  variant={horizonMonths === m ? 'secondary' : 'outline'}
+                  variant={horizonMonths === m ? "secondary" : "outline"}
                   onClick={() => setHorizonMonths(m as HorizonMonths)}
                 >
                   {m} months
@@ -430,7 +446,9 @@ export const CashFlowForecast: React.FC = () => {
           </div>
 
           <div className="bg-muted rounded-lg p-4">
-            <div className="text-sm font-semibold text-foreground mb-3">Assumptions</div>
+            <div className="text-sm font-semibold text-foreground mb-3">
+              Assumptions
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-xs font-medium text-muted-foreground">
@@ -516,13 +534,13 @@ export const CashFlowForecast: React.FC = () => {
               ) : (
                 <TrendingDown className="w-4 h-4" />
               )}
-              {cashChangePercent >= 0 ? '+' : ''}
-              {cashChangePercent.toFixed(1)}%
-              <span className="mx-1">ΓÇó</span>
+              {cashChangePercent >= 0 ? "+" : ""}
+              {cashChangePercent.toFixed(1)}%<span className="mx-1">ΓÇó</span>
               {confidenceLabel}
             </div>
             <div className="text-xs text-muted-foreground mt-1">
-              Range: {formatCurrency(projectedLow)} ΓÇô {formatCurrency(projectedHigh)}
+              Range: {formatCurrency(projectedLow)} ΓÇô{" "}
+              {formatCurrency(projectedHigh)}
             </div>
           </div>
 
@@ -531,7 +549,9 @@ export const CashFlowForecast: React.FC = () => {
               <AlertTriangle className="w-4 h-4" />
               Risk Level
             </div>
-            <div className={`inline-flex px-3 py-1 rounded-full text-sm font-medium capitalize ${getRiskColor(overallRisk)}`}>
+            <div
+              className={`inline-flex px-3 py-1 rounded-full text-sm font-medium capitalize ${getRiskColor(overallRisk)}`}
+            >
               {overallRisk}
             </div>
           </div>
@@ -558,28 +578,32 @@ export const CashFlowForecast: React.FC = () => {
             {(projection?.dailyForecasts ?? forecast.dailyForecasts)
               .slice(0, 14)
               .map((day, index) => {
-              const isPositive = day.netCashFlow >= 0;
-              const barHeight = Math.min(100, Math.abs(day.netCashFlow) / 100);
-              
-              return (
-                <div key={index} className="flex flex-col items-center w-16">
-                  <div className="h-24 w-full flex items-end justify-center">
-                    <div
-                      className={`w-8 rounded-t transition-all ${
-                        isPositive ? 'bg-primary' : 'bg-primary/40'
-                      }`}
-                      style={{ height: `${barHeight}%`, minHeight: '4px' }}
-                    />
+                const isPositive = day.netCashFlow >= 0;
+                const barHeight = Math.min(
+                  100,
+                  Math.abs(day.netCashFlow) / 100,
+                );
+
+                return (
+                  <div key={index} className="flex flex-col items-center w-16">
+                    <div className="h-24 w-full flex items-end justify-center">
+                      <div
+                        className={`w-8 rounded-t transition-all ${
+                          isPositive ? "bg-primary" : "bg-primary/40"
+                        }`}
+                        style={{ height: `${barHeight}%`, minHeight: "4px" }}
+                      />
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      {formatDate(day.date)}
+                    </div>
+                    <div className="text-xs font-medium text-muted-foreground">
+                      {isPositive ? "+" : ""}
+                      {formatCurrency(day.netCashFlow)}
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    {formatDate(day.date)}
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    {isPositive ? '+' : ''}{formatCurrency(day.netCashFlow)}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         </div>
       </div>
@@ -607,11 +631,11 @@ export const CashFlowForecast: React.FC = () => {
                 </div>
                 <span
                   className={`px-2 py-1 rounded text-xs font-medium ${
-                    insight.priority === 'high'
-                      ? 'bg-secondary text-secondary-foreground'
-                      : insight.priority === 'medium'
-                        ? 'bg-accent text-accent-foreground'
-                        : 'bg-muted text-muted-foreground'
+                    insight.priority === "high"
+                      ? "bg-secondary text-secondary-foreground"
+                      : insight.priority === "medium"
+                        ? "bg-accent text-accent-foreground"
+                        : "bg-muted text-muted-foreground"
                   }`}
                 >
                   {insight.priority}
@@ -630,7 +654,10 @@ export const CashFlowForecast: React.FC = () => {
           </h3>
           <ul className="space-y-2">
             {forecast.riskAssessment.recommendations.map((rec, index) => (
-              <li key={index} className="flex items-start gap-2 text-muted-foreground">
+              <li
+                key={index}
+                className="flex items-start gap-2 text-muted-foreground"
+              >
                 <ArrowRight className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 {rec}
               </li>
@@ -643,7 +670,8 @@ export const CashFlowForecast: React.FC = () => {
       <div className="bg-muted rounded-lg p-4 flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Info className="w-4 h-4" />
-          Forecast accuracy: {(forecast.accuracy.historicalAccuracy * 100).toFixed(0)}%
+          Forecast accuracy:{" "}
+          {(forecast.accuracy.historicalAccuracy * 100).toFixed(0)}%
           <span className="mx-2">•</span>
           Data quality: {forecast.accuracy.dataQuality}
           <span className="mx-2">•</span>

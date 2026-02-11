@@ -113,7 +113,8 @@ const EnterpriseDashboardNew = React.forwardRef<
       render: (value) => {
         const typeColors = {
           Invoice: "bg-primary/10 text-primary",
-          Expense: "bg-destructive/10 text-destructive dark:text-destructive-500",
+          Expense:
+            "bg-destructive/10 text-destructive dark:text-destructive-500",
           Payment: "bg-success/10 text-success-700 dark:text-success",
         };
         return (
@@ -156,7 +157,8 @@ const EnterpriseDashboardNew = React.forwardRef<
         const statusColors = {
           Paid: "bg-success/10 text-success-700 dark:text-success",
           Pending: "bg-warning/10 text-warning-700 dark:text-warning",
-          Overdue: "bg-destructive/10 text-destructive dark:text-destructive-500",
+          Overdue:
+            "bg-destructive/10 text-destructive dark:text-destructive-500",
           Completed: "bg-primary/10 text-primary",
         };
         return (
@@ -350,7 +352,9 @@ const EnterpriseDashboardNew = React.forwardRef<
               <div className="text-center">
                 <div className="w-24 h-24 mx-auto mb-2 rounded-full border-8 border-border" />
                 <p className="text-muted-foreground">Pie Chart</p>
-                <p className="text-sm text-muted-foreground">Expense by category</p>
+                <p className="text-sm text-muted-foreground">
+                  Expense by category
+                </p>
                 <div className="mt-4 space-y-1 text-xs text-muted-foreground">
                   {chartData.expenses.map((item, index) => (
                     <div

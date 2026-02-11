@@ -89,7 +89,9 @@ const FormField: React.FC<FormFieldProps> = ({
       <label className="block text-sm font-medium text-foreground">
         {label}
         {required && (
-          <span className="text-destructive dark:text-destructive-500 ml-1">*</span>
+          <span className="text-destructive dark:text-destructive-500 ml-1">
+            *
+          </span>
         )}
       </label>
 
@@ -100,7 +102,10 @@ const FormField: React.FC<FormFieldProps> = ({
       )}
 
       {error && (
-        <p className="text-sm text-destructive dark:text-destructive-500" role="alert">
+        <p
+          className="text-sm text-destructive dark:text-destructive-500"
+          role="alert"
+        >
           {error}
         </p>
       )}

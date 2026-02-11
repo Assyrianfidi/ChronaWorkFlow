@@ -38,7 +38,9 @@ const NotFoundPage = React.forwardRef<HTMLDivElement, NotFoundPageProps>(
 
           {/* Error Content */}
           <div className="mb-8">
-            <h1 className="text-9xl font-bold text-muted-foreground/30 mb-4">404</h1>
+            <h1 className="text-9xl font-bold text-muted-foreground/30 mb-4">
+              404
+            </h1>
             <h2 className="text-3xl font-bold text-foreground mb-4">
               Page Not Found
             </h2>

@@ -18,11 +18,7 @@ import {
   keepPreviousData,
 } from "@tanstack/react-query";
 import { reportService } from "@/services/reportService";
-import {
-  Report,
-  ReportFormData,
-  ReportListResponse,
-} from "@/types/report";
+import { Report, ReportFormData, ReportListResponse } from "@/types/report";
 import { QueryParams } from "@/types/common";
 import { useToast } from "@/hooks/use-toast";
 

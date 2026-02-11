@@ -1,6 +1,6 @@
 "use client";
 
-import { LoadingState } from '@/components/ui/LoadingState';
+import { LoadingState } from "@/components/ui/LoadingState";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth-store";
@@ -18,7 +18,5 @@ export default function SignOutPage() {
     handleSignOut();
   }, [router]);
 
-  return (
-    <LoadingState size="sm" />
-  );
+  return <LoadingState size="sm" />;
 }

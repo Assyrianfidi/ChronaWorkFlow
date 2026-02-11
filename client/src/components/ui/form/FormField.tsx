@@ -38,9 +38,7 @@ export function FormField({
         </label>
       )}
       {description && (
-        <p className="text-xs text-muted-foreground">
-          {description}
-        </p>
+        <p className="text-xs text-muted-foreground">{description}</p>
       )}
       <div className="mt-1">
         {React.cloneElement(children, {
@@ -51,9 +49,7 @@ export function FormField({
         })}
       </div>
       {errorMessage && (
-        <p className="mt-1 text-sm text-destructive">
-          {errorMessage}
-        </p>
+        <p className="mt-1 text-sm text-destructive">{errorMessage}</p>
       )}
     </div>
   );

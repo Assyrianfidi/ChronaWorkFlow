@@ -27,13 +27,20 @@ export interface CashFlowData {
 }
 
 export class DashboardKpiService {
-  async getKPIs(companyId: string, period: "7-day" | "30-day" | "quarter" = "30-day"): Promise<DashboardKPI> {
-    const response = await api.get<DashboardKPI>(`/dashboard/kpis?companyId=${companyId}&period=${period}`);
+  async getKPIs(
+    companyId: string,
+    period: "7-day" | "30-day" | "quarter" = "30-day",
+  ): Promise<DashboardKPI> {
+    const response = await api.get<DashboardKPI>(
+      `/dashboard/kpis?companyId=${companyId}&period=${period}`,
+    );
     return response.data;
   }
 
   async getMetrics(companyId: string): Promise<DashboardMetrics> {
-    const response = await api.get<DashboardMetrics>(`/dashboard/metrics?companyId=${companyId}`);
+    const response = await api.get<DashboardMetrics>(
+      `/dashboard/metrics?companyId=${companyId}`,
+    );
     return response.data;
   }
 
@@ -41,17 +48,23 @@ export class DashboardKpiService {
     companyId: string,
     period: "6-months" | "12-months" | "24-months" = "6-months",
   ): Promise<CashFlowData[]> {
-    const response = await api.get<CashFlowData[]>(`/dashboard/cash-flow?companyId=${companyId}&period=${period}`);
+    const response = await api.get<CashFlowData[]>(
+      `/dashboard/cash-flow?companyId=${companyId}&period=${period}`,
+    );
     return response.data;
   }
 
   async getRecentTransactions(companyId: string, limit = 10) {
-    const response = await api.get(`/transactions?companyId=${companyId}&limit=${limit}`);
+    const response = await api.get(
+      `/transactions?companyId=${companyId}&limit=${limit}`,
+    );
     return response.data;
   }
 
   async getOpenInvoices(companyId: string, limit = 10) {
-    const response = await api.get(`/invoices?companyId=${companyId}&status=open&limit=${limit}`);
+    const response = await api.get(
+      `/invoices?companyId=${companyId}&status=open&limit=${limit}`,
+    );
     return response.data;
   }
 }

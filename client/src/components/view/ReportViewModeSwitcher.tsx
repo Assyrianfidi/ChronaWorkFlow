@@ -3,17 +3,17 @@
  * Switch between Standard, Print, Email, and PDF report layouts
  */
 
-import React from 'react';
-import { useView } from '@/contexts/ViewContext';
+import React from "react";
+import { useView } from "@/contexts/ViewContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/DropdownMenu';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/DropdownMenu";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   Monitor,
   Printer,
@@ -21,8 +21,8 @@ import {
   FileText,
   Check,
   Download,
-} from 'lucide-react';
-import { REPORT_VIEWS } from '@/config/view.config';
+} from "lucide-react";
+import { REPORT_VIEWS } from "@/config/view.config";
 
 export const ReportViewModeSwitcher: React.FC<{
   onExport?: (mode: string) => void;
@@ -31,11 +31,16 @@ export const ReportViewModeSwitcher: React.FC<{
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
-      case 'Monitor': return Monitor;
-      case 'Printer': return Printer;
-      case 'Mail': return Mail;
-      case 'FileText': return FileText;
-      default: return Monitor;
+      case "Monitor":
+        return Monitor;
+      case "Printer":
+        return Printer;
+      case "Mail":
+        return Mail;
+      case "FileText":
+        return FileText;
+      default:
+        return Monitor;
     }
   };
 
@@ -67,8 +72,8 @@ export const ReportViewModeSwitcher: React.FC<{
                 key={view.id}
                 onClick={() => handleModeChange(view.id)}
                 className={cn(
-                  'flex items-center justify-between',
-                  isActive && 'bg-primary/10'
+                  "flex items-center justify-between",
+                  isActive && "bg-primary/10",
                 )}
               >
                 <div className="flex items-center gap-2">
@@ -82,7 +87,7 @@ export const ReportViewModeSwitcher: React.FC<{
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {reportView !== 'standard' && (
+      {reportView !== "standard" && (
         <Button
           variant="ghost"
           size="icon"

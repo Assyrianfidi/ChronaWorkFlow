@@ -1,6 +1,6 @@
-﻿import * as React from 'react';
+﻿import * as React from "react";
 
-import QuickBooksMigration from '@/components/quickbooks/QuickBooksMigration';
+import QuickBooksMigration from "@/components/quickbooks/QuickBooksMigration";
 
 const QuickBooksMigrationPage: React.FC = () => {
   return (

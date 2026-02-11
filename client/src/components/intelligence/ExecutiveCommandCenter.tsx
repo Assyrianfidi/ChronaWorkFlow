@@ -1,6 +1,6 @@
 /**
  * Executive Command Center - Primary Dashboard
- * 
+ *
  * Role-aware dashboard that answers at a glance:
  * - Risks & Alerts
  * - Smart Insights
@@ -9,20 +9,36 @@
  * - Trends & Forecasts
  */
 
-import React, { useState } from 'react';
-import { useExecutiveDashboard, useExplainability, useCreateAutomation } from '../../hooks/useIntelligence';
-import { InsightCard } from './InsightCard';
-import { ExplainabilityPanel } from './ExplainabilityPanel';
-import { AutomationActivityCenter } from './AutomationActivityCenter';
-import { BusinessImpactMetrics } from './BusinessImpactMetrics';
-import { SmartInsight } from '../../types/intelligence';
-import { AlertTriangle, Brain, Zap, TrendingUp, RefreshCw, Settings } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  useExecutiveDashboard,
+  useExplainability,
+  useCreateAutomation,
+} from "../../hooks/useIntelligence";
+import { InsightCard } from "./InsightCard";
+import { ExplainabilityPanel } from "./ExplainabilityPanel";
+import { AutomationActivityCenter } from "./AutomationActivityCenter";
+import { BusinessImpactMetrics } from "./BusinessImpactMetrics";
+import { SmartInsight } from "../../types/intelligence";
+import {
+  AlertTriangle,
+  Brain,
+  Zap,
+  TrendingUp,
+  RefreshCw,
+  Settings,
+} from "lucide-react";
 
 export const ExecutiveCommandCenter: React.FC = () => {
   const { data: dashboardData, isLoading, refetch } = useExecutiveDashboard();
-  const [selectedInsight, setSelectedInsight] = useState<SmartInsight | null>(null);
-  const { isOpen, openExplainability, closeExplainability } = useExplainability(selectedInsight);
-  const [activeTab, setActiveTab] = useState<'insights' | 'automations'>('insights');
+  const [selectedInsight, setSelectedInsight] = useState<SmartInsight | null>(
+    null,
+  );
+  const { isOpen, openExplainability, closeExplainability } =
+    useExplainability(selectedInsight);
+  const [activeTab, setActiveTab] = useState<"insights" | "automations">(
+    "insights",
+  );
   const createAutomation = useCreateAutomation();
 
   const handleExplain = (insight: SmartInsight) => {
@@ -30,14 +46,18 @@ export const ExecutiveCommandCenter: React.FC = () => {
     openExplainability();
   };
 
-  const handleAction = async (insight: SmartInsight, actionType: string, automationTemplate?: string) => {
-    if (actionType === 'automation' && automationTemplate) {
+  const handleAction = async (
+    insight: SmartInsight,
+    actionType: string,
+    automationTemplate?: string,
+  ) => {
+    if (actionType === "automation" && automationTemplate) {
       // Navigate to automation builder with pre-filled template
-      console.log('Activating automation template:', automationTemplate);
+      console.log("Activating automation template:", automationTemplate);
       // TODO: Implement navigation to automation builder
-    } else if (actionType === 'review') {
+    } else if (actionType === "review") {
       // Navigate to related resource
-      console.log('Navigating to review:', insight.relatedEntities);
+      console.log("Navigating to review:", insight.relatedEntities);
     }
   };
 
@@ -53,7 +73,15 @@ export const ExecutiveCommandCenter: React.FC = () => {
     return null;
   }
 
-  const { risksAndAlerts, smartInsights, activeAutomations, businessImpact, recentExecutions, automationStats, limits } = dashboardData;
+  const {
+    risksAndAlerts,
+    smartInsights,
+    activeAutomations,
+    businessImpact,
+    recentExecutions,
+    automationStats,
+    limits,
+  } = dashboardData;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -61,8 +89,12 @@ export const ExecutiveCommandCenter: React.FC = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Executive Command Center</h1>
-            <p className="text-gray-600 mt-1">Your financial co-pilot at a glance</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Executive Command Center
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Your financial co-pilot at a glance
+            </p>
           </div>
           <button
             onClick={() => refetch()}
@@ -75,17 +107,21 @@ export const ExecutiveCommandCenter: React.FC = () => {
       </div>
 
       {/* Business Impact Metrics */}
-      <BusinessImpactMetrics metrics={businessImpact} stats={automationStats} limits={limits} />
+      <BusinessImpactMetrics
+        metrics={businessImpact}
+        stats={automationStats}
+        limits={limits}
+      />
 
       {/* Tab Navigation */}
       <div className="border-b border-gray-200 mb-6">
         <nav className="-mb-px flex space-x-8">
           <button
-            onClick={() => setActiveTab('insights')}
+            onClick={() => setActiveTab("insights")}
             className={`${
-              activeTab === 'insights'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              activeTab === "insights"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2`}
           >
             <Brain className="w-5 h-5" />
@@ -97,11 +133,11 @@ export const ExecutiveCommandCenter: React.FC = () => {
             )}
           </button>
           <button
-            onClick={() => setActiveTab('automations')}
+            onClick={() => setActiveTab("automations")}
             className={`${
-              activeTab === 'automations'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              activeTab === "automations"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
             } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2`}
           >
             <Zap className="w-5 h-5" />
@@ -116,14 +152,16 @@ export const ExecutiveCommandCenter: React.FC = () => {
       </div>
 
       {/* Content */}
-      {activeTab === 'insights' ? (
+      {activeTab === "insights" ? (
         <div className="space-y-6">
           {/* Critical Risks & Alerts */}
           {risksAndAlerts.length > 0 && (
             <section>
               <div className="flex items-center space-x-2 mb-4">
                 <AlertTriangle className="w-6 h-6 text-red-600" />
-                <h2 className="text-xl font-semibold text-gray-900">Risks & Alerts</h2>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Risks & Alerts
+                </h2>
                 <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-full text-xs font-semibold">
                   {risksAndAlerts.length}
                 </span>
@@ -134,7 +172,9 @@ export const ExecutiveCommandCenter: React.FC = () => {
                     key={insight.id}
                     insight={insight}
                     onExplain={() => handleExplain(insight)}
-                    onAction={(actionType, template) => handleAction(insight, actionType, template)}
+                    onAction={(actionType, template) =>
+                      handleAction(insight, actionType, template)
+                    }
                   />
                 ))}
               </div>
@@ -146,7 +186,9 @@ export const ExecutiveCommandCenter: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
                 <Brain className="w-6 h-6 text-blue-600" />
-                <h2 className="text-xl font-semibold text-gray-900">All Insights</h2>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  All Insights
+                </h2>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <TrendingUp className="w-4 h-4" />
@@ -156,9 +198,12 @@ export const ExecutiveCommandCenter: React.FC = () => {
             {smartInsights.length === 0 ? (
               <div className="bg-gray-50 rounded-lg p-12 text-center">
                 <Brain className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Insights Yet</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No Insights Yet
+                </h3>
                 <p className="text-gray-600">
-                  We're analyzing your financial data. Check back soon for intelligent insights.
+                  We're analyzing your financial data. Check back soon for
+                  intelligent insights.
                 </p>
               </div>
             ) : (
@@ -170,7 +215,9 @@ export const ExecutiveCommandCenter: React.FC = () => {
                       key={insight.id}
                       insight={insight}
                       onExplain={() => handleExplain(insight)}
-                      onAction={(actionType, template) => handleAction(insight, actionType, template)}
+                      onAction={(actionType, template) =>
+                        handleAction(insight, actionType, template)
+                      }
                     />
                   ))}
               </div>

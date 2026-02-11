@@ -1,9 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import Card, { CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { Badge } from '@/components/ui/Badge';
-import { ArrowUp, ArrowDown, Minus, TrendingUp, AlertCircle } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import Card, {
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/Card";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Badge } from "@/components/ui/Badge";
+import {
+  ArrowUp,
+  ArrowDown,
+  Minus,
+  TrendingUp,
+  AlertCircle,
+} from "lucide-react";
 
 interface ScenarioData {
   id: string;
@@ -28,7 +39,7 @@ interface ScenarioComparisonProps {
 
 export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
   scenarioIds,
-  className = '',
+  className = "",
 }) => {
   const [scenarios, setScenarios] = useState<ScenarioData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,15 +53,15 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
         const promises = scenarioIds.map((id) =>
           fetch(`/api/scenarios/${id}`, {
-            headers: { 'Content-Type': 'application/json' },
-          }).then((res) => res.json())
+            headers: { "Content-Type": "application/json" },
+          }).then((res) => res.json()),
         );
 
         const data = await Promise.all(promises);
         setScenarios(data);
       } catch (err) {
-        console.error('Error fetching scenarios:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        console.error("Error fetching scenarios:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -64,56 +75,63 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
   }, [scenarioIds]);
 
   const formatCurrency = (value: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
   };
 
-  const getDelta = (value1: number | undefined, value2: number | undefined): {
+  const getDelta = (
+    value1: number | undefined,
+    value2: number | undefined,
+  ): {
     value: number;
     percentage: number;
-    direction: 'up' | 'down' | 'neutral';
+    direction: "up" | "down" | "neutral";
   } | null => {
     if (value1 === undefined || value2 === undefined) return null;
     const delta = value2 - value1;
     const percentage = value1 !== 0 ? (delta / Math.abs(value1)) * 100 : 0;
-    const direction = delta > 0 ? 'up' : delta < 0 ? 'down' : 'neutral';
+    const direction = delta > 0 ? "up" : delta < 0 ? "down" : "neutral";
     return { value: delta, percentage, direction };
   };
 
-  const getDeltaIcon = (direction: 'up' | 'down' | 'neutral') => {
+  const getDeltaIcon = (direction: "up" | "down" | "neutral") => {
     switch (direction) {
-      case 'up':
+      case "up":
         return <ArrowUp className="w-4 h-4" aria-hidden="true" />;
-      case 'down':
+      case "down":
         return <ArrowDown className="w-4 h-4" aria-hidden="true" />;
       default:
         return <Minus className="w-4 h-4" aria-hidden="true" />;
     }
   };
 
-  const getDeltaColor = (direction: 'up' | 'down' | 'neutral', isPositive: boolean) => {
-    if (direction === 'neutral') return 'text-gray-600';
-    return (direction === 'up' && isPositive) || (direction === 'down' && !isPositive)
-      ? 'text-green-600'
-      : 'text-red-600';
+  const getDeltaColor = (
+    direction: "up" | "down" | "neutral",
+    isPositive: boolean,
+  ) => {
+    if (direction === "neutral") return "text-gray-600";
+    return (direction === "up" && isPositive) ||
+      (direction === "down" && !isPositive)
+      ? "text-green-600"
+      : "text-red-600";
   };
 
   const getRiskColor = (level: string): string => {
     switch (level.toUpperCase()) {
-      case 'CRITICAL':
-        return 'text-red-700 bg-red-50 border-red-300';
-      case 'HIGH':
-        return 'text-orange-700 bg-orange-50 border-orange-300';
-      case 'MEDIUM':
-        return 'text-yellow-700 bg-yellow-50 border-yellow-300';
-      case 'LOW':
-        return 'text-green-700 bg-green-50 border-green-300';
+      case "CRITICAL":
+        return "text-red-700 bg-red-50 border-red-300";
+      case "HIGH":
+        return "text-orange-700 bg-orange-50 border-orange-300";
+      case "MEDIUM":
+        return "text-yellow-700 bg-yellow-50 border-yellow-300";
+      case "LOW":
+        return "text-green-700 bg-green-50 border-green-300";
       default:
-        return 'text-gray-700 bg-gray-50 border-gray-300';
+        return "text-gray-700 bg-gray-50 border-gray-300";
     }
   };
 
@@ -191,13 +209,16 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
               <tbody className="divide-y divide-gray-200">
                 {/* Scenario Type */}
                 <tr>
-                  <th scope="row" className="p-4 text-sm font-medium text-gray-900">
+                  <th
+                    scope="row"
+                    className="p-4 text-sm font-medium text-gray-900"
+                  >
                     Type
                   </th>
                   {scenarios.map((scenario) => (
                     <td key={scenario.id} className="p-4">
                       <Badge variant="outline">
-                        {scenario.type.replace('_', ' ')}
+                        {scenario.type.replace("_", " ")}
                       </Badge>
                     </td>
                   ))}
@@ -205,14 +226,17 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
                 {/* Risk Level */}
                 <tr className="bg-gray-50">
-                  <th scope="row" className="p-4 text-sm font-medium text-gray-900">
+                  <th
+                    scope="row"
+                    className="p-4 text-sm font-medium text-gray-900"
+                  >
                     Risk Level
                   </th>
                   {scenarios.map((scenario) => (
                     <td key={scenario.id} className="p-4">
                       <span
                         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getRiskColor(
-                          scenario.riskLevel
+                          scenario.riskLevel,
                         )}`}
                       >
                         {scenario.riskLevel}
@@ -223,7 +247,10 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
                 {/* Risk Score */}
                 <tr>
-                  <th scope="row" className="p-4 text-sm font-medium text-gray-900">
+                  <th
+                    scope="row"
+                    className="p-4 text-sm font-medium text-gray-900"
+                  >
                     Risk Score
                   </th>
                   {scenarios.map((scenario, index) => {
@@ -241,7 +268,7 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                             <span
                               className={`flex items-center text-xs font-medium ${getDeltaColor(
                                 delta.direction,
-                                false
+                                false,
                               )}`}
                             >
                               {getDeltaIcon(delta.direction)}
@@ -256,7 +283,10 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
                 {/* Runway Impact */}
                 <tr className="bg-gray-50">
-                  <th scope="row" className="p-4 text-sm font-medium text-gray-900">
+                  <th
+                    scope="row"
+                    className="p-4 text-sm font-medium text-gray-900"
+                  >
                     Runway Impact
                   </th>
                   {scenarios.map((scenario, index) => {
@@ -265,7 +295,7 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                       index > 0 && runwayDays !== undefined
                         ? getDelta(
                             scenarios[0].projectedImpact.runwayDays,
-                            runwayDays
+                            runwayDays,
                           )
                         : null;
                     return (
@@ -274,17 +304,19 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                           <div className="flex items-center gap-2">
                             <span
                               className={`text-sm font-semibold ${
-                                runwayDays >= 0 ? 'text-green-600' : 'text-red-600'
+                                runwayDays >= 0
+                                  ? "text-green-600"
+                                  : "text-red-600"
                               }`}
                             >
-                              {runwayDays >= 0 ? '+' : ''}
+                              {runwayDays >= 0 ? "+" : ""}
                               {runwayDays} days
                             </span>
                             {delta && (
                               <span
                                 className={`flex items-center text-xs font-medium ${getDeltaColor(
                                   delta.direction,
-                                  true
+                                  true,
                                 )}`}
                               >
                                 {getDeltaIcon(delta.direction)}
@@ -302,16 +334,20 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
                 {/* Monthly Burn Impact */}
                 <tr>
-                  <th scope="row" className="p-4 text-sm font-medium text-gray-900">
+                  <th
+                    scope="row"
+                    className="p-4 text-sm font-medium text-gray-900"
+                  >
                     Monthly Burn Impact
                   </th>
                   {scenarios.map((scenario, index) => {
-                    const burnIncrease = scenario.projectedImpact.monthlyBurnIncrease;
+                    const burnIncrease =
+                      scenario.projectedImpact.monthlyBurnIncrease;
                     const delta =
                       index > 0 && burnIncrease !== undefined
                         ? getDelta(
                             scenarios[0].projectedImpact.monthlyBurnIncrease,
-                            burnIncrease
+                            burnIncrease,
                           )
                         : null;
                     return (
@@ -320,17 +356,19 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                           <div className="flex items-center gap-2">
                             <span
                               className={`text-sm font-semibold ${
-                                burnIncrease <= 0 ? 'text-green-600' : 'text-red-600'
+                                burnIncrease <= 0
+                                  ? "text-green-600"
+                                  : "text-red-600"
                               }`}
                             >
-                              {burnIncrease >= 0 ? '+' : ''}
+                              {burnIncrease >= 0 ? "+" : ""}
                               {formatCurrency(burnIncrease)}
                             </span>
                             {delta && (
                               <span
                                 className={`flex items-center text-xs font-medium ${getDeltaColor(
                                   delta.direction,
-                                  false
+                                  false,
                                 )}`}
                               >
                                 {getDeltaIcon(delta.direction)}
@@ -348,7 +386,10 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
                 {/* Monthly Revenue Impact */}
                 <tr className="bg-gray-50">
-                  <th scope="row" className="p-4 text-sm font-medium text-gray-900">
+                  <th
+                    scope="row"
+                    className="p-4 text-sm font-medium text-gray-900"
+                  >
                     Monthly Revenue Impact
                   </th>
                   {scenarios.map((scenario, index) => {
@@ -358,7 +399,7 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                       index > 0 && revenueIncrease !== undefined
                         ? getDelta(
                             scenarios[0].projectedImpact.monthlyRevenueIncrease,
-                            revenueIncrease
+                            revenueIncrease,
                           )
                         : null;
                     return (
@@ -367,17 +408,19 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
                           <div className="flex items-center gap-2">
                             <span
                               className={`text-sm font-semibold ${
-                                revenueIncrease >= 0 ? 'text-green-600' : 'text-red-600'
+                                revenueIncrease >= 0
+                                  ? "text-green-600"
+                                  : "text-red-600"
                               }`}
                             >
-                              {revenueIncrease >= 0 ? '+' : ''}
+                              {revenueIncrease >= 0 ? "+" : ""}
                               {formatCurrency(revenueIncrease)}
                             </span>
                             {delta && (
                               <span
                                 className={`flex items-center text-xs font-medium ${getDeltaColor(
                                   delta.direction,
-                                  true
+                                  true,
                                 )}`}
                               >
                                 {getDeltaIcon(delta.direction)}
@@ -395,14 +438,19 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
 
                 {/* Status */}
                 <tr>
-                  <th scope="row" className="p-4 text-sm font-medium text-gray-900">
+                  <th
+                    scope="row"
+                    className="p-4 text-sm font-medium text-gray-900"
+                  >
                     Status
                   </th>
                   {scenarios.map((scenario) => (
                     <td key={scenario.id} className="p-4">
                       <Badge
                         variant={
-                          scenario.status === 'COMPLETED' ? 'default' : 'secondary'
+                          scenario.status === "COMPLETED"
+                            ? "default"
+                            : "secondary"
                         }
                       >
                         {scenario.status}
@@ -421,13 +469,19 @@ export const ScenarioComparison: React.FC<ScenarioComparisonProps> = ({
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div className="flex items-center gap-2">
-                <ArrowUp className="w-4 h-4 text-green-600" aria-hidden="true" />
+                <ArrowUp
+                  className="w-4 h-4 text-green-600"
+                  aria-hidden="true"
+                />
                 <span className="text-gray-700">
                   Green up arrow: Improvement vs. baseline
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <ArrowDown className="w-4 h-4 text-red-600" aria-hidden="true" />
+                <ArrowDown
+                  className="w-4 h-4 text-red-600"
+                  aria-hidden="true"
+                />
                 <span className="text-gray-700">
                   Red down arrow: Decline vs. baseline
                 </span>

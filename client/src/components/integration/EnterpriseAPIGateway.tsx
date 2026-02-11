@@ -182,10 +182,8 @@ class APIGatewayEngine {
     string,
     (req: any, endpoint: any) => unknown | Promise<unknown>
   > = new Map();
-  private transformers: Map<
-    string,
-    (...args: any[]) => any | Promise<any>
-  > = new Map();
+  private transformers: Map<string, (...args: any[]) => any | Promise<any>> =
+    new Map();
   private validators: Map<
     string,
     (...args: any[]) => boolean | Promise<boolean>

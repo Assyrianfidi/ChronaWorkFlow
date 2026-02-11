@@ -568,17 +568,16 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           transition={{ delay: 0.2 }}
         >
           <div className="search-container">
-            
-        <label htmlFor="input-cuch3ussa" className="sr-only">
-          Text
-        </label>
-        <input id="input-cuch3ussa"
+            <label htmlFor="input-cuch3ussa" className="sr-only">
+              Text
+            </label>
+            <input
+              id="input-cuch3ussa"
               ref={searchInputRef}
               type="text"
               placeholder="Search navigation..."
               value={searchQuery}
-              onChange={(e) =>
-       setSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setShowSearch(true)}
               onBlur={() => {
                 if (!searchQuery) setShowSearch(false);

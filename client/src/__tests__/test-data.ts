@@ -1,4 +1,4 @@
-import { User, type Account } from '../types/user';
+import { User, type Account } from "../types/user";
 
 const mockAccount: Account = {
   id: "acc_123",

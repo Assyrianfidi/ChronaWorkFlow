@@ -412,15 +412,14 @@ export function UXCustomSettings() {
         {/* Toggle Settings */}
         <div className="space-y-2">
           <label className="flex items-center gap-2">
-            
-        <label htmlFor="input-r0qrt6ce7" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-r0qrt6ce7"
+            <label htmlFor="input-r0qrt6ce7" className="sr-only">
+              Checkbox
+            </label>
+            <input
+              id="input-r0qrt6ce7"
               type="checkbox"
               checked={customSettings.shortcuts ?? true}
               onChange={(e) =>
-      
                 updateCustomSettings({ shortcuts: e.target.checked })
               }
               className="rounded"
@@ -431,15 +430,14 @@ export function UXCustomSettings() {
           </label>
 
           <label className="flex items-center gap-2">
-            
-        <label htmlFor="input-75i6bcdyx" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-75i6bcdyx"
+            <label htmlFor="input-75i6bcdyx" className="sr-only">
+              Checkbox
+            </label>
+            <input
+              id="input-75i6bcdyx"
               type="checkbox"
               checked={customSettings.tooltips ?? true}
               onChange={(e) =>
-      
                 updateCustomSettings({ tooltips: e.target.checked })
               }
               className="rounded"
@@ -450,15 +448,14 @@ export function UXCustomSettings() {
           </label>
 
           <label className="flex items-center gap-2">
-            
-        <label htmlFor="input-5i9j6cir2" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-5i9j6cir2"
+            <label htmlFor="input-5i9j6cir2" className="sr-only">
+              Checkbox
+            </label>
+            <input
+              id="input-5i9j6cir2"
               type="checkbox"
               checked={customSettings.sounds ?? false}
               onChange={(e) =>
-      
                 updateCustomSettings({ sounds: e.target.checked })
               }
               className="rounded"

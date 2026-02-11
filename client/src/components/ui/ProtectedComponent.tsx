@@ -23,15 +23,24 @@ export const ProtectedComponent: React.FC<ProtectedComponentProps> = ({
   const isAuthorized = permission
     ? hasPermission(permission)
     : role
-    ? hasRole(role)
-    : true;
+      ? hasRole(role)
+      : true;
 
-  const unauthorizedMessage = tooltip ?? (permission ? "Requires permission: " + permission : role ? "Requires role: " + (Array.isArray(role) ? role.join(" or ") : role) : "Access denied");
+  const unauthorizedMessage =
+    tooltip ??
+    (permission
+      ? "Requires permission: " + permission
+      : role
+        ? "Requires role: " + (Array.isArray(role) ? role.join(" or ") : role)
+        : "Access denied");
 
   if (!isAuthorized) {
     if (disableInsteadOfHide) {
       return (
-        <div title={unauthorizedMessage} style={{ opacity: 0.5, pointerEvents: "none" }}>
+        <div
+          title={unauthorizedMessage}
+          style={{ opacity: 0.5, pointerEvents: "none" }}
+        >
           {children}
         </div>
       );

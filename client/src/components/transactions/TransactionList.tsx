@@ -3,7 +3,7 @@
  * Displays all transactions with AI categorization status and insights
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Search,
   Filter,
@@ -28,7 +28,7 @@ import {
   Calendar,
   Building2,
   DollarSign,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface Transaction {
   id: string;
@@ -36,10 +36,10 @@ interface Transaction {
   description: string;
   vendor: string;
   amount: number;
-  type: 'income' | 'expense';
+  type: "income" | "expense";
   category: string;
   categoryConfidence: number;
-  categorizationStatus: 'auto' | 'manual' | 'pending' | 'needs_review';
+  categorizationStatus: "auto" | "manual" | "pending" | "needs_review";
   accountId: string;
   accountName: string;
   entityId: string;
@@ -68,17 +68,18 @@ interface TransactionFilters {
 const TransactionList: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<keyof Transaction>('date');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortField, setSortField] = useState<keyof Transaction>("date");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<TransactionFilters>({
-    dateRange: { start: '', end: '' },
-    type: 'all',
-    category: 'all',
-    entity: 'all',
-    status: 'all',
+    dateRange: { start: "", end: "" },
+    type: "all",
+    category: "all",
+    entity: "all",
+    status: "all",
     minAmount: null,
     maxAmount: null,
   });
@@ -91,13 +92,13 @@ const TransactionList: React.FC = () => {
   const fetchTransactions = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/v1/transactions', {
+      const response = await fetch("/api/v1/transactions", {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      if (!response.ok) throw new Error('Failed to fetch');
+      if (!response.ok) throw new Error("Failed to fetch");
 
       const data = await response.json();
       setTransactions(data.data || []);
@@ -119,16 +120,16 @@ const TransactionList: React.FC = () => {
   const handleAICategorize = async (transactionIds: string[]) => {
     setIsCategorizing(true);
     try {
-      const response = await fetch('/api/ai/categorize/batch', {
-        method: 'POST',
+      const response = await fetch("/api/ai/categorize/batch", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
           transactions: transactions
-            .filter(t => transactionIds.includes(t.id))
-            .map(t => ({
+            .filter((t) => transactionIds.includes(t.id))
+            .map((t) => ({
               id: t.id,
               description: t.description,
               amount: t.amount,
@@ -138,37 +139,43 @@ const TransactionList: React.FC = () => {
         }),
       });
 
-      if (!response.ok) throw new Error('Categorization failed');
+      if (!response.ok) throw new Error("Categorization failed");
 
       const data = await response.json();
-      
+
       // Update transactions with new categories
-      setTransactions(transactions.map(t => {
-        const result = data.data.results.find((r: any) => r.transactionId === t.id);
-        if (result) {
-          return {
-            ...t,
-            category: result.category,
-            categoryConfidence: result.confidence,
-            categorizationStatus: 'auto' as const,
-          };
-        }
-        return t;
-      }));
+      setTransactions(
+        transactions.map((t) => {
+          const result = data.data.results.find(
+            (r: any) => r.transactionId === t.id,
+          );
+          if (result) {
+            return {
+              ...t,
+              category: result.category,
+              categoryConfidence: result.confidence,
+              categorizationStatus: "auto" as const,
+            };
+          }
+          return t;
+        }),
+      );
 
       setSelectedIds(new Set());
     } catch (err) {
       // Demo mode: simulate categorization
-      setTransactions(transactions.map(t => {
-        if (transactionIds.includes(t.id)) {
-          return {
-            ...t,
-            categoryConfidence: 0.92 + Math.random() * 0.07,
-            categorizationStatus: 'auto' as const,
-          };
-        }
-        return t;
-      }));
+      setTransactions(
+        transactions.map((t) => {
+          if (transactionIds.includes(t.id)) {
+            return {
+              ...t,
+              categoryConfidence: 0.92 + Math.random() * 0.07,
+              categorizationStatus: "auto" as const,
+            };
+          }
+          return t;
+        }),
+      );
       setSelectedIds(new Set());
     } finally {
       setIsCategorizing(false);
@@ -178,83 +185,98 @@ const TransactionList: React.FC = () => {
   // Sort transactions
   const handleSort = (field: keyof Transaction) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('desc');
+      setSortDirection("desc");
     }
   };
 
   // Filter and sort transactions
   const filteredTransactions = transactions
-    .filter(t => {
-      const matchesSearch = 
+    .filter((t) => {
+      const matchesSearch =
         t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.vendor.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.category.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesType = filters.type === 'all' || t.type === filters.type;
-      const matchesCategory = filters.category === 'all' || t.category === filters.category;
-      const matchesEntity = filters.entity === 'all' || t.entityId === filters.entity;
-      const matchesStatus = filters.status === 'all' || t.categorizationStatus === filters.status;
-      const matchesMinAmount = !filters.minAmount || Math.abs(t.amount) >= filters.minAmount;
-      const matchesMaxAmount = !filters.maxAmount || Math.abs(t.amount) <= filters.maxAmount;
-      
-      return matchesSearch && matchesType && matchesCategory && matchesEntity && 
-             matchesStatus && matchesMinAmount && matchesMaxAmount;
+      const matchesType = filters.type === "all" || t.type === filters.type;
+      const matchesCategory =
+        filters.category === "all" || t.category === filters.category;
+      const matchesEntity =
+        filters.entity === "all" || t.entityId === filters.entity;
+      const matchesStatus =
+        filters.status === "all" || t.categorizationStatus === filters.status;
+      const matchesMinAmount =
+        !filters.minAmount || Math.abs(t.amount) >= filters.minAmount;
+      const matchesMaxAmount =
+        !filters.maxAmount || Math.abs(t.amount) <= filters.maxAmount;
+
+      return (
+        matchesSearch &&
+        matchesType &&
+        matchesCategory &&
+        matchesEntity &&
+        matchesStatus &&
+        matchesMinAmount &&
+        matchesMaxAmount
+      );
     })
     .sort((a, b) => {
       const aVal = a[sortField];
       const bVal = b[sortField];
-      const modifier = sortDirection === 'asc' ? 1 : -1;
-      
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
+      const modifier = sortDirection === "asc" ? 1 : -1;
+
+      if (typeof aVal === "string" && typeof bVal === "string") {
         return aVal.localeCompare(bVal) * modifier;
       }
-      if (typeof aVal === 'number' && typeof bVal === 'number') {
+      if (typeof aVal === "number" && typeof bVal === "number") {
         return (aVal - bVal) * modifier;
       }
       return 0;
     });
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(Math.abs(amount));
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
-  const getStatusBadge = (status: Transaction['categorizationStatus'], confidence: number) => {
+  const getStatusBadge = (
+    status: Transaction["categorizationStatus"],
+    confidence: number,
+  ) => {
     switch (status) {
-      case 'auto':
+      case "auto":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-foreground">
             <Brain className="w-3 h-3" />
             AI {(confidence * 100).toFixed(0)}%
           </span>
         );
-      case 'manual':
+      case "manual":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-foreground">
             <CheckCircle className="w-3 h-3" />
             Manual
           </span>
         );
-      case 'pending':
+      case "pending":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-foreground">
             <Clock className="w-3 h-3" />
             Pending
           </span>
         );
-      case 'needs_review':
+      case "needs_review":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-foreground">
             <AlertCircle className="w-3 h-3" />
@@ -268,10 +290,20 @@ const TransactionList: React.FC = () => {
 
   // Calculate summary stats
   const stats = {
-    totalIncome: filteredTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0),
-    totalExpenses: filteredTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + Math.abs(t.amount), 0),
-    aiCategorized: filteredTransactions.filter(t => t.categorizationStatus === 'auto').length,
-    needsReview: filteredTransactions.filter(t => t.categorizationStatus === 'needs_review' || t.categorizationStatus === 'pending').length,
+    totalIncome: filteredTransactions
+      .filter((t) => t.type === "income")
+      .reduce((sum, t) => sum + t.amount, 0),
+    totalExpenses: filteredTransactions
+      .filter((t) => t.type === "expense")
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0),
+    aiCategorized: filteredTransactions.filter(
+      (t) => t.categorizationStatus === "auto",
+    ).length,
+    needsReview: filteredTransactions.filter(
+      (t) =>
+        t.categorizationStatus === "needs_review" ||
+        t.categorizationStatus === "pending",
+    ).length,
   };
 
   return (
@@ -286,7 +318,8 @@ const TransactionList: React.FC = () => {
                 Transactions
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                {filteredTransactions.length} transactions • {stats.aiCategorized} AI categorized
+                {filteredTransactions.length} transactions •{" "}
+                {stats.aiCategorized} AI categorized
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -294,7 +327,9 @@ const TransactionList: React.FC = () => {
                 onClick={fetchTransactions}
                 className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted"
               >
-                <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`}
+                />
               </button>
               <button className="flex items-center gap-2 px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted">
                 <Download className="w-5 h-5" />
@@ -386,13 +421,17 @@ const TransactionList: React.FC = () => {
                   onClick={() => setShowFilters(!showFilters)}
                   className={`flex items-center gap-2 px-4 py-2 border rounded-lg ${
                     showFilters
-                      ? 'border-success text-success bg-success/10'
-                      : 'border-border text-foreground'
+                      ? "border-success text-success bg-success/10"
+                      : "border-border text-foreground"
                   }`}
                 >
                   <Filter className="w-5 h-5" />
                   Filters
-                  {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  {showFilters ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
                 </button>
 
                 {selectedIds.size > 0 && (
@@ -401,8 +440,12 @@ const TransactionList: React.FC = () => {
                     disabled={isCategorizing}
                     className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
                   >
-                    <Sparkles className={`w-5 h-5 ${isCategorizing ? 'animate-pulse' : ''}`} />
-                    {isCategorizing ? 'Categorizing...' : `AI Categorize (${selectedIds.size})`}
+                    <Sparkles
+                      className={`w-5 h-5 ${isCategorizing ? "animate-pulse" : ""}`}
+                    />
+                    {isCategorizing
+                      ? "Categorizing..."
+                      : `AI Categorize (${selectedIds.size})`}
                   </button>
                 )}
               </div>
@@ -412,10 +455,14 @@ const TransactionList: React.FC = () => {
             {showFilters && (
               <div className="mt-4 pt-4 border-t border-border grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1">Type</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                    Type
+                  </label>
                   <select
                     value={filters.type}
-                    onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, type: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-border bg-card text-sm"
                   >
                     <option value="all">All</option>
@@ -424,36 +471,52 @@ const TransactionList: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1">Category</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                    Category
+                  </label>
                   <select
                     value={filters.category}
-                    onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, category: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-border bg-card text-sm"
                   >
                     <option value="all">All Categories</option>
-                    {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1">Entity</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                    Entity
+                  </label>
                   <select
                     value={filters.entity}
-                    onChange={(e) => setFilters({ ...filters, entity: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, entity: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-border bg-card text-sm"
                   >
                     <option value="all">All Entities</option>
-                    {entities.map(ent => (
-                      <option key={ent.id} value={ent.id}>{ent.name}</option>
+                    {entities.map((ent) => (
+                      <option key={ent.id} value={ent.id}>
+                        {ent.name}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1">Status</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                    Status
+                  </label>
                   <select
                     value={filters.status}
-                    onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                    onChange={(e) =>
+                      setFilters({ ...filters, status: e.target.value })
+                    }
                     className="w-full px-3 py-2 border border-border bg-card text-sm"
                   >
                     <option value="all">All Status</option>
@@ -464,22 +527,40 @@ const TransactionList: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1">Min Amount</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                    Min Amount
+                  </label>
                   <input
                     type="number"
                     placeholder="0"
-                    value={filters.minAmount || ''}
-                    onChange={(e) => setFilters({ ...filters, minAmount: e.target.value ? Number(e.target.value) : null })}
+                    value={filters.minAmount || ""}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        minAmount: e.target.value
+                          ? Number(e.target.value)
+                          : null,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-border bg-card text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1">Max Amount</label>
+                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                    Max Amount
+                  </label>
                   <input
                     type="number"
                     placeholder="∞"
-                    value={filters.maxAmount || ''}
-                    onChange={(e) => setFilters({ ...filters, maxAmount: e.target.value ? Number(e.target.value) : null })}
+                    value={filters.maxAmount || ""}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        maxAmount: e.target.value
+                          ? Number(e.target.value)
+                          : null,
+                      })
+                    }
                     className="w-full px-3 py-2 border border-border bg-card text-sm"
                   />
                 </div>
@@ -497,10 +578,15 @@ const TransactionList: React.FC = () => {
                   <th className="px-4 py-3 text-left">
                     <input
                       type="checkbox"
-                      checked={selectedIds.size === filteredTransactions.length && filteredTransactions.length > 0}
+                      checked={
+                        selectedIds.size === filteredTransactions.length &&
+                        filteredTransactions.length > 0
+                      }
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedIds(new Set(filteredTransactions.map(t => t.id)));
+                          setSelectedIds(
+                            new Set(filteredTransactions.map((t) => t.id)),
+                          );
                         } else {
                           setSelectedIds(new Set());
                         }
@@ -510,11 +596,16 @@ const TransactionList: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase cursor-pointer hover:text-foreground"
-                    onClick={() => handleSort('date')}
+                    onClick={() => handleSort("date")}
                   >
                     <div className="flex items-center gap-1">
                       Date
-                      {sortField === 'date' && (sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                      {sortField === "date" &&
+                        (sortDirection === "asc" ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        ))}
                     </div>
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
@@ -528,11 +619,16 @@ const TransactionList: React.FC = () => {
                   </th>
                   <th
                     className="px-4 py-3 text-right text-xs font-medium text-muted-foreground uppercase cursor-pointer hover:text-foreground"
-                    onClick={() => handleSort('amount')}
+                    onClick={() => handleSort("amount")}
                   >
                     <div className="flex items-center justify-end gap-1">
                       Amount
-                      {sortField === 'amount' && (sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />)}
+                      {sortField === "amount" &&
+                        (sortDirection === "asc" ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        ))}
                     </div>
                   </th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase">
@@ -548,21 +644,25 @@ const TransactionList: React.FC = () => {
                   <tr>
                     <td colSpan={8} className="px-4 py-12 text-center">
                       <RefreshCw className="w-8 h-8 text-muted-foreground animate-spin mx-auto mb-2" />
-                      <p className="text-muted-foreground">Loading transactions...</p>
+                      <p className="text-muted-foreground">
+                        Loading transactions...
+                      </p>
                     </td>
                   </tr>
                 ) : filteredTransactions.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-4 py-12 text-center">
                       <DollarSign className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                      <p className="text-muted-foreground">No transactions found</p>
+                      <p className="text-muted-foreground">
+                        No transactions found
+                      </p>
                     </td>
                   </tr>
                 ) : (
                   filteredTransactions.map((transaction) => (
                     <tr
                       key={transaction.id}
-                      className={`hover:bg-muted ${selectedIds.has(transaction.id) ? 'bg-primary/10' : ''}`}
+                      className={`hover:bg-muted ${selectedIds.has(transaction.id) ? "bg-primary/10" : ""}`}
                     >
                       <td className="px-4 py-3">
                         <input
@@ -570,7 +670,9 @@ const TransactionList: React.FC = () => {
                           checked={selectedIds.has(transaction.id)}
                           onChange={(e) => {
                             const newSelected = new Set(selectedIds);
-                            e.target.checked ? newSelected.add(transaction.id) : newSelected.delete(transaction.id);
+                            e.target.checked
+                              ? newSelected.add(transaction.id)
+                              : newSelected.delete(transaction.id);
                             setSelectedIds(newSelected);
                           }}
                           className="rounded border-border"
@@ -598,13 +700,15 @@ const TransactionList: React.FC = () => {
                             {transaction.category}
                           </span>
                         </div>
-                        {transaction.aiInsights?.suggestedCategory && 
-                         transaction.aiInsights.suggestedCategory !== transaction.category && (
-                          <p className="text-xs text-primary mt-1 flex items-center gap-1">
-                            <Sparkles className="w-3 h-3" />
-                            Suggested: {transaction.aiInsights.suggestedCategory}
-                          </p>
-                        )}
+                        {transaction.aiInsights?.suggestedCategory &&
+                          transaction.aiInsights.suggestedCategory !==
+                            transaction.category && (
+                            <p className="text-xs text-primary mt-1 flex items-center gap-1">
+                              <Sparkles className="w-3 h-3" />
+                              Suggested:{" "}
+                              {transaction.aiInsights.suggestedCategory}
+                            </p>
+                          )}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
@@ -615,12 +719,18 @@ const TransactionList: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <span className={`text-sm font-medium ${transaction.type === 'income' ? 'text-success' : 'text-destructive'}`}>
-                          {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                        <span
+                          className={`text-sm font-medium ${transaction.type === "income" ? "text-success" : "text-destructive"}`}
+                        >
+                          {transaction.type === "income" ? "+" : "-"}
+                          {formatCurrency(transaction.amount)}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
-                        {getStatusBadge(transaction.categorizationStatus, transaction.categoryConfidence)}
+                        {getStatusBadge(
+                          transaction.categorizationStatus,
+                          transaction.categoryConfidence,
+                        )}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
@@ -664,8 +774,11 @@ const TransactionList: React.FC = () => {
               <div className="p-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Amount</span>
-                  <span className={`text-2xl font-bold ${selectedTransaction.type === 'income' ? 'text-success' : 'text-destructive'}`}>
-                    {selectedTransaction.type === 'income' ? '+' : '-'}{formatCurrency(selectedTransaction.amount)}
+                  <span
+                    className={`text-2xl font-bold ${selectedTransaction.type === "income" ? "text-success" : "text-destructive"}`}
+                  >
+                    {selectedTransaction.type === "income" ? "+" : "-"}
+                    {formatCurrency(selectedTransaction.amount)}
                   </span>
                 </div>
 
@@ -683,7 +796,9 @@ const TransactionList: React.FC = () => {
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">Category</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Category
+                    </p>
                     <p className="text-sm font-medium text-foreground">
                       {selectedTransaction.category}
                     </p>
@@ -697,19 +812,30 @@ const TransactionList: React.FC = () => {
                 </div>
 
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Description</p>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Description
+                  </p>
                   <p className="text-sm text-foreground">
                     {selectedTransaction.description}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">Categorization</p>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Categorization
+                  </p>
                   <div className="flex items-center gap-2">
-                    {getStatusBadge(selectedTransaction.categorizationStatus, selectedTransaction.categoryConfidence)}
-                    {selectedTransaction.categorizationStatus === 'auto' && (
+                    {getStatusBadge(
+                      selectedTransaction.categorizationStatus,
+                      selectedTransaction.categoryConfidence,
+                    )}
+                    {selectedTransaction.categorizationStatus === "auto" && (
                       <span className="text-xs text-muted-foreground">
-                        Confidence: {(selectedTransaction.categoryConfidence * 100).toFixed(1)}%
+                        Confidence:{" "}
+                        {(selectedTransaction.categoryConfidence * 100).toFixed(
+                          1,
+                        )}
+                        %
                       </span>
                     )}
                   </div>
@@ -729,7 +855,9 @@ const TransactionList: React.FC = () => {
                         <li>• Potentially tax deductible</li>
                       )}
                       {selectedTransaction.aiInsights.anomalyFlag && (
-                        <li className="text-orange-600">• Flagged for review</li>
+                        <li className="text-orange-600">
+                          • Flagged for review
+                        </li>
                       )}
                     </ul>
                   </div>
@@ -761,114 +889,117 @@ const TransactionList: React.FC = () => {
 function getMockTransactions(): Transaction[] {
   return [
     {
-      id: 'txn_1',
-      date: '2024-12-20T00:00:00Z',
-      description: 'AWS Monthly Subscription',
-      vendor: 'Amazon Web Services',
+      id: "txn_1",
+      date: "2024-12-20T00:00:00Z",
+      description: "AWS Monthly Subscription",
+      vendor: "Amazon Web Services",
       amount: 1500,
-      type: 'expense',
-      category: 'Software & Subscriptions',
+      type: "expense",
+      category: "Software & Subscriptions",
       categoryConfidence: 0.96,
-      categorizationStatus: 'auto',
-      accountId: 'acc_1',
-      accountName: 'Business Checking',
-      entityId: 'ent_1',
-      entityName: 'TechStart Inc.',
+      categorizationStatus: "auto",
+      accountId: "acc_1",
+      accountName: "Business Checking",
+      entityId: "ent_1",
+      entityName: "TechStart Inc.",
       aiInsights: { recurringPattern: true, taxDeductible: true },
-      tags: ['cloud', 'infrastructure'],
+      tags: ["cloud", "infrastructure"],
       attachments: 1,
       reconciled: true,
     },
     {
-      id: 'txn_2',
-      date: '2024-12-19T00:00:00Z',
-      description: 'Client Payment - Acme Corp',
-      vendor: 'Acme Corporation',
+      id: "txn_2",
+      date: "2024-12-19T00:00:00Z",
+      description: "Client Payment - Acme Corp",
+      vendor: "Acme Corporation",
       amount: 15000,
-      type: 'income',
-      category: 'Revenue',
+      type: "income",
+      category: "Revenue",
       categoryConfidence: 0.98,
-      categorizationStatus: 'auto',
-      accountId: 'acc_1',
-      accountName: 'Business Checking',
-      entityId: 'ent_1',
-      entityName: 'TechStart Inc.',
+      categorizationStatus: "auto",
+      accountId: "acc_1",
+      accountName: "Business Checking",
+      entityId: "ent_1",
+      entityName: "TechStart Inc.",
       aiInsights: {},
-      tags: ['client-payment'],
+      tags: ["client-payment"],
       attachments: 2,
       reconciled: true,
     },
     {
-      id: 'txn_3',
-      date: '2024-12-18T00:00:00Z',
-      description: 'Office Supplies - Staples',
-      vendor: 'Staples Business',
-      amount: 245.50,
-      type: 'expense',
-      category: 'Office Supplies',
+      id: "txn_3",
+      date: "2024-12-18T00:00:00Z",
+      description: "Office Supplies - Staples",
+      vendor: "Staples Business",
+      amount: 245.5,
+      type: "expense",
+      category: "Office Supplies",
       categoryConfidence: 0.89,
-      categorizationStatus: 'auto',
-      accountId: 'acc_1',
-      accountName: 'Business Checking',
-      entityId: 'ent_2',
-      entityName: 'Digital Solutions LLC',
+      categorizationStatus: "auto",
+      accountId: "acc_1",
+      accountName: "Business Checking",
+      entityId: "ent_2",
+      entityName: "Digital Solutions LLC",
       aiInsights: { taxDeductible: true },
-      tags: ['office'],
+      tags: ["office"],
       attachments: 1,
       reconciled: false,
     },
     {
-      id: 'txn_4',
-      date: '2024-12-17T00:00:00Z',
-      description: 'Consulting Services',
-      vendor: 'Consulting Partners',
+      id: "txn_4",
+      date: "2024-12-17T00:00:00Z",
+      description: "Consulting Services",
+      vendor: "Consulting Partners",
       amount: 5000,
-      type: 'expense',
-      category: 'Professional Services',
+      type: "expense",
+      category: "Professional Services",
       categoryConfidence: 0.72,
-      categorizationStatus: 'needs_review',
-      accountId: 'acc_1',
-      accountName: 'Business Checking',
-      entityId: 'ent_1',
-      entityName: 'TechStart Inc.',
-      aiInsights: { suggestedCategory: 'Contractor Payments', anomalyFlag: true },
+      categorizationStatus: "needs_review",
+      accountId: "acc_1",
+      accountName: "Business Checking",
+      entityId: "ent_1",
+      entityName: "TechStart Inc.",
+      aiInsights: {
+        suggestedCategory: "Contractor Payments",
+        anomalyFlag: true,
+      },
       tags: [],
       attachments: 0,
       reconciled: false,
     },
     {
-      id: 'txn_5',
-      date: '2024-12-16T00:00:00Z',
-      description: 'Google Workspace',
-      vendor: 'Google',
+      id: "txn_5",
+      date: "2024-12-16T00:00:00Z",
+      description: "Google Workspace",
+      vendor: "Google",
       amount: 72,
-      type: 'expense',
-      category: 'Software & Subscriptions',
+      type: "expense",
+      category: "Software & Subscriptions",
       categoryConfidence: 0.94,
-      categorizationStatus: 'auto',
-      accountId: 'acc_1',
-      accountName: 'Business Checking',
-      entityId: 'ent_1',
-      entityName: 'TechStart Inc.',
+      categorizationStatus: "auto",
+      accountId: "acc_1",
+      accountName: "Business Checking",
+      entityId: "ent_1",
+      entityName: "TechStart Inc.",
       aiInsights: { recurringPattern: true, taxDeductible: true },
-      tags: ['software', 'monthly'],
+      tags: ["software", "monthly"],
       attachments: 0,
       reconciled: true,
     },
     {
-      id: 'txn_6',
-      date: '2024-12-15T00:00:00Z',
-      description: 'New Transaction',
-      vendor: 'Unknown Vendor',
+      id: "txn_6",
+      date: "2024-12-15T00:00:00Z",
+      description: "New Transaction",
+      vendor: "Unknown Vendor",
       amount: 350,
-      type: 'expense',
-      category: 'Uncategorized',
+      type: "expense",
+      category: "Uncategorized",
       categoryConfidence: 0,
-      categorizationStatus: 'pending',
-      accountId: 'acc_1',
-      accountName: 'Business Checking',
-      entityId: 'ent_2',
-      entityName: 'Digital Solutions LLC',
+      categorizationStatus: "pending",
+      accountId: "acc_1",
+      accountName: "Business Checking",
+      entityId: "ent_2",
+      entityName: "Digital Solutions LLC",
       aiInsights: {},
       tags: [],
       attachments: 0,
@@ -879,24 +1010,24 @@ function getMockTransactions(): Transaction[] {
 
 function getCategories(): string[] {
   return [
-    'Software & Subscriptions',
-    'Office Supplies',
-    'Professional Services',
-    'Revenue',
-    'Payroll',
-    'Marketing',
-    'Travel',
-    'Utilities',
-    'Insurance',
-    'Uncategorized',
+    "Software & Subscriptions",
+    "Office Supplies",
+    "Professional Services",
+    "Revenue",
+    "Payroll",
+    "Marketing",
+    "Travel",
+    "Utilities",
+    "Insurance",
+    "Uncategorized",
   ];
 }
 
 function getEntities(): { id: string; name: string }[] {
   return [
-    { id: 'ent_1', name: 'TechStart Inc.' },
-    { id: 'ent_2', name: 'Digital Solutions LLC' },
-    { id: 'ent_3', name: 'Consulting Partners' },
+    { id: "ent_1", name: "TechStart Inc." },
+    { id: "ent_2", name: "Digital Solutions LLC" },
+    { id: "ent_3", name: "Consulting Partners" },
   ];
 }
 

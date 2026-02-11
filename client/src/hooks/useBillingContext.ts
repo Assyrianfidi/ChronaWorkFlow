@@ -1,6 +1,10 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { billingApi, type BillingStatus, type BillingLimits } from '../api/billing.api';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import {
+  billingApi,
+  type BillingStatus,
+  type BillingLimits,
+} from "../api/billing.api";
 
 interface BillingContextState {
   status: BillingStatus | null;
@@ -8,17 +12,21 @@ interface BillingContextState {
   isLoading: boolean;
   error: string | null;
   lastFetched: number | null;
-  
+
   // Actions
   fetchBillingStatus: (companyId: string) => Promise<void>;
   fetchBillingLimits: (companyId: string) => Promise<void>;
   refresh: (companyId: string) => Promise<void>;
   clear: () => void;
-  
+
   // Helpers
   canWrite: () => boolean;
-  isOverLimit: (resourceType: 'invoices' | 'users' | 'companies' | 'aiTokens') => boolean;
-  getUsagePercentage: (resourceType: 'invoices' | 'users' | 'companies' | 'aiTokens') => number;
+  isOverLimit: (
+    resourceType: "invoices" | "users" | "companies" | "aiTokens",
+  ) => boolean;
+  getUsagePercentage: (
+    resourceType: "invoices" | "users" | "companies" | "aiTokens",
+  ) => number;
 }
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -38,9 +46,13 @@ export const useBillingContext = create<BillingContextState>()(
 
       fetchBillingStatus: async (companyId: string) => {
         const state = get();
-        
+
         // Use cache if fresh
-        if (state.status && state.lastFetched && Date.now() - state.lastFetched < CACHE_DURATION) {
+        if (
+          state.status &&
+          state.lastFetched &&
+          Date.now() - state.lastFetched < CACHE_DURATION
+        ) {
           return;
         }
 
@@ -53,20 +65,27 @@ export const useBillingContext = create<BillingContextState>()(
             lastFetched: Date.now(),
           });
         } catch (err: any) {
-          const errorMessage = err.response?.data?.message || err.message || 'Failed to fetch billing status';
+          const errorMessage =
+            err.response?.data?.message ||
+            err.message ||
+            "Failed to fetch billing status";
           set({
             error: errorMessage,
             isLoading: false,
           });
-          console.error('Failed to fetch billing status:', err);
+          console.error("Failed to fetch billing status:", err);
         }
       },
 
       fetchBillingLimits: async (companyId: string) => {
         const state = get();
-        
+
         // Use cache if fresh
-        if (state.limits && state.lastFetched && Date.now() - state.lastFetched < CACHE_DURATION) {
+        if (
+          state.limits &&
+          state.lastFetched &&
+          Date.now() - state.lastFetched < CACHE_DURATION
+        ) {
           return;
         }
 
@@ -79,12 +98,15 @@ export const useBillingContext = create<BillingContextState>()(
             lastFetched: Date.now(),
           });
         } catch (err: any) {
-          const errorMessage = err.response?.data?.message || err.message || 'Failed to fetch billing limits';
+          const errorMessage =
+            err.response?.data?.message ||
+            err.message ||
+            "Failed to fetch billing limits";
           set({
             error: errorMessage,
             isLoading: false,
           });
-          console.error('Failed to fetch billing limits:', err);
+          console.error("Failed to fetch billing limits:", err);
         }
       },
 
@@ -109,34 +131,42 @@ export const useBillingContext = create<BillingContextState>()(
       canWrite: () => {
         const { status } = get();
         if (!status) return true; // Allow if not loaded yet (fail open for UX)
-        
+
         // Block writes if suspended or read-only
-        if (status.status === 'suspended' || status.readOnly) {
+        if (status.status === "suspended" || status.readOnly) {
           return false;
         }
-        
+
         return true;
       },
 
-      isOverLimit: (resourceType: 'invoices' | 'users' | 'companies' | 'aiTokens') => {
+      isOverLimit: (
+        resourceType: "invoices" | "users" | "companies" | "aiTokens",
+      ) => {
         const { limits } = get();
         if (!limits) return false;
 
         switch (resourceType) {
-          case 'invoices':
-            return limits.usage.invoicesThisMonth >= limits.limits.invoicesPerMonth;
-          case 'users':
+          case "invoices":
+            return (
+              limits.usage.invoicesThisMonth >= limits.limits.invoicesPerMonth
+            );
+          case "users":
             return limits.usage.users >= limits.limits.users;
-          case 'companies':
+          case "companies":
             return limits.usage.companies >= limits.limits.companies;
-          case 'aiTokens':
-            return limits.usage.aiTokensThisMonth >= limits.limits.aiTokensPerMonth;
+          case "aiTokens":
+            return (
+              limits.usage.aiTokensThisMonth >= limits.limits.aiTokensPerMonth
+            );
           default:
             return false;
         }
       },
 
-      getUsagePercentage: (resourceType: 'invoices' | 'users' | 'companies' | 'aiTokens') => {
+      getUsagePercentage: (
+        resourceType: "invoices" | "users" | "companies" | "aiTokens",
+      ) => {
         const { limits } = get();
         if (!limits) return 0;
 
@@ -144,19 +174,19 @@ export const useBillingContext = create<BillingContextState>()(
         let limit = 1;
 
         switch (resourceType) {
-          case 'invoices':
+          case "invoices":
             usage = limits.usage.invoicesThisMonth;
             limit = limits.limits.invoicesPerMonth;
             break;
-          case 'users':
+          case "users":
             usage = limits.usage.users;
             limit = limits.limits.users;
             break;
-          case 'companies':
+          case "companies":
             usage = limits.usage.companies;
             limit = limits.limits.companies;
             break;
-          case 'aiTokens':
+          case "aiTokens":
             usage = limits.usage.aiTokensThisMonth;
             limit = limits.limits.aiTokensPerMonth;
             break;
@@ -167,14 +197,14 @@ export const useBillingContext = create<BillingContextState>()(
       },
     }),
     {
-      name: 'accubooks-billing-context',
+      name: "accubooks-billing-context",
       partialize: (state) => ({
         status: state.status,
         limits: state.limits,
         lastFetched: state.lastFetched,
       }),
-    }
-  )
+    },
+  ),
 );
 
 /**
@@ -187,6 +217,8 @@ export function canPerformWrite(): boolean {
 /**
  * Helper to check if resource limit is exceeded
  */
-export function isResourceOverLimit(resourceType: 'invoices' | 'users' | 'companies' | 'aiTokens'): boolean {
+export function isResourceOverLimit(
+  resourceType: "invoices" | "users" | "companies" | "aiTokens",
+): boolean {
   return useBillingContext.getState().isOverLimit(resourceType);
 }

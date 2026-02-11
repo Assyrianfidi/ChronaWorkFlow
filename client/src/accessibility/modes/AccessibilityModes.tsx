@@ -181,15 +181,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
             <div className="settings-grid">
               <div className="setting-item">
                 <label className="setting-label">
-
-        <label htmlFor="input-cign08db4" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-cign08db4"
+                  <label htmlFor="input-cign08db4" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-cign08db4"
                     type="checkbox"
                     checked={config.visual.highContrast}
-                    onChange={() =>
-       toggleMode("high-contrast")}
+                    onChange={() => toggleMode("high-contrast")}
                   />
                   <span className="setting-text">
                     <strong>High Contrast</strong>
@@ -202,15 +201,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-
-        <label htmlFor="input-4227ksz1x" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-4227ksz1x"
+                  <label htmlFor="input-4227ksz1x" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-4227ksz1x"
                     type="checkbox"
                     checked={config.visual.largeText}
-                    onChange={() =>
-       toggleMode("large-text")}
+                    onChange={() => toggleMode("large-text")}
                   />
                   <span className="setting-text">
                     <strong>Large Text</strong>
@@ -223,15 +221,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-
-        <label htmlFor="input-j9zqzmlnr" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-j9zqzmlnr"
+                  <label htmlFor="input-j9zqzmlnr" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-j9zqzmlnr"
                     type="checkbox"
                     checked={config.visual.reducedMotion}
-                    onChange={() =>
-       toggleMode("reduced-motion")}
+                    onChange={() => toggleMode("reduced-motion")}
                   />
                   <span className="setting-text">
                     <strong>Reduced Motion</strong>
@@ -270,15 +267,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
             <div className="settings-grid">
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-aet4fz43b" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-aet4fz43b"
+                  <label htmlFor="input-aet4fz43b" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-aet4fz43b"
                     type="checkbox"
                     checked={config.cognitive.simplifiedUI}
-                    onChange={() =>
-       toggleMode("simplified-ui")}
+                    onChange={() => toggleMode("simplified-ui")}
                   />
                   <span className="setting-text">
                     <strong>Simplified Interface</strong>
@@ -308,15 +304,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-koi2isrfq" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-koi2isrfq"
+                  <label htmlFor="input-koi2isrfq" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-koi2isrfq"
                     type="checkbox"
                     checked={config.cognitive.helpText}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         cognitive: {
                           ...config.cognitive,
@@ -336,15 +331,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-yaetlw5fu" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-yaetlw5fu"
+                  <label htmlFor="input-yaetlw5fu" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-yaetlw5fu"
                     type="checkbox"
                     checked={config.cognitive.errorPrevention}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         cognitive: {
                           ...config.cognitive,
@@ -370,15 +364,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
             <div className="settings-grid">
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-14bfew8lm" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-14bfew8lm"
+                  <label htmlFor="input-14bfew8lm" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-14bfew8lm"
                     type="checkbox"
                     checked={config.motor.largerClickTargets}
-                    onChange={() =>
-       toggleMode("large-targets")}
+                    onChange={() => toggleMode("large-targets")}
                   />
                   <span className="setting-text">
                     <strong>Larger Click Targets</strong>
@@ -391,15 +384,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-ascymcyr3" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-ascymcyr3"
+                  <label htmlFor="input-ascymcyr3" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-ascymcyr3"
                     type="checkbox"
                     checked={config.motor.gestureAlternatives}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         motor: {
                           ...config.motor,
@@ -420,15 +412,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-vcz9dksph" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-vcz9dksph"
+                  <label htmlFor="input-vcz9dksph" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-vcz9dksph"
                     type="checkbox"
                     checked={config.motor.voiceControl}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         motor: {
                           ...config.motor,
@@ -448,15 +439,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-bur1jtka4" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-bur1jtka4"
+                  <label htmlFor="input-bur1jtka4" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-bur1jtka4"
                     type="checkbox"
                     checked={config.motor.switchNavigation}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         motor: {
                           ...config.motor,
@@ -482,15 +472,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
             <div className="settings-grid">
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-r6sxei1jx" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-r6sxei1jx"
+                  <label htmlFor="input-r6sxei1jx" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-r6sxei1jx"
                     type="checkbox"
                     checked={config.focusManagement.visibleFocus}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         focusManagement: {
                           ...config.focusManagement,
@@ -510,15 +499,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-h6ly857wn" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-h6ly857wn"
+                  <label htmlFor="input-h6ly857wn" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-h6ly857wn"
                     type="checkbox"
                     checked={config.focusManagement.focusTrap}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         focusManagement: {
                           ...config.focusManagement,
@@ -538,15 +526,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-jvz1lmt8h" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-jvz1lmt8h"
+                  <label htmlFor="input-jvz1lmt8h" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-jvz1lmt8h"
                     type="checkbox"
                     checked={config.focusManagement.skipLinks}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         focusManagement: {
                           ...config.focusManagement,
@@ -572,15 +559,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
             <div className="settings-grid">
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-3vo0c8s41" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-3vo0c8s41"
+                  <label htmlFor="input-3vo0c8s41" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-3vo0c8s41"
                     type="checkbox"
                     checked={config.screenReader.announcements}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         screenReader: {
                           ...config.screenReader,
@@ -600,15 +586,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-1ouxoifg5" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-1ouxoifg5"
+                  <label htmlFor="input-1ouxoifg5" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-1ouxoifg5"
                     type="checkbox"
                     checked={config.screenReader.landmarks}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         screenReader: {
                           ...config.screenReader,
@@ -628,15 +613,14 @@ const AccessibilityModes: React.FC<AccessibilityModesProps> = ({
 
               <div className="setting-item">
                 <label className="setting-label">
-                  
-        <label htmlFor="input-5cixgj3w6" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-5cixgj3w6"
+                  <label htmlFor="input-5cixgj3w6" className="sr-only">
+                    Checkbox
+                  </label>
+                  <input
+                    id="input-5cixgj3w6"
                     type="checkbox"
                     checked={config.screenReader.descriptions}
                     onChange={() =>
-      
                       handleConfigUpdate({
                         screenReader: {
                           ...config.screenReader,

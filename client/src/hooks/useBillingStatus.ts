@@ -24,7 +24,9 @@ export function useBillingStatus(companyId: string) {
   } = useQuery<BillingStatusResponse>({
     queryKey: ["billing-status", companyId],
     queryFn: async () => {
-      const response = await api.get<BillingStatusResponse>(`/billing/status?companyId=${companyId}`);
+      const response = await api.get<BillingStatusResponse>(
+        `/billing/status?companyId=${companyId}`,
+      );
       return response.data;
     },
     enabled: !!companyId,

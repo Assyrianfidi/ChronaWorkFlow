@@ -1,5 +1,5 @@
-import api from './index';
-import type { ApiResponse } from './index';
+import api from "./index";
+import type { ApiResponse } from "./index";
 
 export interface Payment {
   id: string;
@@ -7,7 +7,7 @@ export interface Payment {
   invoiceId: string;
   amount: string;
   date: string;
-  paymentMethod: 'cash' | 'check' | 'credit_card' | 'bank_transfer' | 'other';
+  paymentMethod: "cash" | "check" | "credit_card" | "bank_transfer" | "other";
   referenceNumber?: string;
   notes?: string;
   createdBy: string;
@@ -21,7 +21,7 @@ export interface CreatePaymentRequest {
   invoiceId: string;
   amount: string;
   date: string;
-  paymentMethod: Payment['paymentMethod'];
+  paymentMethod: Payment["paymentMethod"];
   referenceNumber?: string;
   notes?: string;
 }
@@ -40,10 +40,14 @@ export const paymentsApi = {
    * List payments for a company
    */
   list: (params: PaymentListParams) =>
-    api.get<ApiResponse<{ payments: Payment[]; total: number; page: number; totalPages: number }>>(
-      '/payments',
-      { params }
-    ),
+    api.get<
+      ApiResponse<{
+        payments: Payment[];
+        total: number;
+        page: number;
+        totalPages: number;
+      }>
+    >("/payments", { params }),
 
   /**
    * Get a single payment by ID
@@ -58,11 +62,11 @@ export const paymentsApi = {
    */
   create: (data: CreatePaymentRequest, idempotencyKey: string) =>
     api.post<ApiResponse<{ payment: Payment; replayed: boolean }>>(
-      '/payments',
+      "/payments",
       data,
       {
-        headers: { 'Idempotency-Key': idempotencyKey },
-      }
+        headers: { "Idempotency-Key": idempotencyKey },
+      },
     ),
 
   /**

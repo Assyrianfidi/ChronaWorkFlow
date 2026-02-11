@@ -443,7 +443,12 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
               {notification.actions && notification.actions.length > 0 && (
                 <div
                   className="notification-action-row"
-                  style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    marginTop: 12,
+                    flexWrap: "wrap",
+                  }}
                 >
                   {notification.actions.map((action) => {
                     const isPrimary = action.variant === "primary";
@@ -529,8 +534,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({
 
 // Notification hook for easy usage
 export const useNotification = () => {
-  const [notificationSystem, setNotificationSystem] =
-    useState<any>(null);
+  const [notificationSystem, setNotificationSystem] = useState<any>(null);
 
   const showNotification = useCallback(
     (

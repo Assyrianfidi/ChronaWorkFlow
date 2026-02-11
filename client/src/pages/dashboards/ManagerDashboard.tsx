@@ -64,25 +64,26 @@ const ManagerDashboard: React.FC = () => {
   const { user } = useAuth();
 
   // Fetch manager dashboard data
-  const { data: dashboardData, isLoading, error } = useSWR<{
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useSWR<{
     success: boolean;
     data: {
       kpis: FinancialKPIs;
       teamActivity: TeamActivity[];
     };
-  }>(
-    "/api/dashboard/manager",
-    async (url: string) => {
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch dashboard data");
-      return response.json();
-    },
-  );
+  }>("/api/dashboard/manager", async (url: string) => {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) throw new Error("Failed to fetch dashboard data");
+    return response.json();
+  });
 
   const kpis = dashboardData?.data?.kpis;
   const teamActivity = dashboardData?.data?.teamActivity;

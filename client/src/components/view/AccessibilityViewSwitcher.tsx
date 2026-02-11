@@ -3,33 +3,32 @@
  * Switch between Default, High Contrast, and Screen Reader modes
  */
 
-import React from 'react';
-import { useView } from '@/contexts/ViewContext';
+import React from "react";
+import { useView } from "@/contexts/ViewContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/DropdownMenu';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import {
-  Eye,
-  Contrast,
-  Headphones,
-  Check,
-} from 'lucide-react';
-import { ACCESSIBILITY_VIEWS } from '@/config/view.config';
+} from "@/components/ui/DropdownMenu";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Eye, Contrast, Headphones, Check } from "lucide-react";
+import { ACCESSIBILITY_VIEWS } from "@/config/view.config";
 
 export const AccessibilityViewSwitcher: React.FC = () => {
   const { accessibility, setAccessibility, accessibilityConfig } = useView();
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
-      case 'Eye': return Eye;
-      case 'Contrast': return Contrast;
-      case 'Headphones': return Headphones;
-      default: return Eye;
+      case "Eye":
+        return Eye;
+      case "Contrast":
+        return Contrast;
+      case "Headphones":
+        return Headphones;
+      default:
+        return Eye;
     }
   };
 
@@ -53,8 +52,8 @@ export const AccessibilityViewSwitcher: React.FC = () => {
               key={view.id}
               onClick={() => setAccessibility(view.id)}
               className={cn(
-                'flex items-center justify-between',
-                isActive && 'bg-primary/10'
+                "flex items-center justify-between",
+                isActive && "bg-primary/10",
               )}
             >
               <div className="flex items-center gap-2">

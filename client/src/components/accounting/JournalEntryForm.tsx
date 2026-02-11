@@ -3,25 +3,50 @@
  * Double-entry transaction creation with real-time balance validation
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-import { useToast } from '@/hooks/useToast';
-import { useView } from '@/contexts/ViewContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { CalendarIcon, Plus, Trash2, Save, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import React, { useState, useCallback, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { useToast } from "@/hooks/useToast";
+import { useView } from "@/contexts/ViewContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import {
+  CalendarIcon,
+  Plus,
+  Trash2,
+  Save,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Account {
   id: string;
@@ -47,10 +72,10 @@ interface JournalEntry {
 
 const EMPTY_LINE: JournalLine = {
   id: crypto.randomUUID(),
-  accountId: '',
-  debit: '',
-  credit: '',
-  description: '',
+  accountId: "",
+  debit: "",
+  credit: "",
+  description: "",
 };
 
 export const JournalEntryForm: React.FC = () => {
@@ -58,8 +83,8 @@ export const JournalEntryForm: React.FC = () => {
   const { mainViewConfig } = useView();
   const queryClient = useQueryClient();
   const [date, setDate] = useState<Date>(new Date());
-  const [description, setDescription] = useState('');
-  const [reference, setReference] = useState('');
+  const [description, setDescription] = useState("");
+  const [reference, setReference] = useState("");
   const [lines, setLines] = useState<JournalLine[]>([
     { ...EMPTY_LINE },
     { ...EMPTY_LINE, id: crypto.randomUUID() },
@@ -70,9 +95,9 @@ export const JournalEntryForm: React.FC = () => {
 
   // Fetch accounts for dropdown
   const { data: accounts = [], isLoading: accountsLoading } = useQuery({
-    queryKey: ['accounts'],
+    queryKey: ["accounts"],
     queryFn: async () => {
-      const response = await api.get('/ledger/accounts');
+      const response = await api.get("/ledger/accounts");
       return response.data.data;
     },
   });
@@ -80,18 +105,18 @@ export const JournalEntryForm: React.FC = () => {
   // Create transaction mutation
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await api.post('/ledger/transactions', data);
+      const response = await api.post("/ledger/transactions", data);
       return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       toast({
-        title: 'Journal entry created',
-        description: 'Your transaction has been posted successfully.',
+        title: "Journal entry created",
+        description: "Your transaction has been posted successfully.",
       });
       // Reset form
-      setDescription('');
-      setReference('');
+      setDescription("");
+      setReference("");
       setLines([
         { ...EMPTY_LINE, id: crypto.randomUUID() },
         { ...EMPTY_LINE, id: crypto.randomUUID() },
@@ -99,17 +124,24 @@ export const JournalEntryForm: React.FC = () => {
     },
     onError: (error: any) => {
       toast({
-        title: 'Error creating entry',
-        description: error.response?.data?.error?.message || 'An error occurred',
-        variant: 'destructive',
+        title: "Error creating entry",
+        description:
+          error.response?.data?.error?.message || "An error occurred",
+        variant: "destructive",
       });
     },
   });
 
   // Calculate totals and balance status
   useEffect(() => {
-    const debits = lines.reduce((sum, line) => sum + (parseFloat(line.debit) || 0), 0);
-    const credits = lines.reduce((sum, line) => sum + (parseFloat(line.credit) || 0), 0);
+    const debits = lines.reduce(
+      (sum, line) => sum + (parseFloat(line.debit) || 0),
+      0,
+    );
+    const credits = lines.reduce(
+      (sum, line) => sum + (parseFloat(line.credit) || 0),
+      0,
+    );
     setTotalDebits(debits);
     setTotalCredits(credits);
     setIsBalanced(Math.abs(debits - credits) < 0.001 && debits > 0);
@@ -121,68 +153,74 @@ export const JournalEntryForm: React.FC = () => {
   }, []);
 
   // Remove line
-  const removeLine = useCallback((id: string) => {
-    setLines((prev) => {
-      if (prev.length <= 2) {
-        toast({
-          title: 'Cannot remove',
-          description: 'Journal entries must have at least two lines.',
-          variant: 'destructive',
-        });
-        return prev;
-      }
-      return prev.filter((line) => line.id !== id);
-    });
-  }, [toast]);
+  const removeLine = useCallback(
+    (id: string) => {
+      setLines((prev) => {
+        if (prev.length <= 2) {
+          toast({
+            title: "Cannot remove",
+            description: "Journal entries must have at least two lines.",
+            variant: "destructive",
+          });
+          return prev;
+        }
+        return prev.filter((line) => line.id !== id);
+      });
+    },
+    [toast],
+  );
 
   // Update line
-  const updateLine = useCallback((id: string, field: keyof JournalLine, value: string) => {
-    setLines((prev) =>
-      prev.map((line) => {
-        if (line.id !== id) return line;
+  const updateLine = useCallback(
+    (id: string, field: keyof JournalLine, value: string) => {
+      setLines((prev) =>
+        prev.map((line) => {
+          if (line.id !== id) return line;
 
-        // Clear opposite amount when entering debit/credit
-        if (field === 'debit' && value) {
-          return { ...line, [field]: value, credit: '' };
-        }
-        if (field === 'credit' && value) {
-          return { ...line, [field]: value, debit: '' };
-        }
+          // Clear opposite amount when entering debit/credit
+          if (field === "debit" && value) {
+            return { ...line, [field]: value, credit: "" };
+          }
+          if (field === "credit" && value) {
+            return { ...line, [field]: value, debit: "" };
+          }
 
-        return { ...line, [field]: value };
-      })
-    );
-  }, []);
+          return { ...line, [field]: value };
+        }),
+      );
+    },
+    [],
+  );
 
   // Handle form submission
   const handleSubmit = async () => {
     if (!isBalanced) {
       toast({
-        title: 'Entry not balanced',
-        description: 'Total debits must equal total credits.',
-        variant: 'destructive',
+        title: "Entry not balanced",
+        description: "Total debits must equal total credits.",
+        variant: "destructive",
       });
       return;
     }
 
     if (!description.trim()) {
       toast({
-        title: 'Description required',
-        description: 'Please enter a description for this entry.',
-        variant: 'destructive',
+        title: "Description required",
+        description: "Please enter a description for this entry.",
+        variant: "destructive",
       });
       return;
     }
 
     const validLines = lines.filter(
-      (line) => line.accountId && (line.debit || line.credit)
+      (line) => line.accountId && (line.debit || line.credit),
     );
 
     if (validLines.length < 2) {
       toast({
-        title: 'Insufficient lines',
-        description: 'You need at least two valid lines.',
-        variant: 'destructive',
+        title: "Insufficient lines",
+        description: "You need at least two valid lines.",
+        variant: "destructive",
       });
       return;
     }
@@ -191,7 +229,7 @@ export const JournalEntryForm: React.FC = () => {
       date,
       description,
       reference,
-      type: 'manual',
+      type: "manual",
       lines: validLines.map((line) => ({
         accountId: line.accountId,
         debit: line.debit ? parseFloat(line.debit) : undefined,
@@ -211,9 +249,9 @@ export const JournalEntryForm: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            {mainViewConfig.terminology.accounting === 'Chart of Accounts'
-              ? 'Journal Entry'
-              : 'General Journal'}
+            {mainViewConfig.terminology.accounting === "Chart of Accounts"
+              ? "Journal Entry"
+              : "General Journal"}
           </h1>
           <p className="text-muted-foreground">
             Create a double-entry accounting transaction
@@ -242,7 +280,8 @@ export const JournalEntryForm: React.FC = () => {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Entry is not balanced. Difference: ${Math.abs(difference).toFixed(2)}
+            Entry is not balanced. Difference: $
+            {Math.abs(difference).toFixed(2)}
           </AlertDescription>
         </Alert>
       )}
@@ -270,12 +309,12 @@ export const JournalEntryForm: React.FC = () => {
                   <Button
                     variant="outline"
                     className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !date && 'text-muted-foreground'
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, 'PPP') : <span>Pick a date</span>}
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -333,11 +372,15 @@ export const JournalEntryForm: React.FC = () => {
             <TableBody>
               {lines.map((line, index) => (
                 <TableRow key={line.id}>
-                  <TableCell className="text-muted-foreground">{index + 1}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {index + 1}
+                  </TableCell>
                   <TableCell>
                     <Select
                       value={line.accountId}
-                      onValueChange={(value) => updateLine(line.id, 'accountId', value)}
+                      onValueChange={(value) =>
+                        updateLine(line.id, "accountId", value)
+                      }
                       disabled={accountsLoading}
                     >
                       <SelectTrigger className="w-64">
@@ -356,7 +399,9 @@ export const JournalEntryForm: React.FC = () => {
                     <Input
                       placeholder="Line description"
                       value={line.description}
-                      onChange={(e) => updateLine(line.id, 'description', e.target.value)}
+                      onChange={(e) =>
+                        updateLine(line.id, "description", e.target.value)
+                      }
                     />
                   </TableCell>
                   <TableCell>
@@ -366,7 +411,9 @@ export const JournalEntryForm: React.FC = () => {
                       min="0"
                       placeholder="0.00"
                       value={line.debit}
-                      onChange={(e) => updateLine(line.id, 'debit', e.target.value)}
+                      onChange={(e) =>
+                        updateLine(line.id, "debit", e.target.value)
+                      }
                       className="text-right"
                     />
                   </TableCell>
@@ -377,7 +424,9 @@ export const JournalEntryForm: React.FC = () => {
                       min="0"
                       placeholder="0.00"
                       value={line.credit}
-                      onChange={(e) => updateLine(line.id, 'credit', e.target.value)}
+                      onChange={(e) =>
+                        updateLine(line.id, "credit", e.target.value)
+                      }
                       className="text-right"
                     />
                   </TableCell>
@@ -397,10 +446,20 @@ export const JournalEntryForm: React.FC = () => {
                 <TableCell></TableCell>
                 <TableCell></TableCell>
                 <TableCell className="text-right">Totals:</TableCell>
-                <TableCell className={cn('text-right', difference !== 0 && 'text-destructive')}>
+                <TableCell
+                  className={cn(
+                    "text-right",
+                    difference !== 0 && "text-destructive",
+                  )}
+                >
                   ${totalDebits.toFixed(2)}
                 </TableCell>
-                <TableCell className={cn('text-right', difference !== 0 && 'text-destructive')}>
+                <TableCell
+                  className={cn(
+                    "text-right",
+                    difference !== 0 && "text-destructive",
+                  )}
+                >
                   ${totalCredits.toFixed(2)}
                 </TableCell>
                 <TableCell></TableCell>
@@ -413,14 +472,16 @@ export const JournalEntryForm: React.FC = () => {
       {/* Summary */}
       <div className="flex justify-between items-center text-sm text-muted-foreground">
         <div>
-          Lines: {lines.length} | Valid lines:{' '}
+          Lines: {lines.length} | Valid lines:{" "}
           {lines.filter((l) => l.accountId && (l.debit || l.credit)).length}
         </div>
         <div className="flex items-center gap-4">
           <span>Total Debits: ${totalDebits.toFixed(2)}</span>
           <span>Total Credits: ${totalCredits.toFixed(2)}</span>
-          <Badge variant={isBalanced ? 'default' : 'destructive'}>
-            {isBalanced ? 'Balanced' : `Off by $${Math.abs(difference).toFixed(2)}`}
+          <Badge variant={isBalanced ? "default" : "destructive"}>
+            {isBalanced
+              ? "Balanced"
+              : `Off by $${Math.abs(difference).toFixed(2)}`}
           </Badge>
         </div>
       </div>

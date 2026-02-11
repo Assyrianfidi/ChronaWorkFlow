@@ -5,7 +5,12 @@ import { OwnerLayout } from "@/components/layout/OwnerLayout";
 import { DataTable } from "@/components/ui/DataTable";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/Select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Textarea } from "@/components/ui/Textarea";
 import {
@@ -160,13 +165,22 @@ function hydrateForm(plan: Plan): PlanFormState {
     includedInvoices: String(plan.includedInvoices ?? 0),
     includedAiTokens: String(plan.includedAiTokens ?? 0),
     includedApiCalls: String(plan.includedApiCalls ?? 0),
-    maxUsers: plan.maxUsers === null || plan.maxUsers === undefined ? "" : String(plan.maxUsers),
+    maxUsers:
+      plan.maxUsers === null || plan.maxUsers === undefined
+        ? ""
+        : String(plan.maxUsers),
     maxInvoices:
-      plan.maxInvoices === null || plan.maxInvoices === undefined ? "" : String(plan.maxInvoices),
+      plan.maxInvoices === null || plan.maxInvoices === undefined
+        ? ""
+        : String(plan.maxInvoices),
     maxAiTokens:
-      plan.maxAiTokens === null || plan.maxAiTokens === undefined ? "" : String(plan.maxAiTokens),
+      plan.maxAiTokens === null || plan.maxAiTokens === undefined
+        ? ""
+        : String(plan.maxAiTokens),
     maxApiCalls:
-      plan.maxApiCalls === null || plan.maxApiCalls === undefined ? "" : String(plan.maxApiCalls),
+      plan.maxApiCalls === null || plan.maxApiCalls === undefined
+        ? ""
+        : String(plan.maxApiCalls),
     allowApiAccess: Boolean(plan.allowApiAccess),
     allowAuditExports: Boolean(plan.allowAuditExports),
     allowAdvancedAnalytics: Boolean(plan.allowAdvancedAnalytics),
@@ -178,7 +192,9 @@ export default function OwnerPlansPage() {
 
   const [open, setOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<Plan | null>(null);
-  const [form, setForm] = React.useState<PlanFormState>(() => createEmptyForm());
+  const [form, setForm] = React.useState<PlanFormState>(() =>
+    createEmptyForm(),
+  );
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["owner-plans"],
@@ -256,7 +272,8 @@ export default function OwnerPlansPage() {
                   {editing ? `Edit plan: ${editing.code}` : "Create plan"}
                 </DialogTitle>
                 <DialogDescription>
-                  Define pricing, limits, and included usage. Changes are audited.
+                  Define pricing, limits, and included usage. Changes are
+                  audited.
                 </DialogDescription>
               </DialogHeader>
 
@@ -266,7 +283,9 @@ export default function OwnerPlansPage() {
                   <Input
                     aria-label="Plan code"
                     value={form.code}
-                    onChange={(e) => setForm((p) => ({ ...p, code: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, code: e.target.value }))
+                    }
                     placeholder="STARTER"
                   />
                 </div>
@@ -276,7 +295,9 @@ export default function OwnerPlansPage() {
                   <Input
                     aria-label="Plan name"
                     value={form.name}
-                    onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, name: e.target.value }))
+                    }
                     placeholder="Starter"
                   />
                 </div>
@@ -286,7 +307,9 @@ export default function OwnerPlansPage() {
                   <Textarea
                     aria-label="Plan description"
                     value={form.description}
-                    onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, description: e.target.value }))
+                    }
                     placeholder="Copy-ready plan description for pricing pages"
                     className="min-h-[96px]"
                   />
@@ -298,7 +321,9 @@ export default function OwnerPlansPage() {
                     aria-label="Plan price cents"
                     inputMode="numeric"
                     value={form.priceCents}
-                    onChange={(e) => setForm((p) => ({ ...p, priceCents: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, priceCents: e.target.value }))
+                    }
                   />
                 </div>
 
@@ -306,7 +331,9 @@ export default function OwnerPlansPage() {
                   <div className="text-sm font-medium">Billing interval</div>
                   <Select
                     value={form.billingInterval}
-                    onValueChange={(v) => setForm((p) => ({ ...p, billingInterval: v as any }))}
+                    onValueChange={(v) =>
+                      setForm((p) => ({ ...p, billingInterval: v as any }))
+                    }
                   >
                     <SelectValue placeholder="Select interval" />
                     <SelectContent>
@@ -322,7 +349,9 @@ export default function OwnerPlansPage() {
                     aria-label="Included users"
                     inputMode="numeric"
                     value={form.includedUsers}
-                    onChange={(e) => setForm((p) => ({ ...p, includedUsers: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, includedUsers: e.target.value }))
+                    }
                   />
                 </div>
 
@@ -332,70 +361,105 @@ export default function OwnerPlansPage() {
                     aria-label="Max users"
                     inputMode="numeric"
                     value={form.maxUsers}
-                    onChange={(e) => setForm((p) => ({ ...p, maxUsers: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, maxUsers: e.target.value }))
+                    }
                     placeholder="Leave blank for unlimited"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Included invoices / month</div>
+                  <div className="text-sm font-medium">
+                    Included invoices / month
+                  </div>
                   <Input
                     aria-label="Included invoices"
                     inputMode="numeric"
                     value={form.includedInvoices}
-                    onChange={(e) => setForm((p) => ({ ...p, includedInvoices: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({
+                        ...p,
+                        includedInvoices: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Max invoices / month</div>
+                  <div className="text-sm font-medium">
+                    Max invoices / month
+                  </div>
                   <Input
                     aria-label="Max invoices"
                     inputMode="numeric"
                     value={form.maxInvoices}
-                    onChange={(e) => setForm((p) => ({ ...p, maxInvoices: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, maxInvoices: e.target.value }))
+                    }
                     placeholder="Leave blank for unlimited"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Included AI tokens / month</div>
+                  <div className="text-sm font-medium">
+                    Included AI tokens / month
+                  </div>
                   <Input
                     aria-label="Included AI tokens"
                     inputMode="numeric"
                     value={form.includedAiTokens}
-                    onChange={(e) => setForm((p) => ({ ...p, includedAiTokens: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({
+                        ...p,
+                        includedAiTokens: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Max AI tokens / month</div>
+                  <div className="text-sm font-medium">
+                    Max AI tokens / month
+                  </div>
                   <Input
                     aria-label="Max AI tokens"
                     inputMode="numeric"
                     value={form.maxAiTokens}
-                    onChange={(e) => setForm((p) => ({ ...p, maxAiTokens: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, maxAiTokens: e.target.value }))
+                    }
                     placeholder="Leave blank for unlimited"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Included API calls / month</div>
+                  <div className="text-sm font-medium">
+                    Included API calls / month
+                  </div>
                   <Input
                     aria-label="Included API calls"
                     inputMode="numeric"
                     value={form.includedApiCalls}
-                    onChange={(e) => setForm((p) => ({ ...p, includedApiCalls: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({
+                        ...p,
+                        includedApiCalls: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Max API calls / month</div>
+                  <div className="text-sm font-medium">
+                    Max API calls / month
+                  </div>
                   <Input
                     aria-label="Max API calls"
                     inputMode="numeric"
                     value={form.maxApiCalls}
-                    onChange={(e) => setForm((p) => ({ ...p, maxApiCalls: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, maxApiCalls: e.target.value }))
+                    }
                     placeholder="Leave blank for unlimited"
                   />
                 </div>
@@ -405,7 +469,9 @@ export default function OwnerPlansPage() {
                     <label className="flex items-center gap-2 text-sm">
                       <Checkbox
                         checked={form.isActive}
-                        onCheckedChange={(v) => setForm((p) => ({ ...p, isActive: Boolean(v) }))}
+                        onCheckedChange={(v) =>
+                          setForm((p) => ({ ...p, isActive: Boolean(v) }))
+                        }
                       />
                       Active
                     </label>
@@ -424,7 +490,10 @@ export default function OwnerPlansPage() {
                       <Checkbox
                         checked={form.allowAdvancedAnalytics}
                         onCheckedChange={(v) =>
-                          setForm((p) => ({ ...p, allowAdvancedAnalytics: Boolean(v) }))
+                          setForm((p) => ({
+                            ...p,
+                            allowAdvancedAnalytics: Boolean(v),
+                          }))
                         }
                       />
                       Advanced analytics
@@ -434,7 +503,10 @@ export default function OwnerPlansPage() {
                       <Checkbox
                         checked={form.allowAuditExports}
                         onCheckedChange={(v) =>
-                          setForm((p) => ({ ...p, allowAuditExports: Boolean(v) }))
+                          setForm((p) => ({
+                            ...p,
+                            allowAuditExports: Boolean(v),
+                          }))
                         }
                       />
                       Audit exports
@@ -496,7 +568,9 @@ export default function OwnerPlansPage() {
               key: "includedUsers",
               title: "Users",
               render: (_v, row) =>
-                row.maxUsers ? `${row.includedUsers}/${row.maxUsers}` : `${row.includedUsers}/∞`,
+                row.maxUsers
+                  ? `${row.includedUsers}/${row.maxUsers}`
+                  : `${row.includedUsers}/∞`,
             },
             {
               key: "includedAiTokens",
@@ -544,8 +618,9 @@ export default function OwnerPlansPage() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Disable plan?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          This performs a soft delete (plan becomes inactive). Existing subscriptions
-                          will remain, but the plan should no longer be sold.
+                          This performs a soft delete (plan becomes inactive).
+                          Existing subscriptions will remain, but the plan
+                          should no longer be sold.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>

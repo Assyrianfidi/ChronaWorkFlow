@@ -482,15 +482,15 @@ export const DataVisualizationComponent: React.FC<{
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">X Axis</label>
-              
-        <label htmlFor="input-tmhenxvd0" className="sr-only">
-          Text
-        </label>
-        <input id="input-tmhenxvd0"
+
+              <label htmlFor="input-tmhenxvd0" className="sr-only">
+                Text
+              </label>
+              <input
+                id="input-tmhenxvd0"
                 type="text"
                 value={editConfig.xAxis || ""}
                 onChange={(e) =>
-      
                   setEditConfig((prev: VisualizationConfig) => ({
                     ...prev,
                     xAxis: e.target.value,
@@ -501,15 +501,15 @@ export const DataVisualizationComponent: React.FC<{
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Y Axis</label>
-              
-        <label htmlFor="input-fnrt03zqb" className="sr-only">
-          Text
-        </label>
-        <input id="input-fnrt03zqb"
+
+              <label htmlFor="input-fnrt03zqb" className="sr-only">
+                Text
+              </label>
+              <input
+                id="input-fnrt03zqb"
                 type="text"
                 value={editConfig.yAxis || ""}
                 onChange={(e) =>
-      
                   setEditConfig((prev: VisualizationConfig) => ({
                     ...prev,
                     yAxis: e.target.value,
@@ -521,15 +521,14 @@ export const DataVisualizationComponent: React.FC<{
           </div>
           <div className="flex items-center space-x-4">
             <label className="flex items-center">
-              
-        <label htmlFor="input-9p09cjeek" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-9p09cjeek"
+              <label htmlFor="input-9p09cjeek" className="sr-only">
+                Checkbox
+              </label>
+              <input
+                id="input-9p09cjeek"
                 type="checkbox"
                 checked={editConfig.showLegend !== false}
                 onChange={(e) =>
-      
                   setEditConfig((prev: VisualizationConfig) => ({
                     ...prev,
                     showLegend: e.target.checked,
@@ -540,15 +539,14 @@ export const DataVisualizationComponent: React.FC<{
               Show Legend
             </label>
             <label className="flex items-center">
-              
-        <label htmlFor="input-ecpey03yr" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-ecpey03yr"
+              <label htmlFor="input-ecpey03yr" className="sr-only">
+                Checkbox
+              </label>
+              <input
+                id="input-ecpey03yr"
                 type="checkbox"
                 checked={editConfig.showGrid !== false}
                 onChange={(e) =>
-      
                   setEditConfig((prev: VisualizationConfig) => ({
                     ...prev,
                     showGrid: e.target.checked,
@@ -559,15 +557,14 @@ export const DataVisualizationComponent: React.FC<{
               Show Grid
             </label>
             <label className="flex items-center">
-              
-        <label htmlFor="input-xhdd32r2h" className="sr-only">
-          Checkbox
-        </label>
-        <input id="input-xhdd32r2h"
+              <label htmlFor="input-xhdd32r2h" className="sr-only">
+                Checkbox
+              </label>
+              <input
+                id="input-xhdd32r2h"
                 type="checkbox"
                 checked={editConfig.interactive !== false}
                 onChange={(e) =>
-      
                   setEditConfig((prev: VisualizationConfig) => ({
                     ...prev,
                     interactive: e.target.checked,

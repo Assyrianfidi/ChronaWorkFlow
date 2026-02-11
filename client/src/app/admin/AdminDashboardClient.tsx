@@ -4,9 +4,9 @@ declare global {
   }
 }
 
-"use client";
+("use client");
 
-import { LoadingState } from '@/components/ui/LoadingState';
+import { LoadingState } from "@/components/ui/LoadingState";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth-store";
 

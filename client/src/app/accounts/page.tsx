@@ -9,11 +9,7 @@ import {
 } from "@/components/ui/EnterpriseDataTable";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
 import { EnterpriseInput } from "@/components/ui/EnterpriseInput";
-import {
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/Card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import Card from "@/components/ui/Card";
 import { Building2, Plus, Trash2, Edit, Eye } from "lucide-react";
 import { useState } from "react";

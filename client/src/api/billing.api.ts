@@ -1,8 +1,8 @@
-import api from './index';
-import type { ApiResponse } from './index';
+import api from "./index";
+import type { ApiResponse } from "./index";
 
 export interface BillingStatus {
-  status: 'active' | 'trial' | 'past_due' | 'suspended';
+  status: "active" | "trial" | "past_due" | "suspended";
   plan: string;
   readOnly: boolean;
   renewalDate?: string;
@@ -32,7 +32,7 @@ export const billingApi = {
    * Returns subscription status, plan tier, and read-only flag
    */
   getStatus: (companyId: string) =>
-    api.get<ApiResponse<BillingStatus>>('/billing/status', {
+    api.get<ApiResponse<BillingStatus>>("/billing/status", {
       params: { companyId },
     }),
 
@@ -41,7 +41,7 @@ export const billingApi = {
    * Returns limits and usage computed from authoritative sources
    */
   getLimits: (companyId: string) =>
-    api.get<ApiResponse<BillingLimits>>('/billing/limits', {
+    api.get<ApiResponse<BillingLimits>>("/billing/limits", {
       params: { companyId },
     }),
 };

@@ -40,9 +40,7 @@ export const validateField = <T extends z.ZodSchema>(
   try {
     if (schema instanceof z.ZodObject) {
       const shape = schema.shape;
-      const fieldSchema = (shape as Record<string, z.ZodTypeAny>)[
-        fieldName
-      ];
+      const fieldSchema = (shape as Record<string, z.ZodTypeAny>)[fieldName];
       if (!fieldSchema) return "Invalid field";
 
       const result = fieldSchema.safeParse(value);

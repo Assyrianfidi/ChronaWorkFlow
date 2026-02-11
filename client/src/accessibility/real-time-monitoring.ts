@@ -1083,13 +1083,10 @@ export class RealTimeAccessibilityMonitor {
   private testNonTextContent(element: HTMLElement): WCAGTestResult {
     const violations: WCAGViolation[] = [];
 
-    const img = element.tagName === "IMG" ? (element as HTMLImageElement) : null;
+    const img =
+      element.tagName === "IMG" ? (element as HTMLImageElement) : null;
 
-    if (
-      img &&
-      !img.alt &&
-      !element.getAttribute("aria-label")
-    ) {
+    if (img && !img.alt && !element.getAttribute("aria-label")) {
       violations.push({
         element,
         criterion: "1.1.1",
@@ -1143,13 +1140,10 @@ export class RealTimeAccessibilityMonitor {
   private testKeyboardAccess(element: HTMLElement): WCAGTestResult {
     const violations: WCAGViolation[] = [];
 
-    const anchor = element.tagName === "A" ? (element as HTMLAnchorElement) : null;
+    const anchor =
+      element.tagName === "A" ? (element as HTMLAnchorElement) : null;
 
-    if (
-      anchor &&
-      !anchor.href &&
-      !element.getAttribute("role")
-    ) {
+    if (anchor && !anchor.href && !element.getAttribute("role")) {
       violations.push({
         element,
         criterion: "2.1.1",

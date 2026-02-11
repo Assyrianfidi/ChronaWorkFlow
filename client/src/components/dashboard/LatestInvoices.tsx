@@ -185,13 +185,22 @@ const LatestInvoices = React.forwardRef<HTMLDivElement, LatestInvoicesProps>(
                   </td>
                   <td className="py-3 px-2">
                     <div className="flex items-center justify-center gap-1">
-                      <button className="p-1 hover:bg-muted rounded transition-colors" aria-label="Button button">
+                      <button
+                        className="p-1 hover:bg-muted rounded transition-colors"
+                        aria-label="Button button"
+                      >
                         <Eye className="w-4 h-4 text-muted-foreground" />
                       </button>
-                      <button className="p-1 hover:bg-muted rounded transition-colors" aria-label="Button button">
+                      <button
+                        className="p-1 hover:bg-muted rounded transition-colors"
+                        aria-label="Button button"
+                      >
                         <Download className="w-4 h-4 text-muted-foreground" />
                       </button>
-                      <button className="p-1 hover:bg-muted rounded transition-colors" aria-label="Button button">
+                      <button
+                        className="p-1 hover:bg-muted rounded transition-colors"
+                        aria-label="Button button"
+                      >
                         <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                       </button>
                     </div>

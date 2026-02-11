@@ -9,19 +9,19 @@ export {
   ViewToggleButton,
   ViewSwitcherDialog,
   ViewBadge,
-} from './ViewSwitcher';
+} from "./ViewSwitcher";
 
-export { DashboardViewSwitcher } from './DashboardViewSwitcher';
-export { ReportViewModeSwitcher } from './ReportViewModeSwitcher';
-export { TransactionViewSwitcher } from './TransactionViewSwitcher';
-export { BankingViewSwitcher } from './BankingViewSwitcher';
-export { ListViewSwitcher } from './ListViewSwitcher';
-export { AccessibilityViewSwitcher } from './AccessibilityViewSwitcher';
-export { PresentationModeExit } from './PresentationModeExit';
+export { DashboardViewSwitcher } from "./DashboardViewSwitcher";
+export { ReportViewModeSwitcher } from "./ReportViewModeSwitcher";
+export { TransactionViewSwitcher } from "./TransactionViewSwitcher";
+export { BankingViewSwitcher } from "./BankingViewSwitcher";
+export { ListViewSwitcher } from "./ListViewSwitcher";
+export { AccessibilityViewSwitcher } from "./AccessibilityViewSwitcher";
+export { PresentationModeExit } from "./PresentationModeExit";
 
 // Hooks
-export { useView } from '@/contexts/ViewContext';
-export { useViewNavigation } from '@/hooks/useViewNavigation';
+export { useView } from "@/contexts/ViewContext";
+export { useViewNavigation } from "@/hooks/useViewNavigation";
 
 // Configuration
 export {
@@ -38,7 +38,7 @@ export {
   REGIONAL_VIEWS,
   DEFAULT_VIEW_STATE,
   canAccessView,
-} from '@/config/view.config';
+} from "@/config/view.config";
 
 // Types
 export type {
@@ -65,4 +65,4 @@ export type {
   SpecializedViewConfig,
   MultiCompanyViewConfig,
   RegionalViewConfig,
-} from '@/config/view.config';
+} from "@/config/view.config";

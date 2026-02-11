@@ -73,11 +73,11 @@ const TopNav = React.forwardRef<HTMLDivElement, TopNavProps>(
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">AB</span>
+              <span className="text-primary-foreground font-bold text-sm">
+                AB
+              </span>
             </div>
-            <span className="text-xl font-bold text-foreground">
-              AccuBooks
-            </span>
+            <span className="text-xl font-bold text-foreground">AccuBooks</span>
           </div>
         </div>
 
@@ -124,7 +124,9 @@ const TopNav = React.forwardRef<HTMLDivElement, TopNavProps>(
 
               {/* User Info */}
               <div className="text-left hidden md:block">
-                <p className="text-sm font-medium text-foreground">{user.name}</p>
+                <p className="text-sm font-medium text-foreground">
+                  {user.name}
+                </p>
                 <p className="text-xs text-muted-foreground">{user.role}</p>
               </div>
 

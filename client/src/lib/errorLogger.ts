@@ -3,7 +3,7 @@
  * Structured error logging with context preservation
  */
 
-import analytics from './analytics';
+import analytics from "./analytics";
 
 export interface ErrorContext {
   componentName?: string;
@@ -20,7 +20,7 @@ export interface LoggedError {
   message: string;
   stack?: string;
   context: ErrorContext;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
 }
 
 class ErrorLogger {
@@ -37,11 +37,11 @@ class ErrorLogger {
   logError(
     error: Error | string,
     context: ErrorContext = {},
-    severity: LoggedError['severity'] = 'medium'
+    severity: LoggedError["severity"] = "medium",
   ): void {
-    const errorMessage = typeof error === 'string' ? error : error.message;
-    const errorStack = typeof error === 'string' ? undefined : error.stack;
-    const errorType = typeof error === 'string' ? 'Error' : error.name;
+    const errorMessage = typeof error === "string" ? error : error.message;
+    const errorStack = typeof error === "string" ? undefined : error.stack;
+    const errorType = typeof error === "string" ? "Error" : error.name;
 
     const loggedError: LoggedError = {
       type: errorType,
@@ -60,7 +60,7 @@ class ErrorLogger {
     this.addToQueue(loggedError);
 
     // Track in analytics
-    analytics.trackError('runtime_error', {
+    analytics.trackError("runtime_error", {
       errorType: loggedError.type,
       errorMessage: loggedError.message,
       componentName: context.componentName,
@@ -68,8 +68,8 @@ class ErrorLogger {
     });
 
     // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('[ErrorLogger]', loggedError);
+    if (process.env.NODE_ENV === "development") {
+      console.error("[ErrorLogger]", loggedError);
     }
 
     // Send to backend
@@ -83,12 +83,12 @@ class ErrorLogger {
     endpoint: string,
     statusCode: number,
     errorMessage: string,
-    context: ErrorContext = {}
+    context: ErrorContext = {},
   ): void {
     const severity = this.getApiErrorSeverity(statusCode);
 
     const loggedError: LoggedError = {
-      type: 'ApiError',
+      type: "ApiError",
       message: this.sanitizeErrorMessage(errorMessage),
       context: {
         ...context,
@@ -100,16 +100,16 @@ class ErrorLogger {
 
     this.addToQueue(loggedError);
 
-    analytics.trackError('api_error', {
-      errorType: 'ApiError',
+    analytics.trackError("api_error", {
+      errorType: "ApiError",
       errorMessage: loggedError.message,
       apiEndpoint: endpoint,
       statusCode,
       severity,
     });
 
-    if (process.env.NODE_ENV === 'development') {
-      console.error('[ErrorLogger] API Error', loggedError);
+    if (process.env.NODE_ENV === "development") {
+      console.error("[ErrorLogger] API Error", loggedError);
     }
 
     this.sendToBackend(loggedError);
@@ -121,51 +121,48 @@ class ErrorLogger {
   logValidationError(
     fieldName: string,
     errorMessage: string,
-    context: ErrorContext = {}
+    context: ErrorContext = {},
   ): void {
     const loggedError: LoggedError = {
-      type: 'ValidationError',
+      type: "ValidationError",
       message: `${fieldName}: ${this.sanitizeErrorMessage(errorMessage)}`,
       context: {
         ...context,
         timestamp: Date.now(),
       },
-      severity: 'low',
+      severity: "low",
     };
 
     this.addToQueue(loggedError);
 
-    analytics.trackError('validation_error', {
-      errorType: 'ValidationError',
+    analytics.trackError("validation_error", {
+      errorType: "ValidationError",
       errorMessage: loggedError.message,
       componentName: context.componentName,
-      severity: 'low',
+      severity: "low",
     });
   }
 
   /**
    * Log a network error
    */
-  logNetworkError(
-    errorMessage: string,
-    context: ErrorContext = {}
-  ): void {
+  logNetworkError(errorMessage: string, context: ErrorContext = {}): void {
     const loggedError: LoggedError = {
-      type: 'NetworkError',
+      type: "NetworkError",
       message: this.sanitizeErrorMessage(errorMessage),
       context: {
         ...context,
         timestamp: Date.now(),
       },
-      severity: 'medium',
+      severity: "medium",
     };
 
     this.addToQueue(loggedError);
 
-    analytics.trackError('network_error', {
-      errorType: 'NetworkError',
+    analytics.trackError("network_error", {
+      errorType: "NetworkError",
       errorMessage: loggedError.message,
-      severity: 'medium',
+      severity: "medium",
     });
   }
 
@@ -188,22 +185,26 @@ class ErrorLogger {
    */
   private setupGlobalErrorHandlers(): void {
     // Handle unhandled errors
-    window.addEventListener('error', (event) => {
-      this.logError(event.error || event.message, {
-        componentName: 'Global',
-        action: 'unhandled_error',
-      }, 'high');
+    window.addEventListener("error", (event) => {
+      this.logError(
+        event.error || event.message,
+        {
+          componentName: "Global",
+          action: "unhandled_error",
+        },
+        "high",
+      );
     });
 
     // Handle unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener("unhandledrejection", (event) => {
       this.logError(
         event.reason instanceof Error ? event.reason : String(event.reason),
         {
-          componentName: 'Global',
-          action: 'unhandled_rejection',
+          componentName: "Global",
+          action: "unhandled_rejection",
         },
-        'high'
+        "high",
       );
     });
   }
@@ -225,18 +226,18 @@ class ErrorLogger {
    */
   private async sendToBackend(error: LoggedError): Promise<void> {
     try {
-      await fetch('/api/errors/log', {
-        method: 'POST',
+      await fetch("/api/errors/log", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(error),
         keepalive: true,
       });
     } catch (err) {
       // Silently fail - don't create error loops
-      if (process.env.NODE_ENV === 'development') {
-        console.error('[ErrorLogger] Failed to send error to backend:', err);
+      if (process.env.NODE_ENV === "development") {
+        console.error("[ErrorLogger] Failed to send error to backend:", err);
       }
     }
   }
@@ -246,17 +247,20 @@ class ErrorLogger {
    */
   private sanitizeErrorMessage(message: string): string {
     // Remove email addresses
-    let sanitized = message.replace(/[\w.-]+@[\w.-]+\.\w+/g, '[EMAIL]');
-    
+    let sanitized = message.replace(/[\w.-]+@[\w.-]+\.\w+/g, "[EMAIL]");
+
     // Remove phone numbers
-    sanitized = sanitized.replace(/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g, '[PHONE]');
-    
+    sanitized = sanitized.replace(/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g, "[PHONE]");
+
     // Remove credit card numbers
-    sanitized = sanitized.replace(/\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/g, '[CARD]');
-    
+    sanitized = sanitized.replace(
+      /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/g,
+      "[CARD]",
+    );
+
     // Remove SSN
-    sanitized = sanitized.replace(/\b\d{3}-\d{2}-\d{4}\b/g, '[SSN]');
-    
+    sanitized = sanitized.replace(/\b\d{3}-\d{2}-\d{4}\b/g, "[SSN]");
+
     return sanitized;
   }
 
@@ -265,17 +269,18 @@ class ErrorLogger {
    */
   private sanitizeStack(stack: string): string {
     // Remove file paths that might contain usernames
-    return stack.replace(/\/Users\/[^\/]+/g, '/Users/[USER]')
-                .replace(/C:\\Users\\[^\\]+/g, 'C:\\Users\\[USER]');
+    return stack
+      .replace(/\/Users\/[^\/]+/g, "/Users/[USER]")
+      .replace(/C:\\Users\\[^\\]+/g, "C:\\Users\\[USER]");
   }
 
   /**
    * Determine API error severity based on status code
    */
-  private getApiErrorSeverity(statusCode: number): LoggedError['severity'] {
-    if (statusCode >= 500) return 'critical';
-    if (statusCode >= 400 && statusCode < 500) return 'medium';
-    return 'low';
+  private getApiErrorSeverity(statusCode: number): LoggedError["severity"] {
+    if (statusCode >= 500) return "critical";
+    if (statusCode >= 400 && statusCode < 500) return "medium";
+    return "low";
   }
 }
 

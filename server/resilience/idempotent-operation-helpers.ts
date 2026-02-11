@@ -62,7 +62,7 @@ export async function createIdempotentFinancialOperation<TEntity>(
 ): Promise<IdempotentWriteResult<TEntity>> {
   const startTime = Date.now();
   let status: "new" | "replayed" | "failed" = "new";
-  let workflowsTriggered = 0;
+  const workflowsTriggered = 0;
   let errorMessage: string | undefined;
 
   try {
@@ -135,7 +135,7 @@ export async function createIdempotentHighRiskOperation<TEntity>(
 ): Promise<IdempotentWriteResult<TEntity>> {
   const startTime = Date.now();
   let status: "new" | "replayed" | "failed" = "new";
-  let workflowsTriggered = 0;
+  const workflowsTriggered = 0;
   let errorMessage: string | undefined;
 
   try {

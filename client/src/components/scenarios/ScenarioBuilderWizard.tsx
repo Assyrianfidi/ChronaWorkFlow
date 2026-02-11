@@ -1,28 +1,33 @@
 /**
  * Scenario Builder Wizard
- * 
+ *
  * Step-by-step interface for executives to create and simulate scenarios
  * Plain-English labels, real-time risk assessment, advisory recommendations
  */
 
-import React, { useState } from 'react';
-import { ScenarioType, CreateScenarioRequest, ScenarioResult, RiskLevel } from '../../types/forecasting';
+import React, { useState } from "react";
+import {
+  ScenarioType,
+  CreateScenarioRequest,
+  ScenarioResult,
+  RiskLevel,
+} from "../../types/forecasting";
 
 interface ScenarioBuilderWizardProps {
   onComplete: (scenario: ScenarioResult) => void;
   onCancel: () => void;
 }
 
-type WizardStep = 'type' | 'config' | 'review' | 'results';
+type WizardStep = "type" | "config" | "review" | "results";
 
 export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
   onComplete,
   onCancel,
 }) => {
-  const [currentStep, setCurrentStep] = useState<WizardStep>('type');
+  const [currentStep, setCurrentStep] = useState<WizardStep>("type");
   const [scenarioType, setScenarioType] = useState<ScenarioType | null>(null);
-  const [scenarioName, setScenarioName] = useState('');
-  const [scenarioDescription, setScenarioDescription] = useState('');
+  const [scenarioName, setScenarioName] = useState("");
+  const [scenarioDescription, setScenarioDescription] = useState("");
   const [config, setConfig] = useState<Record<string, any>>({});
   const [result, setResult] = useState<ScenarioResult | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
@@ -31,55 +36,56 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
   const scenarioTypes = [
     {
       type: ScenarioType.HIRING,
-      name: 'Hiring Decision',
-      description: 'Model the financial impact of hiring a new employee',
-      icon: '👤',
-      color: 'blue',
+      name: "Hiring Decision",
+      description: "Model the financial impact of hiring a new employee",
+      icon: "👤",
+      color: "blue",
     },
     {
       type: ScenarioType.LARGE_PURCHASE,
-      name: 'Major Purchase',
-      description: 'Analyze the effect of a large purchase or recurring expense',
-      icon: '🛒',
-      color: 'purple',
+      name: "Major Purchase",
+      description:
+        "Analyze the effect of a large purchase or recurring expense",
+      icon: "🛒",
+      color: "purple",
     },
     {
       type: ScenarioType.REVENUE_CHANGE,
-      name: 'Revenue Change',
-      description: 'Simulate revenue growth or decline scenarios',
-      icon: '📈',
-      color: 'green',
+      name: "Revenue Change",
+      description: "Simulate revenue growth or decline scenarios",
+      icon: "📈",
+      color: "green",
     },
     {
       type: ScenarioType.PAYMENT_DELAY,
-      name: 'Payment Delay',
-      description: 'Assess the impact of delayed customer payments',
-      icon: '⏰',
-      color: 'orange',
+      name: "Payment Delay",
+      description: "Assess the impact of delayed customer payments",
+      icon: "⏰",
+      color: "orange",
     },
     {
       type: ScenarioType.AUTOMATION_CHANGE,
-      name: 'Automation Change',
-      description: 'Evaluate efficiency gains from automation',
-      icon: '⚡',
-      color: 'yellow',
+      name: "Automation Change",
+      description: "Evaluate efficiency gains from automation",
+      icon: "⚡",
+      color: "yellow",
     },
     {
       type: ScenarioType.CUSTOM,
-      name: 'Custom Scenario',
-      description: 'Create a custom scenario with your own parameters',
-      icon: '⚙️',
-      color: 'gray',
+      name: "Custom Scenario",
+      description: "Create a custom scenario with your own parameters",
+      icon: "⚙️",
+      color: "gray",
     },
   ];
 
   const handleTypeSelect = (type: ScenarioType) => {
     setScenarioType(type);
-    setCurrentStep('config');
+    setCurrentStep("config");
   };
 
   const handleConfigSubmit = () => {
-    setCurrentStep('review');
+    setCurrentStep("review");
   };
 
   const handleSimulate = async () => {
@@ -90,33 +96,33 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
 
     try {
       const request: CreateScenarioRequest = {
-        tenantId: 'current-tenant-id', // Replace with actual tenant ID from auth context
+        tenantId: "current-tenant-id", // Replace with actual tenant ID from auth context
         name: scenarioName,
         description: scenarioDescription,
         scenarioType,
         config,
       };
 
-      const response = await fetch('/api/scenarios', {
-        method: 'POST',
+      const response = await fetch("/api/scenarios", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(request),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create scenario');
+        throw new Error(errorData.message || "Failed to create scenario");
       }
 
       const data = await response.json();
       setResult(data.data);
-      setCurrentStep('results');
+      setCurrentStep("results");
       onComplete(data.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsSimulating(false);
     }
@@ -124,13 +130,13 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
 
   const renderStepIndicator = () => {
     const steps = [
-      { id: 'type', label: 'Choose Type' },
-      { id: 'config', label: 'Configure' },
-      { id: 'review', label: 'Review' },
-      { id: 'results', label: 'Results' },
+      { id: "type", label: "Choose Type" },
+      { id: "config", label: "Configure" },
+      { id: "review", label: "Review" },
+      { id: "results", label: "Results" },
     ];
 
-    const currentIndex = steps.findIndex(s => s.id === currentStep);
+    const currentIndex = steps.findIndex((s) => s.id === currentStep);
 
     return (
       <div className="flex items-center justify-center mb-8">
@@ -140,8 +146,8 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
                   index <= currentIndex
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-500'
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-500"
                 }`}
               >
                 {index + 1}
@@ -151,7 +157,7 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
             {index < steps.length - 1 && (
               <div
                 className={`w-24 h-1 mx-4 ${
-                  index < currentIndex ? 'bg-blue-600' : 'bg-gray-200'
+                  index < currentIndex ? "bg-blue-600" : "bg-gray-200"
                 }`}
               />
             )}
@@ -173,7 +179,7 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {scenarioTypes.map(type => (
+        {scenarioTypes.map((type) => (
           <button
             key={type.type}
             onClick={() => handleTypeSelect(type.type)}
@@ -209,7 +215,7 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
           <input
             type="text"
             value={scenarioName}
-            onChange={e => setScenarioName(e.target.value)}
+            onChange={(e) => setScenarioName(e.target.value)}
             placeholder="e.g., Hire Senior Engineer"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
@@ -221,8 +227,10 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
           </label>
           <input
             type="text"
-            value={config.employeeName || ''}
-            onChange={e => setConfig({ ...config, employeeName: e.target.value })}
+            value={config.employeeName || ""}
+            onChange={(e) =>
+              setConfig({ ...config, employeeName: e.target.value })
+            }
             placeholder="e.g., Senior Software Engineer"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
@@ -236,8 +244,10 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
             <span className="absolute left-4 top-2 text-gray-500">$</span>
             <input
               type="number"
-              value={config.salary || ''}
-              onChange={e => setConfig({ ...config, salary: Number(e.target.value) })}
+              value={config.salary || ""}
+              onChange={(e) =>
+                setConfig({ ...config, salary: Number(e.target.value) })
+              }
               placeholder="120000"
               className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -252,8 +262,10 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
             <span className="absolute left-4 top-2 text-gray-500">$</span>
             <input
               type="number"
-              value={config.benefits || ''}
-              onChange={e => setConfig({ ...config, benefits: Number(e.target.value) })}
+              value={config.benefits || ""}
+              onChange={(e) =>
+                setConfig({ ...config, benefits: Number(e.target.value) })
+              }
               placeholder="24000"
               className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -268,8 +280,10 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
             <span className="absolute left-4 top-2 text-gray-500">$</span>
             <input
               type="number"
-              value={config.equipment || ''}
-              onChange={e => setConfig({ ...config, equipment: Number(e.target.value) })}
+              value={config.equipment || ""}
+              onChange={(e) =>
+                setConfig({ ...config, equipment: Number(e.target.value) })
+              }
               placeholder="5000"
               className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -282,8 +296,10 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
           </label>
           <input
             type="number"
-            value={config.rampMonths || ''}
-            onChange={e => setConfig({ ...config, rampMonths: Number(e.target.value) })}
+            value={config.rampMonths || ""}
+            onChange={(e) =>
+              setConfig({ ...config, rampMonths: Number(e.target.value) })
+            }
             placeholder="3"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
@@ -295,15 +311,17 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
           </label>
           <input
             type="date"
-            value={config.startDate || ''}
-            onChange={e => setConfig({ ...config, startDate: e.target.value })}
+            value={config.startDate || ""}
+            onChange={(e) =>
+              setConfig({ ...config, startDate: e.target.value })
+            }
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div className="flex gap-4 pt-6">
           <button
-            onClick={() => setCurrentStep('type')}
+            onClick={() => setCurrentStep("type")}
             className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
           >
             Back
@@ -333,14 +351,18 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
 
       <div className="max-w-2xl mx-auto bg-gray-50 rounded-lg p-6 space-y-4">
         <div>
-          <span className="text-sm font-medium text-gray-500">Scenario Type</span>
+          <span className="text-sm font-medium text-gray-500">
+            Scenario Type
+          </span>
           <p className="text-lg font-semibold text-gray-900">
-            {scenarioTypes.find(t => t.type === scenarioType)?.name}
+            {scenarioTypes.find((t) => t.type === scenarioType)?.name}
           </p>
         </div>
 
         <div>
-          <span className="text-sm font-medium text-gray-500">Scenario Name</span>
+          <span className="text-sm font-medium text-gray-500">
+            Scenario Name
+          </span>
           <p className="text-lg font-semibold text-gray-900">{scenarioName}</p>
         </div>
 
@@ -348,11 +370,17 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
           <>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <span className="text-sm font-medium text-gray-500">Employee</span>
-                <p className="text-lg font-semibold text-gray-900">{config.employeeName}</p>
+                <span className="text-sm font-medium text-gray-500">
+                  Employee
+                </span>
+                <p className="text-lg font-semibold text-gray-900">
+                  {config.employeeName}
+                </p>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-500">Annual Salary</span>
+                <span className="text-sm font-medium text-gray-500">
+                  Annual Salary
+                </span>
                 <p className="text-lg font-semibold text-gray-900">
                   ${config.salary?.toLocaleString()}
                 </p>
@@ -361,13 +389,17 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <span className="text-sm font-medium text-gray-500">Benefits</span>
+                <span className="text-sm font-medium text-gray-500">
+                  Benefits
+                </span>
                 <p className="text-lg font-semibold text-gray-900">
                   ${config.benefits?.toLocaleString()}
                 </p>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-500">Equipment</span>
+                <span className="text-sm font-medium text-gray-500">
+                  Equipment
+                </span>
                 <p className="text-lg font-semibold text-gray-900">
                   ${config.equipment?.toLocaleString()}
                 </p>
@@ -376,11 +408,17 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <span className="text-sm font-medium text-gray-500">Ramp Period</span>
-                <p className="text-lg font-semibold text-gray-900">{config.rampMonths} months</p>
+                <span className="text-sm font-medium text-gray-500">
+                  Ramp Period
+                </span>
+                <p className="text-lg font-semibold text-gray-900">
+                  {config.rampMonths} months
+                </p>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-500">Start Date</span>
+                <span className="text-sm font-medium text-gray-500">
+                  Start Date
+                </span>
                 <p className="text-lg font-semibold text-gray-900">
                   {new Date(config.startDate).toLocaleDateString()}
                 </p>
@@ -398,7 +436,7 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
 
       <div className="max-w-2xl mx-auto flex gap-4">
         <button
-          onClick={() => setCurrentStep('config')}
+          onClick={() => setCurrentStep("config")}
           className="flex-1 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50"
         >
           Back
@@ -408,7 +446,7 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
           disabled={isSimulating}
           className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          {isSimulating ? 'Simulating...' : 'Run Simulation'}
+          {isSimulating ? "Simulating..." : "Run Simulation"}
         </button>
       </div>
     </div>
@@ -417,15 +455,15 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
   const getRiskLevelColor = (level: RiskLevel) => {
     switch (level) {
       case RiskLevel.LOW:
-        return 'text-green-600 bg-green-50 border-green-200';
+        return "text-green-600 bg-green-50 border-green-200";
       case RiskLevel.MEDIUM:
-        return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+        return "text-yellow-600 bg-yellow-50 border-yellow-200";
       case RiskLevel.HIGH:
-        return 'text-orange-600 bg-orange-50 border-orange-200';
+        return "text-orange-600 bg-orange-50 border-orange-200";
       case RiskLevel.CRITICAL:
-        return 'text-red-600 bg-red-50 border-red-200';
+        return "text-red-600 bg-red-50 border-red-200";
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200';
+        return "text-gray-600 bg-gray-50 border-gray-200";
     }
   };
 
@@ -445,29 +483,33 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
 
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Risk Level Banner */}
-          <div className={`border-2 rounded-lg p-6 ${getRiskLevelColor(result.riskLevel)}`}>
+          <div
+            className={`border-2 rounded-lg p-6 ${getRiskLevelColor(result.riskLevel)}`}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold mb-1">
                   Risk Level: {result.riskLevel}
                 </h3>
                 <p className="text-sm">
-                  Risk Score: {result.riskScore.toFixed(0)}/100 | 
-                  Success Probability: {result.successProbability.toFixed(0)}%
+                  Risk Score: {result.riskScore.toFixed(0)}/100 | Success
+                  Probability: {result.successProbability.toFixed(0)}%
                 </p>
               </div>
               <div className="text-4xl">
-                {result.riskLevel === RiskLevel.LOW && '✅'}
-                {result.riskLevel === RiskLevel.MEDIUM && '⚠️'}
-                {result.riskLevel === RiskLevel.HIGH && '🔶'}
-                {result.riskLevel === RiskLevel.CRITICAL && '🚨'}
+                {result.riskLevel === RiskLevel.LOW && "✅"}
+                {result.riskLevel === RiskLevel.MEDIUM && "⚠️"}
+                {result.riskLevel === RiskLevel.HIGH && "🔶"}
+                {result.riskLevel === RiskLevel.CRITICAL && "🚨"}
               </div>
             </div>
           </div>
 
           {/* Runway Impact */}
           <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Runway Impact</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Runway Impact
+            </h3>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <span className="text-sm text-gray-500">Baseline Runway</span>
@@ -483,8 +525,11 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
               </div>
               <div>
                 <span className="text-sm text-gray-500">Change</span>
-                <p className={`text-2xl font-bold ${result.runwayChange < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                  {result.runwayChange > 0 ? '+' : ''}{result.runwayChange.toFixed(0)} days
+                <p
+                  className={`text-2xl font-bold ${result.runwayChange < 0 ? "text-red-600" : "text-green-600"}`}
+                >
+                  {result.runwayChange > 0 ? "+" : ""}
+                  {result.runwayChange.toFixed(0)} days
                 </p>
               </div>
             </div>
@@ -492,25 +537,35 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
 
           {/* Top Risk Drivers */}
           <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Risk Drivers</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Top Risk Drivers
+            </h3>
             <div className="space-y-3">
               {result.topRiskDrivers.slice(0, 3).map((driver, index) => (
                 <div key={index} className="border-l-4 border-blue-500 pl-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{driver.factor}</h4>
-                      <p className="text-sm text-gray-600 mt-1">{driver.description}</p>
+                      <h4 className="font-semibold text-gray-900">
+                        {driver.factor}
+                      </h4>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {driver.description}
+                      </p>
                       {driver.mitigation && (
                         <p className="text-sm text-blue-600 mt-2">
                           <strong>Mitigation:</strong> {driver.mitigation}
                         </p>
                       )}
                     </div>
-                    <span className={`ml-4 px-3 py-1 rounded-full text-xs font-semibold ${
-                      driver.impact === 'high' ? 'bg-red-100 text-red-800' :
-                      driver.impact === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
+                    <span
+                      className={`ml-4 px-3 py-1 rounded-full text-xs font-semibold ${
+                        driver.impact === "high"
+                          ? "bg-red-100 text-red-800"
+                          : driver.impact === "medium"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-green-100 text-green-800"
+                      }`}
+                    >
                       {driver.impact.toUpperCase()}
                     </span>
                   </div>
@@ -526,22 +581,30 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
                 💡 Advisory Recommendations
               </h3>
               <p className="text-sm text-gray-600 mb-4">
-                These are suggestions, not automatic actions. You remain in control.
+                These are suggestions, not automatic actions. You remain in
+                control.
               </p>
               <div className="space-y-3">
                 {result.recommendations.map((rec, index) => (
                   <div key={index} className="bg-white rounded-lg p-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">{rec.title}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{rec.description}</p>
-                        <p className="text-sm text-gray-700 mt-2">{rec.explanation}</p>
+                        <h4 className="font-semibold text-gray-900">
+                          {rec.title}
+                        </h4>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {rec.description}
+                        </p>
+                        <p className="text-sm text-gray-700 mt-2">
+                          {rec.explanation}
+                        </p>
                         <div className="flex gap-4 mt-3 text-sm">
                           <span className="text-green-600">
                             <strong>Benefit:</strong> {rec.expectedBenefit}
                           </span>
                           <span className="text-blue-600">
-                            <strong>Risk Reduction:</strong> {rec.riskReduction}%
+                            <strong>Risk Reduction:</strong> {rec.riskReduction}
+                            %
                           </span>
                           <span className="text-gray-600">
                             <strong>Confidence:</strong> {rec.confidenceScore}%
@@ -564,9 +627,9 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
             </button>
             <button
               onClick={() => {
-                setCurrentStep('type');
+                setCurrentStep("type");
                 setScenarioType(null);
-                setScenarioName('');
+                setScenarioName("");
                 setConfig({});
                 setResult(null);
               }}
@@ -585,10 +648,12 @@ export const ScenarioBuilderWizard: React.FC<ScenarioBuilderWizardProps> = ({
       <div className="max-w-7xl mx-auto">
         {renderStepIndicator()}
 
-        {currentStep === 'type' && renderTypeSelection()}
-        {currentStep === 'config' && scenarioType === ScenarioType.HIRING && renderHiringConfig()}
-        {currentStep === 'review' && renderReview()}
-        {currentStep === 'results' && renderResults()}
+        {currentStep === "type" && renderTypeSelection()}
+        {currentStep === "config" &&
+          scenarioType === ScenarioType.HIRING &&
+          renderHiringConfig()}
+        {currentStep === "review" && renderReview()}
+        {currentStep === "results" && renderResults()}
       </div>
     </div>
   );

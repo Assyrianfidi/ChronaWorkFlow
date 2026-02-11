@@ -58,30 +58,270 @@ interface JournalEntry {
 // MOCK DATA
 // ========================================
 const ACCOUNTS: Account[] = [
-  { id: "1", code: "1000", name: "Assets", type: "asset", category: "Balance Sheet", balance: 0, currency: "USD", status: "active", lastActivity: "System", hasChildren: true, level: 0 },
-  { id: "2", code: "1100", name: "Current Assets", type: "asset", category: "Balance Sheet", balance: 0, currency: "USD", status: "active", lastActivity: "System", hasChildren: true, level: 1 },
-  { id: "3", code: "1101", name: "Cash and Cash Equivalents", type: "asset", category: "Balance Sheet", balance: 1250000.00, currency: "USD", status: "active", lastActivity: "2 min ago", hasChildren: true, level: 2 },
-  { id: "4", code: "1101-01", name: "Operating Account - Chase", type: "asset", category: "Bank", balance: 450000.00, currency: "USD", status: "active", lastActivity: "2 min ago", hasChildren: false, level: 3 },
-  { id: "5", code: "1101-02", name: "Savings Account - Chase", type: "asset", category: "Bank", balance: 800000.00, currency: "USD", status: "active", lastActivity: "1 hr ago", hasChildren: false, level: 3 },
-  { id: "6", code: "1102", name: "Accounts Receivable", type: "asset", category: "Receivables", balance: 892450.00, currency: "USD", status: "active", lastActivity: "5 min ago", hasChildren: false, level: 2 },
-  { id: "7", code: "1103", name: "Inventory", type: "asset", category: "Inventory", balance: 234567.00, currency: "USD", status: "active", lastActivity: "1 day ago", hasChildren: false, level: 2 },
-  { id: "8", code: "1104", name: "Prepaid Expenses", type: "asset", category: "Prepaid", balance: 45000.00, currency: "USD", status: "active", lastActivity: "3 days ago", hasChildren: false, level: 2 },
-  { id: "9", code: "1200", name: "Fixed Assets", type: "asset", category: "Balance Sheet", balance: 0, currency: "USD", status: "active", lastActivity: "System", hasChildren: true, level: 1 },
-  { id: "10", code: "1201", name: "Equipment", type: "asset", category: "Fixed Assets", balance: 125000.00, currency: "USD", status: "active", lastActivity: "1 week ago", hasChildren: false, level: 2 },
-  { id: "11", code: "1202", name: "Furniture & Fixtures", type: "asset", category: "Fixed Assets", balance: 45000.00, currency: "USD", status: "active", lastActivity: "2 weeks ago", hasChildren: false, level: 2 },
-  { id: "12", code: "2000", name: "Liabilities", type: "liability", category: "Balance Sheet", balance: 0, currency: "USD", status: "active", lastActivity: "System", hasChildren: true, level: 0 },
-  { id: "13", code: "2100", name: "Current Liabilities", type: "liability", category: "Balance Sheet", balance: 0, currency: "USD", status: "active", lastActivity: "System", hasChildren: true, level: 1 },
-  { id: "14", code: "2101", name: "Accounts Payable", type: "liability", category: "Payables", balance: 634200.00, currency: "USD", status: "active", lastActivity: "1 hr ago", hasChildren: false, level: 2 },
-  { id: "15", code: "2102", name: "Accrued Expenses", type: "liability", category: "Accruals", balance: 125000.00, currency: "USD", status: "active", lastActivity: "2 days ago", hasChildren: false, level: 2 },
-  { id: "16", code: "2103", name: "Payroll Liabilities", type: "liability", category: "Payroll", balance: 87500.00, currency: "USD", status: "active", lastActivity: "5 days ago", hasChildren: false, level: 2 },
+  {
+    id: "1",
+    code: "1000",
+    name: "Assets",
+    type: "asset",
+    category: "Balance Sheet",
+    balance: 0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "System",
+    hasChildren: true,
+    level: 0,
+  },
+  {
+    id: "2",
+    code: "1100",
+    name: "Current Assets",
+    type: "asset",
+    category: "Balance Sheet",
+    balance: 0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "System",
+    hasChildren: true,
+    level: 1,
+  },
+  {
+    id: "3",
+    code: "1101",
+    name: "Cash and Cash Equivalents",
+    type: "asset",
+    category: "Balance Sheet",
+    balance: 1250000.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "2 min ago",
+    hasChildren: true,
+    level: 2,
+  },
+  {
+    id: "4",
+    code: "1101-01",
+    name: "Operating Account - Chase",
+    type: "asset",
+    category: "Bank",
+    balance: 450000.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "2 min ago",
+    hasChildren: false,
+    level: 3,
+  },
+  {
+    id: "5",
+    code: "1101-02",
+    name: "Savings Account - Chase",
+    type: "asset",
+    category: "Bank",
+    balance: 800000.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "1 hr ago",
+    hasChildren: false,
+    level: 3,
+  },
+  {
+    id: "6",
+    code: "1102",
+    name: "Accounts Receivable",
+    type: "asset",
+    category: "Receivables",
+    balance: 892450.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "5 min ago",
+    hasChildren: false,
+    level: 2,
+  },
+  {
+    id: "7",
+    code: "1103",
+    name: "Inventory",
+    type: "asset",
+    category: "Inventory",
+    balance: 234567.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "1 day ago",
+    hasChildren: false,
+    level: 2,
+  },
+  {
+    id: "8",
+    code: "1104",
+    name: "Prepaid Expenses",
+    type: "asset",
+    category: "Prepaid",
+    balance: 45000.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "3 days ago",
+    hasChildren: false,
+    level: 2,
+  },
+  {
+    id: "9",
+    code: "1200",
+    name: "Fixed Assets",
+    type: "asset",
+    category: "Balance Sheet",
+    balance: 0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "System",
+    hasChildren: true,
+    level: 1,
+  },
+  {
+    id: "10",
+    code: "1201",
+    name: "Equipment",
+    type: "asset",
+    category: "Fixed Assets",
+    balance: 125000.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "1 week ago",
+    hasChildren: false,
+    level: 2,
+  },
+  {
+    id: "11",
+    code: "1202",
+    name: "Furniture & Fixtures",
+    type: "asset",
+    category: "Fixed Assets",
+    balance: 45000.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "2 weeks ago",
+    hasChildren: false,
+    level: 2,
+  },
+  {
+    id: "12",
+    code: "2000",
+    name: "Liabilities",
+    type: "liability",
+    category: "Balance Sheet",
+    balance: 0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "System",
+    hasChildren: true,
+    level: 0,
+  },
+  {
+    id: "13",
+    code: "2100",
+    name: "Current Liabilities",
+    type: "liability",
+    category: "Balance Sheet",
+    balance: 0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "System",
+    hasChildren: true,
+    level: 1,
+  },
+  {
+    id: "14",
+    code: "2101",
+    name: "Accounts Payable",
+    type: "liability",
+    category: "Payables",
+    balance: 634200.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "1 hr ago",
+    hasChildren: false,
+    level: 2,
+  },
+  {
+    id: "15",
+    code: "2102",
+    name: "Accrued Expenses",
+    type: "liability",
+    category: "Accruals",
+    balance: 125000.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "2 days ago",
+    hasChildren: false,
+    level: 2,
+  },
+  {
+    id: "16",
+    code: "2103",
+    name: "Payroll Liabilities",
+    type: "liability",
+    category: "Payroll",
+    balance: 87500.0,
+    currency: "USD",
+    status: "active",
+    lastActivity: "5 days ago",
+    hasChildren: false,
+    level: 2,
+  },
 ];
 
 const RECENT_JOURNAL_ENTRIES: JournalEntry[] = [
-  { id: "JE-2024-001", date: "2024-01-15", reference: "JE-2024-001", description: "Monthly depreciation - Equipment", debit: 2083.33, credit: 2083.33, status: "posted", postedBy: "John Smith", postedAt: "2024-01-15 09:30:00" },
-  { id: "JE-2024-002", date: "2024-01-15", reference: "JE-2024-002", description: "Accrued salary expenses", debit: 45000.00, credit: 45000.00, status: "posted", postedBy: "Jane Doe", postedAt: "2024-01-15 14:20:00" },
-  { id: "JE-2024-003", date: "2024-01-16", reference: "JE-2024-003", description: "Prepaid insurance amortization", debit: 3750.00, credit: 3750.00, status: "draft" },
-  { id: "JE-2024-004", date: "2024-01-16", reference: "JE-2024-004", description: "Bad debt provision", debit: 5000.00, credit: 5000.00, status: "posted", postedBy: "John Smith", postedAt: "2024-01-16 11:15:00" },
-  { id: "JE-2024-005", date: "2024-01-17", reference: "JE-2024-005", description: "Inventory adjustment", debit: 2340.00, credit: 2340.00, status: "posted", postedBy: "Jane Doe", postedAt: "2024-01-17 16:45:00" },
+  {
+    id: "JE-2024-001",
+    date: "2024-01-15",
+    reference: "JE-2024-001",
+    description: "Monthly depreciation - Equipment",
+    debit: 2083.33,
+    credit: 2083.33,
+    status: "posted",
+    postedBy: "John Smith",
+    postedAt: "2024-01-15 09:30:00",
+  },
+  {
+    id: "JE-2024-002",
+    date: "2024-01-15",
+    reference: "JE-2024-002",
+    description: "Accrued salary expenses",
+    debit: 45000.0,
+    credit: 45000.0,
+    status: "posted",
+    postedBy: "Jane Doe",
+    postedAt: "2024-01-15 14:20:00",
+  },
+  {
+    id: "JE-2024-003",
+    date: "2024-01-16",
+    reference: "JE-2024-003",
+    description: "Prepaid insurance amortization",
+    debit: 3750.0,
+    credit: 3750.0,
+    status: "draft",
+  },
+  {
+    id: "JE-2024-004",
+    date: "2024-01-16",
+    reference: "JE-2024-004",
+    description: "Bad debt provision",
+    debit: 5000.0,
+    credit: 5000.0,
+    status: "posted",
+    postedBy: "John Smith",
+    postedAt: "2024-01-16 11:15:00",
+  },
+  {
+    id: "JE-2024-005",
+    date: "2024-01-17",
+    reference: "JE-2024-005",
+    description: "Inventory adjustment",
+    debit: 2340.0,
+    credit: 2340.0,
+    status: "posted",
+    postedBy: "Jane Doe",
+    postedAt: "2024-01-17 16:45:00",
+  },
 ];
 
 // ========================================
@@ -106,7 +346,12 @@ const getStatusBadge = (status: string) => {
     reversed: "bg-red-100 text-red-700",
   };
   return (
-    <span className={cn("px-2 py-0.5 text-xs font-medium rounded-full", variants[status] || "bg-slate-100")}>
+    <span
+      className={cn(
+        "px-2 py-0.5 text-xs font-medium rounded-full",
+        variants[status] || "bg-slate-100",
+      )}
+    >
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   );
@@ -128,13 +373,16 @@ const getAccountTypeColor = (type: string) => {
 // ========================================
 const LedgerPage: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"accounts" | "journal" | "trial-balance" | "closing">("accounts");
+  const [activeTab, setActiveTab] = useState<
+    "accounts" | "journal" | "trial-balance" | "closing"
+  >("accounts");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState<string>("all");
 
   const filteredAccounts = ACCOUNTS.filter((account) => {
-    const matchesSearch = account.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         account.code.includes(searchQuery);
+    const matchesSearch =
+      account.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      account.code.includes(searchQuery);
     const matchesType = selectedType === "all" || account.type === selectedType;
     return matchesSearch && matchesType;
   });
@@ -150,7 +398,9 @@ const LedgerPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-xl font-semibold">General Ledger</h1>
-              <p className="text-sm text-muted-foreground">Chart of accounts and journal entries</p>
+              <p className="text-sm text-muted-foreground">
+                Chart of accounts and journal entries
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -186,7 +436,7 @@ const LedgerPage: React.FC = () => {
                   "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors",
                   activeTab === tab.id
                     ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted",
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -237,21 +487,29 @@ const LedgerPage: React.FC = () => {
               {/* Summary Cards */}
               <div className="grid grid-cols-4 gap-4">
                 <div className="p-4 rounded-lg border bg-card">
-                  <p className="text-sm text-muted-foreground">Total Accounts</p>
+                  <p className="text-sm text-muted-foreground">
+                    Total Accounts
+                  </p>
                   <p className="text-2xl font-bold">{ACCOUNTS.length}</p>
                 </div>
                 <div className="p-4 rounded-lg border bg-card">
-                  <p className="text-sm text-muted-foreground">Active Accounts</p>
+                  <p className="text-sm text-muted-foreground">
+                    Active Accounts
+                  </p>
                   <p className="text-2xl font-bold text-emerald-600">
                     {ACCOUNTS.filter((a) => a.status === "active").length}
                   </p>
                 </div>
                 <div className="p-4 rounded-lg border bg-card">
                   <p className="text-sm text-muted-foreground">Total Assets</p>
-                  <p className="text-2xl font-bold">{formatCurrency(2452517)}</p>
+                  <p className="text-2xl font-bold">
+                    {formatCurrency(2452517)}
+                  </p>
                 </div>
                 <div className="p-4 rounded-lg border bg-card">
-                  <p className="text-sm text-muted-foreground">Total Liabilities</p>
+                  <p className="text-sm text-muted-foreground">
+                    Total Liabilities
+                  </p>
                   <p className="text-2xl font-bold">{formatCurrency(846700)}</p>
                 </div>
               </div>
@@ -261,13 +519,27 @@ const LedgerPage: React.FC = () => {
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50">
                     <tr>
-                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Code</th>
-                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Account Name</th>
-                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Type</th>
-                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Balance</th>
-                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Status</th>
-                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Last Activity</th>
-                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Actions</th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                        Code
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                        Account Name
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                        Type
+                      </th>
+                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">
+                        Balance
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                        Status
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                        Last Activity
+                      </th>
+                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
@@ -276,29 +548,44 @@ const LedgerPage: React.FC = () => {
                         key={account.id}
                         className={cn(
                           "hover:bg-muted/30 transition-colors",
-                          account.level > 0 && "bg-muted/20"
+                          account.level > 0 && "bg-muted/20",
                         )}
                         style={{ paddingLeft: `${account.level * 20}px` }}
                       >
                         <td className="px-4 py-3 font-mono text-muted-foreground">
-                          <span style={{ marginLeft: `${account.level * 20}px` }}>
+                          <span
+                            style={{ marginLeft: `${account.level * 20}px` }}
+                          >
                             {account.code}
                           </span>
                         </td>
                         <td className="px-4 py-3 font-medium">
-                          <span style={{ marginLeft: `${account.level * 20}px` }}>
+                          <span
+                            style={{ marginLeft: `${account.level * 20}px` }}
+                          >
                             {account.hasChildren && "▼ "}
                             {account.name}
                           </span>
                         </td>
-                        <td className={cn("px-4 py-3 capitalize", getAccountTypeColor(account.type))}>
+                        <td
+                          className={cn(
+                            "px-4 py-3 capitalize",
+                            getAccountTypeColor(account.type),
+                          )}
+                        >
                           {account.type}
                         </td>
                         <td className="px-4 py-3 text-right font-mono tabular-nums">
-                          {account.balance !== 0 ? formatCurrency(account.balance) : "—"}
+                          {account.balance !== 0
+                            ? formatCurrency(account.balance)
+                            : "—"}
                         </td>
-                        <td className="px-4 py-3">{getStatusBadge(account.status)}</td>
-                        <td className="px-4 py-3 text-muted-foreground">{account.lastActivity}</td>
+                        <td className="px-4 py-3">
+                          {getStatusBadge(account.status)}
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground">
+                          {account.lastActivity}
+                        </td>
                         <td className="px-4 py-3 text-right">
                           <button className="p-1 hover:bg-muted rounded">
                             <MoreHorizontal className="w-4 h-4" />
@@ -329,7 +616,9 @@ const LedgerPage: React.FC = () => {
               <div className="text-center">
                 <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-lg font-medium">Period Closing</p>
-                <p className="text-sm text-muted-foreground">Feature coming soon</p>
+                <p className="text-sm text-muted-foreground">
+                  Feature coming soon
+                </p>
               </div>
             </div>
           )}

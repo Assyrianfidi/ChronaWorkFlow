@@ -160,9 +160,7 @@ export const SecureForm: React.FC<SecureFormProps> = ({
 
   return (
     <form {...props} onSubmit={handleSubmit}>
-      {csrfToken && (
-        <input type="hidden" name="csrf_token" value={csrfToken} />
-      )}
+      {csrfToken && <input type="hidden" name="csrf_token" value={csrfToken} />}
       {children}
     </form>
   );

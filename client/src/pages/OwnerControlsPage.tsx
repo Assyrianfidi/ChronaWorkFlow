@@ -9,7 +9,8 @@ import { ProtectedComponent } from "@/components/ui/ProtectedComponent";
 const OwnerControlsPage: React.FC = () => {
   const { user } = useAuth();
   const [companyId] = useState("demo-company"); // TODO: pull from context or route
-  const { periods, isLoading, lockPeriod, unlockPeriod } = useAccountingPeriods(companyId);
+  const { periods, isLoading, lockPeriod, unlockPeriod } =
+    useAccountingPeriods(companyId);
   const [lockReason, setLockReason] = useState("");
   const [unlockReason, setUnlockReason] = useState("");
   const [showLockForm, setShowLockForm] = useState<string | null>(null);
@@ -31,8 +32,11 @@ const OwnerControlsPage: React.FC = () => {
 
   const handleExportReport = async (format: "json" | "csv") => {
     try {
-      const startDate = periods?.[0]?.startDate ?? new Date().toISOString().split("T")[0];
-      const endDate = periods?.[periods.length - 1]?.endDate ?? new Date().toISOString().split("T")[0];
+      const startDate =
+        periods?.[0]?.startDate ?? new Date().toISOString().split("T")[0];
+      const endDate =
+        periods?.[periods.length - 1]?.endDate ??
+        new Date().toISOString().split("T")[0];
       const url = `/api/owner/export/accountant-report?companyId=${companyId}&startDate=${startDate}&endDate=${endDate}&format=${format}`;
       window.open(url, "_blank");
     } catch (error) {
@@ -44,7 +48,9 @@ const OwnerControlsPage: React.FC = () => {
     return (
       <div className="p-6">
         <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
-        <p className="text-gray-600">Owner access required to view this page.</p>
+        <p className="text-gray-600">
+          Owner access required to view this page.
+        </p>
       </div>
     );
   }
@@ -75,10 +81,14 @@ const OwnerControlsPage: React.FC = () => {
         ) : (
           <div className="space-y-3">
             {periods?.map((period) => (
-              <div key={period.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div
+                key={period.id}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
                 <div>
                   <p className="font-medium">
-                    {new Date(period.startDate).toLocaleDateString()} — {new Date(period.endDate).toLocaleDateString()}
+                    {new Date(period.startDate).toLocaleDateString()} —{" "}
+                    {new Date(period.endDate).toLocaleDateString()}
                   </p>
                   <p className="text-sm text-gray-500">
                     {period.isLocked ? (
@@ -118,7 +128,9 @@ const OwnerControlsPage: React.FC = () => {
             {showLockForm && (
               <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded-lg w-96">
-                  <h3 className="text-lg font-semibold mb-4">Lock Accounting Period</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Lock Accounting Period
+                  </h3>
                   <textarea
                     className="w-full border rounded p-2 mb-4"
                     rows={3}
@@ -127,10 +139,15 @@ const OwnerControlsPage: React.FC = () => {
                     onChange={(e) => setLockReason(e.target.value)}
                   />
                   <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setShowLockForm(null)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowLockForm(null)}
+                    >
                       Cancel
                     </Button>
-                    <Button onClick={() => handleLockPeriod(showLockForm)}>Lock</Button>
+                    <Button onClick={() => handleLockPeriod(showLockForm)}>
+                      Lock
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -138,7 +155,9 @@ const OwnerControlsPage: React.FC = () => {
             {showUnlockForm && (
               <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded-lg w-96">
-                  <h3 className="text-lg font-semibold mb-4">Unlock Accounting Period</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Unlock Accounting Period
+                  </h3>
                   <textarea
                     className="w-full border rounded p-2 mb-4"
                     rows={3}
@@ -147,10 +166,15 @@ const OwnerControlsPage: React.FC = () => {
                     onChange={(e) => setUnlockReason(e.target.value)}
                   />
                   <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setShowUnlockForm(null)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowUnlockForm(null)}
+                    >
                       Cancel
                     </Button>
-                    <Button onClick={() => handleUnlockPeriod(showUnlockForm)}>Unlock</Button>
+                    <Button onClick={() => handleUnlockPeriod(showUnlockForm)}>
+                      Unlock
+                    </Button>
                   </div>
                 </div>
               </div>

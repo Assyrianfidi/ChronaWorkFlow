@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { useAutomation } from "./AutomationEngine";
 import { useAnalytics } from "@/components/analytics/AnalyticsEngine";
 

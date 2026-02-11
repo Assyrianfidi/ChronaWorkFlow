@@ -1,9 +1,9 @@
 import React from "react";
-import { useDashboard } from '../../contexts/DashboardContext';
-import { CFODashboard } from './CFODashboard';
-import { ControllerDashboard } from './ControllerDashboard';
-import { ProjectManagerDashboard } from './ProjectManagerDashboard';
-import { AccountantDashboard } from './AccountantDashboard';
+import { useDashboard } from "../../contexts/DashboardContext";
+import { CFODashboard } from "./CFODashboard";
+import { ControllerDashboard } from "./ControllerDashboard";
+import { ProjectManagerDashboard } from "./ProjectManagerDashboard";
+import { AccountantDashboard } from "./AccountantDashboard";
 
 export const Dashboard = () => {
   const { config } = useDashboard();

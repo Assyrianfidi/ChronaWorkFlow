@@ -19,7 +19,8 @@ const WorkflowPage: React.FC = () => {
 
   React.useEffect(() => {
     setLoading(true);
-    api.get("/workflow/instances")
+    api
+      .get("/workflow/instances")
       .then((res) => setInstances(res.data))
       .catch(() => setInstances([]))
       .finally(() => setLoading(false));
@@ -50,19 +51,35 @@ const WorkflowPage: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trigger</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entity</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Started</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Completed</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Current Step</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Trigger
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Entity
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Started
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Completed
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Current Step
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {instances.map((instance) => (
                 <tr key={instance.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{instance.triggerEventType}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{instance.triggerEntityId}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {instance.triggerEventType}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {instance.triggerEntityId}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm flex items-center gap-2">
                     {getStatusIcon(instance.status)}
                     <span className="capitalize">{instance.status}</span>
@@ -71,9 +88,13 @@ const WorkflowPage: React.FC = () => {
                     {new Date(instance.startedAt).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {instance.completedAt ? new Date(instance.completedAt).toLocaleString() : "-"}
+                    {instance.completedAt
+                      ? new Date(instance.completedAt).toLocaleString()
+                      : "-"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{instance.currentStep ?? "-"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {instance.currentStep ?? "-"}
+                  </td>
                 </tr>
               ))}
             </tbody>

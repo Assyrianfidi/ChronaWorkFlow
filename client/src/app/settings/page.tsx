@@ -3,14 +3,12 @@
 import React from "react";
 
 import { MainLayout } from "@/components/layout/MainLayout";
-import EnterpriseDataTable, { type Column } from "@/components/ui/EnterpriseDataTable";
+import EnterpriseDataTable, {
+  type Column,
+} from "@/components/ui/EnterpriseDataTable";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
 import { EnterpriseInput } from "@/components/ui/EnterpriseInput";
-import Card, {
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Users,
   Plus,
@@ -503,7 +501,9 @@ export default function SettingsPage() {
                   <EnterpriseButton variant="primary">
                     Save Changes
                   </EnterpriseButton>
-                  <EnterpriseButton variant="secondary">Cancel</EnterpriseButton>
+                  <EnterpriseButton variant="secondary">
+                    Cancel
+                  </EnterpriseButton>
                 </div>
               </CardContent>
             </Card>

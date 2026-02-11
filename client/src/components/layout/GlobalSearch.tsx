@@ -1,16 +1,16 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import Input from '@/components/ui/Input';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/ScrollArea';
+} from "@/components/ui/dialog";
+import Input from "@/components/ui/Input";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import {
   Search,
   Clock,
@@ -24,8 +24,8 @@ import {
   BarChart3,
   X,
   Sparkles,
-} from 'lucide-react';
-import { SEARCH_ENTITIES } from '@/config/navigation.config';
+} from "lucide-react";
+import { SEARCH_ENTITIES } from "@/config/navigation.config";
 
 // ============================================================================
 // TYPES
@@ -37,7 +37,16 @@ interface SearchResult {
   title: string;
   subtitle?: string;
   path: string;
-  entityType: 'transaction' | 'customer' | 'vendor' | 'invoice' | 'bill' | 'account' | 'product' | 'report' | 'employee';
+  entityType:
+    | "transaction"
+    | "customer"
+    | "vendor"
+    | "invoice"
+    | "bill"
+    | "account"
+    | "product"
+    | "report"
+    | "employee";
   date?: string;
   amount?: number;
   status?: string;
@@ -55,16 +64,97 @@ interface SearchHistory {
 // ============================================================================
 
 const MOCK_RESULTS: SearchResult[] = [
-  { id: '1', type: 'invoice', title: 'INV-001', subtitle: 'Acme Corp - $5,000.00', path: '/invoices/1', entityType: 'invoice', date: '2024-01-15', amount: 5000, status: 'Open' },
-  { id: '2', type: 'customer', title: 'Acme Corporation', subtitle: 'Active Customer - $45,000 YTD', path: '/customers/1', entityType: 'customer' },
-  { id: '3', type: 'transaction', title: 'Deposit #1234', subtitle: 'Checking Account - $12,500.00', path: '/banking/transactions/1234', entityType: 'transaction', date: '2024-01-14', amount: 12500 },
-  { id: '4', type: 'bill', title: 'BILL-045', subtitle: 'Office Supplies Inc - $850.00', path: '/bills/45', entityType: 'bill', date: '2024-01-13', amount: 850, status: 'Overdue' },
-  { id: '5', type: 'account', title: '1000 - Cash and Equivalents', subtitle: 'Asset Account - $125,000.00', path: '/chart-of-accounts/1000', entityType: 'account' },
-  { id: '6', type: 'product', title: 'Professional Services', subtitle: 'Service Item - $150.00/hr', path: '/products/1', entityType: 'product' },
-  { id: '7', type: 'report', title: 'Profit & Loss', subtitle: 'Standard Financial Report', path: '/reports/pnl', entityType: 'report' },
-  { id: '8', type: 'vendor', title: 'Office Supplies Inc', subtitle: 'Active Vendor - $12,500 YTD', path: '/vendors/1', entityType: 'vendor' },
-  { id: '9', type: 'employee', title: 'John Smith', subtitle: 'Engineering - $85,000/yr', path: '/employees/1', entityType: 'employee' },
-  { id: '10', type: 'invoice', title: 'INV-002', subtitle: 'TechStart Inc - $8,500.00', path: '/invoices/2', entityType: 'invoice', date: '2024-01-12', amount: 8500, status: 'Paid' },
+  {
+    id: "1",
+    type: "invoice",
+    title: "INV-001",
+    subtitle: "Acme Corp - $5,000.00",
+    path: "/invoices/1",
+    entityType: "invoice",
+    date: "2024-01-15",
+    amount: 5000,
+    status: "Open",
+  },
+  {
+    id: "2",
+    type: "customer",
+    title: "Acme Corporation",
+    subtitle: "Active Customer - $45,000 YTD",
+    path: "/customers/1",
+    entityType: "customer",
+  },
+  {
+    id: "3",
+    type: "transaction",
+    title: "Deposit #1234",
+    subtitle: "Checking Account - $12,500.00",
+    path: "/banking/transactions/1234",
+    entityType: "transaction",
+    date: "2024-01-14",
+    amount: 12500,
+  },
+  {
+    id: "4",
+    type: "bill",
+    title: "BILL-045",
+    subtitle: "Office Supplies Inc - $850.00",
+    path: "/bills/45",
+    entityType: "bill",
+    date: "2024-01-13",
+    amount: 850,
+    status: "Overdue",
+  },
+  {
+    id: "5",
+    type: "account",
+    title: "1000 - Cash and Equivalents",
+    subtitle: "Asset Account - $125,000.00",
+    path: "/chart-of-accounts/1000",
+    entityType: "account",
+  },
+  {
+    id: "6",
+    type: "product",
+    title: "Professional Services",
+    subtitle: "Service Item - $150.00/hr",
+    path: "/products/1",
+    entityType: "product",
+  },
+  {
+    id: "7",
+    type: "report",
+    title: "Profit & Loss",
+    subtitle: "Standard Financial Report",
+    path: "/reports/pnl",
+    entityType: "report",
+  },
+  {
+    id: "8",
+    type: "vendor",
+    title: "Office Supplies Inc",
+    subtitle: "Active Vendor - $12,500 YTD",
+    path: "/vendors/1",
+    entityType: "vendor",
+  },
+  {
+    id: "9",
+    type: "employee",
+    title: "John Smith",
+    subtitle: "Engineering - $85,000/yr",
+    path: "/employees/1",
+    entityType: "employee",
+  },
+  {
+    id: "10",
+    type: "invoice",
+    title: "INV-002",
+    subtitle: "TechStart Inc - $8,500.00",
+    path: "/invoices/2",
+    entityType: "invoice",
+    date: "2024-01-12",
+    amount: 8500,
+    status: "Paid",
+  },
 ];
 
 // ============================================================================
@@ -73,31 +163,51 @@ const MOCK_RESULTS: SearchResult[] = [
 
 const getEntityIcon = (entityType: string) => {
   switch (entityType) {
-    case 'invoice': return FileText;
-    case 'customer': return Users;
-    case 'vendor': return Building2;
-    case 'bill': return Receipt;
-    case 'account': return BookOpen;
-    case 'product': return Package;
-    case 'report': return BarChart3;
-    case 'employee': return Users;
-    case 'transaction': return Receipt;
-    default: return FileText;
+    case "invoice":
+      return FileText;
+    case "customer":
+      return Users;
+    case "vendor":
+      return Building2;
+    case "bill":
+      return Receipt;
+    case "account":
+      return BookOpen;
+    case "product":
+      return Package;
+    case "report":
+      return BarChart3;
+    case "employee":
+      return Users;
+    case "transaction":
+      return Receipt;
+    default:
+      return FileText;
   }
 };
 
 const getEntityColor = (entityType: string) => {
   switch (entityType) {
-    case 'invoice': return 'bg-blue-100 text-blue-700';
-    case 'customer': return 'bg-emerald-100 text-emerald-700';
-    case 'vendor': return 'bg-amber-100 text-amber-700';
-    case 'bill': return 'bg-red-100 text-red-700';
-    case 'account': return 'bg-purple-100 text-purple-700';
-    case 'product': return 'bg-cyan-100 text-cyan-700';
-    case 'report': return 'bg-indigo-100 text-indigo-700';
-    case 'employee': return 'bg-pink-100 text-pink-700';
-    case 'transaction': return 'bg-slate-100 text-slate-700';
-    default: return 'bg-gray-100 text-gray-700';
+    case "invoice":
+      return "bg-blue-100 text-blue-700";
+    case "customer":
+      return "bg-emerald-100 text-emerald-700";
+    case "vendor":
+      return "bg-amber-100 text-amber-700";
+    case "bill":
+      return "bg-red-100 text-red-700";
+    case "account":
+      return "bg-purple-100 text-purple-700";
+    case "product":
+      return "bg-cyan-100 text-cyan-700";
+    case "report":
+      return "bg-indigo-100 text-indigo-700";
+    case "employee":
+      return "bg-pink-100 text-pink-700";
+    case "transaction":
+      return "bg-slate-100 text-slate-700";
+    default:
+      return "bg-gray-100 text-gray-700";
   }
 };
 
@@ -108,16 +218,16 @@ const getEntityColor = (entityType: string) => {
 interface GlobalSearchProps {
   className?: string;
   shortcut?: boolean;
-  variant?: 'default' | 'compact';
+  variant?: "default" | "compact";
 }
 
 export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   className,
   shortcut = true,
-  variant = 'default',
+  variant = "default",
 }) => {
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [recentSearches, setRecentSearches] = useState<SearchHistory[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -127,16 +237,20 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
   // Load recent searches from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('qb-search-history');
+    const saved = localStorage.getItem("qb-search-history");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setRecentSearches(parsed.map((s: SearchHistory) => ({
-          ...s,
-          timestamp: new Date(s.timestamp)
-        })).slice(0, 5));
+        setRecentSearches(
+          parsed
+            .map((s: SearchHistory) => ({
+              ...s,
+              timestamp: new Date(s.timestamp),
+            }))
+            .slice(0, 5),
+        );
       } catch (e) {
-        console.error('Failed to parse search history', e);
+        console.error("Failed to parse search history", e);
       }
     }
   }, []);
@@ -144,55 +258,59 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   // Save recent searches
   const saveRecentSearch = useCallback((query: string, resultCount: number) => {
     if (!query.trim()) return;
-    
+
     const newSearch: SearchHistory = {
       id: Date.now().toString(),
       query,
       timestamp: new Date(),
       resultCount,
     };
-    
-    setRecentSearches(prev => {
-      const filtered = prev.filter(s => s.query !== query);
+
+    setRecentSearches((prev) => {
+      const filtered = prev.filter((s) => s.query !== query);
       const updated = [newSearch, ...filtered].slice(0, 10);
-      localStorage.setItem('qb-search-history', JSON.stringify(updated));
+      localStorage.setItem("qb-search-history", JSON.stringify(updated));
       return updated;
     });
   }, []);
 
   // Search function
-  const performSearch = useCallback((searchQuery: string, filter?: string | null) => {
-    if (!searchQuery.trim() && !filter) {
-      setResults([]);
-      return;
-    }
+  const performSearch = useCallback(
+    (searchQuery: string, filter?: string | null) => {
+      if (!searchQuery.trim() && !filter) {
+        setResults([]);
+        return;
+      }
 
-    // Simulate API search
-    let filtered = MOCK_RESULTS;
-    
-    if (searchQuery.trim()) {
-      const lowerQuery = searchQuery.toLowerCase();
-      filtered = filtered.filter(result =>
-        result.title.toLowerCase().includes(lowerQuery) ||
-        result.subtitle?.toLowerCase().includes(lowerQuery) ||
-        result.type.toLowerCase().includes(lowerQuery)
-      );
-    }
-    
-    if (filter) {
-      filtered = filtered.filter(result => result.entityType === filter);
-    }
-    
-    setResults(filtered);
-    setSelectedIndex(filtered.length > 0 ? 0 : -1);
-  }, []);
+      // Simulate API search
+      let filtered = MOCK_RESULTS;
+
+      if (searchQuery.trim()) {
+        const lowerQuery = searchQuery.toLowerCase();
+        filtered = filtered.filter(
+          (result) =>
+            result.title.toLowerCase().includes(lowerQuery) ||
+            result.subtitle?.toLowerCase().includes(lowerQuery) ||
+            result.type.toLowerCase().includes(lowerQuery),
+        );
+      }
+
+      if (filter) {
+        filtered = filtered.filter((result) => result.entityType === filter);
+      }
+
+      setResults(filtered);
+      setSelectedIndex(filtered.length > 0 ? 0 : -1);
+    },
+    [],
+  );
 
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
       performSearch(query, activeFilter);
     }, 150);
-    
+
     return () => clearTimeout(timer);
   }, [query, activeFilter, performSearch]);
 
@@ -200,33 +318,37 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Cmd/Ctrl + K to open
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         setOpen(true);
       }
-      
+
       // Escape to close
-      if (e.key === 'Escape' && open) {
+      if (e.key === "Escape" && open) {
         setOpen(false);
       }
-      
+
       // Arrow navigation when open
       if (open) {
-        if (e.key === 'ArrowDown') {
+        if (e.key === "ArrowDown") {
           e.preventDefault();
-          setSelectedIndex(prev => Math.min(prev + 1, results.length - 1));
-        } else if (e.key === 'ArrowUp') {
+          setSelectedIndex((prev) => Math.min(prev + 1, results.length - 1));
+        } else if (e.key === "ArrowUp") {
           e.preventDefault();
-          setSelectedIndex(prev => Math.max(prev - 1, -1));
-        } else if (e.key === 'Enter' && selectedIndex >= 0 && results[selectedIndex]) {
+          setSelectedIndex((prev) => Math.max(prev - 1, -1));
+        } else if (
+          e.key === "Enter" &&
+          selectedIndex >= 0 &&
+          results[selectedIndex]
+        ) {
           e.preventDefault();
           handleResultClick(results[selectedIndex]);
         }
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, results, selectedIndex]);
 
   // Focus input when dialog opens
@@ -236,22 +358,28 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
     }
   }, [open]);
 
-  const handleResultClick = useCallback((result: SearchResult) => {
-    saveRecentSearch(query, results.length);
-    setOpen(false);
-    setQuery('');
-    setResults([]);
-    navigate(result.path);
-  }, [navigate, query, results.length, saveRecentSearch]);
+  const handleResultClick = useCallback(
+    (result: SearchResult) => {
+      saveRecentSearch(query, results.length);
+      setOpen(false);
+      setQuery("");
+      setResults([]);
+      navigate(result.path);
+    },
+    [navigate, query, results.length, saveRecentSearch],
+  );
 
-  const handleRecentClick = useCallback((search: SearchHistory) => {
-    setQuery(search.query);
-    performSearch(search.query, activeFilter);
-  }, [activeFilter, performSearch]);
+  const handleRecentClick = useCallback(
+    (search: SearchHistory) => {
+      setQuery(search.query);
+      performSearch(search.query, activeFilter);
+    },
+    [activeFilter, performSearch],
+  );
 
   const clearRecentSearches = useCallback(() => {
     setRecentSearches([]);
-    localStorage.removeItem('qb-search-history');
+    localStorage.removeItem("qb-search-history");
   }, []);
 
   return (
@@ -260,13 +388,15 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
       <Button
         variant="outline"
         className={cn(
-          'relative h-9 w-full justify-start rounded-md bg-muted/50 text-sm font-normal text-muted-foreground shadow-none hover:bg-accent hover:text-accent-foreground',
-          className
+          "relative h-9 w-full justify-start rounded-md bg-muted/50 text-sm font-normal text-muted-foreground shadow-none hover:bg-accent hover:text-accent-foreground",
+          className,
         )}
         onClick={() => setOpen(true)}
       >
         <Search className="mr-2 h-4 w-4 shrink-0" />
-        <span className="flex-1 text-left truncate">Search transactions, customers...</span>
+        <span className="flex-1 text-left truncate">
+          Search transactions, customers...
+        </span>
         {shortcut && (
           <kbd className="pointer-events-none ml-auto hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
             <span className="text-xs">⌘</span>K
@@ -280,7 +410,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           <DialogHeader className="sr-only">
             <DialogTitle>Search</DialogTitle>
           </DialogHeader>
-          
+
           {/* Search Input */}
           <div className="flex items-center border-b px-3 py-2">
             <Search className="mr-2 h-5 w-5 shrink-0 text-muted-foreground" />
@@ -296,7 +426,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 shrink-0"
-                onClick={() => setQuery('')}
+                onClick={() => setQuery("")}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -310,7 +440,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           <div className="border-b px-3 py-2">
             <div className="flex flex-wrap gap-1.5">
               <Button
-                variant={activeFilter === null ? 'secondary' : 'ghost'}
+                variant={activeFilter === null ? "secondary" : "ghost"}
                 size="sm"
                 className="h-7 text-xs"
                 onClick={() => setActiveFilter(null)}
@@ -323,10 +453,12 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
                 return (
                   <Button
                     key={entity.type}
-                    variant={isActive ? 'secondary' : 'ghost'}
+                    variant={isActive ? "secondary" : "ghost"}
                     size="sm"
                     className="h-7 text-xs gap-1.5"
-                    onClick={() => setActiveFilter(isActive ? null : entity.type)}
+                    onClick={() =>
+                      setActiveFilter(isActive ? null : entity.type)
+                    }
                   >
                     <Icon className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">{entity.label}</span>
@@ -349,34 +481,49 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
                     const Icon = getEntityIcon(result.entityType);
                     const colorClass = getEntityColor(result.entityType);
                     const isSelected = index === selectedIndex;
-                    
+
                     return (
                       <button
                         key={result.id}
                         onClick={() => handleResultClick(result)}
                         className={cn(
-                          'flex items-start gap-3 w-full px-3 py-2.5 rounded-md text-left transition-colors',
-                          isSelected ? 'bg-accent' : 'hover:bg-accent/50'
+                          "flex items-start gap-3 w-full px-3 py-2.5 rounded-md text-left transition-colors",
+                          isSelected ? "bg-accent" : "hover:bg-accent/50",
                         )}
                       >
-                        <div className={cn('mt-0.5 p-1.5 rounded-md shrink-0', colorClass)}>
+                        <div
+                          className={cn(
+                            "mt-0.5 p-1.5 rounded-md shrink-0",
+                            colorClass,
+                          )}
+                        >
                           <Icon className="h-4 w-4" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="font-medium truncate">{result.title}</span>
+                            <span className="font-medium truncate">
+                              {result.title}
+                            </span>
                             {result.status && (
-                              <Badge 
-                                variant={result.status === 'Overdue' ? 'destructive' : 'secondary'}
+                              <Badge
+                                variant={
+                                  result.status === "Overdue"
+                                    ? "destructive"
+                                    : "secondary"
+                                }
                                 className="h-4 px-1 text-[10px]"
                               >
                                 {result.status}
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground truncate">{result.subtitle}</p>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {result.subtitle}
+                          </p>
                           {result.date && (
-                            <p className="text-xs text-muted-foreground mt-0.5">{result.date}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {result.date}
+                            </p>
                           )}
                         </div>
                         <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 shrink-0" />
@@ -388,7 +535,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
             )}
 
             {/* Recent Searches */}
-            {query === '' && recentSearches.length > 0 && (
+            {query === "" && recentSearches.length > 0 && (
               <div className="p-2">
                 <div className="flex items-center justify-between px-2 py-1.5">
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -422,7 +569,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
             )}
 
             {/* Empty State */}
-            {query !== '' && results.length === 0 && (
+            {query !== "" && results.length === 0 && (
               <div className="p-8 text-center">
                 <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
                   <Search className="h-6 w-6 text-muted-foreground" />
@@ -437,7 +584,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
             )}
 
             {/* Initial State - No Query */}
-            {query === '' && recentSearches.length === 0 && (
+            {query === "" && recentSearches.length === 0 && (
               <div className="p-8 text-center">
                 <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
                   <Sparkles className="h-6 w-6 text-amber-500" />
@@ -446,7 +593,8 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
                   Start typing to search
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Search across transactions, customers, vendors, invoices, and more
+                  Search across transactions, customers, vendors, invoices, and
+                  more
                 </p>
               </div>
             )}
@@ -456,11 +604,15 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           <div className="border-t px-3 py-2 flex items-center justify-between text-xs text-muted-foreground">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
-                <kbd className="h-5 px-1 rounded border bg-muted font-mono text-[10px]">↑↓</kbd>
+                <kbd className="h-5 px-1 rounded border bg-muted font-mono text-[10px]">
+                  ↑↓
+                </kbd>
                 <span>Navigate</span>
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="h-5 px-1 rounded border bg-muted font-mono text-[10px]">↵</kbd>
+                <kbd className="h-5 px-1 rounded border bg-muted font-mono text-[10px]">
+                  ↵
+                </kbd>
                 <span>Select</span>
               </span>
             </div>

@@ -18,9 +18,9 @@ const fetcher = async (key: string) => {
     throw new Error(`Method ${method} not found on service`);
   }
 
-  const fn = serviceInstance[method as keyof typeof dashboardService] as unknown as (
-    ...args: unknown[]
-  ) => Promise<unknown>;
+  const fn = serviceInstance[
+    method as keyof typeof dashboardService
+  ] as unknown as (...args: unknown[]) => Promise<unknown>;
 
   return await fn(...params);
 };

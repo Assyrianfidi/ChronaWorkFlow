@@ -572,7 +572,8 @@ export function InteractionEngine({ children }: { children: React.ReactNode }) {
   const { currentMode } = useUserExperienceMode();
   const { isLowPerformanceMode } = usePerformance();
   const accessibilityContext: any = useAccessibility();
-  const accessibilityConfig = accessibilityContext?.config ?? accessibilityContext ?? {};
+  const accessibilityConfig =
+    accessibilityContext?.config ?? accessibilityContext ?? {};
   const reducedMotion = Boolean(accessibilityConfig.reducedMotion);
 
   const [config, setConfig] = useState<InteractionConfig>(defaultConfig);
@@ -972,7 +973,9 @@ export function PhysicsAnimation({
 }: {
   children:
     | React.ReactNode
-    | ((args: { animate: (targetStyle: React.CSSProperties) => void }) => React.ReactNode);
+    | ((args: {
+        animate: (targetStyle: React.CSSProperties) => void;
+      }) => React.ReactNode);
   mass?: number;
   tension?: number;
   friction?: number;

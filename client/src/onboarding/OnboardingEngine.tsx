@@ -372,7 +372,10 @@ export class OnboardingEngine {
       .filter(
         (flow) => flow.targetAudience === role || flow.targetAudience === "all",
       )
-      .sort((a: any, b: any) => ((a.priority as number) || 0) - ((b.priority as number) || 0));
+      .sort(
+        (a: any, b: any) =>
+          ((a.priority as number) || 0) - ((b.priority as number) || 0),
+      );
   }
 
   public startFlow(flowId: string): boolean {

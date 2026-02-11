@@ -19,7 +19,10 @@ export default function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
     const onPointerDown = (e: MouseEvent | TouchEvent) => {
       const target = e.target as Node | null;
       if (!target) return;
-      if (!buttonRef.current?.contains(target) && !menuRef.current?.contains(target)) {
+      if (
+        !buttonRef.current?.contains(target) &&
+        !menuRef.current?.contains(target)
+      ) {
         setOpen(false);
       }
     };
@@ -44,7 +47,9 @@ export default function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
     if (!open) return;
     requestAnimationFrame(() => {
       menuRef.current
-        ?.querySelector<HTMLElement>("button,[href],[tabindex]:not([tabindex='-1'])")
+        ?.querySelector<HTMLElement>(
+          "button,[href],[tabindex]:not([tabindex='-1'])",
+        )
         ?.focus();
     });
   }, [open]);

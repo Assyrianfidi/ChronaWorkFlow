@@ -65,25 +65,26 @@ const AuditorDashboard: React.FC = () => {
   const { user } = useAuth();
 
   // Fetch auditor dashboard data
-  const { data: dashboardData, isLoading, error } = useSWR<{
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useSWR<{
     success: boolean;
     data: {
       metrics: ComplianceMetrics;
       logs: AuditLog[];
     };
-  }>(
-    "/api/dashboard/auditor",
-    async (url: string) => {
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch dashboard data");
-      return response.json();
-    },
-  );
+  }>("/api/dashboard/auditor", async (url: string) => {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) throw new Error("Failed to fetch dashboard data");
+    return response.json();
+  });
 
   const metrics = dashboardData?.data?.metrics;
   const logs = dashboardData?.data?.logs;

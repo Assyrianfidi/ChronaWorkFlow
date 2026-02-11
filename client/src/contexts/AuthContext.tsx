@@ -194,7 +194,8 @@ export const useAuth = create<AuthState>((set, get) => {
         const response = await authApi.login(email, password);
         const payload = response?.data as any;
         const user = payload?.data?.user ?? payload?.user ?? payload;
-        const accessToken = payload?.data?.accessToken ?? payload?.accessToken ?? payload?.token;
+        const accessToken =
+          payload?.data?.accessToken ?? payload?.accessToken ?? payload?.token;
 
         const role = normalizeRole(user?.role);
         const name =
@@ -241,7 +242,8 @@ export const useAuth = create<AuthState>((set, get) => {
         });
         const payload = response?.data as any;
         const user = payload?.data?.user ?? payload?.user ?? payload;
-        const accessToken = payload?.data?.accessToken ?? payload?.accessToken ?? payload?.token;
+        const accessToken =
+          payload?.data?.accessToken ?? payload?.accessToken ?? payload?.token;
 
         const role = normalizeRole(user?.role);
         const name =

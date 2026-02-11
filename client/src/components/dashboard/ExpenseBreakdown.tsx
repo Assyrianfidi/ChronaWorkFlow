@@ -76,7 +76,9 @@ const ExpenseBreakdown = React.forwardRef<
     if (active && payload && payload.length) {
       return (
         <div className="bg-popover text-popover-foreground p-3 border border-border rounded-lg shadow-elevated">
-          <p className="text-sm font-medium text-foreground">{payload[0].name}</p>
+          <p className="text-sm font-medium text-foreground">
+            {payload[0].name}
+          </p>
           <p className="text-sm text-muted-foreground">
             ${payload[0].value.toLocaleString()} (
             {payload[0].payload.percentage}%)
@@ -168,7 +170,10 @@ const ExpenseBreakdown = React.forwardRef<
               dataKey="value"
             >
               {expenses.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={chartColors[index % chartColors.length]}
+                />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />

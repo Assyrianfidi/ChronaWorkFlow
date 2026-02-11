@@ -161,7 +161,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       pulse: {
@@ -170,7 +173,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       fade: {
@@ -179,7 +185,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       scale: {
@@ -188,7 +197,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       slide: {
@@ -197,7 +209,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       rotate: {
@@ -206,7 +221,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       flip: {
@@ -215,7 +233,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       shake: {
@@ -224,7 +245,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       wiggle: {
@@ -233,16 +257,28 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       glow: {
         initial: { filter: "drop-shadow(0 0 0 rgba(0,0,0,0))" },
-        animate: { filter: ["drop-shadow(0 0 0 rgba(0,0,0,0))", "drop-shadow(0 0 10px rgba(99,102,241,0.6))", "drop-shadow(0 0 0 rgba(0,0,0,0))"] },
+        animate: {
+          filter: [
+            "drop-shadow(0 0 0 rgba(0,0,0,0))",
+            "drop-shadow(0 0 10px rgba(99,102,241,0.6))",
+            "drop-shadow(0 0 0 rgba(0,0,0,0))",
+          ],
+        },
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       ripple: {
@@ -251,7 +287,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
       morph: {
@@ -260,7 +299,10 @@ export const MicroInteraction: React.FC<MicroInteractionProps> = ({
         transition: {
           duration: animationConfig.duration,
           ease: animationConfig.easing,
-          repeat: animationConfig.repeat === "infinite" ? Infinity : animationConfig.repeat,
+          repeat:
+            animationConfig.repeat === "infinite"
+              ? Infinity
+              : animationConfig.repeat,
         },
       },
     };

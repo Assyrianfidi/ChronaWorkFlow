@@ -600,7 +600,9 @@ const InventoryPage: React.FC = () => {
                 </div>
               ) : filteredItems.length === 0 ? (
                 <div className="py-10 text-center space-y-3">
-                  <div className="text-sm font-medium">No inventory items found</div>
+                  <div className="text-sm font-medium">
+                    No inventory items found
+                  </div>
                   <div className="text-sm text-muted-foreground">
                     Try adjusting your filters or add a new item.
                   </div>
@@ -746,62 +748,64 @@ const InventoryPage: React.FC = () => {
             <CardContent>
               {stockMovements.length === 0 ? (
                 <div className="py-10 text-center space-y-2">
-                  <div className="text-sm font-medium">No stock movements yet</div>
+                  <div className="text-sm font-medium">
+                    No stock movements yet
+                  </div>
                   <div className="text-sm text-muted-foreground">
                     Movements will appear here when inventory changes occur.
                   </div>
                 </div>
               ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Timestamp</TableHead>
-                    <TableHead>Item</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Reason</TableHead>
-                    <TableHead>Reference</TableHead>
-                    <TableHead>User</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {stockMovements.map((movement) => {
-                    const MovementIcon = movementConfig[movement.type].icon;
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Timestamp</TableHead>
+                      <TableHead>Item</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Quantity</TableHead>
+                      <TableHead>Reason</TableHead>
+                      <TableHead>Reference</TableHead>
+                      <TableHead>User</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stockMovements.map((movement) => {
+                      const MovementIcon = movementConfig[movement.type].icon;
 
-                    return (
-                      <TableRow key={movement.id}>
-                        <TableCell>
-                          <div className="text-sm">
-                            {formatDate(movement.timestamp)}
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {movement.itemName}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={movementConfig[movement.type].color}
-                          >
-                            <MovementIcon className="w-3 h-3 mr-1" />
-                            {movementConfig[movement.type].label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {movement.type === "OUT" ? "-" : "+"}
-                          {movement.quantity}
-                        </TableCell>
-                        <TableCell>{movement.reason}</TableCell>
-                        <TableCell>
-                          <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">
-                            {movement.reference}
-                          </code>
-                        </TableCell>
-                        <TableCell>{movement.user}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                      return (
+                        <TableRow key={movement.id}>
+                          <TableCell>
+                            <div className="text-sm">
+                              {formatDate(movement.timestamp)}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {movement.itemName}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={movementConfig[movement.type].color}
+                            >
+                              <MovementIcon className="w-3 h-3 mr-1" />
+                              {movementConfig[movement.type].label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {movement.type === "OUT" ? "-" : "+"}
+                            {movement.quantity}
+                          </TableCell>
+                          <TableCell>{movement.reason}</TableCell>
+                          <TableCell>
+                            <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">
+                              {movement.reference}
+                            </code>
+                          </TableCell>
+                          <TableCell>{movement.user}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               )}
             </CardContent>
           </Card>

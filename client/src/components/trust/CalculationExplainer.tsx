@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import Card, { CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Info, ChevronDown, ChevronUp, Calculator } from 'lucide-react';
+import React, { useState } from "react";
+import Card, { CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { Info, ChevronDown, ChevronUp, Calculator } from "lucide-react";
 
 interface CalculationStep {
   step: number;
@@ -29,11 +29,11 @@ interface CalculationExplainerProps {
 export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({
   title,
   finalResult,
-  resultUnit = '',
+  resultUnit = "",
   formula,
   steps,
   assumptions,
-  className = '',
+  className = "",
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set());
@@ -49,8 +49,8 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({
   };
 
   const formatValue = (value: number | string): string => {
-    if (typeof value === 'number') {
-      return new Intl.NumberFormat('en-US', {
+    if (typeof value === "number") {
+      return new Intl.NumberFormat("en-US", {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2,
       }).format(value);
@@ -106,7 +106,10 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({
             {assumptions && assumptions.length > 0 && (
               <div>
                 <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
-                  <Info className="w-4 h-4 mr-2 text-blue-600" aria-hidden="true" />
+                  <Info
+                    className="w-4 h-4 mr-2 text-blue-600"
+                    aria-hidden="true"
+                  />
                   Key Assumptions
                 </h4>
                 <div className="space-y-2">
@@ -117,7 +120,7 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium text-gray-900">
-                          {assumption.key.replace(/_/g, ' ')}
+                          {assumption.key.replace(/_/g, " ")}
                         </span>
                         <Badge variant="outline" className="text-xs">
                           {formatValue(assumption.value)}
@@ -199,7 +202,7 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({
                                 className="flex items-center justify-between p-2 bg-white rounded border border-gray-200"
                               >
                                 <span className="text-xs text-gray-600">
-                                  {key.replace(/_/g, ' ')}:
+                                  {key.replace(/_/g, " ")}:
                                 </span>
                                 <span className="text-xs font-medium text-gray-900">
                                   {formatValue(value)}
@@ -233,7 +236,8 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
                   <span>
-                    All calculations use deterministic math - no hidden algorithms
+                    All calculations use deterministic math - no hidden
+                    algorithms
                   </span>
                 </li>
                 <li className="flex items-start">

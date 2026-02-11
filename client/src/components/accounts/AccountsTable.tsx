@@ -1,14 +1,21 @@
 import React from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/components/ui/table";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Badge } from '../ui/badge';
-import { Skeleton } from '../ui/skeleton';
+import { Badge } from "../ui/badge";
+import { Skeleton } from "../ui/skeleton";
 import type {
   AccountWithChildren,
   AccountRowProps,
   AccountsTableProps,
-} from '../../types/accounts';
+} from "../../types/accounts";
 
 export const AccountRow: React.FC<AccountRowProps> = ({
   account,

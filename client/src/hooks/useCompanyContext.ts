@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface CompanyContextState {
   companyId: string | null;
@@ -17,19 +17,19 @@ export const useCompanyContext = create<CompanyContextState>()(
     (set) => ({
       companyId: null,
       companyName: null,
-      
+
       setCompany: (companyId: string, companyName?: string) => {
         set({ companyId, companyName: companyName || null });
       },
-      
+
       clearCompany: () => {
         set({ companyId: null, companyName: null });
       },
     }),
     {
-      name: 'accubooks-company-context',
-    }
-  )
+      name: "accubooks-company-context",
+    },
+  ),
 );
 
 /**
@@ -38,7 +38,7 @@ export const useCompanyContext = create<CompanyContextState>()(
 export function requireCompanyId(): string {
   const companyId = useCompanyContext.getState().companyId;
   if (!companyId) {
-    throw new Error('Company context required but not set');
+    throw new Error("Company context required but not set");
   }
   return companyId;
 }

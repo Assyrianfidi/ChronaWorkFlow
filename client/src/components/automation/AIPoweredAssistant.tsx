@@ -1019,16 +1019,15 @@ export const AIPoweredAssistant: React.FC<{
       {/* Input */}
       <div className="border-t border-gray-200 p-4">
         <div className="flex gap-2">
-          
-        <label htmlFor="input-hwtlc4ttg" className="sr-only">
-          Text
-        </label>
-        <input id="input-hwtlc4ttg"
+          <label htmlFor="input-hwtlc4ttg" className="sr-only">
+            Text
+          </label>
+          <input
+            id="input-hwtlc4ttg"
             ref={inputRef}
             type="text"
             value={inputValue}
-            onChange={(e) =>
-       setInputValue(e.target.value)}
+            onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
             placeholder="Ask me anything..."
             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

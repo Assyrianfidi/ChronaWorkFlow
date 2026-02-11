@@ -3,7 +3,7 @@
  * Handles pricing tier API calls
  */
 
-const API_BASE = '/api';
+const API_BASE = "/api";
 
 interface PricingTier {
   name: string;
@@ -71,10 +71,10 @@ interface UpgradeTrigger {
 
 class PricingService {
   private getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     return {
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : '',
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
     };
   }
 
@@ -82,17 +82,22 @@ class PricingService {
     const response = await fetch(`${API_BASE}/pricing/tiers`);
 
     if (!response.ok) {
-      throw new Error('Failed to get pricing tiers');
+      throw new Error("Failed to get pricing tiers");
     }
 
     return response.json();
   }
 
-  async compareTiers(from: string, to: string): Promise<{ success: boolean; data: TierComparison }> {
-    const response = await fetch(`${API_BASE}/pricing/compare?from=${from}&to=${to}`);
+  async compareTiers(
+    from: string,
+    to: string,
+  ): Promise<{ success: boolean; data: TierComparison }> {
+    const response = await fetch(
+      `${API_BASE}/pricing/compare?from=${from}&to=${to}`,
+    );
 
     if (!response.ok) {
-      throw new Error('Failed to compare tiers');
+      throw new Error("Failed to compare tiers");
     }
 
     return response.json();
@@ -104,7 +109,7 @@ class PricingService {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get current tier');
+      throw new Error("Failed to get current tier");
     }
 
     return response.json();
@@ -123,37 +128,43 @@ class PricingService {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to check feature access');
+      throw new Error("Failed to check feature access");
     }
 
     return response.json();
   }
 
-  async getUpgradeTriggers(): Promise<{ success: boolean; data: UpgradeTrigger[] }> {
+  async getUpgradeTriggers(): Promise<{
+    success: boolean;
+    data: UpgradeTrigger[];
+  }> {
     const response = await fetch(`${API_BASE}/pricing/upgrade-triggers`, {
       headers: this.getAuthHeaders(),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get upgrade triggers');
+      throw new Error("Failed to get upgrade triggers");
     }
 
     return response.json();
   }
 
-  async upgradeTier(tier: string, subscriptionId?: string): Promise<{
+  async upgradeTier(
+    tier: string,
+    subscriptionId?: string,
+  ): Promise<{
     success: boolean;
     data: { upgraded: boolean; newTier: string };
   }> {
     const response = await fetch(`${API_BASE}/pricing/upgrade`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getAuthHeaders(),
       body: JSON.stringify({ tier, subscriptionId }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to upgrade tier');
+      throw new Error(error.error || "Failed to upgrade tier");
     }
 
     return response.json();
@@ -164,14 +175,14 @@ class PricingService {
     data: { downgraded: boolean; newTier: string; effectiveDate: string };
   }> {
     const response = await fetch(`${API_BASE}/pricing/downgrade`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getAuthHeaders(),
       body: JSON.stringify({ tier }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to downgrade tier');
+      throw new Error(error.error || "Failed to downgrade tier");
     }
 
     return response.json();
@@ -179,20 +190,20 @@ class PricingService {
 
   async trackUsage(featureName: string): Promise<void> {
     const response = await fetch(`${API_BASE}/pricing/track-usage`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getAuthHeaders(),
       body: JSON.stringify({ featureName }),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to track usage');
+      throw new Error("Failed to track usage");
     }
   }
 
   formatPrice(price: number): string {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
@@ -203,9 +214,14 @@ class PricingService {
     return yearlyFromMonthly - annualPrice;
   }
 
-  calculateSavingsPercentage(monthlyPrice: number, annualPrice: number): number {
+  calculateSavingsPercentage(
+    monthlyPrice: number,
+    annualPrice: number,
+  ): number {
     const yearlyFromMonthly = monthlyPrice * 12;
-    return Math.round(((yearlyFromMonthly - annualPrice) / yearlyFromMonthly) * 100);
+    return Math.round(
+      ((yearlyFromMonthly - annualPrice) / yearlyFromMonthly) * 100,
+    );
   }
 }
 

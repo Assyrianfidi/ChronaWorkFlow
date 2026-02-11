@@ -7,17 +7,20 @@ type ElementType = keyof JSX.IntrinsicElements | ComponentType<any>;
 /**
  * Adds a role and optional className to a component
  */
-export const withRole = (role: string, className: string = '') => ({
+export const withRole = (role: string, className: string = "") => ({
   role,
-  className: `role-${role} ${className}`.trim()
+  className: `role-${role} ${className}`.trim(),
 });
 
 /**
  * Adds an aria-label to a component
  */
-export const withAriaLabel = (label: string, props: Record<string, any> = {}) => ({
+export const withAriaLabel = (
+  label: string,
+  props: Record<string, any> = {},
+) => ({
   ...props,
-  'aria-label': label
+  "aria-label": label,
 });
 
 interface AccessibleContainerProps extends React.HTMLAttributes<HTMLElement> {
@@ -33,7 +36,10 @@ export const AccessibleContainer = React.forwardRef<
   HTMLElement,
   AccessibleContainerProps
 >(
-  ({ as: Component = 'div', role, className = '', children, ...props }, ref) => {
+  (
+    { as: Component = "div", role, className = "", children, ...props },
+    ref,
+  ) => {
     return React.createElement(
       Component as React.ElementType,
       {
@@ -44,12 +50,13 @@ export const AccessibleContainer = React.forwardRef<
       },
       children,
     );
-  }
+  },
 );
 
-AccessibleContainer.displayName = 'AccessibleContainer';
+AccessibleContainer.displayName = "AccessibleContainer";
 
-interface AccessibleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface AccessibleButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label?: string;
   children: ReactNode;
 }
@@ -60,26 +67,25 @@ interface AccessibleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEle
 export const AccessibleButton = React.forwardRef<
   HTMLButtonElement,
   AccessibleButtonProps
->(
-  ({ children, label, className = "", ...props }, ref) =>
-    React.createElement(
-      "button",
-      {
-        ...(props as Record<string, unknown>),
-        ref,
-        type: "button",
-        className: `accessible-button ${className}`.trim(),
-        "aria-label":
-          label || (typeof children === "string" ? children : undefined),
-      },
-      children,
-    ),
+>(({ children, label, className = "", ...props }, ref) =>
+  React.createElement(
+    "button",
+    {
+      ...(props as Record<string, unknown>),
+      ref,
+      type: "button",
+      className: `accessible-button ${className}`.trim(),
+      "aria-label":
+        label || (typeof children === "string" ? children : undefined),
+    },
+    children,
+  ),
 );
 
-AccessibleButton.displayName = 'AccessibleButton';
+AccessibleButton.displayName = "AccessibleButton";
 
 interface AccessibleIconProps extends React.HTMLAttributes<HTMLSpanElement> {
-  icon: ComponentType<{ 'aria-hidden'?: boolean }>;
+  icon: ComponentType<{ "aria-hidden"?: boolean }>;
   label: string;
 }
 
@@ -89,19 +95,18 @@ interface AccessibleIconProps extends React.HTMLAttributes<HTMLSpanElement> {
 export const AccessibleIcon = React.forwardRef<
   HTMLSpanElement,
   AccessibleIconProps
->(
-  ({ icon: Icon, label, className = "", ...props }, ref) =>
-    React.createElement(
-      "span",
-      {
-        ...(props as Record<string, unknown>),
-        ref,
-        role: "img",
-        "aria-label": label,
-        className: `inline-flex items-center justify-center ${className}`.trim(),
-      },
-      React.createElement(Icon, { "aria-hidden": true }),
-    ),
+>(({ icon: Icon, label, className = "", ...props }, ref) =>
+  React.createElement(
+    "span",
+    {
+      ...(props as Record<string, unknown>),
+      ref,
+      role: "img",
+      "aria-label": label,
+      className: `inline-flex items-center justify-center ${className}`.trim(),
+    },
+    React.createElement(Icon, { "aria-hidden": true }),
+  ),
 );
 
-AccessibleIcon.displayName = 'AccessibleIcon';
+AccessibleIcon.displayName = "AccessibleIcon";

@@ -1,12 +1,12 @@
-import React from 'react';
-import { Badge } from '@/components/ui/Badge';
-import { CheckCircle, AlertCircle, Info } from 'lucide-react';
+import React from "react";
+import { Badge } from "@/components/ui/Badge";
+import { CheckCircle, AlertCircle, Info } from "lucide-react";
 
 interface ConfidenceIndicatorProps {
   score: number;
   showLabel?: boolean;
   showExplanation?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
 }
 
@@ -14,11 +14,11 @@ export const ConfidenceIndicator: React.FC<ConfidenceIndicatorProps> = ({
   score,
   showLabel = true,
   showExplanation = false,
-  size = 'md',
-  className = '',
+  size = "md",
+  className = "",
 }) => {
   const getConfidenceConfig = (
-    score: number
+    score: number,
   ): {
     level: string;
     color: string;
@@ -28,30 +28,30 @@ export const ConfidenceIndicator: React.FC<ConfidenceIndicatorProps> = ({
   } => {
     if (score >= 80) {
       return {
-        level: 'High Confidence',
-        color: 'text-green-700',
-        bgColor: 'bg-green-50 border-green-300',
+        level: "High Confidence",
+        color: "text-green-700",
+        bgColor: "bg-green-50 border-green-300",
         icon: <CheckCircle className="w-4 h-4" aria-hidden="true" />,
         description:
-          'This forecast is highly reliable based on strong data quality and historical accuracy.',
+          "This forecast is highly reliable based on strong data quality and historical accuracy.",
       };
     } else if (score >= 60) {
       return {
-        level: 'Moderate Confidence',
-        color: 'text-yellow-700',
-        bgColor: 'bg-yellow-50 border-yellow-300',
+        level: "Moderate Confidence",
+        color: "text-yellow-700",
+        bgColor: "bg-yellow-50 border-yellow-300",
         icon: <AlertCircle className="w-4 h-4" aria-hidden="true" />,
         description:
-          'This forecast is reasonably reliable but may be affected by data limitations or assumptions.',
+          "This forecast is reasonably reliable but may be affected by data limitations or assumptions.",
       };
     } else {
       return {
-        level: 'Low Confidence',
-        color: 'text-red-700',
-        bgColor: 'bg-red-50 border-red-300',
+        level: "Low Confidence",
+        color: "text-red-700",
+        bgColor: "bg-red-50 border-red-300",
         icon: <Info className="w-4 h-4" aria-hidden="true" />,
         description:
-          'This forecast has limited reliability due to data quality issues or high uncertainty.',
+          "This forecast has limited reliability due to data quality issues or high uncertainty.",
       };
     }
   };
@@ -59,23 +59,29 @@ export const ConfidenceIndicator: React.FC<ConfidenceIndicatorProps> = ({
   const config = getConfidenceConfig(score);
 
   const sizeClasses = {
-    sm: 'text-xs',
-    md: 'text-sm',
-    lg: 'text-base',
+    sm: "text-xs",
+    md: "text-sm",
+    lg: "text-base",
   };
 
   const barHeight = {
-    sm: 'h-1',
-    md: 'h-2',
-    lg: 'h-3',
+    sm: "h-1",
+    md: "h-2",
+    lg: "h-3",
   };
 
   return (
-    <div className={className} role="status" aria-label={`Confidence score: ${score}%`}>
+    <div
+      className={className}
+      role="status"
+      aria-label={`Confidence score: ${score}%`}
+    >
       <div className="flex items-center gap-3">
         {/* Confidence Score */}
         <div className="flex items-center gap-2">
-          <span className={`${config.color} ${sizeClasses[size]} font-semibold`}>
+          <span
+            className={`${config.color} ${sizeClasses[size]} font-semibold`}
+          >
             {score}%
           </span>
           {showLabel && (
@@ -95,10 +101,10 @@ export const ConfidenceIndicator: React.FC<ConfidenceIndicatorProps> = ({
             <div
               className={`${barHeight[size]} rounded-full transition-all duration-500 ${
                 score >= 80
-                  ? 'bg-green-600'
+                  ? "bg-green-600"
                   : score >= 60
-                  ? 'bg-yellow-600'
-                  : 'bg-red-600'
+                    ? "bg-yellow-600"
+                    : "bg-red-600"
               }`}
               style={{ width: `${score}%` }}
               role="progressbar"

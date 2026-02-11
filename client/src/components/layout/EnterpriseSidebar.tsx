@@ -154,7 +154,9 @@ export const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     if (!isMobile || !isOpen) return;
     requestAnimationFrame(() => {
       sidebarRef.current
-        ?.querySelector<HTMLElement>("a,button,[href],[tabindex]:not([tabindex='-1'])")
+        ?.querySelector<HTMLElement>(
+          "a,button,[href],[tabindex]:not([tabindex='-1'])",
+        )
         ?.focus();
     });
   }, [isMobile, isOpen]);

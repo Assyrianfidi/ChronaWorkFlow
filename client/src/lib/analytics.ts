@@ -12,7 +12,7 @@ import type {
   TrustEvent,
   ErrorEvent,
   PerformanceEvent,
-} from '@/../../shared/analytics/types';
+} from "@/../../shared/analytics/types";
 
 class FrontendAnalytics {
   private sessionId: string;
@@ -25,8 +25,10 @@ class FrontendAnalytics {
 
   constructor() {
     this.sessionId = this.generateSessionId();
-    this.enabled = process.env.NODE_ENV === 'production' || process.env.VITE_ANALYTICS_ENABLED === 'true';
-    this.debug = process.env.NODE_ENV === 'development';
+    this.enabled =
+      process.env.NODE_ENV === "production" ||
+      process.env.VITE_ANALYTICS_ENABLED === "true";
+    this.debug = process.env.NODE_ENV === "development";
   }
 
   /**
@@ -44,9 +46,9 @@ class FrontendAnalytics {
     this.featureFlags = config.featureFlags || {};
 
     if (this.debug) {
-      console.log('[Analytics] Initialized', {
-        userId: this.userId ? '***' : null,
-        tenantId: this.tenantId ? '***' : null,
+      console.log("[Analytics] Initialized", {
+        userId: this.userId ? "***" : null,
+        tenantId: this.tenantId ? "***" : null,
         userRole: this.userRole,
       });
     }
@@ -56,11 +58,11 @@ class FrontendAnalytics {
    * Track authentication events
    */
   trackAuth(
-    action: AuthEvent['action'],
-    metadata?: AuthEvent['metadata']
+    action: AuthEvent["action"],
+    metadata?: AuthEvent["metadata"],
   ): void {
     this.track({
-      category: 'auth',
+      category: "auth",
       action,
       metadata,
     });
@@ -70,11 +72,11 @@ class FrontendAnalytics {
    * Track dashboard events
    */
   trackDashboard(
-    action: DashboardEvent['action'],
-    metadata?: DashboardEvent['metadata']
+    action: DashboardEvent["action"],
+    metadata?: DashboardEvent["metadata"],
   ): void {
     this.track({
-      category: 'dashboard',
+      category: "dashboard",
       action,
       metadata,
     });
@@ -84,11 +86,11 @@ class FrontendAnalytics {
    * Track scenario events
    */
   trackScenario(
-    action: ScenarioEvent['action'],
-    metadata?: ScenarioEvent['metadata']
+    action: ScenarioEvent["action"],
+    metadata?: ScenarioEvent["metadata"],
   ): void {
     this.track({
-      category: 'scenario',
+      category: "scenario",
       action,
       metadata,
     });
@@ -98,11 +100,11 @@ class FrontendAnalytics {
    * Track forecast events
    */
   trackForecast(
-    action: ForecastEvent['action'],
-    metadata?: ForecastEvent['metadata']
+    action: ForecastEvent["action"],
+    metadata?: ForecastEvent["metadata"],
   ): void {
     this.track({
-      category: 'forecast',
+      category: "forecast",
       action,
       metadata,
     });
@@ -112,11 +114,11 @@ class FrontendAnalytics {
    * Track trust layer events
    */
   trackTrust(
-    action: TrustEvent['action'],
-    metadata?: TrustEvent['metadata']
+    action: TrustEvent["action"],
+    metadata?: TrustEvent["metadata"],
   ): void {
     this.track({
-      category: 'trust',
+      category: "trust",
       action,
       metadata,
     });
@@ -126,18 +128,18 @@ class FrontendAnalytics {
    * Track error events
    */
   trackError(
-    action: ErrorEvent['action'],
-    metadata: ErrorEvent['metadata']
+    action: ErrorEvent["action"],
+    metadata: ErrorEvent["metadata"],
   ): void {
     this.track({
-      category: 'error',
+      category: "error",
       action,
       metadata,
     });
 
     // Also log to console in development
     if (this.debug) {
-      console.error('[Analytics Error]', { action, metadata });
+      console.error("[Analytics Error]", { action, metadata });
     }
   }
 
@@ -145,11 +147,11 @@ class FrontendAnalytics {
    * Track performance events
    */
   trackPerformance(
-    action: PerformanceEvent['action'],
-    metadata: PerformanceEvent['metadata']
+    action: PerformanceEvent["action"],
+    metadata: PerformanceEvent["metadata"],
   ): void {
     this.track({
-      category: 'performance',
+      category: "performance",
       action,
       metadata,
     });
@@ -162,8 +164,8 @@ class FrontendAnalytics {
     if (!this.enabled) return;
 
     const event = {
-      category: 'dashboard' as const,
-      action: 'viewed' as const,
+      category: "dashboard" as const,
+      action: "viewed" as const,
       metadata: {
         pageName,
         ...properties,
@@ -177,11 +179,19 @@ class FrontendAnalytics {
    * Core track method
    */
   private track(
-    event: Omit<AnalyticsEvent, 'timestamp' | 'sessionId' | 'tenantIdHash' | 'userId' | 'userRole' | 'featureFlags'>
+    event: Omit<
+      AnalyticsEvent,
+      | "timestamp"
+      | "sessionId"
+      | "tenantIdHash"
+      | "userId"
+      | "userRole"
+      | "featureFlags"
+    >,
   ): void {
     if (!this.enabled) {
       if (this.debug) {
-        console.log('[Analytics] (disabled)', event);
+        console.log("[Analytics] (disabled)", event);
       }
       return;
     }
@@ -200,7 +210,7 @@ class FrontendAnalytics {
     this.sendToBackend(enrichedEvent);
 
     if (this.debug) {
-      console.log('[Analytics]', enrichedEvent);
+      console.log("[Analytics]", enrichedEvent);
     }
   }
 
@@ -209,10 +219,10 @@ class FrontendAnalytics {
    */
   private async sendToBackend(event: any): Promise<void> {
     try {
-      await fetch('/api/analytics/track', {
-        method: 'POST',
+      await fetch("/api/analytics/track", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(event),
         keepalive: true, // Ensure events are sent even on page unload
@@ -220,7 +230,7 @@ class FrontendAnalytics {
     } catch (error) {
       // Silently fail - don't disrupt user experience
       if (this.debug) {
-        console.error('[Analytics] Failed to send event:', error);
+        console.error("[Analytics] Failed to send event:", error);
       }
     }
   }
@@ -237,7 +247,7 @@ class FrontendAnalytics {
    */
   measurePerformance<T>(
     name: string,
-    fn: () => T | Promise<T>
+    fn: () => T | Promise<T>,
   ): T | Promise<T> {
     const startTime = performance.now();
 
@@ -246,7 +256,7 @@ class FrontendAnalytics {
     if (result instanceof Promise) {
       return result.then((value) => {
         const duration = performance.now() - startTime;
-        this.trackPerformance('component_mount', {
+        this.trackPerformance("component_mount", {
           duration,
           componentName: name,
         });
@@ -254,7 +264,7 @@ class FrontendAnalytics {
       });
     } else {
       const duration = performance.now() - startTime;
-      this.trackPerformance('component_mount', {
+      this.trackPerformance("component_mount", {
         duration,
         componentName: name,
       });

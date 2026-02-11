@@ -3,7 +3,7 @@
  * Main marketing page with hero, features, testimonials, and CTAs
  */
 
-import React from 'react';
+import React from "react";
 import {
   Sparkles,
   TrendingUp,
@@ -21,62 +21,71 @@ import {
   AlertTriangle,
   MessageSquare,
   Building2,
-} from 'lucide-react';
+} from "lucide-react";
 
 const features = [
   {
     icon: <Brain className="w-6 h-6" />,
-    title: 'AI-Powered Categorization',
-    description: '95% accuracy on transaction categorization. Our ML model learns from your corrections and improves over time.',
-    color: 'purple',
+    title: "AI-Powered Categorization",
+    description:
+      "95% accuracy on transaction categorization. Our ML model learns from your corrections and improves over time.",
+    color: "purple",
   },
   {
     icon: <MessageSquare className="w-6 h-6" />,
-    title: 'AI CFO Copilot',
-    description: 'Ask questions like "Why did profit drop?" and get instant, data-driven answers from your financial data.',
-    color: 'blue',
+    title: "AI CFO Copilot",
+    description:
+      'Ask questions like "Why did profit drop?" and get instant, data-driven answers from your financial data.',
+    color: "blue",
   },
   {
     icon: <TrendingUp className="w-6 h-6" />,
-    title: '30-Day Cash Flow Forecast',
-    description: 'Predict your cash position with AI-powered forecasting. Know your runway and plan ahead.',
-    color: 'green',
+    title: "30-Day Cash Flow Forecast",
+    description:
+      "Predict your cash position with AI-powered forecasting. Know your runway and plan ahead.",
+    color: "green",
   },
   {
     icon: <AlertTriangle className="w-6 h-6" />,
-    title: 'Anomaly Detection',
-    description: 'Automatically detect duplicate payments, unusual transactions, and potential errors before they cost you.',
-    color: 'amber',
+    title: "Anomaly Detection",
+    description:
+      "Automatically detect duplicate payments, unusual transactions, and potential errors before they cost you.",
+    color: "amber",
   },
   {
     icon: <Zap className="w-6 h-6" />,
-    title: 'Smart Automation',
-    description: 'Create IF/THEN rules that automate repetitive tasks. Save 10+ hours per month on bookkeeping.',
-    color: 'pink',
+    title: "Smart Automation",
+    description:
+      "Create IF/THEN rules that automate repetitive tasks. Save 10+ hours per month on bookkeeping.",
+    color: "pink",
   },
   {
     icon: <Building2 className="w-6 h-6" />,
-    title: 'Multi-Entity Support',
-    description: 'Manage multiple businesses from one dashboard. Consolidated reporting and entity-specific insights.',
-    color: 'indigo',
+    title: "Multi-Entity Support",
+    description:
+      "Manage multiple businesses from one dashboard. Consolidated reporting and entity-specific insights.",
+    color: "indigo",
   },
 ];
 
 const testimonials = [
   {
-    quote: "AccuBooks saved me 15 hours a month on bookkeeping. The AI categorization is incredibly accurate.",
+    quote:
+      "AccuBooks saved me 15 hours a month on bookkeeping. The AI categorization is incredibly accurate.",
     author: "Sarah Chen",
     role: "Founder, TechStart Inc",
     avatar: "SC",
   },
   {
-    quote: "The AI CFO Copilot is like having a financial advisor on call 24/7. Game changer for decision making.",
+    quote:
+      "The AI CFO Copilot is like having a financial advisor on call 24/7. Game changer for decision making.",
     author: "Michael Rodriguez",
     role: "CEO, GrowthLabs",
     avatar: "MR",
   },
   {
-    quote: "Migrated from QuickBooks in 10 minutes. The AI mapped everything perfectly. Wish I'd switched sooner.",
+    quote:
+      "Migrated from QuickBooks in 10 minutes. The AI mapped everything perfectly. Wish I'd switched sooner.",
     author: "Emily Watson",
     role: "Owner, Watson Consulting",
     avatar: "EW",
@@ -84,20 +93,28 @@ const testimonials = [
 ];
 
 const stats = [
-  { value: '95%', label: 'AI Accuracy' },
-  { value: '10+', label: 'Hours Saved/Month' },
-  { value: '$5,000+', label: 'Avg. Deductions Found' },
-  { value: '15min', label: 'QuickBooks Migration' },
+  { value: "95%", label: "AI Accuracy" },
+  { value: "10+", label: "Hours Saved/Month" },
+  { value: "$5,000+", label: "Avg. Deductions Found" },
+  { value: "15min", label: "QuickBooks Migration" },
 ];
 
 const comparisonPoints = [
-  { feature: 'AI Transaction Categorization', accubooks: true, quickbooks: false },
-  { feature: 'Natural Language Queries', accubooks: true, quickbooks: false },
-  { feature: 'Cash Flow Forecasting', accubooks: true, quickbooks: 'Limited' },
-  { feature: 'Anomaly Detection', accubooks: true, quickbooks: false },
-  { feature: 'Multi-Entity Dashboard', accubooks: true, quickbooks: 'Extra Cost' },
-  { feature: 'Automation Workflows', accubooks: true, quickbooks: 'Limited' },
-  { feature: 'Starting Price', accubooks: '$29/mo', quickbooks: '$30/mo' },
+  {
+    feature: "AI Transaction Categorization",
+    accubooks: true,
+    quickbooks: false,
+  },
+  { feature: "Natural Language Queries", accubooks: true, quickbooks: false },
+  { feature: "Cash Flow Forecasting", accubooks: true, quickbooks: "Limited" },
+  { feature: "Anomaly Detection", accubooks: true, quickbooks: false },
+  {
+    feature: "Multi-Entity Dashboard",
+    accubooks: true,
+    quickbooks: "Extra Cost",
+  },
+  { feature: "Automation Workflows", accubooks: true, quickbooks: "Limited" },
+  { feature: "Starting Price", accubooks: "$29/mo", quickbooks: "$30/mo" },
 ];
 
 export const LandingPage: React.FC = () => {
@@ -111,14 +128,39 @@ export const LandingPage: React.FC = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">AccuBooks</span>
+              <span className="text-xl font-bold text-foreground">
+                AccuBooks
+              </span>
             </div>
             <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-muted-foreground hover:text-foreground">Features</a>
-              <a href="/pricing" className="text-muted-foreground hover:text-foreground">Pricing</a>
-              <a href="#comparison" className="text-muted-foreground hover:text-foreground">vs QuickBooks</a>
-              <a href="/login" className="text-muted-foreground hover:text-foreground">Sign In</a>
-              <a href="/signup" className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+              <a
+                href="#features"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Features
+              </a>
+              <a
+                href="/pricing"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Pricing
+              </a>
+              <a
+                href="#comparison"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                vs QuickBooks
+              </a>
+              <a
+                href="/login"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Sign In
+              </a>
+              <a
+                href="/signup"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
                 Start Free Trial
               </a>
             </div>
@@ -135,14 +177,15 @@ export const LandingPage: React.FC = () => {
               AI-Native Accounting Platform
             </div>
             <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-              Accounting That{' '}
+              Accounting That{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
                 Thinks For You
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              AccuBooks uses AI to categorize transactions, forecast cash flow, detect anomalies, 
-              and answer your financial questions—saving you 10+ hours every month.
+              AccuBooks uses AI to categorize transactions, forecast cash flow,
+              detect anomalies, and answer your financial questions—saving you
+              10+ hours every month.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
@@ -187,7 +230,8 @@ export const LandingPage: React.FC = () => {
               AI-Powered Features That Save You Time
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Every feature is designed to automate tedious tasks and give you insights that matter.
+              Every feature is designed to automate tedious tasks and give you
+              insights that matter.
             </p>
           </div>
 
@@ -197,15 +241,15 @@ export const LandingPage: React.FC = () => {
                 key={index}
                 className="bg-muted rounded-2xl p-6 hover:shadow-soft transition-shadow"
               >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-${feature.color}-100 dark:bg-${feature.color}-900/30 text-${feature.color}-600 dark:text-${feature.color}-400`}>
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 bg-${feature.color}-100 dark:bg-${feature.color}-900/30 text-${feature.color}-600 dark:text-${feature.color}-400`}
+                >
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground">
-                  {feature.description}
-                </p>
+                <p className="text-muted-foreground">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -227,8 +271,12 @@ export const LandingPage: React.FC = () => {
           <div className="bg-card rounded-2xl shadow-soft overflow-hidden">
             <div className="grid grid-cols-3 bg-muted p-4">
               <div className="font-semibold text-foreground">Feature</div>
-              <div className="text-center font-semibold text-primary">AccuBooks</div>
-              <div className="text-center font-semibold text-muted-foreground">QuickBooks</div>
+              <div className="text-center font-semibold text-primary">
+                AccuBooks
+              </div>
+              <div className="text-center font-semibold text-muted-foreground">
+                QuickBooks
+              </div>
             </div>
             {comparisonPoints.map((point, index) => (
               <div
@@ -240,7 +288,9 @@ export const LandingPage: React.FC = () => {
                   {point.accubooks === true ? (
                     <Check className="w-5 h-5 text-green-500 mx-auto" />
                   ) : (
-                    <span className="text-foreground font-medium">{point.accubooks}</span>
+                    <span className="text-foreground font-medium">
+                      {point.accubooks}
+                    </span>
                   )}
                 </div>
                 <div className="text-center">
@@ -249,7 +299,9 @@ export const LandingPage: React.FC = () => {
                   ) : point.quickbooks === false ? (
                     <span className="text-muted-foreground">—</span>
                   ) : (
-                    <span className="text-muted-foreground text-sm">{point.quickbooks}</span>
+                    <span className="text-muted-foreground text-sm">
+                      {point.quickbooks}
+                    </span>
                   )}
                 </div>
               </div>
@@ -277,21 +329,26 @@ export const LandingPage: React.FC = () => {
             </h2>
             <div className="flex items-center justify-center gap-1 mb-4">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+                <Star
+                  key={i}
+                  className="w-6 h-6 text-yellow-400 fill-yellow-400"
+                />
               ))}
             </div>
-            <p className="text-muted-foreground">4.9/5 average rating from 500+ reviews</p>
+            <p className="text-muted-foreground">
+              4.9/5 average rating from 500+ reviews
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <div
-                key={index}
-                className="bg-muted rounded-2xl p-6"
-              >
+              <div key={index} className="bg-muted rounded-2xl p-6">
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                    <Star
+                      key={i}
+                      className="w-4 h-4 text-yellow-400 fill-yellow-400"
+                    />
                   ))}
                 </div>
                 <p className="text-muted-foreground mb-6">
@@ -323,7 +380,8 @@ export const LandingPage: React.FC = () => {
             Ready to Transform Your Accounting?
           </h2>
           <p className="text-xl text-primary-foreground/80 mb-8">
-            Join thousands of businesses saving 10+ hours per month with AI-powered accounting.
+            Join thousands of businesses saving 10+ hours per month with
+            AI-powered accounting.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
@@ -353,37 +411,101 @@ export const LandingPage: React.FC = () => {
             <div>
               <h4 className="text-foreground font-semibold mb-4">Product</h4>
               <ul className="space-y-2">
-                <li><a href="#features" className="hover:text-foreground">Features</a></li>
-                <li><a href="/pricing" className="hover:text-foreground">Pricing</a></li>
-                <li><a href="/migration" className="hover:text-foreground">Migration</a></li>
-                <li><a href="/integrations" className="hover:text-foreground">Integrations</a></li>
+                <li>
+                  <a href="#features" className="hover:text-foreground">
+                    Features
+                  </a>
+                </li>
+                <li>
+                  <a href="/pricing" className="hover:text-foreground">
+                    Pricing
+                  </a>
+                </li>
+                <li>
+                  <a href="/migration" className="hover:text-foreground">
+                    Migration
+                  </a>
+                </li>
+                <li>
+                  <a href="/integrations" className="hover:text-foreground">
+                    Integrations
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="text-foreground font-semibold mb-4">Company</h4>
               <ul className="space-y-2">
-                <li><a href="/about" className="hover:text-foreground">About</a></li>
-                <li><a href="/blog" className="hover:text-foreground">Blog</a></li>
-                <li><a href="/careers" className="hover:text-foreground">Careers</a></li>
-                <li><a href="/contact" className="hover:text-foreground">Contact</a></li>
+                <li>
+                  <a href="/about" className="hover:text-foreground">
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a href="/blog" className="hover:text-foreground">
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a href="/careers" className="hover:text-foreground">
+                    Careers
+                  </a>
+                </li>
+                <li>
+                  <a href="/contact" className="hover:text-foreground">
+                    Contact
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="text-foreground font-semibold mb-4">Resources</h4>
               <ul className="space-y-2">
-                <li><a href="/docs" className="hover:text-foreground">Documentation</a></li>
-                <li><a href="/api" className="hover:text-foreground">API</a></li>
-                <li><a href="/help" className="hover:text-foreground">Help Center</a></li>
-                <li><a href="/status" className="hover:text-foreground">Status</a></li>
+                <li>
+                  <a href="/docs" className="hover:text-foreground">
+                    Documentation
+                  </a>
+                </li>
+                <li>
+                  <a href="/api" className="hover:text-foreground">
+                    API
+                  </a>
+                </li>
+                <li>
+                  <a href="/help" className="hover:text-foreground">
+                    Help Center
+                  </a>
+                </li>
+                <li>
+                  <a href="/status" className="hover:text-foreground">
+                    Status
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="text-foreground font-semibold mb-4">Legal</h4>
               <ul className="space-y-2">
-                <li><a href="/privacy" className="hover:text-foreground">Privacy</a></li>
-                <li><a href="/terms" className="hover:text-foreground">Terms</a></li>
-                <li><a href="/security" className="hover:text-foreground">Security</a></li>
-                <li><a href="/compliance" className="hover:text-foreground">Compliance</a></li>
+                <li>
+                  <a href="/privacy" className="hover:text-foreground">
+                    Privacy
+                  </a>
+                </li>
+                <li>
+                  <a href="/terms" className="hover:text-foreground">
+                    Terms
+                  </a>
+                </li>
+                <li>
+                  <a href="/security" className="hover:text-foreground">
+                    Security
+                  </a>
+                </li>
+                <li>
+                  <a href="/compliance" className="hover:text-foreground">
+                    Compliance
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
@@ -394,9 +516,7 @@ export const LandingPage: React.FC = () => {
               </div>
               <span className="text-foreground font-bold">AccuBooks</span>
             </div>
-            <p className="text-sm">
-              2024 AccuBooks. All rights reserved.
-            </p>
+            <p className="text-sm">2024 AccuBooks. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -10,7 +10,8 @@ const CashFlowForecastPage: React.FC = () => {
           Cash Flow Forecast
         </h1>
         <p className="text-sm text-muted-foreground">
-          30-day projections with risk assessment and actionable recommendations.
+          30-day projections with risk assessment and actionable
+          recommendations.
         </p>
       </div>
       <div className="rounded-xl border border-border bg-card shadow-soft">

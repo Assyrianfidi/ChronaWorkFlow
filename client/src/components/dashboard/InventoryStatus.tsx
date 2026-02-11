@@ -1,5 +1,5 @@
 import React from "react";
-import { EmptyState } from '@/components/ui/EmptyState';
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Package, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 
 interface InventoryItem {
@@ -78,9 +78,7 @@ const InventoryStatus: React.FC<InventoryStatusProps> = ({
   }
 
   if (items.length === 0) {
-    return (
-      <EmptyState size="sm" title="No inventory items to display" />
-    );
+    return <EmptyState size="sm" title="No inventory items to display" />;
   }
 
   return (
@@ -98,7 +96,9 @@ const InventoryStatus: React.FC<InventoryStatusProps> = ({
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
                   <h3 className="font-medium text-foreground">{item.name}</h3>
-                  <span className="text-sm text-muted-foreground">SKU: {item.sku}</span>
+                  <span className="text-sm text-muted-foreground">
+                    SKU: {item.sku}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                   <span>Quantity: {item.quantity}</span>

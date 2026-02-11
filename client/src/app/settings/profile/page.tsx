@@ -16,16 +16,15 @@ const ProfilePage = () => {
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-gray-500">Full name</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                
-        <label htmlFor="input-ai2llnmno" className="sr-only">
-          Text
-        </label>
-        <input id="input-ai2llnmno"
+                <label htmlFor="input-ai2llnmno" className="sr-only">
+                  Text
+                </label>
+                <input
+                  id="input-ai2llnmno"
                   type="text"
                   defaultValue="John Doe"
                   className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 />
-      
               </dd>
             </div>
 
@@ -34,32 +33,30 @@ const ProfilePage = () => {
                 Email address
               </dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                
-        <label htmlFor="input-lorpaq1gh" className="sr-only">
-          Email
-        </label>
-        <input id="input-lorpaq1gh"
+                <label htmlFor="input-lorpaq1gh" className="sr-only">
+                  Email
+                </label>
+                <input
+                  id="input-lorpaq1gh"
                   type="email"
                   defaultValue="john@example.com"
                   className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 />
-      
               </dd>
             </div>
 
             <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
               <dt className="text-sm font-medium text-gray-500">Phone</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                
-        <label htmlFor="input-utvkjpxwr" className="sr-only">
-          Tel
-        </label>
-        <input id="input-utvkjpxwr"
+                <label htmlFor="input-utvkjpxwr" className="sr-only">
+                  Tel
+                </label>
+                <input
+                  id="input-utvkjpxwr"
                   type="tel"
                   defaultValue="+1 (555) 123-4567"
                   className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 />
-      
               </dd>
             </div>
 

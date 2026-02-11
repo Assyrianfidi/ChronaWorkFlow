@@ -3,13 +3,11 @@
 import React from "react";
 
 import { MainLayout } from "@/components/layout/MainLayout";
-import EnterpriseDataTable, { type Column } from "@/components/ui/EnterpriseDataTable";
+import EnterpriseDataTable, {
+  type Column,
+} from "@/components/ui/EnterpriseDataTable";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
-import Card, {
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   FileText,
   Plus,
@@ -477,16 +475,16 @@ export default function InvoicesPage() {
                         Invoice Number
                       </label>
 
-        <label htmlFor="input-l2ulzdwgx" className="sr-only">
-          Text
-        </label>
-        <input id="input-l2ulzdwgx"
+                      <label htmlFor="input-l2ulzdwgx" className="sr-only">
+                        Text
+                      </label>
+                      <input
+                        id="input-l2ulzdwgx"
                         type="text"
                         placeholder="INV-XXX"
                         defaultValue={selectedInvoice?.id || ""}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                       />
-      
                     </div>
                   </div>
 
@@ -497,30 +495,30 @@ export default function InvoicesPage() {
                         Issue Date
                       </label>
 
-        <label htmlFor="input-jbpweclu2" className="sr-only">
-          Date
-        </label>
-        <input id="input-jbpweclu2"
+                      <label htmlFor="input-jbpweclu2" className="sr-only">
+                        Date
+                      </label>
+                      <input
+                        id="input-jbpweclu2"
                         type="date"
                         defaultValue={selectedInvoice?.issueDate || ""}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                       />
-      
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Due Date
                       </label>
 
-        <label htmlFor="input-turo6d0mm" className="sr-only">
-          Date
-        </label>
-        <input id="input-turo6d0mm"
+                      <label htmlFor="input-turo6d0mm" className="sr-only">
+                        Date
+                      </label>
+                      <input
+                        id="input-turo6d0mm"
                         type="date"
                         defaultValue={selectedInvoice?.dueDate || ""}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                       />
-      
                     </div>
                   </div>
 
@@ -544,51 +542,50 @@ export default function InvoicesPage() {
                         ]
                       ).map((item: any, index: number) => (
                         <div key={index} className="grid grid-cols-4 gap-2">
-                          
-        <label htmlFor="input-akdo88zpo" className="sr-only">
-          Text
-        </label>
-        <input id="input-akdo88zpo"
+                          <label htmlFor="input-akdo88zpo" className="sr-only">
+                            Text
+                          </label>
+                          <input
+                            id="input-akdo88zpo"
                             type="text"
                             placeholder="Description"
                             defaultValue={item.description}
                             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                           />
-      
-                          
-        <label htmlFor="input-esbgaotz3" className="sr-only">
-          Number
-        </label>
-        <input id="input-esbgaotz3"
+
+                          <label htmlFor="input-esbgaotz3" className="sr-only">
+                            Number
+                          </label>
+                          <input
+                            id="input-esbgaotz3"
                             type="number"
                             placeholder="Qty"
                             defaultValue={item.quantity}
                             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                           />
-      
-                          
-        <label htmlFor="input-c2fdiaeqa" className="sr-only">
-          Number
-        </label>
-        <input id="input-c2fdiaeqa"
+
+                          <label htmlFor="input-c2fdiaeqa" className="sr-only">
+                            Number
+                          </label>
+                          <input
+                            id="input-c2fdiaeqa"
                             type="number"
                             placeholder="Rate"
                             defaultValue={item.rate}
                             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                           />
-      
-                          
-        <label htmlFor="input-t5f2r7cg7" className="sr-only">
-          Number
-        </label>
-        <input id="input-t5f2r7cg7"
+
+                          <label htmlFor="input-t5f2r7cg7" className="sr-only">
+                            Number
+                          </label>
+                          <input
+                            id="input-t5f2r7cg7"
                             type="number"
                             placeholder="Total"
                             defaultValue={item.total}
                             readOnly
                             className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50"
                           />
-      
                         </div>
                       ))}
                     </div>

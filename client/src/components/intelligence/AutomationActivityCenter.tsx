@@ -1,14 +1,31 @@
 /**
  * Automation Activity Center
- * 
+ *
  * Displays automation execution history, success/failure status,
  * business impact, and manual override controls
  */
 
-import React, { useState } from 'react';
-import { AutomationRule, AutomationExecution, AutomationStats, AutomationExecutionStatus } from '../../types/intelligence';
-import { CheckCircle, XCircle, Clock, Play, Pause, Eye, Filter, ChevronDown } from 'lucide-react';
-import { useExecuteAutomation, usePreviewAutomation } from '../../hooks/useIntelligence';
+import React, { useState } from "react";
+import {
+  AutomationRule,
+  AutomationExecution,
+  AutomationStats,
+  AutomationExecutionStatus,
+} from "../../types/intelligence";
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  Play,
+  Pause,
+  Eye,
+  Filter,
+  ChevronDown,
+} from "lucide-react";
+import {
+  useExecuteAutomation,
+  usePreviewAutomation,
+} from "../../hooks/useIntelligence";
 
 interface AutomationActivityCenterProps {
   automations: AutomationRule[];
@@ -16,63 +33,66 @@ interface AutomationActivityCenterProps {
   stats: AutomationStats;
 }
 
-export const AutomationActivityCenter: React.FC<AutomationActivityCenterProps> = ({
-  automations,
-  executions,
-  stats,
-}) => {
-  const [selectedAutomation, setSelectedAutomation] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<AutomationExecutionStatus | 'ALL'>('ALL');
+export const AutomationActivityCenter: React.FC<
+  AutomationActivityCenterProps
+> = ({ automations, executions, stats }) => {
+  const [selectedAutomation, setSelectedAutomation] = useState<string | null>(
+    null,
+  );
+  const [filterStatus, setFilterStatus] = useState<
+    AutomationExecutionStatus | "ALL"
+  >("ALL");
   const executeAutomation = useExecuteAutomation();
   const previewAutomation = usePreviewAutomation();
 
-  const filteredExecutions = filterStatus === 'ALL'
-    ? executions
-    : executions.filter(e => e.status === filterStatus);
+  const filteredExecutions =
+    filterStatus === "ALL"
+      ? executions
+      : executions.filter((e) => e.status === filterStatus);
 
   const getStatusConfig = (status: AutomationExecutionStatus) => {
     switch (status) {
-      case 'SUCCESS':
+      case "SUCCESS":
         return {
           icon: CheckCircle,
-          color: 'text-green-600',
-          bg: 'bg-green-50',
-          label: 'Success',
+          color: "text-green-600",
+          bg: "bg-green-50",
+          label: "Success",
         };
-      case 'FAILED':
+      case "FAILED":
         return {
           icon: XCircle,
-          color: 'text-red-600',
-          bg: 'bg-red-50',
-          label: 'Failed',
+          color: "text-red-600",
+          bg: "bg-red-50",
+          label: "Failed",
         };
-      case 'RUNNING':
+      case "RUNNING":
         return {
           icon: Clock,
-          color: 'text-blue-600',
-          bg: 'bg-blue-50',
-          label: 'Running',
+          color: "text-blue-600",
+          bg: "bg-blue-50",
+          label: "Running",
         };
-      case 'PENDING':
+      case "PENDING":
         return {
           icon: Clock,
-          color: 'text-yellow-600',
-          bg: 'bg-yellow-50',
-          label: 'Pending',
+          color: "text-yellow-600",
+          bg: "bg-yellow-50",
+          label: "Pending",
         };
-      case 'SKIPPED':
+      case "SKIPPED":
         return {
           icon: ChevronDown,
-          color: 'text-gray-600',
-          bg: 'bg-gray-50',
-          label: 'Skipped',
+          color: "text-gray-600",
+          bg: "bg-gray-50",
+          label: "Skipped",
         };
-      case 'CANCELLED':
+      case "CANCELLED":
         return {
           icon: XCircle,
-          color: 'text-orange-600',
-          bg: 'bg-orange-50',
-          label: 'Cancelled',
+          color: "text-orange-600",
+          bg: "bg-orange-50",
+          label: "Cancelled",
         };
     }
   };
@@ -84,7 +104,7 @@ export const AutomationActivityCenter: React.FC<AutomationActivityCenterProps> =
         triggerData: {},
       });
     } catch (error) {
-      console.error('Failed to execute automation:', error);
+      console.error("Failed to execute automation:", error);
     }
   };
 
@@ -94,10 +114,10 @@ export const AutomationActivityCenter: React.FC<AutomationActivityCenterProps> =
         ruleId,
         sampleData: {},
       });
-      console.log('Preview result:', result);
+      console.log("Preview result:", result);
       // TODO: Show preview modal
     } catch (error) {
-      console.error('Failed to preview automation:', error);
+      console.error("Failed to preview automation:", error);
     }
   };
 
@@ -105,19 +125,27 @@ export const AutomationActivityCenter: React.FC<AutomationActivityCenterProps> =
     <div className="space-y-6">
       {/* Active Automations */}
       <section>
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Active Automations</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          Active Automations
+        </h2>
         <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200">
           {automations.length === 0 ? (
             <div className="p-8 text-center">
               <Play className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Automations</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No Active Automations
+              </h3>
               <p className="text-gray-600">
-                Create your first automation to start saving time and preventing risks.
+                Create your first automation to start saving time and preventing
+                risks.
               </p>
             </div>
           ) : (
             automations.map((automation) => (
-              <div key={automation.id} className="p-4 hover:bg-gray-50 transition-colors">
+              <div
+                key={automation.id}
+                className="p-4 hover:bg-gray-50 transition-colors"
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-3 mb-2">
@@ -129,7 +157,9 @@ export const AutomationActivityCenter: React.FC<AutomationActivityCenterProps> =
                       </span>
                     </div>
                     {automation.description && (
-                      <p className="text-sm text-gray-600 mb-3">{automation.description}</p>
+                      <p className="text-sm text-gray-600 mb-3">
+                        {automation.description}
+                      </p>
                     )}
                     <div className="flex items-center space-x-6 text-sm text-gray-600">
                       <div className="flex items-center space-x-1">
@@ -143,9 +173,12 @@ export const AutomationActivityCenter: React.FC<AutomationActivityCenterProps> =
                       <div className="flex items-center space-x-1">
                         <Clock className="w-4 h-4 text-blue-600" />
                         <span>
-                          Last: {automation.lastTriggered
-                            ? new Date(automation.lastTriggered).toLocaleString()
-                            : 'Never'}
+                          Last:{" "}
+                          {automation.lastTriggered
+                            ? new Date(
+                                automation.lastTriggered,
+                              ).toLocaleString()
+                            : "Never"}
                         </span>
                       </div>
                     </div>
@@ -178,12 +211,18 @@ export const AutomationActivityCenter: React.FC<AutomationActivityCenterProps> =
       {/* Recent Executions */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Recent Executions</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Recent Executions
+          </h2>
           <div className="flex items-center space-x-2">
             <Filter className="w-4 h-4 text-gray-500" />
             <select
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as AutomationExecutionStatus | 'ALL')}
+              onChange={(e) =>
+                setFilterStatus(
+                  e.target.value as AutomationExecutionStatus | "ALL",
+                )
+              }
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="ALL">All Status</option>
@@ -227,7 +266,10 @@ export const AutomationActivityCenter: React.FC<AutomationActivityCenterProps> =
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredExecutions.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                    <td
+                      colSpan={7}
+                      className="px-6 py-8 text-center text-gray-500"
+                    >
                       No executions found
                     </td>
                   </tr>
@@ -239,30 +281,34 @@ export const AutomationActivityCenter: React.FC<AutomationActivityCenterProps> =
                     return (
                       <tr key={execution.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className={`flex items-center space-x-2 ${statusConfig.color}`}>
+                          <div
+                            className={`flex items-center space-x-2 ${statusConfig.color}`}
+                          >
                             <StatusIcon className="w-5 h-5" />
-                            <span className="text-sm font-medium">{statusConfig.label}</span>
+                            <span className="text-sm font-medium">
+                              {statusConfig.label}
+                            </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
-                            {execution.rule?.name || 'Unknown'}
+                            {execution.rule?.name || "Unknown"}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-600">
-                            {execution.rule?.triggerType || 'N/A'}
+                            {execution.rule?.triggerType || "N/A"}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`px-2 py-1 text-xs font-semibold rounded ${
                               execution.conditionsMet
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
+                                ? "bg-green-100 text-green-800"
+                                : "bg-gray-100 text-gray-800"
                             }`}
                           >
-                            {execution.conditionsMet ? 'Met' : 'Not Met'}
+                            {execution.conditionsMet ? "Met" : "Not Met"}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -277,7 +323,9 @@ export const AutomationActivityCenter: React.FC<AutomationActivityCenterProps> =
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-600">
-                            {execution.executionTime ? `${execution.executionTime}ms` : 'N/A'}
+                            {execution.executionTime
+                              ? `${execution.executionTime}ms`
+                              : "N/A"}
                           </div>
                         </td>
                       </tr>

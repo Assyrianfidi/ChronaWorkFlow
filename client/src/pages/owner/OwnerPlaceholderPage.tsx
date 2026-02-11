@@ -68,8 +68,8 @@ export default function OwnerPlaceholderPage() {
         </CardHeader>
         <CardContent>
           <div className="text-sm text-muted-foreground">
-            This section is scaffolded. Next we’ll wire the backend models, add server-side
-            enforcement, and build the full enterprise UI.
+            This section is scaffolded. Next we’ll wire the backend models, add
+            server-side enforcement, and build the full enterprise UI.
           </div>
         </CardContent>
       </Card>

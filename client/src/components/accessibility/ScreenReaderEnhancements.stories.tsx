@@ -5,7 +5,7 @@ declare global {
 }
 
 import type { Meta, StoryObj } from "@storybook/react";
-import { ScreenReaderEnhancements } from './ScreenReaderEnhancements';
+import { ScreenReaderEnhancements } from "./ScreenReaderEnhancements";
 
 const meta: Meta<typeof ScreenReaderEnhancements> = {
   title: "Accessibility/ScreenReaderEnhancements",

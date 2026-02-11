@@ -26,7 +26,11 @@ type OwnerNavItem = {
 const OWNER_NAV: OwnerNavItem[] = [
   { to: "/owner", label: "Overview", icon: LayoutDashboard },
   { to: "/owner/analytics", label: "Platform Analytics", icon: Activity },
-  { to: "/owner/subscriptions", label: "Revenue & Subscriptions", icon: Banknote },
+  {
+    to: "/owner/subscriptions",
+    label: "Revenue & Subscriptions",
+    icon: Banknote,
+  },
   { to: "/owner/plans", label: "Plans & Pricing", icon: Banknote },
   { to: "/owner/tenants", label: "User & Company Management", icon: Users },
   { to: "/owner/features", label: "Feature Controls", icon: Flag },
@@ -35,7 +39,11 @@ const OWNER_NAV: OwnerNavItem[] = [
   { to: "/owner/audit", label: "Audit Logs", icon: Eye },
   { to: "/owner/branding", label: "Branding & Theme Control", icon: Brush },
   { to: "/owner/automation", label: "AI & Automation Controls", icon: Zap },
-  { to: "/owner/integrations", label: "Developer / Integrations", icon: Braces },
+  {
+    to: "/owner/integrations",
+    label: "Developer / Integrations",
+    icon: Braces,
+  },
   { to: "/owner/emergency", label: "Emergency Controls", icon: BadgeCheck },
 ];
 

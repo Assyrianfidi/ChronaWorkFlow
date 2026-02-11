@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +12,8 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from '@/components/ui/DropdownMenu';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/DropdownMenu";
+import { Badge } from "@/components/ui/badge";
 import {
   Building2,
   Users,
@@ -25,16 +25,16 @@ import {
   Monitor,
   LayoutTemplate,
   Sparkles,
-} from 'lucide-react';
-import { GlobalSearch } from './GlobalSearch';
-import { QuickCreateMenu } from './QuickCreateMenu';
+} from "lucide-react";
+import { GlobalSearch } from "./GlobalSearch";
+import { QuickCreateMenu } from "./QuickCreateMenu";
 import {
   UserRole,
   SubscriptionTier,
   FeatureFlag,
   DESKTOP_MODE_NAV,
   filterNavigation,
-} from '@/config/navigation.config';
+} from "@/config/navigation.config";
 
 // ============================================================================
 // DESKTOP MODE NAVIGATION (Classic QuickBooks Desktop Style)
@@ -48,16 +48,21 @@ interface DesktopModeNavProps {
 }
 
 export const DesktopModeNav: React.FC<DesktopModeNavProps> = ({
-  userRole = 'OWNER',
-  subscription = 'ENTERPRISE',
-  features = ['PAYROLL', 'TIME_TRACKING', 'PROJECTS', 'INVENTORY'],
+  userRole = "OWNER",
+  subscription = "ENTERPRISE",
+  features = ["PAYROLL", "TIME_TRACKING", "PROJECTS", "INVENTORY"],
   onSwitchToOnline,
 }) => {
   const location = useLocation();
   const [helpOpen, setHelpOpen] = useState(false);
 
   // Filter navigation based on permissions
-  const filteredNav = filterNavigation(DESKTOP_MODE_NAV, userRole, subscription, features);
+  const filteredNav = filterNavigation(
+    DESKTOP_MODE_NAV,
+    userRole,
+    subscription,
+    features,
+  );
 
   return (
     <div className="flex items-center h-14 px-4 border-b bg-background">
@@ -82,7 +87,8 @@ export const DesktopModeNav: React.FC<DesktopModeNavProps> = ({
                 size="sm"
                 className={cn(
                   "h-8 px-3 font-medium",
-                  location.pathname.startsWith(menu.path) && "bg-accent text-accent-foreground"
+                  location.pathname.startsWith(menu.path) &&
+                    "bg-accent text-accent-foreground",
                 )}
               >
                 {menu.label}
@@ -100,7 +106,10 @@ export const DesktopModeNav: React.FC<DesktopModeNavProps> = ({
                     <DropdownMenuSeparator />
                   ) : (
                     <DropdownMenuItem asChild>
-                      <Link to={item.path} className="flex items-center gap-2 cursor-pointer">
+                      <Link
+                        to={item.path}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
                         {item.icon && <item.icon className="h-4 w-4" />}
                         <span>{item.label}</span>
                       </Link>
@@ -115,11 +124,7 @@ export const DesktopModeNav: React.FC<DesktopModeNavProps> = ({
         {/* Help Menu */}
         <DropdownMenu open={helpOpen} onOpenChange={setHelpOpen}>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-3 font-medium"
-            >
+            <Button variant="ghost" size="sm" className="h-8 px-3 font-medium">
               Help
             </Button>
           </DropdownMenuTrigger>
@@ -132,7 +137,9 @@ export const DesktopModeNav: React.FC<DesktopModeNavProps> = ({
             <DropdownMenuItem className="gap-2">
               <Sparkles className="h-4 w-4 text-amber-500" />
               AI Assistant
-              <Badge variant="secondary" className="ml-auto text-[10px]">New</Badge>
+              <Badge variant="secondary" className="ml-auto text-[10px]">
+                New
+              </Badge>
             </DropdownMenuItem>
             <DropdownMenuItem>Help Articles</DropdownMenuItem>
             <DropdownMenuItem>Contact Support</DropdownMenuItem>
@@ -184,7 +191,10 @@ export const DesktopModeNav: React.FC<DesktopModeNavProps> = ({
                   <DropdownMenuSubContent className="w-48">
                     {menu.children?.map((item) => (
                       <DropdownMenuItem key={item.id} asChild>
-                        <Link to={item.path} className="flex items-center gap-2">
+                        <Link
+                          to={item.path}
+                          className="flex items-center gap-2"
+                        >
                           {item.icon && <item.icon className="h-4 w-4" />}
                           <span>{item.label}</span>
                         </Link>

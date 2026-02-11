@@ -20,7 +20,9 @@ export function useAccountingPeriods(companyId: string) {
   } = useQuery<AccountingPeriod[]>({
     queryKey: ["accounting-periods", companyId],
     queryFn: async () => {
-      const response = await api.get<{ periods: AccountingPeriod[] }>(`/owner/accounting-periods?companyId=${companyId}`);
+      const response = await api.get<{ periods: AccountingPeriod[] }>(
+        `/owner/accounting-periods?companyId=${companyId}`,
+      );
       return response.data.periods;
     },
     enabled: !!companyId,
@@ -28,12 +30,23 @@ export function useAccountingPeriods(companyId: string) {
   });
 
   const lockPeriod = useMutation({
-    mutationFn: async ({ periodId, reason }: { periodId: string; reason: string }) => {
-      await api.post(`/owner/accounting-periods/${periodId}/lock`, { companyId, reason });
+    mutationFn: async ({
+      periodId,
+      reason,
+    }: {
+      periodId: string;
+      reason: string;
+    }) => {
+      await api.post(`/owner/accounting-periods/${periodId}/lock`, {
+        companyId,
+        reason,
+      });
     },
     onSuccess: () => {
       toast.success("Accounting period locked.");
-      queryClient.invalidateQueries({ queryKey: ["accounting-periods", companyId] });
+      queryClient.invalidateQueries({
+        queryKey: ["accounting-periods", companyId],
+      });
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.error || "Failed to lock period.");
@@ -41,12 +54,23 @@ export function useAccountingPeriods(companyId: string) {
   });
 
   const unlockPeriod = useMutation({
-    mutationFn: async ({ periodId, reason }: { periodId: string; reason: string }) => {
-      await api.post(`/owner/accounting-periods/${periodId}/unlock`, { companyId, reason });
+    mutationFn: async ({
+      periodId,
+      reason,
+    }: {
+      periodId: string;
+      reason: string;
+    }) => {
+      await api.post(`/owner/accounting-periods/${periodId}/unlock`, {
+        companyId,
+        reason,
+      });
     },
     onSuccess: () => {
       toast.success("Accounting period unlocked.");
-      queryClient.invalidateQueries({ queryKey: ["accounting-periods", companyId] });
+      queryClient.invalidateQueries({
+        queryKey: ["accounting-periods", companyId],
+      });
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.error || "Failed to unlock period.");

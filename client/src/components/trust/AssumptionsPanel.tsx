@@ -1,12 +1,12 @@
-import React from 'react';
-import Card, { CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Info, AlertTriangle, TrendingUp } from 'lucide-react';
+import React from "react";
+import Card, { CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { Info, AlertTriangle, TrendingUp } from "lucide-react";
 
 interface Assumption {
   key: string;
   value: number | string;
-  sensitivity: 'HIGH' | 'MEDIUM' | 'LOW';
+  sensitivity: "HIGH" | "MEDIUM" | "LOW";
   description?: string;
   source?: string;
   lastUpdated?: string;
@@ -21,12 +21,12 @@ interface AssumptionsPanelProps {
 
 export const AssumptionsPanel: React.FC<AssumptionsPanelProps> = ({
   assumptions,
-  title = 'Key Assumptions',
-  description = 'These assumptions drive the forecast calculations',
-  className = '',
+  title = "Key Assumptions",
+  description = "These assumptions drive the forecast calculations",
+  className = "",
 }) => {
   const getSensitivityConfig = (
-    sensitivity: string
+    sensitivity: string,
   ): {
     icon: React.ReactNode;
     color: string;
@@ -34,40 +34,40 @@ export const AssumptionsPanel: React.FC<AssumptionsPanelProps> = ({
     label: string;
   } => {
     switch (sensitivity.toUpperCase()) {
-      case 'HIGH':
+      case "HIGH":
         return {
           icon: <AlertTriangle className="w-4 h-4" aria-hidden="true" />,
-          color: 'text-red-700',
-          bgColor: 'bg-red-50 border-red-200',
-          label: 'High Sensitivity',
+          color: "text-red-700",
+          bgColor: "bg-red-50 border-red-200",
+          label: "High Sensitivity",
         };
-      case 'MEDIUM':
+      case "MEDIUM":
         return {
           icon: <TrendingUp className="w-4 h-4" aria-hidden="true" />,
-          color: 'text-yellow-700',
-          bgColor: 'bg-yellow-50 border-yellow-200',
-          label: 'Medium Sensitivity',
+          color: "text-yellow-700",
+          bgColor: "bg-yellow-50 border-yellow-200",
+          label: "Medium Sensitivity",
         };
-      case 'LOW':
+      case "LOW":
         return {
           icon: <Info className="w-4 h-4" aria-hidden="true" />,
-          color: 'text-blue-700',
-          bgColor: 'bg-blue-50 border-blue-200',
-          label: 'Low Sensitivity',
+          color: "text-blue-700",
+          bgColor: "bg-blue-50 border-blue-200",
+          label: "Low Sensitivity",
         };
       default:
         return {
           icon: <Info className="w-4 h-4" aria-hidden="true" />,
-          color: 'text-gray-700',
-          bgColor: 'bg-gray-50 border-gray-200',
-          label: 'Unknown Sensitivity',
+          color: "text-gray-700",
+          bgColor: "bg-gray-50 border-gray-200",
+          label: "Unknown Sensitivity",
         };
     }
   };
 
   const formatValue = (value: number | string): string => {
-    if (typeof value === 'number') {
-      return new Intl.NumberFormat('en-US', {
+    if (typeof value === "number") {
+      return new Intl.NumberFormat("en-US", {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2,
       }).format(value);
@@ -77,10 +77,10 @@ export const AssumptionsPanel: React.FC<AssumptionsPanelProps> = ({
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     }).format(date);
   };
 
@@ -99,7 +99,9 @@ export const AssumptionsPanel: React.FC<AssumptionsPanelProps> = ({
       <CardContent>
         <div className="space-y-4">
           {assumptions.map((assumption, index) => {
-            const sensitivityConfig = getSensitivityConfig(assumption.sensitivity);
+            const sensitivityConfig = getSensitivityConfig(
+              assumption.sensitivity,
+            );
 
             return (
               <article
@@ -113,7 +115,7 @@ export const AssumptionsPanel: React.FC<AssumptionsPanelProps> = ({
                       id={`assumption-${index}-title`}
                       className="text-sm font-semibold text-gray-900"
                     >
-                      {assumption.key.replace(/_/g, ' ')}
+                      {assumption.key.replace(/_/g, " ")}
                     </h4>
                     {assumption.description && (
                       <p className="text-xs text-gray-600 mt-1">
@@ -160,10 +162,10 @@ export const AssumptionsPanel: React.FC<AssumptionsPanelProps> = ({
                   )}
                 </div>
 
-                {assumption.sensitivity === 'HIGH' && (
+                {assumption.sensitivity === "HIGH" && (
                   <div className="mt-3 p-2 bg-red-100 border border-red-300 rounded text-xs text-red-900">
-                    <strong>High Sensitivity:</strong> Small changes to this value
-                    significantly impact the forecast. Review carefully.
+                    <strong>High Sensitivity:</strong> Small changes to this
+                    value significantly impact the forecast. Review carefully.
                   </div>
                 )}
               </article>

@@ -368,7 +368,10 @@ export const FullFeatureDemo: Story = {
               ),
               cell: ({ row }) => (
                 <>
-                  <label htmlFor={`row-selection-${row.id}`} className="sr-only">
+                  <label
+                    htmlFor={`row-selection-${row.id}`}
+                    className="sr-only"
+                  >
                     Checkbox
                   </label>
                   <input

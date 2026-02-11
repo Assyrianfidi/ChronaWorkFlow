@@ -4,17 +4,17 @@
  * Located in settings or accessible from top navigation
  */
 
-import React from 'react';
-import { useView } from '@/contexts/ViewContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { useView } from "@/contexts/ViewContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,9 +22,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/DropdownMenu';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/DropdownMenu";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   Building2,
   Calculator,
@@ -38,8 +38,8 @@ import {
   Maximize,
   Presentation,
   Check,
-} from 'lucide-react';
-import { MAIN_VIEWS } from '@/config/view.config';
+} from "lucide-react";
+import { MAIN_VIEWS } from "@/config/view.config";
 
 // ============================================================================
 // MAIN VIEW TOGGLE BUTTON
@@ -50,18 +50,18 @@ export const ViewToggleButton: React.FC = () => {
   const { user } = useAuth();
 
   // Only show if user can access both views
-  const canAccessBusiness = canAccessView('business');
-  const canAccessAccountant = canAccessView('accountant');
+  const canAccessBusiness = canAccessView("business");
+  const canAccessAccountant = canAccessView("accountant");
 
   if (!canAccessBusiness || !canAccessAccountant) {
     return null;
   }
 
   const toggleView = () => {
-    setMainView(mainView === 'business' ? 'accountant' : 'business');
+    setMainView(mainView === "business" ? "accountant" : "business");
   };
 
-  const Icon = mainView === 'business' ? Building2 : Calculator;
+  const Icon = mainView === "business" ? Building2 : Calculator;
 
   return (
     <Button
@@ -126,7 +126,7 @@ export const ViewSwitcherDialog: React.FC = () => {
             <h3 className="text-sm font-medium mb-3">Main View Mode</h3>
             <div className="grid grid-cols-2 gap-3">
               {Object.values(MAIN_VIEWS).map((view) => {
-                const Icon = view.icon === 'Building2' ? Building2 : Calculator;
+                const Icon = view.icon === "Building2" ? Building2 : Calculator;
                 const isActive = mainView === view.id;
                 const canAccess = canAccessView(view.id);
 
@@ -136,11 +136,11 @@ export const ViewSwitcherDialog: React.FC = () => {
                     onClick={() => canAccess && setMainView(view.id)}
                     disabled={!canAccess}
                     className={cn(
-                      'relative flex flex-col items-start p-4 border-2 rounded-lg text-left transition-all',
+                      "relative flex flex-col items-start p-4 border-2 rounded-lg text-left transition-all",
                       isActive
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50',
-                      !canAccess && 'opacity-50 cursor-not-allowed'
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50",
+                      !canAccess && "opacity-50 cursor-not-allowed",
                     )}
                   >
                     <div className="flex items-center gap-2 w-full">
@@ -176,7 +176,7 @@ export const ViewSwitcherDialog: React.FC = () => {
                   setOpen(false);
                 }}
                 className={cn(
-                  temporaryView === 'presentation' && 'bg-primary/10'
+                  temporaryView === "presentation" && "bg-primary/10",
                 )}
               >
                 <Presentation className="h-4 w-4 mr-2" />
@@ -214,7 +214,9 @@ export const ViewSwitcherDialog: React.FC = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Transactions:</span>
-                <span className="font-medium capitalize">{transactionView}</span>
+                <span className="font-medium capitalize">
+                  {transactionView}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Lists:</span>
@@ -223,7 +225,7 @@ export const ViewSwitcherDialog: React.FC = () => {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Accessibility:</span>
                 <span className="font-medium capitalize">
-                  {accessibility.replace('-', ' ')}
+                  {accessibility.replace("-", " ")}
                 </span>
               </div>
             </div>
@@ -255,7 +257,7 @@ export const ViewSwitcherDropdown: React.FC = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="gap-2">
-          {mainView === 'business' ? (
+          {mainView === "business" ? (
             <Building2 className="h-4 w-4" />
           ) : (
             <Calculator className="h-4 w-4" />
@@ -265,64 +267,68 @@ export const ViewSwitcherDropdown: React.FC = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>View Mode</DropdownMenuLabel>
-        
+
         {/* Business View */}
         <DropdownMenuItem
-          onClick={() => setMainView('business')}
-          disabled={!canAccessView('business')}
-          className={cn(mainView === 'business' && 'bg-primary/10')}
+          onClick={() => setMainView("business")}
+          disabled={!canAccessView("business")}
+          className={cn(mainView === "business" && "bg-primary/10")}
         >
           <Building2 className="h-4 w-4 mr-2" />
           Business View
-          {mainView === 'business' && <Check className="h-4 w-4 ml-auto" />}
+          {mainView === "business" && <Check className="h-4 w-4 ml-auto" />}
         </DropdownMenuItem>
-        
+
         {/* Accountant View */}
         <DropdownMenuItem
-          onClick={() => setMainView('accountant')}
-          disabled={!canAccessView('accountant')}
-          className={cn(mainView === 'accountant' && 'bg-primary/10')}
+          onClick={() => setMainView("accountant")}
+          disabled={!canAccessView("accountant")}
+          className={cn(mainView === "accountant" && "bg-primary/10")}
         >
           <Calculator className="h-4 w-4 mr-2" />
           Accountant View
-          {mainView === 'accountant' && <Check className="h-4 w-4 ml-auto" />}
+          {mainView === "accountant" && <Check className="h-4 w-4 ml-auto" />}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Accessibility</DropdownMenuLabel>
-        
+
         <DropdownMenuItem
-          onClick={() => setAccessibility('default')}
-          className={cn(accessibility === 'default' && 'bg-primary/10')}
+          onClick={() => setAccessibility("default")}
+          className={cn(accessibility === "default" && "bg-primary/10")}
         >
           <Eye className="h-4 w-4 mr-2" />
           Default
-          {accessibility === 'default' && <Check className="h-4 w-4 ml-auto" />}
+          {accessibility === "default" && <Check className="h-4 w-4 ml-auto" />}
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem
-          onClick={() => setAccessibility('high-contrast')}
-          className={cn(accessibility === 'high-contrast' && 'bg-primary/10')}
+          onClick={() => setAccessibility("high-contrast")}
+          className={cn(accessibility === "high-contrast" && "bg-primary/10")}
         >
           <Monitor className="h-4 w-4 mr-2" />
           High Contrast
-          {accessibility === 'high-contrast' && <Check className="h-4 w-4 ml-auto" />}
+          {accessibility === "high-contrast" && (
+            <Check className="h-4 w-4 ml-auto" />
+          )}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Temporary Modes</DropdownMenuLabel>
-        
+
         <DropdownMenuItem
           onClick={() =>
-            temporaryView === 'presentation'
+            temporaryView === "presentation"
               ? exitPresentationMode()
               : enterPresentationMode()
           }
-          className={cn(temporaryView === 'presentation' && 'bg-primary/10')}
+          className={cn(temporaryView === "presentation" && "bg-primary/10")}
         >
           <Presentation className="h-4 w-4 mr-2" />
           Presentation Mode
-          {temporaryView === 'presentation' && <Check className="h-4 w-4 ml-auto" />}
+          {temporaryView === "presentation" && (
+            <Check className="h-4 w-4 ml-auto" />
+          )}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -335,10 +341,10 @@ export const ViewSwitcherDropdown: React.FC = () => {
 
 export const ViewBadge: React.FC = () => {
   const { mainView, mainViewConfig } = useView();
-  
+
   return (
     <Badge variant="outline" className="gap-1 text-xs">
-      {mainView === 'business' ? (
+      {mainView === "business" ? (
         <Building2 className="h-3 w-3" />
       ) : (
         <Calculator className="h-3 w-3" />

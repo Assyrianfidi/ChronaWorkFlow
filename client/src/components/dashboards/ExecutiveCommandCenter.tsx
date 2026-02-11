@@ -261,7 +261,7 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
     <span
       className={cn(
         "inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full border",
-        variants[status as keyof typeof variants] || variants.neutral
+        variants[status as keyof typeof variants] || variants.neutral,
       )}
     >
       {labels[status as keyof typeof labels] || status}
@@ -269,7 +269,10 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
   );
 };
 
-const TrendIndicator: React.FC<{ trend: string; change: number }> = ({ trend, change }) => {
+const TrendIndicator: React.FC<{ trend: string; change: number }> = ({
+  trend,
+  change,
+}) => {
   if (trend === "neutral" || change === 0) {
     return <Minus className="w-4 h-4 text-slate-400" />;
   }
@@ -300,7 +303,7 @@ const CompanyHealthLayer: React.FC = () => {
           onClick={() => metric.drillDownPath && navigate(metric.drillDownPath)}
           className={cn(
             "p-4 rounded-xl border bg-card text-left transition-all duration-200",
-            "hover:shadow-md hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary"
+            "hover:shadow-md hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary",
           )}
         >
           <div className="flex items-center justify-between mb-2">
@@ -310,7 +313,9 @@ const CompanyHealthLayer: React.FC = () => {
             <StatusBadge status={metric.status} />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold tabular-nums">{metric.value}</span>
+            <span className="text-2xl font-bold tabular-nums">
+              {metric.value}
+            </span>
           </div>
           <div className="flex items-center gap-2 mt-2">
             <TrendIndicator trend={metric.trend} change={metric.change} />
@@ -366,7 +371,7 @@ const RisksAndActionsLayer: React.FC = () => {
           className={cn(
             "flex items-start gap-4 p-4 rounded-xl border transition-all duration-200",
             getSeverityStyles(risk.severity),
-            "hover:shadow-sm"
+            "hover:shadow-sm",
           )}
         >
           <div className="flex-shrink-0 mt-0.5">{getRiskIcon(risk.type)}</div>
@@ -374,7 +379,9 @@ const RisksAndActionsLayer: React.FC = () => {
             <div className="flex items-start justify-between gap-2">
               <div>
                 <h4 className="font-semibold text-sm">{risk.title}</h4>
-                <p className="text-sm text-muted-foreground mt-0.5">{risk.description}</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  {risk.description}
+                </p>
               </div>
               {risk.amount && (
                 <span className="text-sm font-bold tabular-nums text-foreground">
@@ -442,7 +449,7 @@ const ModuleAccessLayer: React.FC = () => {
             onClick={() => navigate(module.path)}
             className={cn(
               "group p-4 rounded-xl border bg-card text-left transition-all duration-200",
-              "hover:shadow-md hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary"
+              "hover:shadow-md hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary",
             )}
           >
             <div className="flex items-start justify-between mb-3">
@@ -472,7 +479,9 @@ const ModuleAccessLayer: React.FC = () => {
 // MAIN EXECUTIVE COMMAND CENTER
 // ========================================
 export const ExecutiveCommandCenter: React.FC = () => {
-  const [timeRange, setTimeRange] = useState<"today" | "week" | "month" | "quarter">("month");
+  const [timeRange, setTimeRange] = useState<
+    "today" | "week" | "month" | "quarter"
+  >("month");
 
   return (
     <div className="h-full overflow-auto bg-background">
@@ -480,7 +489,9 @@ export const ExecutiveCommandCenter: React.FC = () => {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Executive Command Center</h1>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Executive Command Center
+            </h1>
             <p className="text-muted-foreground mt-1">
               Company health, risks, and operational overview
             </p>
@@ -495,7 +506,7 @@ export const ExecutiveCommandCenter: React.FC = () => {
                     "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
                     timeRange === range
                       ? "bg-card text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {range.charAt(0).toUpperCase() + range.slice(1)}

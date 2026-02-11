@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { useAnalytics } from "./AnalyticsEngine";
 import { BusinessInsight } from "./AnalyticsEngine";
 

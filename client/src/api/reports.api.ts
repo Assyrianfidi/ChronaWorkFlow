@@ -1,5 +1,5 @@
-import api from './index';
-import type { ApiResponse } from './index';
+import api from "./index";
+import type { ApiResponse } from "./index";
 
 export interface ProfitLossReport {
   companyId: string;
@@ -108,35 +108,43 @@ export const reportsApi = {
    * Get Profit & Loss report (ledger-derived)
    */
   getProfitLoss: (params: ReportParams) =>
-    api.get<ApiResponse<ProfitLossReport>>('/reports/profit-loss', { params }),
+    api.get<ApiResponse<ProfitLossReport>>("/reports/profit-loss", { params }),
 
   /**
    * Get Balance Sheet report (ledger-derived)
    */
   getBalanceSheet: (params: ReportParams) =>
-    api.get<ApiResponse<BalanceSheetReport>>('/reports/balance-sheet', { params }),
+    api.get<ApiResponse<BalanceSheetReport>>("/reports/balance-sheet", {
+      params,
+    }),
 
   /**
    * Get Cash Flow report (ledger-derived)
    */
   getCashFlow: (params: ReportParams) =>
-    api.get<ApiResponse<CashFlowReport>>('/reports/cash-flow', { params }),
+    api.get<ApiResponse<CashFlowReport>>("/reports/cash-flow", { params }),
 
   /**
    * Export report to PDF
    */
-  exportPDF: (reportType: 'profit-loss' | 'balance-sheet' | 'cash-flow', params: ReportParams) =>
+  exportPDF: (
+    reportType: "profit-loss" | "balance-sheet" | "cash-flow",
+    params: ReportParams,
+  ) =>
     api.get<Blob>(`/reports/${reportType}/pdf`, {
       params,
-      responseType: 'blob',
+      responseType: "blob",
     }),
 
   /**
    * Export report to Excel
    */
-  exportExcel: (reportType: 'profit-loss' | 'balance-sheet' | 'cash-flow', params: ReportParams) =>
+  exportExcel: (
+    reportType: "profit-loss" | "balance-sheet" | "cash-flow",
+    params: ReportParams,
+  ) =>
     api.get<Blob>(`/reports/${reportType}/excel`, {
       params,
-      responseType: 'blob',
+      responseType: "blob",
     }),
 };

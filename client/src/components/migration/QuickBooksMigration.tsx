@@ -3,7 +3,7 @@
  * Import QBO/IIF files with progress tracking and AI categorization
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from "react";
 import {
   Upload,
   FileText,
@@ -18,11 +18,18 @@ import {
   Database,
   Users,
   Receipt,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface MigrationStatus {
   migrationId: string;
-  status: 'pending' | 'parsing' | 'mapping' | 'importing' | 'categorizing' | 'completed' | 'failed';
+  status:
+    | "pending"
+    | "parsing"
+    | "mapping"
+    | "importing"
+    | "categorizing"
+    | "completed"
+    | "failed";
   progress: number;
   currentStep: string;
   itemsProcessed: number;
@@ -48,10 +55,26 @@ interface MigrationResult {
 }
 
 const supportedFormats = [
-  { ext: '.qbo', name: 'QuickBooks Online', description: 'OFX format from QuickBooks Online or banks' },
-  { ext: '.ofx', name: 'Open Financial Exchange', description: 'Standard bank export format' },
-  { ext: '.qfx', name: 'Quicken Financial Exchange', description: 'Quicken export format' },
-  { ext: '.iif', name: 'Intuit Interchange Format', description: 'QuickBooks Desktop export' },
+  {
+    ext: ".qbo",
+    name: "QuickBooks Online",
+    description: "OFX format from QuickBooks Online or banks",
+  },
+  {
+    ext: ".ofx",
+    name: "Open Financial Exchange",
+    description: "Standard bank export format",
+  },
+  {
+    ext: ".qfx",
+    name: "Quicken Financial Exchange",
+    description: "Quicken export format",
+  },
+  {
+    ext: ".iif",
+    name: "Intuit Interchange Format",
+    description: "QuickBooks Desktop export",
+  },
 ];
 
 export const QuickBooksMigration: React.FC = () => {
@@ -74,7 +97,7 @@ export const QuickBooksMigration: React.FC = () => {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const droppedFile = e.dataTransfer.files[0];
     if (droppedFile) {
       validateAndSetFile(droppedFile);
@@ -89,11 +112,13 @@ export const QuickBooksMigration: React.FC = () => {
   };
 
   const validateAndSetFile = (file: File) => {
-    const ext = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
-    const isValid = supportedFormats.some(f => f.ext === ext);
-    
+    const ext = file.name.toLowerCase().slice(file.name.lastIndexOf("."));
+    const isValid = supportedFormats.some((f) => f.ext === ext);
+
     if (!isValid) {
-      setError(`Invalid file type. Supported formats: ${supportedFormats.map(f => f.ext).join(', ')}`);
+      setError(
+        `Invalid file type. Supported formats: ${supportedFormats.map((f) => f.ext).join(", ")}`,
+      );
       return;
     }
 
@@ -108,26 +133,27 @@ export const QuickBooksMigration: React.FC = () => {
 
     setError(null);
     setStatus({
-      migrationId: '',
-      status: 'pending',
+      migrationId: "",
+      status: "pending",
       progress: 0,
-      currentStep: 'Preparing upload...',
+      currentStep: "Preparing upload...",
       itemsProcessed: 0,
       totalItems: 0,
       errors: [],
     });
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
-    const ext = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
-    const endpoint = ext === '.iif' ? '/api/migration/iif' : '/api/migration/qbo';
+    const ext = file.name.toLowerCase().slice(file.name.lastIndexOf("."));
+    const endpoint =
+      ext === ".iif" ? "/api/migration/iif" : "/api/migration/qbo";
 
     try {
       const response = await fetch(endpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: formData,
       });
@@ -138,20 +164,20 @@ export const QuickBooksMigration: React.FC = () => {
         setResult(data.data);
         setStatus({
           migrationId: data.data.migrationId,
-          status: 'completed',
+          status: "completed",
           progress: 100,
-          currentStep: 'Migration complete!',
+          currentStep: "Migration complete!",
           itemsProcessed: data.data.summary.transactionsImported,
           totalItems: data.data.summary.transactionsImported,
           errors: data.data.errors,
         });
       } else {
-        setError(data.error || 'Migration failed');
-        setStatus(prev => prev ? { ...prev, status: 'failed' } : null);
+        setError(data.error || "Migration failed");
+        setStatus((prev) => (prev ? { ...prev, status: "failed" } : null));
       }
     } catch (err) {
-      setError('Failed to connect to server');
-      setStatus(prev => prev ? { ...prev, status: 'failed' } : null);
+      setError("Failed to connect to server");
+      setStatus((prev) => (prev ? { ...prev, status: "failed" } : null));
     }
   };
 
@@ -164,11 +190,11 @@ export const QuickBooksMigration: React.FC = () => {
 
   const getStatusIcon = () => {
     if (!status) return null;
-    
+
     switch (status.status) {
-      case 'completed':
+      case "completed":
         return <CheckCircle className="w-16 h-16 text-green-500" />;
-      case 'failed':
+      case "failed":
         return <XCircle className="w-16 h-16 text-red-500" />;
       default:
         return <RefreshCw className="w-16 h-16 text-blue-500 animate-spin" />;
@@ -194,9 +220,13 @@ export const QuickBooksMigration: React.FC = () => {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors ${isDragging ? 'border-primary bg-primary/10'
-              : file ? 'border-success bg-success/10'
-                : 'border-border hover:border-primary'}`}
+            className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors ${
+              isDragging
+                ? "border-primary bg-primary/10"
+                : file
+                  ? "border-success bg-success/10"
+                  : "border-border hover:border-primary"
+            }`}
           >
             {file ? (
               <div className="space-y-4">
@@ -329,23 +359,25 @@ export const QuickBooksMigration: React.FC = () => {
       )}
 
       {/* Progress */}
-      {status && status.status !== 'completed' && status.status !== 'failed' && (
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8 text-center">
-          <RefreshCw className="w-16 h-16 text-blue-500 animate-spin mx-auto mb-6" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            {status.currentStep}
-          </h3>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-4">
-            <div
-              className="bg-blue-600 h-3 rounded-full transition-all duration-500"
-              style={{ width: `${status.progress}%` }}
-            />
+      {status &&
+        status.status !== "completed" &&
+        status.status !== "failed" && (
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8 text-center">
+            <RefreshCw className="w-16 h-16 text-blue-500 animate-spin mx-auto mb-6" />
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              {status.currentStep}
+            </h3>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-4">
+              <div
+                className="bg-blue-600 h-3 rounded-full transition-all duration-500"
+                style={{ width: `${status.progress}%` }}
+              />
+            </div>
+            <p className="text-gray-500 dark:text-gray-400">
+              {status.itemsProcessed} / {status.totalItems} items processed
+            </p>
           </div>
-          <p className="text-gray-500 dark:text-gray-400">
-            {status.itemsProcessed} / {status.totalItems} items processed
-          </p>
-        </div>
-      )}
+        )}
 
       {/* Result */}
       {result && (
@@ -353,12 +385,12 @@ export const QuickBooksMigration: React.FC = () => {
           <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8 text-center">
             {getStatusIcon()}
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-4 mb-2">
-              {result.success ? 'Migration Complete!' : 'Migration Failed'}
+              {result.success ? "Migration Complete!" : "Migration Failed"}
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
               {result.success
                 ? `Completed in ${result.durationMinutes.toFixed(1)} minutes`
-                : 'Please check the errors below and try again'}
+                : "Please check the errors below and try again"}
             </p>
 
             {result.success && (
@@ -368,35 +400,43 @@ export const QuickBooksMigration: React.FC = () => {
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     {result.summary.accountsImported}
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Accounts</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Accounts
+                  </div>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <Receipt className="w-6 h-6 text-green-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     {result.summary.transactionsImported}
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Transactions</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Transactions
+                  </div>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <Users className="w-6 h-6 text-purple-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     {result.summary.customersImported}
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Customers</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Customers
+                  </div>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <Sparkles className="w-6 h-6 text-amber-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
                     {(result.summary.categorizationAccuracy * 100).toFixed(0)}%
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">AI Accuracy</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    AI Accuracy
+                  </div>
                 </div>
               </div>
             )}
 
             <div className="flex items-center justify-center gap-4">
               <button
-                onClick={() => window.location.href = '/dashboard'}
+                onClick={() => (window.location.href = "/dashboard")}
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
               >
                 Go to Dashboard
@@ -419,7 +459,10 @@ export const QuickBooksMigration: React.FC = () => {
               </h4>
               <ul className="space-y-2">
                 {result.errors.map((err, index) => (
-                  <li key={index} className="text-sm text-red-600 dark:text-red-400">
+                  <li
+                    key={index}
+                    className="text-sm text-red-600 dark:text-red-400"
+                  >
                     [{err.type}] {err.message}
                   </li>
                 ))}
@@ -435,7 +478,10 @@ export const QuickBooksMigration: React.FC = () => {
               </h4>
               <ul className="space-y-2">
                 {result.warnings.map((warning, index) => (
-                  <li key={index} className="text-sm text-amber-600 dark:text-amber-400">
+                  <li
+                    key={index}
+                    className="text-sm text-amber-600 dark:text-amber-400"
+                  >
                     {warning}
                   </li>
                 ))}

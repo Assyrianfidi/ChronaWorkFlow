@@ -25,11 +25,7 @@ interface EnvConfig {
 
 // Validate and parse environment variables
 export const validateEnv = (): EnvConfig => {
-  const requiredVars = [
-    "NODE_ENV",
-    "VITE_API_URL",
-    "VITE_API_VERSION",
-  ];
+  const requiredVars = ["NODE_ENV", "VITE_API_URL", "VITE_API_VERSION"];
 
   const missingVars = requiredVars.filter(
     (varName) => !import.meta.env[varName],

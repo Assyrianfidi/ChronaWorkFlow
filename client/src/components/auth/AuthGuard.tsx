@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-"use client";
+("use client");
 
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -56,10 +56,7 @@ export function AuthGuard({
   const [error, setError] = useState<Error | null>(null);
 
   // Get auth state from the store
-  const {
-    isAuthenticated,
-    isLoading: isAuthLoading,
-  } = useAuthStore();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
 
   useEffect(() => {
     setIsLoading(isAuthLoading);

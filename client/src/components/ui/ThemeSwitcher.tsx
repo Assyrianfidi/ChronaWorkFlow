@@ -3,19 +3,35 @@
  * Allows users to switch between light/dark mode and different theme palettes
  */
 
-import React, { useState } from 'react';
-import { Moon, Sun, Monitor, Palette, Check } from 'lucide-react';
-import { useEnhancedTheme } from '@/contexts/EnhancedThemeContext';
-import { ThemeMode, ThemeName, themes } from '@/config/themes';
+import React, { useState } from "react";
+import { Moon, Sun, Monitor, Palette, Check } from "lucide-react";
+import { useEnhancedTheme } from "@/contexts/EnhancedThemeContext";
+import { ThemeMode, ThemeName, themes } from "@/config/themes";
 
 export function ThemeSwitcher() {
   const { mode, themeName, setMode, setThemeName } = useEnhancedTheme();
   const [isOpen, setIsOpen] = useState(false);
 
-  const modeOptions: { value: ThemeMode; label: string; icon: React.ReactNode }[] = [
-    { value: 'light', label: 'Light', icon: <Sun className="w-4 h-4" aria-hidden="true" /> },
-    { value: 'dark', label: 'Dark', icon: <Moon className="w-4 h-4" aria-hidden="true" /> },
-    { value: 'system', label: 'System', icon: <Monitor className="w-4 h-4" aria-hidden="true" /> },
+  const modeOptions: {
+    value: ThemeMode;
+    label: string;
+    icon: React.ReactNode;
+  }[] = [
+    {
+      value: "light",
+      label: "Light",
+      icon: <Sun className="w-4 h-4" aria-hidden="true" />,
+    },
+    {
+      value: "dark",
+      label: "Dark",
+      icon: <Moon className="w-4 h-4" aria-hidden="true" />,
+    },
+    {
+      value: "system",
+      label: "System",
+      icon: <Monitor className="w-4 h-4" aria-hidden="true" />,
+    },
   ];
 
   const themeOptions = Object.values(themes).map((theme) => ({
@@ -65,8 +81,8 @@ export function ThemeSwitcher() {
                     }}
                     className={`flex flex-col items-center gap-1 p-2 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
                       mode === option.value
-                        ? 'bg-primary text-white'
-                        : 'bg-surfaceHover text-textSecondary hover:bg-surfaceActive'
+                        ? "bg-primary text-white"
+                        : "bg-surfaceHover text-textSecondary hover:bg-surfaceActive"
                     }`}
                     role="menuitemradio"
                     aria-checked={mode === option.value}
@@ -92,8 +108,8 @@ export function ThemeSwitcher() {
                     }}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
                       themeName === option.value
-                        ? 'bg-primary/10 text-primary font-medium'
-                        : 'text-textPrimary hover:bg-surfaceHover'
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-textPrimary hover:bg-surfaceHover"
                     }`}
                     role="menuitemradio"
                     aria-checked={themeName === option.value}

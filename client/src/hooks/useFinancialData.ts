@@ -3,8 +3,8 @@
  * React Query hooks for fetching financial dashboard data
  */
 
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { apiClient, handleApiError } from '@/services/api-client';
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { apiClient, handleApiError } from "@/services/api-client";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -31,7 +31,7 @@ export interface BankAccount {
   currency: string;
   change: number; // percentage change
   lastUpdated: string;
-  type: 'checking' | 'savings' | 'credit';
+  type: "checking" | "savings" | "credit";
 }
 
 export interface BankAccountsData {
@@ -45,7 +45,7 @@ export interface Invoice {
   number: string;
   customer: string;
   amount: number;
-  status: 'paid' | 'pending' | 'overdue';
+  status: "paid" | "pending" | "overdue";
   dueDate: string;
   issuedDate: string;
 }
@@ -81,12 +81,13 @@ export interface ExpenseCategory {
 // ============================================================================
 
 export const financialQueryKeys = {
-  all: ['financial'] as const,
-  profitLoss: (period?: string) => ['financial', 'profit-loss', period] as const,
-  bankAccounts: () => ['financial', 'bank-accounts'] as const,
-  invoices: (status?: string) => ['financial', 'invoices', status] as const,
-  cashFlow: (months?: number) => ['financial', 'cash-flow', months] as const,
-  expenses: (period?: string) => ['financial', 'expenses', period] as const,
+  all: ["financial"] as const,
+  profitLoss: (period?: string) =>
+    ["financial", "profit-loss", period] as const,
+  bankAccounts: () => ["financial", "bank-accounts"] as const,
+  invoices: (status?: string) => ["financial", "invoices", status] as const,
+  cashFlow: (months?: number) => ["financial", "cash-flow", months] as const,
+  expenses: (period?: string) => ["financial", "expenses", period] as const,
 };
 
 // ============================================================================
@@ -96,12 +97,17 @@ export const financialQueryKeys = {
 /**
  * Fetch Profit & Loss data
  */
-export function useProfitLoss(period: string = 'current-month'): UseQueryResult<ProfitLossData> {
+export function useProfitLoss(
+  period: string = "current-month",
+): UseQueryResult<ProfitLossData> {
   return useQuery({
     queryKey: financialQueryKeys.profitLoss(period),
     queryFn: async () => {
       try {
-        const response = await apiClient.get<ProfitLossData>('/reports/profit-loss', { period });
+        const response = await apiClient.get<ProfitLossData>(
+          "/reports/profit-loss",
+          { period },
+        );
         return response.data;
       } catch (error) {
         handleApiError(error);
@@ -121,7 +127,8 @@ export function useBankAccounts(): UseQueryResult<BankAccountsData> {
     queryKey: financialQueryKeys.bankAccounts(),
     queryFn: async () => {
       try {
-        const response = await apiClient.get<BankAccountsData>('/accounts/balances');
+        const response =
+          await apiClient.get<BankAccountsData>("/accounts/balances");
         return response.data;
       } catch (error) {
         handleApiError(error);
@@ -141,7 +148,10 @@ export function useInvoices(status?: string): UseQueryResult<InvoicesData> {
     queryKey: financialQueryKeys.invoices(status),
     queryFn: async () => {
       try {
-        const response = await apiClient.get<InvoicesData>('/invoices/summary', { status });
+        const response = await apiClient.get<InvoicesData>(
+          "/invoices/summary",
+          { status },
+        );
         return response.data;
       } catch (error) {
         handleApiError(error);
@@ -156,12 +166,17 @@ export function useInvoices(status?: string): UseQueryResult<InvoicesData> {
 /**
  * Fetch Cash Flow data for charts
  */
-export function useCashFlow(months: number = 6): UseQueryResult<CashFlowData[]> {
+export function useCashFlow(
+  months: number = 6,
+): UseQueryResult<CashFlowData[]> {
   return useQuery({
     queryKey: financialQueryKeys.cashFlow(months),
     queryFn: async () => {
       try {
-        const response = await apiClient.get<CashFlowData[]>('/reports/cash-flow', { months });
+        const response = await apiClient.get<CashFlowData[]>(
+          "/reports/cash-flow",
+          { months },
+        );
         return response.data;
       } catch (error) {
         handleApiError(error);
@@ -176,12 +191,17 @@ export function useCashFlow(months: number = 6): UseQueryResult<CashFlowData[]> 
 /**
  * Fetch Top Expenses data
  */
-export function useTopExpenses(period: string = 'current-month'): UseQueryResult<ExpenseCategory[]> {
+export function useTopExpenses(
+  period: string = "current-month",
+): UseQueryResult<ExpenseCategory[]> {
   return useQuery({
     queryKey: financialQueryKeys.expenses(period),
     queryFn: async () => {
       try {
-        const response = await apiClient.get<ExpenseCategory[]>('/reports/top-expenses', { period });
+        const response = await apiClient.get<ExpenseCategory[]>(
+          "/reports/top-expenses",
+          { period },
+        );
         return response.data;
       } catch (error) {
         handleApiError(error);
@@ -203,7 +223,7 @@ export const mockProfitLossData: ProfitLossData = {
   expenses: 83170,
   profitMargin: 35.2,
   trend: 12.5,
-  period: 'January 2026',
+  period: "January 2026",
   previousPeriod: {
     netProfit: 40250,
     revenue: 114200,
@@ -214,31 +234,31 @@ export const mockProfitLossData: ProfitLossData = {
 export const mockBankAccountsData: BankAccountsData = {
   accounts: [
     {
-      id: '1',
-      name: 'Business Checking',
+      id: "1",
+      name: "Business Checking",
       balance: 125840,
-      currency: 'USD',
+      currency: "USD",
       change: 8.3,
       lastUpdated: new Date().toISOString(),
-      type: 'checking',
+      type: "checking",
     },
     {
-      id: '2',
-      name: 'Savings Account',
+      id: "2",
+      name: "Savings Account",
       balance: 78920,
-      currency: 'USD',
+      currency: "USD",
       change: 2.1,
       lastUpdated: new Date().toISOString(),
-      type: 'savings',
+      type: "savings",
     },
     {
-      id: '3',
-      name: 'Operating Account',
+      id: "3",
+      name: "Operating Account",
       balance: 42150,
-      currency: 'USD',
+      currency: "USD",
       change: -3.2,
       lastUpdated: new Date().toISOString(),
-      type: 'checking',
+      type: "checking",
     },
   ],
   totalBalance: 246910,
@@ -255,50 +275,50 @@ export const mockInvoicesData: InvoicesData = {
   },
   recentInvoices: [
     {
-      id: 'INV-001',
-      number: 'INV-2026-001',
-      customer: 'Acme Corp',
+      id: "INV-001",
+      number: "INV-2026-001",
+      customer: "Acme Corp",
       amount: 12500,
-      status: 'paid',
-      dueDate: '2026-01-15',
-      issuedDate: '2026-01-01',
+      status: "paid",
+      dueDate: "2026-01-15",
+      issuedDate: "2026-01-01",
     },
     {
-      id: 'INV-002',
-      number: 'INV-2026-002',
-      customer: 'TechStart Inc',
+      id: "INV-002",
+      number: "INV-2026-002",
+      customer: "TechStart Inc",
       amount: 8750,
-      status: 'pending',
-      dueDate: '2026-02-01',
-      issuedDate: '2026-01-15',
+      status: "pending",
+      dueDate: "2026-02-01",
+      issuedDate: "2026-01-15",
     },
     {
-      id: 'INV-003',
-      number: 'INV-2026-003',
-      customer: 'Global Solutions',
+      id: "INV-003",
+      number: "INV-2026-003",
+      customer: "Global Solutions",
       amount: 15200,
-      status: 'overdue',
-      dueDate: '2026-01-20',
-      issuedDate: '2026-01-05',
+      status: "overdue",
+      dueDate: "2026-01-20",
+      issuedDate: "2026-01-05",
     },
   ],
   trend: 18.2,
 };
 
 export const mockCashFlowData: CashFlowData[] = [
-  { period: 'Aug', inflow: 95000, outflow: 72000, net: 23000 },
-  { period: 'Sep', inflow: 108000, outflow: 78000, net: 30000 },
-  { period: 'Oct', inflow: 112000, outflow: 82000, net: 30000 },
-  { period: 'Nov', inflow: 118000, outflow: 85000, net: 33000 },
-  { period: 'Dec', inflow: 125000, outflow: 88000, net: 37000 },
-  { period: 'Jan', inflow: 128000, outflow: 83000, net: 45000 },
+  { period: "Aug", inflow: 95000, outflow: 72000, net: 23000 },
+  { period: "Sep", inflow: 108000, outflow: 78000, net: 30000 },
+  { period: "Oct", inflow: 112000, outflow: 82000, net: 30000 },
+  { period: "Nov", inflow: 118000, outflow: 85000, net: 33000 },
+  { period: "Dec", inflow: 125000, outflow: 88000, net: 37000 },
+  { period: "Jan", inflow: 128000, outflow: 83000, net: 45000 },
 ];
 
 export const mockTopExpensesData: ExpenseCategory[] = [
-  { category: 'Payroll', amount: 45000, percentage: 54.1, change: 2.3 },
-  { category: 'Rent & Utilities', amount: 12000, percentage: 14.4, change: 0 },
-  { category: 'Marketing', amount: 8500, percentage: 10.2, change: 15.8 },
-  { category: 'Software & Tools', amount: 6200, percentage: 7.5, change: -5.2 },
-  { category: 'Office Supplies', amount: 4800, percentage: 5.8, change: 8.1 },
-  { category: 'Other', amount: 6670, percentage: 8.0, change: 3.5 },
+  { category: "Payroll", amount: 45000, percentage: 54.1, change: 2.3 },
+  { category: "Rent & Utilities", amount: 12000, percentage: 14.4, change: 0 },
+  { category: "Marketing", amount: 8500, percentage: 10.2, change: 15.8 },
+  { category: "Software & Tools", amount: 6200, percentage: 7.5, change: -5.2 },
+  { category: "Office Supplies", amount: 4800, percentage: 5.8, change: 8.1 },
+  { category: "Other", amount: 6670, percentage: 8.0, change: 3.5 },
 ];

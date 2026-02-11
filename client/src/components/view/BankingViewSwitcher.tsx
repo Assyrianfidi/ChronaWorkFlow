@@ -3,22 +3,17 @@
  * Filter banking transactions by For Review, Categorized, Excluded, All
  */
 
-import React from 'react';
-import { useView } from '@/contexts/ViewContext';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import {
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  List,
-} from 'lucide-react';
-import { BANKING_VIEWS } from '@/config/view.config';
+import React from "react";
+import { useView } from "@/contexts/ViewContext";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { AlertCircle, CheckCircle, XCircle, List } from "lucide-react";
+import { BANKING_VIEWS } from "@/config/view.config";
 
 export const BankingViewSwitcher: React.FC<{
   counts?: {
-    'for-review': number;
+    "for-review": number;
     categorized: number;
     excluded: number;
     all: number;
@@ -28,11 +23,16 @@ export const BankingViewSwitcher: React.FC<{
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
-      case 'AlertCircle': return AlertCircle;
-      case 'CheckCircle': return CheckCircle;
-      case 'XCircle': return XCircle;
-      case 'List': return List;
-      default: return List;
+      case "AlertCircle":
+        return AlertCircle;
+      case "CheckCircle":
+        return CheckCircle;
+      case "XCircle":
+        return XCircle;
+      case "List":
+        return List;
+      default:
+        return List;
     }
   };
 
@@ -46,13 +46,10 @@ export const BankingViewSwitcher: React.FC<{
         return (
           <Button
             key={view.id}
-            variant={isActive ? 'default' : 'outline'}
+            variant={isActive ? "default" : "outline"}
             size="sm"
             onClick={() => setBankingView(view.id)}
-            className={cn(
-              'gap-2',
-              isActive && 'ring-2 ring-offset-1'
-            )}
+            className={cn("gap-2", isActive && "ring-2 ring-offset-1")}
             style={{
               borderColor: isActive ? view.color : undefined,
               backgroundColor: isActive ? view.color : undefined,
@@ -62,7 +59,7 @@ export const BankingViewSwitcher: React.FC<{
             <span>{view.name}</span>
             {count !== undefined && count > 0 && (
               <Badge
-                variant={isActive ? 'secondary' : 'default'}
+                variant={isActive ? "secondary" : "default"}
                 className="ml-1 text-[10px]"
               >
                 {count}

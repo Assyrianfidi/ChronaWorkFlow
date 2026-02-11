@@ -8,9 +8,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { Badge } from "../ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
 
 interface ExplainButtonProps {
   kpiName: string;
@@ -80,7 +93,9 @@ export const ExplainButton: React.FC<ExplainButtonProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [explanation, setExplanation] = useState<NumberExplanation | null>(null);
+  const [explanation, setExplanation] = useState<NumberExplanation | null>(
+    null,
+  );
 
   const handleExplain = async () => {
     setIsOpen(true);
@@ -90,8 +105,14 @@ export const ExplainButton: React.FC<ExplainButtonProps> = ({
     try {
       // Default to current month if no dates provided
       const now = new Date();
-      const start = startDate || new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-      const end = endDate || new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59));
+      const start =
+        startDate ||
+        new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+      const end =
+        endDate ||
+        new Date(
+          Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59),
+        );
 
       const response = await fetch("/api/ledger/explain", {
         method: "POST",
@@ -147,7 +168,9 @@ export const ExplainButton: React.FC<ExplainButtonProps> = ({
           {isLoading && (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">Loading explanation...</span>
+              <span className="ml-2 text-muted-foreground">
+                Loading explanation...
+              </span>
             </div>
           )}
 
@@ -173,11 +196,15 @@ export const ExplainButton: React.FC<ExplainButtonProps> = ({
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="font-medium">Start Date:</span>{" "}
-                      {new Date(explanation.period.startDate).toLocaleDateString()}
+                      {new Date(
+                        explanation.period.startDate,
+                      ).toLocaleDateString()}
                     </div>
                     <div>
                       <span className="font-medium">End Date:</span>{" "}
-                      {new Date(explanation.period.endDate).toLocaleDateString()}
+                      {new Date(
+                        explanation.period.endDate,
+                      ).toLocaleDateString()}
                     </div>
                     <div className="col-span-2">
                       {explanation.period.isPeriodLocked && (
@@ -197,15 +224,21 @@ export const ExplainButton: React.FC<ExplainButtonProps> = ({
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="font-medium">Total Debits:</span>{" "}
-                      <span className="font-mono">${explanation.summary.totalDebits}</span>
+                      <span className="font-mono">
+                        ${explanation.summary.totalDebits}
+                      </span>
                     </div>
                     <div>
                       <span className="font-medium">Total Credits:</span>{" "}
-                      <span className="font-mono">${explanation.summary.totalCredits}</span>
+                      <span className="font-mono">
+                        ${explanation.summary.totalCredits}
+                      </span>
                     </div>
                     <div>
                       <span className="font-medium">Net Amount:</span>{" "}
-                      <span className="font-mono font-bold">${explanation.summary.netAmount}</span>
+                      <span className="font-mono font-bold">
+                        ${explanation.summary.netAmount}
+                      </span>
                     </div>
                     <div>
                       <span className="font-medium">Transactions:</span>{" "}
@@ -238,10 +271,14 @@ export const ExplainButton: React.FC<ExplainButtonProps> = ({
                     <TableBody>
                       {explanation.accountsInvolved.map((account) => (
                         <TableRow key={account.accountId}>
-                          <TableCell className="font-mono">{account.accountCode}</TableCell>
+                          <TableCell className="font-mono">
+                            {account.accountCode}
+                          </TableCell>
                           <TableCell>{account.accountName}</TableCell>
                           <TableCell>
-                            <Badge variant="outline">{account.accountType}</Badge>
+                            <Badge variant="outline">
+                              {account.accountType}
+                            </Badge>
                           </TableCell>
                           <TableCell className="text-right font-mono">
                             ${account.debits}
@@ -275,14 +312,17 @@ export const ExplainButton: React.FC<ExplainButtonProps> = ({
                           <div className="grid grid-cols-2 gap-2 text-sm">
                             <div>
                               <span className="font-medium">Transaction:</span>{" "}
-                              <span className="font-mono">{txn.transactionNumber}</span>
+                              <span className="font-mono">
+                                {txn.transactionNumber}
+                              </span>
                             </div>
                             <div>
                               <span className="font-medium">Date:</span>{" "}
                               {new Date(txn.date).toLocaleDateString()}
                             </div>
                             <div className="col-span-2">
-                              <span className="font-medium">Description:</span> {txn.description}
+                              <span className="font-medium">Description:</span>{" "}
+                              {txn.description}
                             </div>
                             <div>
                               <span className="font-medium">Type:</span>{" "}
@@ -292,7 +332,8 @@ export const ExplainButton: React.FC<ExplainButtonProps> = ({
                               <div>
                                 <span className="font-medium">Origin:</span>{" "}
                                 <Badge variant="secondary">
-                                  {txn.originatingAction.type}: {txn.originatingAction.id}
+                                  {txn.originatingAction.type}:{" "}
+                                  {txn.originatingAction.id}
                                 </Badge>
                               </div>
                             )}
@@ -311,7 +352,9 @@ export const ExplainButton: React.FC<ExplainButtonProps> = ({
                               </div>
                               <div>
                                 <span className="font-medium">Net:</span>{" "}
-                                <span className="font-mono font-bold">${txn.netEffect}</span>
+                                <span className="font-mono font-bold">
+                                  ${txn.netEffect}
+                                </span>
                               </div>
                             </div>
                           </div>

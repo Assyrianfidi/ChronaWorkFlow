@@ -5,11 +5,11 @@ import {
   TableHeader,
   TableRow,
   TableCell,
-} from '../components/ui/table';
-import { Skeleton } from '../components/ui/skeleton';
+} from "../components/ui/table";
+import { Skeleton } from "../components/ui/skeleton";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { AccountRow } from './AccountRow';
-import type { AccountWithChildren } from '../../types/accounts';
+import { AccountRow } from "./AccountRow";
+import type { AccountWithChildren } from "../../types/accounts";
 
 // Define the type for flattened account items
 interface FlattenedAccount {

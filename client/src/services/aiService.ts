@@ -3,12 +3,12 @@
  * Handles all API calls to AI endpoints
  */
 
-const API_BASE = '/api';
+const API_BASE = "/api";
 
 interface CategorizeRequest {
   description: string;
   amount: number;
-  type: 'income' | 'expense';
+  type: "income" | "expense";
   vendor?: string;
 }
 
@@ -26,7 +26,7 @@ interface BatchCategorizeRequest {
     id: string;
     description: string;
     amount: number;
-    type: 'income' | 'expense';
+    type: "income" | "expense";
     vendor?: string;
   }>;
 }
@@ -67,7 +67,7 @@ interface CopilotResponse {
       label: string;
       value: number;
       change?: number;
-      trend?: 'up' | 'down' | 'stable';
+      trend?: "up" | "down" | "stable";
     }>;
     confidence: number;
     processingTime: number;
@@ -88,7 +88,7 @@ interface ForecastResponse {
       confidence: number;
     }>;
     riskAssessment: {
-      overallRisk: 'low' | 'medium' | 'high' | 'critical';
+      overallRisk: "low" | "medium" | "high" | "critical";
       cashRunwayDays: number;
       shortfallProbability: number;
       recommendations: string[];
@@ -127,44 +127,52 @@ interface AnomalyResponse {
 
 class AIService {
   private getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     return {
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : '',
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
     };
   }
 
-  async categorizeTransaction(request: CategorizeRequest): Promise<CategorizeResponse> {
+  async categorizeTransaction(
+    request: CategorizeRequest,
+  ): Promise<CategorizeResponse> {
     const response = await fetch(`${API_BASE}/ai/categorize`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getAuthHeaders(),
       body: JSON.stringify(request),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to categorize transaction');
+      throw new Error("Failed to categorize transaction");
     }
 
     return response.json();
   }
 
-  async batchCategorize(request: BatchCategorizeRequest): Promise<BatchCategorizeResponse> {
+  async batchCategorize(
+    request: BatchCategorizeRequest,
+  ): Promise<BatchCategorizeResponse> {
     const response = await fetch(`${API_BASE}/ai/categorize/batch`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getAuthHeaders(),
       body: JSON.stringify(request),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to batch categorize transactions');
+      throw new Error("Failed to batch categorize transactions");
     }
 
     return response.json();
   }
 
-  async submitFeedback(transactionId: string, originalCategory: string, correctedCategory: string): Promise<void> {
+  async submitFeedback(
+    transactionId: string,
+    originalCategory: string,
+    correctedCategory: string,
+  ): Promise<void> {
     const response = await fetch(`${API_BASE}/ai/categorize/feedback`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getAuthHeaders(),
       body: JSON.stringify({
         transactionId,
@@ -174,17 +182,20 @@ class AIService {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to submit feedback');
+      throw new Error("Failed to submit feedback");
     }
   }
 
-  async getAccuracyMetrics(): Promise<{ accuracy: number; totalCategorized: number }> {
+  async getAccuracyMetrics(): Promise<{
+    accuracy: number;
+    totalCategorized: number;
+  }> {
     const response = await fetch(`${API_BASE}/ai/categorize/accuracy`, {
       headers: this.getAuthHeaders(),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get accuracy metrics');
+      throw new Error("Failed to get accuracy metrics");
     }
 
     const data = await response.json();
@@ -193,13 +204,13 @@ class AIService {
 
   async askCopilot(request: CopilotQueryRequest): Promise<CopilotResponse> {
     const response = await fetch(`${API_BASE}/ai/copilot/ask`, {
-      method: 'POST',
+      method: "POST",
       headers: this.getAuthHeaders(),
       body: JSON.stringify(request),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to query AI Copilot');
+      throw new Error("Failed to query AI Copilot");
     }
 
     return response.json();
@@ -211,7 +222,7 @@ class AIService {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get quick insights');
+      throw new Error("Failed to get quick insights");
     }
 
     const data = await response.json();
@@ -224,7 +235,7 @@ class AIService {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get cash flow forecast');
+      throw new Error("Failed to get cash flow forecast");
     }
 
     return response.json();
@@ -236,21 +247,28 @@ class AIService {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get anomalies');
+      throw new Error("Failed to get anomalies");
     }
 
     return response.json();
   }
 
-  async resolveAnomaly(anomalyId: string, resolution: string, notes?: string): Promise<void> {
-    const response = await fetch(`${API_BASE}/ai/anomalies/${anomalyId}/resolve`, {
-      method: 'POST',
-      headers: this.getAuthHeaders(),
-      body: JSON.stringify({ resolution, notes }),
-    });
+  async resolveAnomaly(
+    anomalyId: string,
+    resolution: string,
+    notes?: string,
+  ): Promise<void> {
+    const response = await fetch(
+      `${API_BASE}/ai/anomalies/${anomalyId}/resolve`,
+      {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ resolution, notes }),
+      },
+    );
 
     if (!response.ok) {
-      throw new Error('Failed to resolve anomaly');
+      throw new Error("Failed to resolve anomaly");
     }
   }
 
@@ -265,7 +283,7 @@ class AIService {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get usage stats');
+      throw new Error("Failed to get usage stats");
     }
 
     const data = await response.json();

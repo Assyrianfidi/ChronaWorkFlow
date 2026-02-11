@@ -34,7 +34,10 @@ export function AppLayout() {
         />
       ) : null}
       {/* Sidebar */}
-      <Sidebar isOpen={isMobileSidebarOpen} onClose={() => setIsMobileSidebarOpen(false)} />
+      <Sidebar
+        isOpen={isMobileSidebarOpen}
+        onClose={() => setIsMobileSidebarOpen(false)}
+      />
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -53,7 +56,9 @@ export function AppLayout() {
               <h1 className="text-xl font-semibold">AccuBooks</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-muted-foreground">{user?.name}</span>
+              <span className="text-sm text-muted-foreground">
+                {user?.name}
+              </span>
               <Button variant="outline" size="sm" onClick={logout}>
                 Logout
               </Button>

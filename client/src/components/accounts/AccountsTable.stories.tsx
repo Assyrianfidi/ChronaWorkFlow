@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { AccountsTable } from './AccountsTable';
-import { VirtualizedAccountsTable } from './VirtualizedAccountsTable';
+import { AccountsTable } from "./AccountsTable";
+import { VirtualizedAccountsTable } from "./VirtualizedAccountsTable";
 
 // Mock account data
 const mockAccounts = [

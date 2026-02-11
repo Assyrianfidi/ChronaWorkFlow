@@ -4,120 +4,185 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import { PrismaClient } from "@prisma/client";
+import usersRoutes from "./src/routes/users.routes.js";
+import companiesRoutes from "./src/routes/companies.routes.js";
+import transactionsRoutes from "./src/routes/transactions.routes.js";
+import invoicesRoutes from "./src/routes/invoices.routes.js";
+import authRoutes from "./src/routes/auth.routes.js";
+import billingRoutes from "./src/routes/billing.routes.js";
+import adminRoutes from "./src/routes/admin.routes.js";
+import { 
+  apiLimiter, 
+  authLimiter, 
+  requestSizeLimit, 
+  sanitizeInput,
+  securityLogger,
+  validateEnvironment 
+} from "./src/middleware/security.middleware.js";
+import { authenticate } from "./src/middleware/auth.middleware.js";
+import { injectCompanyContext } from "./src/middleware/tenancy.middleware.js";
+import { enforcePlanLimits } from "./src/middleware/plan-enforcement.middleware.js";
+import logger from "./src/config/logger.js";
 
 dotenv.config();
+validateEnvironment();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 let prisma;
 try {
-  prisma = new PrismaClient();
-  console.log("✅ Prisma client initialized");
+  prisma = new PrismaClient({
+    log: process.env.NODE_ENV === 'production' ? ['error'] : ['query', 'error', 'warn'],
+  });
+  logger.info("Prisma client initialized");
 } catch (error) {
-  console.error("❌ Failed to initialize Prisma client:", error);
+  logger.error("Failed to initialize Prisma client", { error: error.message });
   process.exit(1);
 }
 
-app.use(helmet());
+// HTTPS enforcement in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`);
+    } else {
+      next();
+    }
+  });
+}
+
+// Security headers with HSTS
+app.use(helmet({
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
+  },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+    },
+  },
+}));
 app.use(cors({
   origin: process.env.CORS_ORIGIN || "http://localhost:3000",
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  next();
-});
+// Security middleware
+app.use(requestSizeLimit);
+app.use(sanitizeInput);
+app.use(securityLogger);
 
-app.get("/api/health", (req, res) => {
-  res.status(200).json({
-    status: "healthy",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || "development",
-    port: PORT,
+// Request logging (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    logger.debug(`${req.method} ${req.url}`);
+    next();
   });
+}
+
+app.get("/api/health", async (req, res) => {
+  try {
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    
+    res.status(200).json({
+      status: "ok",
+      database: "connected",
+      environment: process.env.NODE_ENV || "development",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      port: PORT,
+    });
+  } catch (error) {
+    logger.error("Health check failed", { error: error.message });
+    res.status(503).json({
+      status: "error",
+      database: "disconnected",
+      environment: process.env.NODE_ENV || "development",
+      error: error.message,
+    });
+  }
 });
 
-app.get("/api/users", async (req, res) => {
+// Simple health endpoint for Render
+app.get("/health", async (req, res) => {
   try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-      take: 50,
+    await prisma.$queryRaw`SELECT 1`;
+    res.status(200).json({
+      status: "ok",
+      database: "connected",
+      environment: process.env.NODE_ENV || "development"
     });
+  } catch (error) {
+    res.status(503).json({
+      status: "error",
+      database: "disconnected"
+    });
+  }
+});
+
+// Public routes (no authentication required)
+app.use("/api/auth", authLimiter, authRoutes);
+
+// Protected routes (authentication required)
+app.use("/api/users", apiLimiter, authenticate, injectCompanyContext, enforcePlanLimits, usersRoutes);
+app.use("/api/companies", apiLimiter, authenticate, injectCompanyContext, enforcePlanLimits, companiesRoutes);
+app.use("/api/transactions", apiLimiter, authenticate, injectCompanyContext, transactionsRoutes);
+app.use("/api/invoices", apiLimiter, authenticate, injectCompanyContext, invoicesRoutes);
+app.use("/api/billing", apiLimiter, billingRoutes);
+app.use("/api/admin", apiLimiter, adminRoutes);
+
+// Dashboard stats endpoint
+app.get("/api/dashboard/stats", async (req, res) => {
+  try {
+    const [userStats, companyStats, transactionStats, invoiceStats] = await Promise.all([
+      prisma.user.count(),
+      prisma.company.count(),
+      prisma.transaction.aggregate({ _sum: { amount: true }, _count: true }),
+      prisma.invoice.aggregate({ _sum: { amount: true }, _count: true }),
+    ]);
+    
     res.json({
       success: true,
-      data: users,
-      count: users.length,
+      data: {
+        users: { total: userStats },
+        companies: { total: companyStats },
+        transactions: { 
+          total: transactionStats._count,
+          totalAmount: transactionStats._sum.amount || 0,
+        },
+        invoices: { 
+          total: invoiceStats._count,
+          totalAmount: invoiceStats._sum.amount || 0,
+        },
+      },
     });
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("Error fetching dashboard stats:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch users",
+      message: "Failed to fetch dashboard statistics",
       error: error.message,
     });
   }
 });
 
-app.post("/api/users", async (req, res) => {
-  try {
-    const { email, name, password, role } = req.body;
-    
-    if (!email || !name) {
-      return res.status(400).json({
-        success: false,
-        message: "Email and name are required",
-      });
-    }
-
-    const user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        password: password || "default",
-        role: role || "USER",
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        createdAt: true,
-      },
-    });
-
-    res.status(201).json({
-      success: true,
-      data: user,
-    });
-  } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(400).json({
-      success: false,
-      message: "Failed to create user",
-      error: error.message,
-    });
-  }
-});
-
-app.get("/api/transactions", async (req, res) => {
+// Legacy basic endpoints (deprecated - use module routes instead)
+app.get("/api/transactions/legacy", async (req, res) => {
   try {
     const transactions = await prisma.transaction.findMany({
       orderBy: { date: "desc" },
@@ -192,51 +257,50 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error("Unhandled error:", err);
+  logger.error("Unhandled error", { error: err.message, stack: err.stack, url: req.url });
   res.status(500).json({
     success: false,
     message: "Internal server error",
     error: {
       code: "INTERNAL_ERROR",
-      message: err.message,
+      message: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message,
     },
   });
 });
 
 const server = app.listen(PORT, () => {
-  console.log("");
-  console.log("🚀 ========================================");
-  console.log(`   AccuBooks Backend Server Started`);
-  console.log("   ========================================");
-  console.log(`   Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`   Port: ${PORT}`);
-  console.log("");
-  console.log("   📊 API Endpoints:");
-  console.log(`   - Health: http://localhost:${PORT}/api/health`);
-  console.log(`   - Users: http://localhost:${PORT}/api/users`);
-  console.log(`   - Transactions: http://localhost:${PORT}/api/transactions`);
-  console.log(`   - Companies: http://localhost:${PORT}/api/companies`);
-  console.log(`   - Invoices: http://localhost:${PORT}/api/invoices`);
-  console.log("   ========================================");
-  console.log("");
+  logger.info("AccuBooks Backend Server Started", {
+    environment: process.env.NODE_ENV || "development",
+    port: PORT,
+    endpoints: [
+      `/api/health`,
+      `/api/auth/*`,
+      `/api/users`,
+      `/api/companies`,
+      `/api/transactions`,
+      `/api/invoices`,
+      `/api/billing`,
+      `/api/admin`,
+    ],
+  });
 });
 
 process.on("unhandledRejection", (err) => {
-  console.error("Unhandled Rejection:", err);
+  logger.error("Unhandled Rejection", { error: err });
   server.close(() => process.exit(1));
 });
 
 const shutdown = async () => {
-  console.log("\n🛑 Shutting down gracefully...");
+  logger.info("Shutting down gracefully...");
   try {
     await prisma.$disconnect();
-    console.log("✅ Database connection closed");
+    logger.info("Database connection closed");
     server.close(() => {
-      console.log("✅ Server closed");
+      logger.info("Server closed");
       process.exit(0);
     });
   } catch (error) {
-    console.error("❌ Error during shutdown:", error);
+    logger.error("Error during shutdown", { error: error.message });
     process.exit(1);
   }
 };

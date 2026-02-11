@@ -1763,7 +1763,8 @@ export function useSuperAccessibility() {
       const region = document.createElement("div");
       region.setAttribute("aria-live", options?.politeness ?? "polite");
       region.setAttribute("aria-atomic", String(options?.atomic ?? true));
-      if (options?.relevant) region.setAttribute("aria-relevant", options.relevant);
+      if (options?.relevant)
+        region.setAttribute("aria-relevant", options.relevant);
 
       region.style.position = "absolute";
       region.style.width = "1px";

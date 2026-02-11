@@ -3,7 +3,7 @@
  * Provides feature flag access throughout the application
  */
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from "react";
 import {
   FeatureFlagKey,
   FeatureFlag,
@@ -11,8 +11,8 @@ import {
   getAllFeatureFlags,
   setFeatureFlagOverride,
   clearFeatureFlagOverrides,
-} from '@/config/featureFlags';
-import { useAuth } from '@/contexts/AuthContext';
+} from "@/config/featureFlags";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface FeatureFlagContextType {
   isEnabled: (key: FeatureFlagKey) => boolean;
@@ -21,7 +21,9 @@ interface FeatureFlagContextType {
   clearOverrides: () => void;
 }
 
-const FeatureFlagContext = createContext<FeatureFlagContextType | undefined>(undefined);
+const FeatureFlagContext = createContext<FeatureFlagContextType | undefined>(
+  undefined,
+);
 
 interface FeatureFlagProviderProps {
   children: ReactNode;
@@ -65,7 +67,9 @@ export function FeatureFlagProvider({ children }: FeatureFlagProviderProps) {
 export function useFeatureFlags() {
   const context = useContext(FeatureFlagContext);
   if (context === undefined) {
-    throw new Error('useFeatureFlags must be used within a FeatureFlagProvider');
+    throw new Error(
+      "useFeatureFlags must be used within a FeatureFlagProvider",
+    );
   }
   return context;
 }
@@ -80,7 +84,7 @@ export function useFeatureFlag(key: FeatureFlagKey): boolean {
 export function withFeatureFlag<P extends object>(
   Component: React.ComponentType<P>,
   flagKey: FeatureFlagKey,
-  FallbackComponent?: React.ComponentType<P>
+  FallbackComponent?: React.ComponentType<P>,
 ) {
   return function FeatureGatedComponent(props: P) {
     const isEnabled = useFeatureFlag(flagKey);
@@ -100,7 +104,11 @@ interface FeatureGateProps {
   fallback?: ReactNode;
 }
 
-export function FeatureGate({ flag, children, fallback = null }: FeatureGateProps) {
+export function FeatureGate({
+  flag,
+  children,
+  fallback = null,
+}: FeatureGateProps) {
   const isEnabled = useFeatureFlag(flag);
 
   if (!isEnabled) {

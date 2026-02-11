@@ -3,28 +3,23 @@
  * Customer-facing theme customization panel
  */
 
-import React, { useState } from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Button } from '@/components/ui/button';
+import React, { useState } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import Label from '@/components/ui/Label';
-import Input from '@/components/ui/Input';
-import { Slider } from '@/components/ui/slider';
-import { ScrollArea } from '@/components/ui/ScrollArea';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Label from "@/components/ui/Label";
+import Input from "@/components/ui/Input";
+import { Slider } from "@/components/ui/slider";
+import { ScrollArea } from "@/components/ui/ScrollArea";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import {
   Palette,
   Type,
@@ -35,8 +30,8 @@ import {
   Trash2,
   RotateCcw,
   Sparkles,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   BORDER_RADIUS_OPTIONS,
   DENSITY_OPTIONS,
@@ -44,7 +39,7 @@ import {
   SIDEBAR_STYLE_OPTIONS,
   SHADOW_OPTIONS,
   PRESET_THEMES,
-} from '@/config/theme.config';
+} from "@/config/theme.config";
 
 // ============================================================================
 // COLOR PICKER COMPONENT
@@ -56,7 +51,11 @@ interface ColorPickerProps {
   onChange: (value: string) => void;
 }
 
-const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange }) => {
+const ColorPicker: React.FC<ColorPickerProps> = ({
+  label,
+  value,
+  onChange,
+}) => {
   return (
     <div className="flex items-center justify-between py-2">
       <Label className="text-sm">{label}</Label>
@@ -82,7 +81,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange }) => 
 // ============================================================================
 
 interface ThemePreviewCardProps {
-  theme: typeof PRESET_THEMES[0];
+  theme: (typeof PRESET_THEMES)[0];
   isActive: boolean;
   onClick: () => void;
 }
@@ -96,10 +95,10 @@ const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
     <button
       onClick={onClick}
       className={cn(
-        'relative w-full text-left rounded-lg border-2 p-3 transition-all',
+        "relative w-full text-left rounded-lg border-2 p-3 transition-all",
         isActive
-          ? 'border-primary bg-primary/5'
-          : 'border-border hover:border-primary/50'
+          ? "border-primary bg-primary/5"
+          : "border-border hover:border-primary/50",
       )}
     >
       <div
@@ -116,7 +115,10 @@ const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
         </div>
       )}
       {theme.isCustom && (
-        <Badge variant="secondary" className="absolute bottom-2 right-2 text-[10px]">
+        <Badge
+          variant="secondary"
+          className="absolute bottom-2 right-2 text-[10px]"
+        >
           Custom
         </Badge>
       )}
@@ -143,8 +145,8 @@ export const ThemeCustomizer: React.FC = () => {
     resetToDefault,
   } = useTheme();
 
-  const [activeTab, setActiveTab] = useState('presets');
-  const [newThemeName, setNewThemeName] = useState('');
+  const [activeTab, setActiveTab] = useState("presets");
+  const [newThemeName, setNewThemeName] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   // Combine preset and custom themes
@@ -232,7 +234,7 @@ export const ThemeCustomizer: React.FC = () => {
                       onClick={() => {
                         if (newThemeName) {
                           createCustomTheme(newThemeName, currentTheme.id);
-                          setNewThemeName('');
+                          setNewThemeName("");
                           setShowCreateDialog(false);
                         }
                       }}
@@ -244,7 +246,7 @@ export const ThemeCustomizer: React.FC = () => {
                       variant="outline"
                       onClick={() => {
                         setShowCreateDialog(false);
-                        setNewThemeName('');
+                        setNewThemeName("");
                       }}
                     >
                       Cancel
@@ -258,7 +260,9 @@ export const ThemeCustomizer: React.FC = () => {
                 <>
                   <Separator />
                   <div>
-                    <h3 className="text-sm font-medium mb-3">Your Custom Themes</h3>
+                    <h3 className="text-sm font-medium mb-3">
+                      Your Custom Themes
+                    </h3>
                     <div className="space-y-2">
                       {customThemes.map((theme) => (
                         <div
@@ -305,7 +309,9 @@ export const ThemeCustomizer: React.FC = () => {
                     <ColorPicker
                       label="Primary Foreground"
                       value={currentTheme.colors.primaryForeground}
-                      onChange={(v) => updateThemeColors({ primaryForeground: v })}
+                      onChange={(v) =>
+                        updateThemeColors({ primaryForeground: v })
+                      }
                     />
                     <ColorPicker
                       label="Secondary"
@@ -315,7 +321,9 @@ export const ThemeCustomizer: React.FC = () => {
                     <ColorPicker
                       label="Secondary Foreground"
                       value={currentTheme.colors.secondaryForeground}
-                      onChange={(v) => updateThemeColors({ secondaryForeground: v })}
+                      onChange={(v) =>
+                        updateThemeColors({ secondaryForeground: v })
+                      }
                     />
                   </div>
                 </div>
@@ -359,7 +367,9 @@ export const ThemeCustomizer: React.FC = () => {
                     <ColorPicker
                       label="Accent Foreground"
                       value={currentTheme.colors.accentForeground}
-                      onChange={(v) => updateThemeColors({ accentForeground: v })}
+                      onChange={(v) =>
+                        updateThemeColors({ accentForeground: v })
+                      }
                     />
                     <ColorPicker
                       label="Border"
@@ -435,12 +445,18 @@ export const ThemeCustomizer: React.FC = () => {
                   <Label>Font Family</Label>
                   <select
                     value={currentTheme.typography.fontFamily}
-                    onChange={(e) => updateThemeTypography({ fontFamily: e.target.value })}
+                    onChange={(e) =>
+                      updateThemeTypography({ fontFamily: e.target.value })
+                    }
                     className="w-full p-2 border rounded-md bg-background"
                   >
-                    <option value="Inter, system-ui, sans-serif">Inter (Modern)</option>
+                    <option value="Inter, system-ui, sans-serif">
+                      Inter (Modern)
+                    </option>
                     <option value="Georgia, serif">Georgia (Classic)</option>
-                    <option value="Arial, Helvetica, sans-serif">Arial (Clean)</option>
+                    <option value="Arial, Helvetica, sans-serif">
+                      Arial (Clean)
+                    </option>
                     <option value="system-ui, sans-serif">System UI</option>
                   </select>
                 </div>
@@ -452,16 +468,22 @@ export const ThemeCustomizer: React.FC = () => {
                     {FONT_SIZE_OPTIONS.map((option) => (
                       <button
                         key={option.value}
-                        onClick={() => updateThemeTypography({ fontSize: option.value as any })}
+                        onClick={() =>
+                          updateThemeTypography({
+                            fontSize: option.value as any,
+                          })
+                        }
                         className={cn(
-                          'p-3 text-sm border rounded-lg text-left transition-all',
+                          "p-3 text-sm border rounded-lg text-left transition-all",
                           currentTheme.typography.fontSize === option.value
-                            ? 'border-primary bg-primary/5'
-                            : 'hover:border-primary/50'
+                            ? "border-primary bg-primary/5"
+                            : "hover:border-primary/50",
                         )}
                       >
                         <div className="font-medium">{option.label}</div>
-                        <div className="text-xs text-muted-foreground">{option.description}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {option.description}
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -471,15 +493,19 @@ export const ThemeCustomizer: React.FC = () => {
                 <div className="space-y-2">
                   <Label>Letter Spacing</Label>
                   <div className="grid grid-cols-3 gap-2">
-                    {['tight', 'default', 'wide'].map((spacing) => (
+                    {["tight", "default", "wide"].map((spacing) => (
                       <button
                         key={spacing}
-                        onClick={() => updateThemeTypography({ letterSpacing: spacing as any })}
+                        onClick={() =>
+                          updateThemeTypography({
+                            letterSpacing: spacing as any,
+                          })
+                        }
                         className={cn(
-                          'p-3 text-sm border rounded-lg capitalize transition-all',
+                          "p-3 text-sm border rounded-lg capitalize transition-all",
                           currentTheme.typography.letterSpacing === spacing
-                            ? 'border-primary bg-primary/5'
-                            : 'hover:border-primary/50'
+                            ? "border-primary bg-primary/5"
+                            : "hover:border-primary/50",
                         )}
                       >
                         {spacing}
@@ -495,8 +521,12 @@ export const ThemeCustomizer: React.FC = () => {
                     className="text-lg"
                     style={{
                       fontFamily: currentTheme.typography.fontFamily,
-                      letterSpacing: currentTheme.typography.letterSpacing === 'tight' ? '-0.025em' :
-                        currentTheme.typography.letterSpacing === 'wide' ? '0.025em' : '0',
+                      letterSpacing:
+                        currentTheme.typography.letterSpacing === "tight"
+                          ? "-0.025em"
+                          : currentTheme.typography.letterSpacing === "wide"
+                            ? "0.025em"
+                            : "0",
                     }}
                   >
                     The quick brown fox jumps over the lazy dog.
@@ -525,16 +555,20 @@ export const ThemeCustomizer: React.FC = () => {
                     {DENSITY_OPTIONS.map((option) => (
                       <button
                         key={option.value}
-                        onClick={() => updateThemeLayout({ density: option.value as any })}
+                        onClick={() =>
+                          updateThemeLayout({ density: option.value as any })
+                        }
                         className={cn(
-                          'p-3 text-sm border rounded-lg text-left transition-all',
+                          "p-3 text-sm border rounded-lg text-left transition-all",
                           currentTheme.layout.density === option.value
-                            ? 'border-primary bg-primary/5'
-                            : 'hover:border-primary/50'
+                            ? "border-primary bg-primary/5"
+                            : "hover:border-primary/50",
                         )}
                       >
                         <div className="font-medium">{option.label}</div>
-                        <div className="text-xs text-muted-foreground">{option.description}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {option.description}
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -547,20 +581,30 @@ export const ThemeCustomizer: React.FC = () => {
                     {BORDER_RADIUS_OPTIONS.map((option) => (
                       <button
                         key={option.value}
-                        onClick={() => updateThemeLayout({ borderRadius: option.value as any })}
+                        onClick={() =>
+                          updateThemeLayout({
+                            borderRadius: option.value as any,
+                          })
+                        }
                         className={cn(
-                          'p-3 text-sm border text-center transition-all',
+                          "p-3 text-sm border text-center transition-all",
                           currentTheme.layout.borderRadius === option.value
-                            ? 'border-primary bg-primary/5'
-                            : 'hover:border-primary/50',
-                          option.value === 'none' ? 'rounded-none' :
-                            option.value === 'small' ? 'rounded-sm' :
-                            option.value === 'default' ? 'rounded-md' :
-                            option.value === 'large' ? 'rounded-lg' :
-                            'rounded-full'
+                            ? "border-primary bg-primary/5"
+                            : "hover:border-primary/50",
+                          option.value === "none"
+                            ? "rounded-none"
+                            : option.value === "small"
+                              ? "rounded-sm"
+                              : option.value === "default"
+                                ? "rounded-md"
+                                : option.value === "large"
+                                  ? "rounded-lg"
+                                  : "rounded-full",
                         )}
                       >
-                        <div className="font-medium text-xs">{option.label}</div>
+                        <div className="font-medium text-xs">
+                          {option.label}
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -573,20 +617,27 @@ export const ThemeCustomizer: React.FC = () => {
                     {SHADOW_OPTIONS.map((option) => (
                       <button
                         key={option.value}
-                        onClick={() => updateThemeLayout({ shadows: option.value as any })}
+                        onClick={() =>
+                          updateThemeLayout({ shadows: option.value as any })
+                        }
                         className={cn(
-                          'p-3 text-sm border rounded-lg text-left transition-all',
-                          option.value === 'none' ? '' :
-                            option.value === 'subtle' ? 'shadow-sm' :
-                            option.value === 'default' ? 'shadow-md' :
-                            'shadow-lg',
+                          "p-3 text-sm border rounded-lg text-left transition-all",
+                          option.value === "none"
+                            ? ""
+                            : option.value === "subtle"
+                              ? "shadow-sm"
+                              : option.value === "default"
+                                ? "shadow-md"
+                                : "shadow-lg",
                           currentTheme.layout.shadows === option.value
-                            ? 'border-primary bg-primary/5'
-                            : 'hover:border-primary/50'
+                            ? "border-primary bg-primary/5"
+                            : "hover:border-primary/50",
                         )}
                       >
                         <div className="font-medium">{option.label}</div>
-                        <div className="text-xs text-muted-foreground">{option.description}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {option.description}
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -599,16 +650,20 @@ export const ThemeCustomizer: React.FC = () => {
                     {SIDEBAR_STYLE_OPTIONS.map((option) => (
                       <button
                         key={option.value}
-                        onClick={() => updateThemeSidebar({ style: option.value as any })}
+                        onClick={() =>
+                          updateThemeSidebar({ style: option.value as any })
+                        }
                         className={cn(
-                          'p-3 text-sm border rounded-lg text-left transition-all',
+                          "p-3 text-sm border rounded-lg text-left transition-all",
                           currentTheme.sidebar.style === option.value
-                            ? 'border-primary bg-primary/5'
-                            : 'hover:border-primary/50'
+                            ? "border-primary bg-primary/5"
+                            : "hover:border-primary/50",
                         )}
                       >
                         <div className="font-medium">{option.label}</div>
-                        <div className="text-xs text-muted-foreground">{option.description}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {option.description}
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -618,11 +673,15 @@ export const ThemeCustomizer: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <Label>Sidebar Width</Label>
-                    <span className="text-sm text-muted-foreground">{currentTheme.sidebar.expandedWidth}px</span>
+                    <span className="text-sm text-muted-foreground">
+                      {currentTheme.sidebar.expandedWidth}px
+                    </span>
                   </div>
                   <Slider
                     value={[currentTheme.sidebar.expandedWidth]}
-                    onValueChange={([v]) => updateThemeSidebar({ expandedWidth: v })}
+                    onValueChange={([v]) =>
+                      updateThemeSidebar({ expandedWidth: v })
+                    }
                     min={240}
                     max={400}
                     step={10}
@@ -633,11 +692,15 @@ export const ThemeCustomizer: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <Label>Collapsed Width</Label>
-                    <span className="text-sm text-muted-foreground">{currentTheme.sidebar.collapsedWidth}px</span>
+                    <span className="text-sm text-muted-foreground">
+                      {currentTheme.sidebar.collapsedWidth}px
+                    </span>
                   </div>
                   <Slider
                     value={[currentTheme.sidebar.collapsedWidth]}
-                    onValueChange={([v]) => updateThemeSidebar({ collapsedWidth: v })}
+                    onValueChange={([v]) =>
+                      updateThemeSidebar({ collapsedWidth: v })
+                    }
                     min={60}
                     max={100}
                     step={4}
@@ -662,7 +725,9 @@ export const ThemeCustomizer: React.FC = () => {
           <div className="text-xs text-muted-foreground">
             Current: <span className="font-medium">{currentTheme.name}</span>
             {currentTheme.isCustom && (
-              <Badge variant="secondary" className="ml-2">Custom</Badge>
+              <Badge variant="secondary" className="ml-2">
+                Custom
+              </Badge>
             )}
           </div>
         </div>

@@ -8,7 +8,8 @@ interface BillingBannerProps {
 }
 
 export const BillingBanner: React.FC<BillingBannerProps> = ({ companyId }) => {
-  const { isPastDue, isReadOnly, isSuspended, billing } = useBillingStatus(companyId);
+  const { isPastDue, isReadOnly, isSuspended, billing } =
+    useBillingStatus(companyId);
 
   if (isSuspended) {
     return (
@@ -17,10 +18,14 @@ export const BillingBanner: React.FC<BillingBannerProps> = ({ companyId }) => {
         <div className="flex-1">
           <h3 className="font-semibold text-red-900">Account Suspended</h3>
           <p className="text-sm text-red-700">
-            Your account is suspended due to overdue payment. Please update your billing information to restore service.
+            Your account is suspended due to overdue payment. Please update your
+            billing information to restore service.
           </p>
         </div>
-        <Button variant="destructive" onClick={() => (window.location.href = "/billing")}>
+        <Button
+          variant="destructive"
+          onClick={() => (window.location.href = "/billing")}
+        >
           Update Billing
         </Button>
       </div>
@@ -34,10 +39,14 @@ export const BillingBanner: React.FC<BillingBannerProps> = ({ companyId }) => {
         <div className="flex-1">
           <h3 className="font-semibold text-orange-900">Read-Only Mode</h3>
           <p className="text-sm text-orange-700">
-            Your account is in read-only mode due to overdue payment. You can view data but cannot make changes.
+            Your account is in read-only mode due to overdue payment. You can
+            view data but cannot make changes.
           </p>
         </div>
-        <Button variant="outline" onClick={() => (window.location.href = "/billing")}>
+        <Button
+          variant="outline"
+          onClick={() => (window.location.href = "/billing")}
+        >
           Update Billing
         </Button>
       </div>
@@ -51,10 +60,14 @@ export const BillingBanner: React.FC<BillingBannerProps> = ({ companyId }) => {
         <div className="flex-1">
           <h3 className="font-semibold text-yellow-900">Payment Overdue</h3>
           <p className="text-sm text-yellow-700">
-            Your payment is overdue. Please update your billing details to avoid service interruption.
+            Your payment is overdue. Please update your billing details to avoid
+            service interruption.
           </p>
         </div>
-        <Button variant="outline" onClick={() => (window.location.href = "/billing")}>
+        <Button
+          variant="outline"
+          onClick={() => (window.location.href = "/billing")}
+        >
           Update Billing
         </Button>
       </div>

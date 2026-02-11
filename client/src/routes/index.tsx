@@ -7,7 +7,9 @@ import { ProtectedRoute, PublicRoute, SuspenseWrapper } from "./RouteGuards";
 import { FeatureRoute } from "./FeatureRoute";
 
 const DashboardRouter = lazy(() => import("../pages/DashboardRouter"));
-const ExecutiveCommandCenter = lazy(() => import("../components/dashboards/ExecutiveCommandCenter"));
+const ExecutiveCommandCenter = lazy(
+  () => import("../components/dashboards/ExecutiveCommandCenter"),
+);
 const LedgerPage = lazy(() => import("../pages/ledger/LedgerPage"));
 const APPage = lazy(() => import("../pages/ap/APPage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
@@ -22,7 +24,9 @@ const InventoryPage = lazy(() => import("../pages/InventoryPage"));
 const ReportsPage = lazy(() => import("../pages/ReportsPage"));
 const EntitiesPage = lazy(() => import("../pages/EntitiesPage"));
 const AICFOCopilotPage = lazy(() => import("../pages/AICFOCopilotPage"));
-const CashFlowForecastPage = lazy(() => import("../pages/CashFlowForecastPage"));
+const CashFlowForecastPage = lazy(
+  () => import("../pages/CashFlowForecastPage"),
+);
 const AIAssistantPage = lazy(() => import("../pages/AIAssistantPage"));
 const QuickBooksMigrationPage = lazy(
   () => import("../pages/QuickBooksMigrationPage"),
@@ -37,9 +41,7 @@ const Unauthorized = lazy(() => import("../pages/Unauthorized"));
 const OwnerDashboardPage = lazy(
   () => import("../pages/owner/OwnerDashboardPage"),
 );
-const OwnerPlansPage = lazy(
-  () => import("../pages/owner/OwnerPlansPage"),
-);
+const OwnerPlansPage = lazy(() => import("../pages/owner/OwnerPlansPage"));
 const OwnerSubscriptionsPage = lazy(
   () => import("../pages/owner/OwnerSubscriptionsPage"),
 );
@@ -112,7 +114,9 @@ const router = createBrowserRouter([
   {
     path: "/ledger",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
+      >
         <EnterpriseLayout>
           <SuspenseWrapper>
             <LedgerPage />
@@ -124,7 +128,9 @@ const router = createBrowserRouter([
   {
     path: "/ledger/accounts",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
+      >
         <EnterpriseLayout>
           <SuspenseWrapper>
             <LedgerPage />
@@ -136,7 +142,9 @@ const router = createBrowserRouter([
   {
     path: "/ledger/journal",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
+      >
         <EnterpriseLayout>
           <SuspenseWrapper>
             <LedgerPage />
@@ -149,7 +157,9 @@ const router = createBrowserRouter([
   {
     path: "/ap",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK"]}
+      >
         <EnterpriseLayout>
           <SuspenseWrapper>
             <APPage />
@@ -161,7 +171,9 @@ const router = createBrowserRouter([
   {
     path: "/ap/bills",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK"]}
+      >
         <EnterpriseLayout>
           <SuspenseWrapper>
             <APPage />
@@ -173,7 +185,15 @@ const router = createBrowserRouter([
   {
     path: "/ap/payments",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK", "TREASURER"]}>
+      <PrivateRoute
+        requiredRole={[
+          "ADMIN",
+          "MANAGER",
+          "ACCOUNTANT",
+          "AP_CLERK",
+          "TREASURER",
+        ]}
+      >
         <EnterpriseLayout>
           <SuspenseWrapper>
             <APPage />
@@ -185,7 +205,9 @@ const router = createBrowserRouter([
   {
     path: "/vendors",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK"]}
+      >
         <EnterpriseLayout>
           <SuspenseWrapper>
             <CustomersPage />
@@ -198,7 +220,9 @@ const router = createBrowserRouter([
   {
     path: "/ar",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AR_CLERK"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AR_CLERK"]}
+      >
         <EnterpriseLayout>
           <SuspenseWrapper>
             <InvoicesPage />
@@ -210,7 +234,9 @@ const router = createBrowserRouter([
   {
     path: "/ar/collections",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AR_CLERK"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AR_CLERK"]}
+      >
         <EnterpriseLayout>
           <SuspenseWrapper>
             <InvoicesPage />
@@ -303,7 +329,9 @@ const router = createBrowserRouter([
   {
     path: "/entities",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
+      >
         <MainLayout>
           <SuspenseWrapper>
             <EntitiesPage />
@@ -315,7 +343,9 @@ const router = createBrowserRouter([
   {
     path: "/ai/copilot",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
+      >
         <MainLayout>
           <SuspenseWrapper>
             <AICFOCopilotPage />
@@ -327,7 +357,9 @@ const router = createBrowserRouter([
   {
     path: "/ai/forecast",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
+      >
         <MainLayout>
           <SuspenseWrapper>
             <CashFlowForecastPage />
@@ -339,7 +371,9 @@ const router = createBrowserRouter([
   {
     path: "/ai/assistant",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
+      >
         <MainLayout>
           <SuspenseWrapper>
             <AIAssistantPage />
@@ -351,7 +385,9 @@ const router = createBrowserRouter([
   {
     path: "/migration/quickbooks",
     element: (
-      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+      <PrivateRoute
+        requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
+      >
         <MainLayout>
           <SuspenseWrapper>
             <QuickBooksMigrationPage />

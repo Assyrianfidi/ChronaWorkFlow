@@ -4,7 +4,7 @@
  */
 
 // Components
-export { ThemeCustomizer } from './ThemeCustomizer';
+export { ThemeCustomizer } from "./ThemeCustomizer";
 
 // Re-export from config for convenience
 export {
@@ -17,7 +17,7 @@ export {
   FONT_SIZE_OPTIONS,
   SIDEBAR_STYLE_OPTIONS,
   SHADOW_OPTIONS,
-} from '@/config/theme.config';
+} from "@/config/theme.config";
 
 // Types
 export type {
@@ -27,4 +27,4 @@ export type {
   ThemeSidebar,
   ThemeConfig,
   CustomerThemePreferences,
-} from '@/config/theme.config';
+} from "@/config/theme.config";

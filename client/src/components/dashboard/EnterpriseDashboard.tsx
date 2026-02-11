@@ -100,7 +100,8 @@ const EnterpriseDashboard = React.forwardRef<
         const statusColors = {
           Paid: "bg-success/10 text-success-700 dark:text-success",
           Pending: "bg-warning/10 text-warning-700 dark:text-warning",
-          Overdue: "bg-destructive/10 text-destructive dark:text-destructive-500",
+          Overdue:
+            "bg-destructive/10 text-destructive dark:text-destructive-500",
         };
         return (
           <span
@@ -174,13 +175,17 @@ const EnterpriseDashboard = React.forwardRef<
 
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
-                <span className="text-accent-foreground text-sm font-medium">A</span>
+                <span className="text-accent-foreground text-sm font-medium">
+                  A
+                </span>
               </div>
               <div className="hidden md:block">
                 <div className="text-sm font-medium text-foreground">
                   Admin User
                 </div>
-                <div className="text-xs text-muted-foreground">Administrator</div>
+                <div className="text-xs text-muted-foreground">
+                  Administrator
+                </div>
               </div>
             </div>
           </div>

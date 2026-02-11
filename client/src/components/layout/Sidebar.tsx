@@ -152,7 +152,11 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ className, isOpen = false, onClose }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  className,
+  isOpen = false,
+  onClose,
+}) => {
   const location = useLocation();
   const { user, hasRole } = useAuth();
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
@@ -210,7 +214,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className, isOpen = false, onClose })
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">AB</span>
+            <span className="text-primary-foreground font-bold text-sm">
+              AB
+            </span>
           </div>
           <span className="text-xl font-bold text-foreground md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 md:transition-opacity">
             AccuBooks

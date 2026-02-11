@@ -350,7 +350,9 @@ function NotificationItem({
         : "transition-all duration-300";
 
   const liveMode =
-    notification.type === "error" ? ("assertive" as const) : ("polite" as const);
+    notification.type === "error"
+      ? ("assertive" as const)
+      : ("polite" as const);
   const landmarkRole =
     notification.type === "error" ? ("alert" as const) : ("status" as const);
 

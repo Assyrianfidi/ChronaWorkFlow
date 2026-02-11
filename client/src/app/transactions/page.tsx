@@ -3,13 +3,11 @@
 import React from "react";
 
 import { MainLayout } from "@/components/layout/MainLayout";
-import EnterpriseDataTable, { type Column } from "@/components/ui/EnterpriseDataTable";
+import EnterpriseDataTable, {
+  type Column,
+} from "@/components/ui/EnterpriseDataTable";
 import { EnterpriseButton } from "@/components/ui/EnterpriseButton";
-import Card, {
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   CreditCard,
   Plus,
@@ -214,7 +212,9 @@ export default function TransactionsPage() {
           {value ? (
             <>
               <Check className="h-4 w-4 text-success-700 dark:text-success" />
-              <span className="text-xs text-success-700 dark:text-success">Yes</span>
+              <span className="text-xs text-success-700 dark:text-success">
+                Yes
+              </span>
             </>
           ) : (
             <>
@@ -438,31 +438,31 @@ export default function TransactionsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Transaction ID
                     </label>
-                    
-        <label htmlFor="input-aj5h85x3p" className="sr-only">
-          Text
-        </label>
-        <input id="input-aj5h85x3p"
+
+                    <label htmlFor="input-aj5h85x3p" className="sr-only">
+                      Text
+                    </label>
+                    <input
+                      id="input-aj5h85x3p"
                       type="text"
                       placeholder="TRN-XXX"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                     />
-      
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Date
                     </label>
-                    
-        <label htmlFor="input-gisasli77" className="sr-only">
-          Date
-        </label>
-        <input id="input-gisasli77"
+
+                    <label htmlFor="input-gisasli77" className="sr-only">
+                      Date
+                    </label>
+                    <input
+                      id="input-gisasli77"
                       type="date"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                     />
-      
                   </div>
 
                   <div>
@@ -485,16 +485,16 @@ export default function TransactionsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Amount
                     </label>
-                    
-        <label htmlFor="input-d82v6b7ll" className="sr-only">
-          Number
-        </label>
-        <input id="input-d82v6b7ll"
+
+                    <label htmlFor="input-d82v6b7ll" className="sr-only">
+                      Number
+                    </label>
+                    <input
+                      id="input-d82v6b7ll"
                       type="number"
                       placeholder="0.00"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                     />
-      
                   </div>
 
                   <div>
@@ -525,16 +525,16 @@ export default function TransactionsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Description
                     </label>
-                    
-        <label htmlFor="input-r8blcj0ed" className="sr-only">
-          Text
-        </label>
-        <input id="input-r8blcj0ed"
+
+                    <label htmlFor="input-r8blcj0ed" className="sr-only">
+                      Text
+                    </label>
+                    <input
+                      id="input-r8blcj0ed"
                       type="text"
                       placeholder="Transaction description"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
                     />
-      
                   </div>
                 </div>
 

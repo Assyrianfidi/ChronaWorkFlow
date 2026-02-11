@@ -26,7 +26,9 @@ function App() {
               </ToastProvider>
             </FeatureFlagProvider>
           </AuthProvider>
-          {import.meta.env.DEV ? <ReactQueryDevtools initialIsOpen={false} /> : null}
+          {import.meta.env.DEV ? (
+            <ReactQueryDevtools initialIsOpen={false} />
+          ) : null}
         </QueryClientProvider>
       </ViewProvider>
     </ThemeProvider>

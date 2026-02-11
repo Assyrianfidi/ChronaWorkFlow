@@ -316,7 +316,9 @@ function DataTable<T>({
                         </span>
                       </button>
                     ) : (
-                      <div className="flex items-center gap-1">{getColumnLabel(column)}</div>
+                      <div className="flex items-center gap-1">
+                        {getColumnLabel(column)}
+                      </div>
                     )}
                   </th>
                 ))}

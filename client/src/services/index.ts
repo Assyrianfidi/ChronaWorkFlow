@@ -1,9 +1,4 @@
-export {
-  ApiClient,
-  apiClient,
-  handleApiError,
-  isApiError,
-} from "./api-client";
+export { ApiClient, apiClient, handleApiError, isApiError } from "./api-client";
 export { DashboardService, dashboardService } from "./dashboard.service";
 export { offlineService } from "./offline.service";
 

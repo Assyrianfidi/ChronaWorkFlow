@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import Card, { CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { Badge } from '@/components/ui/Badge';
+import React, { useEffect, useState } from "react";
+import Card, {
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/Card";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Badge } from "@/components/ui/Badge";
 import {
   AlertTriangle,
   AlertCircle,
@@ -11,9 +16,9 @@ import {
   XCircle,
   TrendingDown,
   Calendar,
-} from 'lucide-react';
+} from "lucide-react";
 
-type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+type RiskLevel = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
 interface RiskItem {
   id: string;
@@ -26,7 +31,7 @@ interface RiskItem {
   mitigationSteps?: string[];
   detectedAt: string;
   resolvedAt?: string;
-  status: 'ACTIVE' | 'MONITORING' | 'RESOLVED';
+  status: "ACTIVE" | "MONITORING" | "RESOLVED";
 }
 
 interface RiskTimelineProps {
@@ -38,7 +43,7 @@ interface RiskTimelineProps {
 export const RiskTimeline: React.FC<RiskTimelineProps> = ({
   tenantId,
   showResolved = false,
-  className = '',
+  className = "",
 }) => {
   const [risks, setRisks] = useState<RiskItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,21 +55,21 @@ export const RiskTimeline: React.FC<RiskTimelineProps> = ({
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/api/risks', {
+        const response = await fetch("/api/risks", {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch risks');
+          throw new Error("Failed to fetch risks");
         }
 
         const data = await response.json();
         setRisks(data);
       } catch (err) {
-        console.error('Error fetching risks:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        console.error("Error fetching risks:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -74,7 +79,7 @@ export const RiskTimeline: React.FC<RiskTimelineProps> = ({
   }, [tenantId]);
 
   const getRiskConfig = (
-    level: RiskLevel
+    level: RiskLevel,
   ): {
     icon: React.ReactNode;
     color: string;
@@ -83,82 +88,82 @@ export const RiskTimeline: React.FC<RiskTimelineProps> = ({
     label: string;
   } => {
     switch (level) {
-      case 'CRITICAL':
+      case "CRITICAL":
         return {
           icon: <XCircle className="w-5 h-5" aria-hidden="true" />,
-          color: 'text-red-700',
-          bgColor: 'bg-red-50',
-          borderColor: 'border-red-300',
-          label: 'Critical Risk',
+          color: "text-red-700",
+          bgColor: "bg-red-50",
+          borderColor: "border-red-300",
+          label: "Critical Risk",
         };
-      case 'HIGH':
+      case "HIGH":
         return {
           icon: <AlertTriangle className="w-5 h-5" aria-hidden="true" />,
-          color: 'text-orange-700',
-          bgColor: 'bg-orange-50',
-          borderColor: 'border-orange-300',
-          label: 'High Risk',
+          color: "text-orange-700",
+          bgColor: "bg-orange-50",
+          borderColor: "border-orange-300",
+          label: "High Risk",
         };
-      case 'MEDIUM':
+      case "MEDIUM":
         return {
           icon: <AlertCircle className="w-5 h-5" aria-hidden="true" />,
-          color: 'text-yellow-700',
-          bgColor: 'bg-yellow-50',
-          borderColor: 'border-yellow-300',
-          label: 'Medium Risk',
+          color: "text-yellow-700",
+          bgColor: "bg-yellow-50",
+          borderColor: "border-yellow-300",
+          label: "Medium Risk",
         };
-      case 'LOW':
+      case "LOW":
         return {
           icon: <Info className="w-5 h-5" aria-hidden="true" />,
-          color: 'text-blue-700',
-          bgColor: 'bg-blue-50',
-          borderColor: 'border-blue-300',
-          label: 'Low Risk',
+          color: "text-blue-700",
+          bgColor: "bg-blue-50",
+          borderColor: "border-blue-300",
+          label: "Low Risk",
         };
     }
   };
 
   const getStatusConfig = (
-    status: string
+    status: string,
   ): {
     icon: React.ReactNode;
     color: string;
     label: string;
   } => {
     switch (status) {
-      case 'RESOLVED':
+      case "RESOLVED":
         return {
           icon: <CheckCircle className="w-4 h-4" aria-hidden="true" />,
-          color: 'text-green-700',
-          label: 'Resolved',
+          color: "text-green-700",
+          label: "Resolved",
         };
-      case 'MONITORING':
+      case "MONITORING":
         return {
           icon: <TrendingDown className="w-4 h-4" aria-hidden="true" />,
-          color: 'text-blue-700',
-          label: 'Monitoring',
+          color: "text-blue-700",
+          label: "Monitoring",
         };
       default:
         return {
           icon: <AlertCircle className="w-4 h-4" aria-hidden="true" />,
-          color: 'text-red-700',
-          label: 'Active',
+          color: "text-red-700",
+          label: "Active",
         };
     }
   };
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     }).format(date);
   };
 
   const filteredRisks = showResolved
     ? risks
-    : risks.filter((risk) => risk.status !== 'RESOLVED');
+    : risks.filter((risk) => risk.status !== "RESOLVED");
 
   if (loading) {
     return (
@@ -264,9 +269,9 @@ export const RiskTimeline: React.FC<RiskTimelineProps> = ({
                         <div className="ml-4">
                           <Badge
                             variant={
-                              risk.level === 'CRITICAL' || risk.level === 'HIGH'
-                                ? 'destructive'
-                                : 'secondary'
+                              risk.level === "CRITICAL" || risk.level === "HIGH"
+                                ? "destructive"
+                                : "secondary"
                             }
                           >
                             {riskConfig.label}
@@ -300,24 +305,25 @@ export const RiskTimeline: React.FC<RiskTimelineProps> = ({
                       </div>
 
                       {/* Mitigation Steps */}
-                      {risk.mitigationSteps && risk.mitigationSteps.length > 0 && (
-                        <div className="mb-3">
-                          <p className="text-xs font-medium text-gray-600 mb-2">
-                            Recommended Actions:
-                          </p>
-                          <ul className="space-y-1">
-                            {risk.mitigationSteps.map((step, stepIndex) => (
-                              <li
-                                key={stepIndex}
-                                className="text-sm text-gray-700 flex items-start"
-                              >
-                                <span className="mr-2">•</span>
-                                <span>{step}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                      {risk.mitigationSteps &&
+                        risk.mitigationSteps.length > 0 && (
+                          <div className="mb-3">
+                            <p className="text-xs font-medium text-gray-600 mb-2">
+                              Recommended Actions:
+                            </p>
+                            <ul className="space-y-1">
+                              {risk.mitigationSteps.map((step, stepIndex) => (
+                                <li
+                                  key={stepIndex}
+                                  className="text-sm text-gray-700 flex items-start"
+                                >
+                                  <span className="mr-2">•</span>
+                                  <span>{step}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
 
                       {/* Dates */}
                       <div className="flex items-center gap-4 text-xs text-gray-600 pt-3 border-t border-gray-300">
@@ -327,7 +333,10 @@ export const RiskTimeline: React.FC<RiskTimelineProps> = ({
                         </span>
                         {risk.resolvedAt && (
                           <span className="flex items-center gap-1">
-                            <CheckCircle className="w-3 h-3" aria-hidden="true" />
+                            <CheckCircle
+                              className="w-3 h-3"
+                              aria-hidden="true"
+                            />
                             Resolved: {formatDate(risk.resolvedAt)}
                           </span>
                         )}
@@ -345,7 +354,7 @@ export const RiskTimeline: React.FC<RiskTimelineProps> = ({
               Risk Level Guide
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] as RiskLevel[]).map(
+              {(["CRITICAL", "HIGH", "MEDIUM", "LOW"] as RiskLevel[]).map(
                 (level) => {
                   const config = getRiskConfig(level);
                   return (
@@ -356,7 +365,7 @@ export const RiskTimeline: React.FC<RiskTimelineProps> = ({
                       </span>
                     </div>
                   );
-                }
+                },
               )}
             </div>
           </div>

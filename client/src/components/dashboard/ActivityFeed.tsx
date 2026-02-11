@@ -145,7 +145,9 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
                   <span className="font-medium"> by {activity.user}</span>
                 )}
               </div>
-              <div className="text-xs text-muted-foreground">{activity.timestamp}</div>
+              <div className="text-xs text-muted-foreground">
+                {activity.timestamp}
+              </div>
             </div>
           </div>
         );

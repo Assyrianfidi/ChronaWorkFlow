@@ -61,25 +61,26 @@ const UserDashboard: React.FC = () => {
   const { user } = useAuth();
 
   // Fetch user dashboard data
-  const { data: dashboardData, isLoading, error } = useSWR<{
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useSWR<{
     success: boolean;
     data: {
       stats: UserStats;
       activity: UserActivity[];
     };
-  }>(
-    "/api/dashboard/user",
-    async (url: string) => {
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch dashboard data");
-      return response.json();
-    },
-  );
+  }>("/api/dashboard/user", async (url: string) => {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) throw new Error("Failed to fetch dashboard data");
+    return response.json();
+  });
 
   const stats = dashboardData?.data?.stats;
   const activity = dashboardData?.data?.activity;

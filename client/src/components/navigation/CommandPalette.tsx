@@ -448,17 +448,17 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
         {/* Search Input */}
         <div className="command-palette-search">
           <div className="search-icon">🔍</div>
-          
-        <label htmlFor="input-i8eq8qs0n" className="sr-only">
-          Text
-        </label>
-        <input id="input-i8eq8qs0n"
+
+          <label htmlFor="input-i8eq8qs0n" className="sr-only">
+            Text
+          </label>
+          <input
+            id="input-i8eq8qs0n"
             ref={inputRef}
             type="text"
             placeholder={defaultConfig.placeholder}
             value={searchQuery}
-            onChange={(e) =>
-       setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             className="search-input"
           />

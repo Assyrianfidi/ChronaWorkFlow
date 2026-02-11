@@ -857,7 +857,9 @@ export default function Settings() {
 
               <div className="border-t pt-6">
                 <div className="space-y-4">
-                  <h3 className="font-medium text-destructive dark:text-destructive-500">Danger Zone</h3>
+                  <h3 className="font-medium text-destructive dark:text-destructive-500">
+                    Danger Zone
+                  </h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-3 border border-destructive/20 rounded-md">
                       <div>

@@ -1,13 +1,20 @@
 /**
  * Insight Card Component
- * 
+ *
  * Displays smart insights with severity badges, actions, and explainability
  */
 
-import React from 'react';
-import { SmartInsight, InsightSeverity } from '../../types/intelligence';
-import { AlertTriangle, Info, AlertCircle, ChevronRight, Zap, X } from 'lucide-react';
-import { useAnalytics, useDismissInsight } from '../../hooks/useIntelligence';
+import React from "react";
+import { SmartInsight, InsightSeverity } from "../../types/intelligence";
+import {
+  AlertTriangle,
+  Info,
+  AlertCircle,
+  ChevronRight,
+  Zap,
+  X,
+} from "lucide-react";
+import { useAnalytics, useDismissInsight } from "../../hooks/useIntelligence";
 
 interface InsightCardProps {
   insight: SmartInsight;
@@ -28,13 +35,16 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   const handleDismiss = async () => {
     await dismissMutation.mutateAsync({
       insightId: insight.id,
-      reason: 'User dismissed from dashboard',
+      reason: "User dismissed from dashboard",
     });
-    
+
     trackEvent({
-      eventType: 'INSIGHT_DISMISSED',
+      eventType: "INSIGHT_DISMISSED",
       insightId: insight.id,
-      metadata: { insightType: insight.insightType, severity: insight.severity },
+      metadata: {
+        insightType: insight.insightType,
+        severity: insight.severity,
+      },
     });
   };
 
@@ -42,19 +52,25 @@ export const InsightCard: React.FC<InsightCardProps> = ({
     if (onAction) {
       onAction(action.type, action.automationTemplate);
     }
-    
+
     trackEvent({
-      eventType: 'ACTION_CLICKED',
+      eventType: "ACTION_CLICKED",
       insightId: insight.id,
-      metadata: { actionType: action.type, automationTemplate: action.automationTemplate },
+      metadata: {
+        actionType: action.type,
+        automationTemplate: action.automationTemplate,
+      },
     });
   };
 
   const handleViewInsight = () => {
     trackEvent({
-      eventType: 'INSIGHT_VIEWED',
+      eventType: "INSIGHT_VIEWED",
       insightId: insight.id,
-      metadata: { insightType: insight.insightType, severity: insight.severity },
+      metadata: {
+        insightType: insight.insightType,
+        severity: insight.severity,
+      },
     });
   };
 
@@ -63,32 +79,32 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       case InsightSeverity.CRITICAL:
         return {
           icon: AlertCircle,
-          bgColor: 'bg-red-50',
-          borderColor: 'border-red-200',
-          iconColor: 'text-red-600',
-          badgeBg: 'bg-red-100',
-          badgeText: 'text-red-800',
-          label: 'Critical',
+          bgColor: "bg-red-50",
+          borderColor: "border-red-200",
+          iconColor: "text-red-600",
+          badgeBg: "bg-red-100",
+          badgeText: "text-red-800",
+          label: "Critical",
         };
       case InsightSeverity.WARNING:
         return {
           icon: AlertTriangle,
-          bgColor: 'bg-yellow-50',
-          borderColor: 'border-yellow-200',
-          iconColor: 'text-yellow-600',
-          badgeBg: 'bg-yellow-100',
-          badgeText: 'text-yellow-800',
-          label: 'Warning',
+          bgColor: "bg-yellow-50",
+          borderColor: "border-yellow-200",
+          iconColor: "text-yellow-600",
+          badgeBg: "bg-yellow-100",
+          badgeText: "text-yellow-800",
+          label: "Warning",
         };
       case InsightSeverity.INFO:
         return {
           icon: Info,
-          bgColor: 'bg-blue-50',
-          borderColor: 'border-blue-200',
-          iconColor: 'text-blue-600',
-          badgeBg: 'bg-blue-100',
-          badgeText: 'text-blue-800',
-          label: 'Info',
+          bgColor: "bg-blue-50",
+          borderColor: "border-blue-200",
+          iconColor: "text-blue-600",
+          badgeBg: "bg-blue-100",
+          badgeText: "text-blue-800",
+          label: "Info",
         };
     }
   };
@@ -118,7 +134,9 @@ export const InsightCard: React.FC<InsightCardProps> = ({
         <Icon className={`w-6 h-6 ${config.iconColor} flex-shrink-0 mt-0.5`} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-1">
-            <span className={`${config.badgeBg} ${config.badgeText} text-xs font-semibold px-2 py-1 rounded`}>
+            <span
+              className={`${config.badgeBg} ${config.badgeText} text-xs font-semibold px-2 py-1 rounded`}
+            >
               {config.label}
             </span>
             <span className="text-xs text-gray-500">
@@ -140,10 +158,10 @@ export const InsightCard: React.FC<InsightCardProps> = ({
           <div
             className={`h-1.5 rounded-full ${
               insight.confidence >= 0.9
-                ? 'bg-green-600'
+                ? "bg-green-600"
                 : insight.confidence >= 0.7
-                ? 'bg-blue-600'
-                : 'bg-yellow-600'
+                  ? "bg-blue-600"
+                  : "bg-yellow-600"
             }`}
             style={{ width: `${insight.confidence * 100}%` }}
           />
@@ -158,7 +176,9 @@ export const InsightCard: React.FC<InsightCardProps> = ({
         <div className="space-y-2">
           <div className="flex items-center space-x-2 mb-2">
             <Zap className="w-4 h-4 text-purple-600" />
-            <span className="text-sm font-semibold text-gray-900">Suggested Actions</span>
+            <span className="text-sm font-semibold text-gray-900">
+              Suggested Actions
+            </span>
           </div>
           <div className="space-y-2">
             {insight.suggestedActions.slice(0, 2).map((action, index) => (

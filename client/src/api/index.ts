@@ -108,7 +108,8 @@ export const ownerApi = {
   getOverview: () => api.get<any>("/owner/overview"),
   getPlans: () => api.get<any>("/owner/plans"),
   createPlan: (payload: any) => api.post<any>("/owner/plans", payload),
-  updatePlan: (id: string, payload: any) => api.patch<any>(`/owner/plans/${id}`, payload),
+  updatePlan: (id: string, payload: any) =>
+    api.patch<any>(`/owner/plans/${id}`, payload),
   deletePlan: (id: string) => api.delete<any>(`/owner/plans/${id}`),
 
   getSubscriptions: (params?: { status?: string }) =>
@@ -133,8 +134,7 @@ export const accountsApi = {
     balance?: string;
     description?: string;
     isActive?: boolean;
-  }) =>
-    api.post<ApiResponse<any>>("/accounts", accountData),
+  }) => api.post<ApiResponse<any>>("/accounts", accountData),
 
   update: (
     id: string,
@@ -147,8 +147,7 @@ export const accountsApi = {
       description?: string;
       isActive?: boolean;
     }>,
-  ) =>
-    api.put<ApiResponse<any>>(`/accounts/${id}`, updateData),
+  ) => api.put<ApiResponse<any>>(`/accounts/${id}`, updateData),
 
   adjustBalance: (id: string, amount: number) =>
     api.post<ApiResponse<any>>(`/accounts/${id}/adjust-balance`, {
@@ -177,15 +176,14 @@ export const transactionsApi = {
     }[];
     description?: string;
     referenceNumber?: string;
-  }) =>
-    api.post<ApiResponse<any>>("/transactions", transactionData),
+  }) => api.post<ApiResponse<any>>("/transactions", transactionData),
 };
 
 // Export specialized API modules
-export { invoicesApi } from './invoices.api';
-export { paymentsApi } from './payments.api';
-export { reportsApi } from './reports.api';
-export { payrollApi } from './payroll.api';
-export { billingApi } from './billing.api';
+export { invoicesApi } from "./invoices.api";
+export { paymentsApi } from "./payments.api";
+export { reportsApi } from "./reports.api";
+export { payrollApi } from "./payroll.api";
+export { billingApi } from "./billing.api";
 
 export default api;

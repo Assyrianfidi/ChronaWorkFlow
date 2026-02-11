@@ -47,7 +47,12 @@ const theme = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isLoading, error: authError, isAuthenticated } = useAuthStore();
+  const {
+    login,
+    isLoading,
+    error: authError,
+    isAuthenticated,
+  } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
 
   React.useEffect(() => {

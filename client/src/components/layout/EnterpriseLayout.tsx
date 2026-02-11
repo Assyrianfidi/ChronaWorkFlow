@@ -9,7 +9,10 @@ import { DesktopModeNav } from "./DesktopModeNav";
 import { GlobalSearch } from "./GlobalSearch";
 import { QuickCreateMenu } from "./QuickCreateMenu";
 import { ThemeCustomizer } from "@/components/theme/ThemeCustomizer";
-import { ViewSwitcherDropdown, ViewBadge } from "@/components/view/ViewSwitcher";
+import {
+  ViewSwitcherDropdown,
+  ViewBadge,
+} from "@/components/view/ViewSwitcher";
 
 // UI Components
 import { Button } from "@/components/ui/button";
@@ -58,9 +61,9 @@ interface EnterpriseLayoutProps {
 // MODE STORAGE
 // ============================================================================
 
-const NAV_MODE_KEY = 'qb-navigation-mode';
+const NAV_MODE_KEY = "qb-navigation-mode";
 
-type NavMode = 'online' | 'desktop';
+type NavMode = "online" | "desktop";
 
 // ============================================================================
 // TOP BAR COMPONENT (For Online Mode)
@@ -124,23 +127,35 @@ const TopBar: React.FC<TopBarProps> = ({
           <DropdownMenuContent align="end" className="w-80">
             <DropdownMenuLabel className="flex items-center justify-between">
               <span className="font-semibold">Notifications</span>
-              <Badge variant="secondary" className="text-[10px]">{notifications} new</Badge>
+              <Badge variant="secondary" className="text-[10px]">
+                {notifications} new
+              </Badge>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <div className="max-h-64 overflow-auto">
               <div className="px-3 py-2 hover:bg-accent cursor-pointer">
                 <p className="text-sm font-medium">Invoice Overdue</p>
-                <p className="text-xs text-muted-foreground">INV-001 from Acme Corp is 5 days overdue</p>
-                <p className="text-xs text-muted-foreground mt-1">2 hours ago</p>
+                <p className="text-xs text-muted-foreground">
+                  INV-001 from Acme Corp is 5 days overdue
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  2 hours ago
+                </p>
               </div>
               <div className="px-3 py-2 hover:bg-accent cursor-pointer">
                 <p className="text-sm font-medium">Reconciliation Needed</p>
-                <p className="text-xs text-muted-foreground">Chase Checking account needs reconciliation</p>
-                <p className="text-xs text-muted-foreground mt-1">5 hours ago</p>
+                <p className="text-xs text-muted-foreground">
+                  Chase Checking account needs reconciliation
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  5 hours ago
+                </p>
               </div>
               <div className="px-3 py-2 hover:bg-accent cursor-pointer">
                 <p className="text-sm font-medium">Payroll Complete</p>
-                <p className="text-xs text-muted-foreground">Payroll run completed successfully</p>
+                <p className="text-xs text-muted-foreground">
+                  Payroll run completed successfully
+                </p>
                 <p className="text-xs text-muted-foreground mt-1">1 day ago</p>
               </div>
             </div>
@@ -162,23 +177,25 @@ const TopBar: React.FC<TopBarProps> = ({
             <DropdownMenuLabel className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-amber-500" />
               AI Assistant
-              <Badge variant="secondary" className="ml-auto text-[10px]">Beta</Badge>
+              <Badge variant="secondary" className="ml-auto text-[10px]">
+                Beta
+              </Badge>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate('/help/articles')}>
+            <DropdownMenuItem onClick={() => navigate("/help/articles")}>
               Help Articles
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/help/tutorials')}>
+            <DropdownMenuItem onClick={() => navigate("/help/tutorials")}>
               Training & Tutorials
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/help/community')}>
+            <DropdownMenuItem onClick={() => navigate("/help/community")}>
               Community Forums
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate('/help/contact')}>
+            <DropdownMenuItem onClick={() => navigate("/help/contact")}>
               Contact Support
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/help/feedback')}>
+            <DropdownMenuItem onClick={() => navigate("/help/feedback")}>
               Send Feedback
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -191,7 +208,7 @@ const TopBar: React.FC<TopBarProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => navigate('/settings')}
+          onClick={() => navigate("/settings")}
         >
           <Settings className="h-5 w-5" />
         </Button>
@@ -199,13 +216,21 @@ const TopBar: React.FC<TopBarProps> = ({
         {/* User Profile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="flex items-center gap-2 pl-2 pr-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2 pl-2 pr-1"
+            >
               <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
                 <User className="h-4 w-4 text-primary" />
               </div>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium leading-none">{user?.name || 'User'}</p>
-                <p className="text-xs text-muted-foreground">{user?.role || 'Owner'}</p>
+                <p className="text-sm font-medium leading-none">
+                  {user?.name || "User"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {user?.role || "Owner"}
+                </p>
               </div>
               <ChevronDown className="h-3 w-3 text-muted-foreground" />
             </Button>
@@ -216,20 +241,22 @@ const TopBar: React.FC<TopBarProps> = ({
                 <User className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-medium">{user?.name || 'User Name'}</p>
-                <p className="text-xs text-muted-foreground">{user?.email || 'user@example.com'}</p>
+                <p className="font-medium">{user?.name || "User Name"}</p>
+                <p className="text-xs text-muted-foreground">
+                  {user?.email || "user@example.com"}
+                </p>
               </div>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate('/profile')}>
+            <DropdownMenuItem onClick={() => navigate("/profile")}>
               <User className="mr-2 h-4 w-4" />
               My Profile
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/settings/company')}>
+            <DropdownMenuItem onClick={() => navigate("/settings/company")}>
               <Building2 className="mr-2 h-4 w-4" />
               Company Settings
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/settings/billing')}>
+            <DropdownMenuItem onClick={() => navigate("/settings/billing")}>
               <Sparkles className="mr-2 h-4 w-4 text-amber-500" />
               Billing & Plan
             </DropdownMenuItem>
@@ -255,13 +282,13 @@ export const EnterpriseLayout: React.FC<EnterpriseLayoutProps> = ({
   theme = "business",
 }) => {
   // Mode state
-  const [navMode, setNavMode] = useState<NavMode>('online');
+  const [navMode, setNavMode] = useState<NavMode>("online");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Load saved mode from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(NAV_MODE_KEY);
-    if (saved === 'desktop' || saved === 'online') {
+    if (saved === "desktop" || saved === "online") {
       setNavMode(saved);
     }
   }, []);
@@ -273,30 +300,32 @@ export const EnterpriseLayout: React.FC<EnterpriseLayoutProps> = ({
 
   // Toggle between modes
   const toggleNavMode = () => {
-    setNavMode(prev => prev === 'online' ? 'desktop' : 'online');
+    setNavMode((prev) => (prev === "online" ? "desktop" : "online"));
   };
 
   // Mock user context - replace with real auth
-  const userRole: UserRole = 'OWNER';
-  const subscription: SubscriptionTier = 'ENTERPRISE';
+  const userRole: UserRole = "OWNER";
+  const subscription: SubscriptionTier = "ENTERPRISE";
   const features: FeatureFlag[] = [
-    'PAYROLL',
-    'TIME_TRACKING',
-    'PROJECTS',
-    'INVENTORY',
-    'ADVANCED_REPORTING',
-    'BUDGETING',
-    '1099_FILING',
-    'ACCOUNTANT_TOOLS',
+    "PAYROLL",
+    "TIME_TRACKING",
+    "PROJECTS",
+    "INVENTORY",
+    "ADVANCED_REPORTING",
+    "BUDGETING",
+    "1099_FILING",
+    "ACCOUNTANT_TOOLS",
   ];
 
   return (
-    <div className={cn(
-      "min-h-screen bg-background",
-      theme === 'desktop' && navMode === 'desktop' && "bg-slate-50",
-      className
-    )}>
-      {navMode === 'online' ? (
+    <div
+      className={cn(
+        "min-h-screen bg-background",
+        theme === "desktop" && navMode === "desktop" && "bg-slate-50",
+        className,
+      )}
+    >
+      {navMode === "online" ? (
         // ONLINE MODE: Sidebar + Top Bar Layout
         <div className="flex h-screen overflow-hidden">
           {/* Left Sidebar */}
@@ -321,9 +350,7 @@ export const EnterpriseLayout: React.FC<EnterpriseLayoutProps> = ({
 
             {/* Page Content */}
             <main className="flex-1 overflow-auto bg-muted/30 p-6">
-              <div className="max-w-7xl mx-auto">
-                {children}
-              </div>
+              <div className="max-w-7xl mx-auto">{children}</div>
             </main>
           </div>
         </div>
@@ -340,9 +367,7 @@ export const EnterpriseLayout: React.FC<EnterpriseLayoutProps> = ({
 
           {/* Page Content */}
           <main className="flex-1 overflow-auto bg-slate-50 p-6">
-            <div className="max-w-7xl mx-auto">
-              {children}
-            </div>
+            <div className="max-w-7xl mx-auto">{children}</div>
           </main>
         </div>
       )}

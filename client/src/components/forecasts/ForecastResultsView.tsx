@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -10,12 +10,17 @@ import {
   ResponsiveContainer,
   Area,
   AreaChart,
-} from 'recharts';
-import Card, { CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { Badge } from '@/components/ui/Badge';
-import { TrendingUp, AlertCircle, Info } from 'lucide-react';
+} from "recharts";
+import Card, {
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/Card";
+import { LoadingState } from "@/components/ui/LoadingState";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Badge } from "@/components/ui/Badge";
+import { TrendingUp, AlertCircle, Info } from "lucide-react";
 
 interface ForecastDataPoint {
   month: string;
@@ -51,7 +56,7 @@ interface ForecastResultsViewProps {
 
 export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
   forecastId,
-  className = '',
+  className = "",
 }) => {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,23 +71,23 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
 
         const url = forecastId
           ? `/api/forecasts/${forecastId}`
-          : '/api/forecasts/latest';
+          : "/api/forecasts/latest";
 
         const response = await fetch(url, {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch forecast');
+          throw new Error("Failed to fetch forecast");
         }
 
         const data = await response.json();
         setForecast(data);
       } catch (err) {
-        console.error('Error fetching forecast:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        console.error("Error fetching forecast:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -92,24 +97,24 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
   }, [forecastId]);
 
   const formatCurrency = (value: number): string => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
   };
 
   const getConfidenceColor = (confidence: number): string => {
-    if (confidence >= 80) return 'text-green-600';
-    if (confidence >= 60) return 'text-yellow-600';
-    return 'text-red-600';
+    if (confidence >= 80) return "text-green-600";
+    if (confidence >= 60) return "text-yellow-600";
+    return "text-red-600";
   };
 
   const getConfidenceLabel = (confidence: number): string => {
-    if (confidence >= 80) return 'High Confidence';
-    if (confidence >= 60) return 'Moderate Confidence';
-    return 'Low Confidence';
+    if (confidence >= 80) return "High Confidence";
+    if (confidence >= 60) return "Moderate Confidence";
+    return "Low Confidence";
   };
 
   if (loading) {
@@ -159,7 +164,7 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
                 {forecast.description}
               </CardDescription>
             </div>
-            <Badge variant="outline">{forecast.type.replace('_', ' ')}</Badge>
+            <Badge variant="outline">{forecast.type.replace("_", " ")}</Badge>
           </div>
         </CardHeader>
 
@@ -170,7 +175,7 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
               <div>
                 <p className="text-sm text-gray-600 mb-1">Forecast Value</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {forecast.result.unit === 'USD'
+                  {forecast.result.unit === "USD"
                     ? formatCurrency(forecast.result.value)
                     : `${forecast.result.value} ${forecast.result.unit}`}
                 </p>
@@ -179,7 +184,7 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
                 <p className="text-sm text-gray-600 mb-1">Confidence Score</p>
                 <p
                   className={`text-3xl font-bold ${getConfidenceColor(
-                    forecast.confidenceScore
+                    forecast.confidenceScore,
                   )}`}
                 >
                   {forecast.confidenceScore}%
@@ -210,7 +215,7 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
                   aria-expanded={showTable}
                   aria-controls="forecast-data-table"
                 >
-                  {showTable ? 'Hide' : 'Show'} data table
+                  {showTable ? "Hide" : "Show"} data table
                 </button>
               </div>
 
@@ -226,42 +231,84 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
                     margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
                   >
                     <defs>
-                      <linearGradient id="colorBest" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                      <linearGradient
+                        id="colorBest"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#10b981"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#10b981"
+                          stopOpacity={0}
+                        />
                       </linearGradient>
-                      <linearGradient id="colorExpected" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                      <linearGradient
+                        id="colorExpected"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0}
+                        />
                       </linearGradient>
-                      <linearGradient id="colorWorst" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                      <linearGradient
+                        id="colorWorst"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#ef4444"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#ef4444"
+                          stopOpacity={0}
+                        />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                     <XAxis
                       dataKey="month"
                       stroke="#6b7280"
-                      style={{ fontSize: '12px' }}
+                      style={{ fontSize: "12px" }}
                     />
                     <YAxis
                       stroke="#6b7280"
-                      style={{ fontSize: '12px' }}
+                      style={{ fontSize: "12px" }}
                       tickFormatter={(value) => formatCurrency(value)}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#fff',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        padding: '12px',
+                        backgroundColor: "#fff",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "8px",
+                        padding: "12px",
                       }}
-                      formatter={(value: number) => [formatCurrency(value), '']}
-                      labelStyle={{ fontWeight: 'bold', marginBottom: '8px' }}
+                      formatter={(value: number) => [formatCurrency(value), ""]}
+                      labelStyle={{ fontWeight: "bold", marginBottom: "8px" }}
                     />
                     <Legend
-                      wrapperStyle={{ paddingTop: '20px' }}
+                      wrapperStyle={{ paddingTop: "20px" }}
                       iconType="line"
                     />
                     <Area
@@ -300,8 +347,8 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
                 >
                   <table className="min-w-full divide-y divide-gray-200">
                     <caption className="sr-only">
-                      Cash flow projection data table showing best case, expected,
-                      and worst case scenarios by month
+                      Cash flow projection data table showing best case,
+                      expected, and worst case scenarios by month
                     </caption>
                     <thead className="bg-gray-50">
                       <tr>
@@ -359,7 +406,10 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
           {forecast.assumptions && forecast.assumptions.length > 0 && (
             <div className="mb-8">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <Info className="w-5 h-5 mr-2 text-blue-600" aria-hidden="true" />
+                <Info
+                  className="w-5 h-5 mr-2 text-blue-600"
+                  aria-hidden="true"
+                />
                 Key Assumptions
               </h3>
               <div className="space-y-3">
@@ -370,14 +420,14 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
                   >
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">
-                        {assumption.key.replace(/_/g, ' ')}
+                        {assumption.key.replace(/_/g, " ")}
                       </p>
                       <p className="text-xs text-gray-600 mt-1">
                         Sensitivity: {assumption.sensitivity}
                       </p>
                     </div>
                     <p className="text-lg font-semibold text-gray-900">
-                      {typeof assumption.value === 'number'
+                      {typeof assumption.value === "number"
                         ? formatCurrency(assumption.value)
                         : assumption.value}
                     </p>
@@ -393,9 +443,9 @@ export const ForecastResultsView: React.FC<ForecastResultsViewProps> = ({
               About Confidence Scores
             </h4>
             <p className="text-sm text-blue-800">
-              Confidence scores reflect the reliability of this forecast based on data
-              quality, historical accuracy, and assumption sensitivity. Higher scores
-              indicate more reliable predictions.
+              Confidence scores reflect the reliability of this forecast based
+              on data quality, historical accuracy, and assumption sensitivity.
+              Higher scores indicate more reliable predictions.
             </p>
           </div>
         </CardContent>

@@ -3,7 +3,10 @@
  * Safe defaults with environment-aware evaluation
  */
 
-import type { FeatureFlagKey, FeatureFlagContext } from '@/../../shared/featureFlags/types';
+import type {
+  FeatureFlagKey,
+  FeatureFlagContext,
+} from "@/../../shared/featureFlags/types";
 
 class FrontendFeatureFlags {
   private flags: Record<string, boolean> = {};
@@ -18,7 +21,10 @@ class FrontendFeatureFlags {
   /**
    * Initialize with server-provided flags
    */
-  initialize(flags: Record<string, boolean>, context?: Partial<FeatureFlagContext>): void {
+  initialize(
+    flags: Record<string, boolean>,
+    context?: Partial<FeatureFlagContext>,
+  ): void {
     this.flags = flags;
     this.context = {
       ...this.context,
@@ -63,17 +69,17 @@ class FrontendFeatureFlags {
   /**
    * Get current environment
    */
-  private getEnvironment(): 'development' | 'staging' | 'production' {
-    if (process.env.NODE_ENV === 'development') {
-      return 'development';
+  private getEnvironment(): "development" | "staging" | "production" {
+    if (process.env.NODE_ENV === "development") {
+      return "development";
     }
-    
+
     const hostname = window.location.hostname;
-    if (hostname.includes('staging')) {
-      return 'staging';
+    if (hostname.includes("staging")) {
+      return "staging";
     }
-    
-    return 'production';
+
+    return "production";
   }
 }
 

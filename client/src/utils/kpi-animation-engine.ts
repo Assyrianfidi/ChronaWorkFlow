@@ -75,7 +75,8 @@ export class KPIAnimationEngine {
 
       const animationConfig: KPIAnimationConfig = {
         duration: mergedConfig.duration ?? 2000,
-        easing: (mergedConfig.easing as KPIAnimationConfig["easing"]) ?? "ease-out",
+        easing:
+          (mergedConfig.easing as KPIAnimationConfig["easing"]) ?? "ease-out",
         delay: mergedConfig.delay,
         stagger: mergedConfig.stagger,
         loop: mergedConfig.loop,

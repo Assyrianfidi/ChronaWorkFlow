@@ -7,7 +7,8 @@ import { Input } from "@/components/ui";
 import Form, { FormField, FormActions } from "./Form";
 import type { ReportFormProps, ReportFormValues } from "./types";
 
-const attachmentSchema = typeof File !== "undefined" ? z.instanceof(File) : z.any();
+const attachmentSchema =
+  typeof File !== "undefined" ? z.instanceof(File) : z.any();
 
 const reportSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -69,7 +70,11 @@ export function ReportForm({
         />
       </FormField>
 
-      <FormField label="Description" error={errors.description?.message} required>
+      <FormField
+        label="Description"
+        error={errors.description?.message}
+        required
+      >
         <textarea
           {...register("description")}
           rows={4}
@@ -142,7 +147,12 @@ export function ReportForm({
         </Button>
 
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
         )}

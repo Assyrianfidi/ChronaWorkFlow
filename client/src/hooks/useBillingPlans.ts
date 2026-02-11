@@ -88,7 +88,10 @@ export function useCurrentSubscription(companyId: string) {
   } = useQuery<{ plan: Plan; entitlements: Entitlements }>({
     queryKey: ["billing-subscription", companyId],
     queryFn: async () => {
-      const response = await api.get<{ plan: Plan; entitlements: Entitlements }>(`/billing/subscription?companyId=${companyId}`);
+      const response = await api.get<{
+        plan: Plan;
+        entitlements: Entitlements;
+      }>(`/billing/subscription?companyId=${companyId}`);
       return response.data;
     },
     enabled: !!companyId,
@@ -99,11 +102,16 @@ export function useCurrentSubscription(companyId: string) {
 
   const upgrade = useMutation({
     mutationFn: async ({ planId }: { planId: string }) => {
-      const response = await api.post("/billing/upgrade", { planId, companyId });
+      const response = await api.post("/billing/upgrade", {
+        planId,
+        companyId,
+      });
       return response.data;
     },
     onSuccess: () => {
-      toast.success("Upgrade request received. You will be redirected to payment.");
+      toast.success(
+        "Upgrade request received. You will be redirected to payment.",
+      );
       queryClient.invalidateQueries({ queryKey: ["billing-subscription"] });
     },
     onError: (error: any) => {

@@ -3,14 +3,14 @@
  * Accounts Receivable overview with metrics and aging
  */
 
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { useToast } from '@/hooks/useToast';
-import { useView } from '@/contexts/ViewContext';
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/useToast";
+import { useView } from "@/contexts/ViewContext";
 import {
   DollarSign,
   TrendingUp,
@@ -20,7 +20,7 @@ import {
   FileText,
   ArrowUpRight,
   ArrowDownRight,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface ARMetrics {
   totalOutstanding: number;
@@ -41,10 +41,10 @@ const ARDashboard: React.FC = () => {
 
   // Fetch AR metrics
   const { data: metrics, isLoading: metricsLoading } = useQuery<ARMetrics>({
-    queryKey: ['ar-metrics'],
+    queryKey: ["ar-metrics"],
     queryFn: async () => {
-      const response = await fetch('/api/ar/dashboard');
-      if (!response.ok) throw new Error('Failed to fetch AR metrics');
+      const response = await fetch("/api/ar/dashboard");
+      if (!response.ok) throw new Error("Failed to fetch AR metrics");
       const data = await response.json();
       return data.data;
     },
@@ -52,19 +52,19 @@ const ARDashboard: React.FC = () => {
 
   // Fetch aging report
   const { data: aging, isLoading: agingLoading } = useQuery<AgingBucket[]>({
-    queryKey: ['ar-aging'],
+    queryKey: ["ar-aging"],
     queryFn: async () => {
-      const response = await fetch('/api/ar/aging');
-      if (!response.ok) throw new Error('Failed to fetch aging report');
+      const response = await fetch("/api/ar/aging");
+      if (!response.ok) throw new Error("Failed to fetch aging report");
       const data = await response.json();
       return data.data;
     },
   });
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(amount);
   };
 
@@ -74,7 +74,7 @@ const ARDashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            {mainViewConfig.terminology.sales || 'Accounts Receivable'}
+            {mainViewConfig.terminology.sales || "Accounts Receivable"}
           </h1>
           <p className="text-muted-foreground">
             Manage customer invoices and payments
@@ -96,12 +96,16 @@ const ARDashboard: React.FC = () => {
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Outstanding</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Outstanding
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metricsLoading ? '...' : formatCurrency(metrics?.totalOutstanding || 0)}
+              {metricsLoading
+                ? "..."
+                : formatCurrency(metrics?.totalOutstanding || 0)}
             </div>
             <p className="text-xs text-muted-foreground">
               Across all customers
@@ -111,12 +115,16 @@ const ARDashboard: React.FC = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Received (30 days)</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Received (30 days)
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-emerald-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-emerald-600">
-              {metricsLoading ? '...' : formatCurrency(metrics?.receivedLast30Days || 0)}
+              {metricsLoading
+                ? "..."
+                : formatCurrency(metrics?.receivedLast30Days || 0)}
             </div>
             <p className="text-xs text-muted-foreground flex items-center">
               <ArrowUpRight className="h-3 w-3 mr-1 text-emerald-600" />
@@ -127,12 +135,16 @@ const ARDashboard: React.FC = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Overdue Amount</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Overdue Amount
+            </CardTitle>
             <AlertCircle className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
-              {metricsLoading ? '...' : formatCurrency(metrics?.overdueAmount || 0)}
+              {metricsLoading
+                ? "..."
+                : formatCurrency(metrics?.overdueAmount || 0)}
             </div>
             <p className="text-xs text-muted-foreground flex items-center">
               <ArrowDownRight className="h-3 w-3 mr-1 text-red-600" />
@@ -143,16 +155,16 @@ const ARDashboard: React.FC = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Customers</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Customers
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metricsLoading ? '...' : (metrics?.totalCustomers || 0)}
+              {metricsLoading ? "..." : metrics?.totalCustomers || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
-              With open balances
-            </p>
+            <p className="text-xs text-muted-foreground">With open balances</p>
           </CardContent>
         </Card>
       </div>
@@ -189,15 +201,17 @@ const ARDashboard: React.FC = () => {
                   <Progress
                     value={
                       aging.reduce((sum, b) => sum + b.amount, 0) > 0
-                        ? (bucket.amount / aging.reduce((sum, b) => sum + b.amount, 0)) * 100
+                        ? (bucket.amount /
+                            aging.reduce((sum, b) => sum + b.amount, 0)) *
+                          100
                         : 0
                     }
                     className={`h-2 ${
-                      bucket.bucket === 'Current'
-                        ? 'bg-emerald-100'
-                        : bucket.bucket.includes('30')
-                        ? 'bg-yellow-100'
-                        : 'bg-red-100'
+                      bucket.bucket === "Current"
+                        ? "bg-emerald-100"
+                        : bucket.bucket.includes("30")
+                          ? "bg-yellow-100"
+                          : "bg-red-100"
                     }`}
                   />
                 </div>
@@ -206,7 +220,9 @@ const ARDashboard: React.FC = () => {
               <div className="pt-4 border-t flex items-center justify-between">
                 <span className="font-bold">Total Outstanding</span>
                 <span className="font-bold text-lg">
-                  {formatCurrency(aging?.reduce((sum, b) => sum + b.amount, 0) || 0)}
+                  {formatCurrency(
+                    aging?.reduce((sum, b) => sum + b.amount, 0) || 0,
+                  )}
                 </span>
               </div>
             </div>

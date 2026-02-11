@@ -348,7 +348,8 @@ export class PerformanceEngine {
 
     // Custom metrics
     const pageLoadTime = navigation
-      ? navigation.loadEventEnd - ((navigation as any).navigationStart ?? navigation.startTime)
+      ? navigation.loadEventEnd -
+        ((navigation as any).navigationStart ?? navigation.startTime)
       : now - this.navigationStart;
     const renderTime = firstContentfulPaint;
     const apiResponseTime = this.calculateAverageApiResponseTime();

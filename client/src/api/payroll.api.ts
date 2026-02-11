@@ -1,5 +1,5 @@
-import api from './index';
-import type { ApiResponse } from './index';
+import api from "./index";
+import type { ApiResponse } from "./index";
 
 export interface PayRun {
   id: string;
@@ -7,7 +7,13 @@ export interface PayRun {
   payPeriodStart: string;
   payPeriodEnd: string;
   payDate: string;
-  status: 'draft' | 'pending_approval' | 'approved' | 'processing' | 'completed' | 'cancelled';
+  status:
+    | "draft"
+    | "pending_approval"
+    | "approved"
+    | "processing"
+    | "completed"
+    | "cancelled";
   totalAmount: string;
   employeeCount: number;
   notes?: string;
@@ -30,7 +36,7 @@ export interface CreatePayRunRequest {
 }
 
 export interface ExecutePayRunRequest {
-  targetStatus: 'approved' | 'processing' | 'completed';
+  targetStatus: "approved" | "processing" | "completed";
 }
 
 export interface PayRunListParams {
@@ -47,10 +53,14 @@ export const payrollApi = {
    * List pay runs for a company
    */
   list: (params: PayRunListParams) =>
-    api.get<ApiResponse<{ payRuns: PayRun[]; total: number; page: number; totalPages: number }>>(
-      '/payroll/runs',
-      { params }
-    ),
+    api.get<
+      ApiResponse<{
+        payRuns: PayRun[];
+        total: number;
+        page: number;
+        totalPages: number;
+      }>
+    >("/payroll/runs", { params }),
 
   /**
    * Get a single pay run by ID
@@ -64,20 +74,25 @@ export const payrollApi = {
    * Create a new pay run
    */
   create: (data: CreatePayRunRequest, idempotencyKey?: string) =>
-    api.post<ApiResponse<PayRun>>('/payroll/runs', data, {
-      headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {},
+    api.post<ApiResponse<PayRun>>("/payroll/runs", data, {
+      headers: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
     }),
 
   /**
    * Execute a pay run (posts to ledger when completed)
    */
-  execute: (id: string, companyId: string, data: ExecutePayRunRequest, idempotencyKey: string) =>
+  execute: (
+    id: string,
+    companyId: string,
+    data: ExecutePayRunRequest,
+    idempotencyKey: string,
+  ) =>
     api.post<ApiResponse<{ payRun: PayRun; replayed: boolean }>>(
       `/payroll/runs/${id}/execute`,
       { ...data, companyId },
       {
-        headers: { 'Idempotency-Key': idempotencyKey },
-      }
+        headers: { "Idempotency-Key": idempotencyKey },
+      },
     ),
 
   /**

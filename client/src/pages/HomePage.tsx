@@ -1,7 +1,16 @@
-import React from 'react';
-import { ArrowRight, Check, Zap, Shield, TrendingUp, Users, BarChart3, Lock } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import {
+  ArrowRight,
+  Check,
+  Zap,
+  Shield,
+  TrendingUp,
+  Users,
+  BarChart3,
+  Lock,
+} from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -9,34 +18,40 @@ export const HomePage: React.FC = () => {
   const features = [
     {
       icon: <BarChart3 className="w-6 h-6" />,
-      title: 'Real-time Financial Insights',
-      description: 'Make data-driven decisions with live dashboards and analytics',
+      title: "Real-time Financial Insights",
+      description:
+        "Make data-driven decisions with live dashboards and analytics",
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: 'Bank-grade Security',
-      description: 'Your data is encrypted and protected with enterprise-level security',
+      title: "Bank-grade Security",
+      description:
+        "Your data is encrypted and protected with enterprise-level security",
     },
     {
       icon: <Zap className="w-6 h-6" />,
-      title: 'Lightning Fast',
-      description: 'Built for speed with modern technology that scales with your business',
+      title: "Lightning Fast",
+      description:
+        "Built for speed with modern technology that scales with your business",
     },
     {
       icon: <Users className="w-6 h-6" />,
-      title: 'Team Collaboration',
-      description: 'Work together seamlessly with role-based access and permissions',
+      title: "Team Collaboration",
+      description:
+        "Work together seamlessly with role-based access and permissions",
     },
   ];
 
   const testimonials = [
     {
-      quote: "AccuBooks transformed how we manage our finances. The insights are invaluable.",
+      quote:
+        "AccuBooks transformed how we manage our finances. The insights are invaluable.",
       author: "Sarah Chen",
       role: "CFO, TechCorp",
     },
     {
-      quote: "Finally, accounting software that doesn't feel like it's from the 90s.",
+      quote:
+        "Finally, accounting software that doesn't feel like it's from the 90s.",
       author: "Michael Rodriguez",
       role: "Founder, StartupXYZ",
     },
@@ -55,15 +70,15 @@ export const HomePage: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-8 h-8 text-primary" />
-              <span className="text-xl font-bold text-gray-900 dark:text-white">AccuBooks</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                AccuBooks
+              </span>
             </div>
             <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => navigate('/login')}>
+              <Button variant="ghost" onClick={() => navigate("/login")}>
                 Sign In
               </Button>
-              <Button onClick={() => navigate('/register')}>
-                Get Started
-              </Button>
+              <Button onClick={() => navigate("/register")}>Get Started</Button>
             </div>
           </div>
         </div>
@@ -78,15 +93,19 @@ export const HomePage: React.FC = () => {
               <span className="block text-primary mt-2">Modern Businesses</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-8">
-              Make better financial decisions with real-time insights, powerful analytics,
-              and intuitive tools designed for the way you work.
+              Make better financial decisions with real-time insights, powerful
+              analytics, and intuitive tools designed for the way you work.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" onClick={() => navigate('/register')}>
+              <Button size="lg" onClick={() => navigate("/register")}>
                 Start Free Trial
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <Button size="lg" variant="outline" onClick={() => navigate('/pricing')}>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => navigate("/pricing")}
+              >
                 View Pricing
               </Button>
             </div>
@@ -112,7 +131,8 @@ export const HomePage: React.FC = () => {
               Everything you need to succeed
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Powerful features designed to help you make better financial decisions
+              Powerful features designed to help you make better financial
+              decisions
             </p>
           </div>
 
@@ -179,12 +199,13 @@ export const HomePage: React.FC = () => {
             Ready to transform your finances?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Start your free trial today and see why thousands of businesses trust AccuBooks
+            Start your free trial today and see why thousands of businesses
+            trust AccuBooks
           </p>
           <Button
             size="lg"
             variant="secondary"
-            onClick={() => navigate('/register')}
+            onClick={() => navigate("/register")}
           >
             Start Free Trial
             <ArrowRight className="w-5 h-5 ml-2" />
@@ -197,60 +218,92 @@ export const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Product</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
+                Product
+              </h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="/features" className="text-gray-600 dark:text-gray-400 hover:text-primary">
+                  <a
+                    href="/features"
+                    className="text-gray-600 dark:text-gray-400 hover:text-primary"
+                  >
                     Features
                   </a>
                 </li>
                 <li>
-                  <a href="/pricing" className="text-gray-600 dark:text-gray-400 hover:text-primary">
+                  <a
+                    href="/pricing"
+                    className="text-gray-600 dark:text-gray-400 hover:text-primary"
+                  >
                     Pricing
                   </a>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Company</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
+                Company
+              </h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="/about" className="text-gray-600 dark:text-gray-400 hover:text-primary">
+                  <a
+                    href="/about"
+                    className="text-gray-600 dark:text-gray-400 hover:text-primary"
+                  >
                     About
                   </a>
                 </li>
                 <li>
-                  <a href="/contact" className="text-gray-600 dark:text-gray-400 hover:text-primary">
+                  <a
+                    href="/contact"
+                    className="text-gray-600 dark:text-gray-400 hover:text-primary"
+                  >
                     Contact
                   </a>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Legal</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
+                Legal
+              </h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="/privacy" className="text-gray-600 dark:text-gray-400 hover:text-primary">
+                  <a
+                    href="/privacy"
+                    className="text-gray-600 dark:text-gray-400 hover:text-primary"
+                  >
                     Privacy
                   </a>
                 </li>
                 <li>
-                  <a href="/terms" className="text-gray-600 dark:text-gray-400 hover:text-primary">
+                  <a
+                    href="/terms"
+                    className="text-gray-600 dark:text-gray-400 hover:text-primary"
+                  >
                     Terms
                   </a>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Support</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
+                Support
+              </h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="/help" className="text-gray-600 dark:text-gray-400 hover:text-primary">
+                  <a
+                    href="/help"
+                    className="text-gray-600 dark:text-gray-400 hover:text-primary"
+                  >
                     Help Center
                   </a>
                 </li>
                 <li>
-                  <a href="/contact" className="text-gray-600 dark:text-gray-400 hover:text-primary">
+                  <a
+                    href="/contact"
+                    className="text-gray-600 dark:text-gray-400 hover:text-primary"
+                  >
                     Contact Us
                   </a>
                 </li>

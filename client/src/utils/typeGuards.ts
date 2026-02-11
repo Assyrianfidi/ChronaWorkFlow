@@ -8,20 +8,20 @@ type Invoice = {
 
 export const isUser = (data: unknown): data is User => {
   return (
-    typeof data === 'object' &&
+    typeof data === "object" &&
     data !== null &&
-    'id' in data &&
-    'email' in data &&
-    'role' in data
+    "id" in data &&
+    "email" in data &&
+    "role" in data
   );
 };
 
 export const isInvoice = (data: unknown): data is Invoice => {
   return (
-    typeof data === 'object' &&
+    typeof data === "object" &&
     data !== null &&
-    'id' in data &&
-    'amount' in data &&
-    'date' in data
+    "id" in data &&
+    "amount" in data &&
+    "date" in data
   );
 };

@@ -33,7 +33,9 @@ function installGlobalErrorHandlers(): void {
   w[GLOBAL_ERROR_GUARD_KEY] = true;
 
   window.addEventListener("error", (event) => {
-    const err = normalizeUnknownError((event as any)?.error || (event as any)?.message);
+    const err = normalizeUnknownError(
+      (event as any)?.error || (event as any)?.message,
+    );
     handleRuntimeError(err);
   });
 
@@ -160,7 +162,8 @@ export const handleSuccess = (
 
 export const handleRuntimeError = (error: Error) => {
   const requestId = getRequestId();
-  const route = typeof window !== "undefined" ? window.location.pathname : undefined;
+  const route =
+    typeof window !== "undefined" ? window.location.pathname : undefined;
 
   if (import.meta.env.PROD) {
     console.error("runtime_error", {

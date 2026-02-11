@@ -88,7 +88,9 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
           <div className="flex items-center gap-3">
             <DollarSign className="w-5 h-5 text-primary" />
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Cash Flow</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                Cash Flow
+              </h3>
               <p className="text-sm text-muted-foreground">Monthly overview</p>
             </div>
           </div>
@@ -145,7 +147,10 @@ const CashFlowChart = React.forwardRef<HTMLDivElement, CashFlowChartProps>(
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={cashFlowData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-gray)" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="var(--border-gray)"
+              />
               <XAxis
                 dataKey="month"
                 tick={{ fontSize: 12, fill: "var(--text-muted)" }}

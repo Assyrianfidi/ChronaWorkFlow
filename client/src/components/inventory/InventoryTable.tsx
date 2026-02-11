@@ -154,7 +154,9 @@ export function InventoryTable({
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6"
-                          aria-label={isRowExpanded ? "Collapse row" : "Expand row"}
+                          aria-label={
+                            isRowExpanded ? "Collapse row" : "Expand row"
+                          }
                           onClick={(e) => {
                             e.stopPropagation();
                             onToggleExpand(item.id);

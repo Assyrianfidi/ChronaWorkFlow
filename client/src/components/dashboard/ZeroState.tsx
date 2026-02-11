@@ -111,7 +111,9 @@ const ZeroState = React.forwardRef<HTMLDivElement, ZeroStateProps>(
         {/* Additional Help for Dashboard */}
         {type === "dashboard" && (
           <div className="mt-8 pt-8 border-t border-border">
-            <p className="text-sm text-muted-foreground mb-4">Quick start options:</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Quick start options:
+            </p>
             <div className="flex flex-wrap gap-3 justify-center">
               <EnterpriseButton variant="ghost" size="sm">
                 <FileText className="w-4 h-4 mr-2" />

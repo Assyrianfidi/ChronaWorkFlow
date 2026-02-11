@@ -3,17 +3,21 @@
  * Comprehensive reporting with P&L, Balance Sheet, and Trial Balance
  */
 
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon } from 'lucide-react';
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -21,7 +25,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   BarChart,
   Bar,
@@ -33,7 +37,7 @@ import {
   PieChart,
   Pie,
   Cell,
-} from 'recharts';
+} from "recharts";
 import {
   Download,
   FileText,
@@ -45,11 +49,11 @@ import {
   BarChart3,
   Printer,
   Share2,
-} from 'lucide-react';
-import { useToast } from '@/hooks/useToast';
-import { useView } from '@/contexts/ViewContext';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { DateRange } from 'react-day-picker';
+} from "lucide-react";
+import { useToast } from "@/hooks/useToast";
+import { useView } from "@/contexts/ViewContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DateRange } from "react-day-picker";
 
 interface ReportLine {
   accountId: string;
@@ -60,7 +64,7 @@ interface ReportLine {
   periodDebits: number;
   periodCredits: number;
   endingBalance: number;
-  normalBalance: 'debit' | 'credit';
+  normalBalance: "debit" | "credit";
 }
 
 interface TrialBalance {
@@ -109,34 +113,35 @@ interface BalanceSheet {
   totalLiabilitiesAndEquity: number;
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 export const FinancialReports: React.FC = () => {
   const { toast } = useToast();
   const { mainViewConfig, mainView } = useView();
-  const [activeTab, setActiveTab] = useState('trial-balance');
+  const [activeTab, setActiveTab] = useState("trial-balance");
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: startOfMonth(subMonths(new Date(), 1)),
     to: endOfMonth(subMonths(new Date(), 1)),
   });
 
   // Fetch trial balance
-  const { data: trialBalance, isLoading: trialBalanceLoading } = useQuery<TrialBalance>({
-    queryKey: ['trial-balance', dateRange],
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/ledger/reports/trial-balance?startDate=${dateRange.from?.toISOString()}&endDate=${dateRange.to?.toISOString()}`
-      );
-      return response.json();
-    },
-  });
+  const { data: trialBalance, isLoading: trialBalanceLoading } =
+    useQuery<TrialBalance>({
+      queryKey: ["trial-balance", dateRange],
+      queryFn: async () => {
+        const response = await fetch(
+          `/api/ledger/reports/trial-balance?startDate=${dateRange.from?.toISOString()}&endDate=${dateRange.to?.toISOString()}`,
+        );
+        return response.json();
+      },
+    });
 
   // Fetch P&L
   const { data: plData, isLoading: plLoading } = useQuery<PLSummary>({
-    queryKey: ['pl', dateRange],
+    queryKey: ["pl", dateRange],
     queryFn: async () => {
       const response = await fetch(
-        `/api/financial-reports/pl?startDate=${dateRange.from?.toISOString()}&endDate=${dateRange.to?.toISOString()}`
+        `/api/financial-reports/pl?startDate=${dateRange.from?.toISOString()}&endDate=${dateRange.to?.toISOString()}`,
       );
       return response.json();
     },
@@ -144,25 +149,27 @@ export const FinancialReports: React.FC = () => {
 
   // Fetch Balance Sheet
   const { data: balanceSheet, isLoading: bsLoading } = useQuery<BalanceSheet>({
-    queryKey: ['balance-sheet', dateRange.to],
+    queryKey: ["balance-sheet", dateRange.to],
     queryFn: async () => {
       const response = await fetch(
-        `/api/financial-reports/balance-sheet?asOfDate=${dateRange.to?.toISOString()}`
+        `/api/financial-reports/balance-sheet?asOfDate=${dateRange.to?.toISOString()}`,
       );
       return response.json();
     },
   });
 
-  const handleExport = (format: 'pdf' | 'excel' | 'csv') => {
+  const handleExport = (format: "pdf" | "excel" | "csv") => {
     toast({
-      title: 'Export initiated',
+      title: "Export initiated",
       description: `Your ${format.toUpperCase()} report is being generated.`,
     });
   };
 
   const renderTrialBalance = () => {
-    if (trialBalanceLoading) return <div className="py-8 text-center">Loading trial balance...</div>;
-    if (!trialBalance) return <div className="py-8 text-center">No data available</div>;
+    if (trialBalanceLoading)
+      return <div className="py-8 text-center">Loading trial balance...</div>;
+    if (!trialBalance)
+      return <div className="py-8 text-center">No data available</div>;
 
     return (
       <div className="space-y-4">
@@ -170,12 +177,12 @@ export const FinancialReports: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold">Trial Balance</h3>
             <p className="text-sm text-muted-foreground">
-              {format(new Date(trialBalance.startDate), 'MMM dd, yyyy')} - {' '}
-              {format(new Date(trialBalance.endDate), 'MMM dd, yyyy')}
+              {format(new Date(trialBalance.startDate), "MMM dd, yyyy")} -{" "}
+              {format(new Date(trialBalance.endDate), "MMM dd, yyyy")}
             </p>
           </div>
-          <Badge variant={trialBalance.isBalanced ? 'default' : 'destructive'}>
-            {trialBalance.isBalanced ? '✓ Balanced' : '✗ Unbalanced'}
+          <Badge variant={trialBalance.isBalanced ? "default" : "destructive"}>
+            {trialBalance.isBalanced ? "✓ Balanced" : "✗ Unbalanced"}
           </Badge>
         </div>
 
@@ -195,7 +202,9 @@ export const FinancialReports: React.FC = () => {
             <TableBody>
               {trialBalance.lines.map((line) => (
                 <TableRow key={line.accountId}>
-                  <TableCell className="font-medium">{line.accountCode}</TableCell>
+                  <TableCell className="font-medium">
+                    {line.accountCode}
+                  </TableCell>
                   <TableCell>{line.accountName}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="text-xs capitalize">
@@ -211,16 +220,20 @@ export const FinancialReports: React.FC = () => {
                   <TableCell className="text-right font-mono">
                     ${line.periodCredits.toLocaleString()}
                   </TableCell>
-                  <TableCell className={cn(
-                    'text-right font-mono font-medium',
-                    line.endingBalance < 0 && 'text-red-600'
-                  )}>
+                  <TableCell
+                    className={cn(
+                      "text-right font-mono font-medium",
+                      line.endingBalance < 0 && "text-red-600",
+                    )}
+                  >
                     ${line.endingBalance.toLocaleString()}
                   </TableCell>
                 </TableRow>
               ))}
               <TableRow className="font-bold border-t-2">
-                <TableCell colSpan={4} className="text-right">Totals:</TableCell>
+                <TableCell colSpan={4} className="text-right">
+                  Totals:
+                </TableCell>
                 <TableCell className="text-right font-mono">
                   ${trialBalance.totals.debit.toLocaleString()}
                 </TableCell>
@@ -237,15 +250,17 @@ export const FinancialReports: React.FC = () => {
   };
 
   const renderPL = () => {
-    if (plLoading) return <div className="py-8 text-center">Loading P&L...</div>;
-    if (!plData) return <div className="py-8 text-center">No data available</div>;
+    if (plLoading)
+      return <div className="py-8 text-center">Loading P&L...</div>;
+    if (!plData)
+      return <div className="py-8 text-center">No data available</div>;
 
     const chartData = [
-      { name: 'Revenue', value: plData.revenue },
-      { name: 'COGS', value: plData.cogs },
-      { name: 'Gross Profit', value: plData.grossProfit },
-      { name: 'OpEx', value: plData.operatingExpenses },
-      { name: 'Net Income', value: plData.netIncome },
+      { name: "Revenue", value: plData.revenue },
+      { name: "COGS", value: plData.cogs },
+      { name: "Gross Profit", value: plData.grossProfit },
+      { name: "OpEx", value: plData.operatingExpenses },
+      { name: "Net Income", value: plData.netIncome },
     ];
 
     return (
@@ -253,10 +268,14 @@ export const FinancialReports: React.FC = () => {
         <div className="grid grid-cols-3 gap-4">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Revenue</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Revenue
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${plData.revenue.toLocaleString()}</div>
+              <div className="text-2xl font-bold">
+                ${plData.revenue.toLocaleString()}
+              </div>
               <div className="text-xs text-green-600 flex items-center mt-1">
                 <TrendingUp className="h-3 w-3 mr-1" />
                 +12% vs last month
@@ -265,10 +284,14 @@ export const FinancialReports: React.FC = () => {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Gross Profit</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Gross Profit
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${plData.grossProfit.toLocaleString()}</div>
+              <div className="text-2xl font-bold">
+                ${plData.grossProfit.toLocaleString()}
+              </div>
               <div className="text-xs text-muted-foreground mt-1">
                 {plData.grossMargin.toFixed(1)}% margin
               </div>
@@ -276,10 +299,17 @@ export const FinancialReports: React.FC = () => {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Net Income</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Net Income
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className={cn('text-2xl font-bold', plData.netIncome < 0 && 'text-red-600')}>
+              <div
+                className={cn(
+                  "text-2xl font-bold",
+                  plData.netIncome < 0 && "text-red-600",
+                )}
+              >
                 ${plData.netIncome.toLocaleString()}
               </div>
               <div className="text-xs text-muted-foreground mt-1">
@@ -300,10 +330,15 @@ export const FinancialReports: React.FC = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
-                  <Tooltip formatter={(value) => `$${Number(value).toLocaleString()}`} />
+                  <Tooltip
+                    formatter={(value) => `$${Number(value).toLocaleString()}`}
+                  />
                   <Bar dataKey="value">
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Bar>
                 </BarChart>
@@ -328,10 +363,15 @@ export const FinancialReports: React.FC = () => {
                     dataKey="value"
                   >
                     {chartData.slice(0, 3).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => `$${Number(value).toLocaleString()}`} />
+                  <Tooltip
+                    formatter={(value) => `$${Number(value).toLocaleString()}`}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
@@ -346,39 +386,68 @@ export const FinancialReports: React.FC = () => {
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b">
                 <span className="font-medium">Revenue</span>
-                <span className="font-mono">${plData.revenue.toLocaleString()}</span>
+                <span className="font-mono">
+                  ${plData.revenue.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b pl-4">
-                <span className="text-muted-foreground">Cost of Goods Sold</span>
-                <span className="font-mono text-red-600">-${plData.cogs.toLocaleString()}</span>
+                <span className="text-muted-foreground">
+                  Cost of Goods Sold
+                </span>
+                <span className="font-mono text-red-600">
+                  -${plData.cogs.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b font-semibold">
                 <span>Gross Profit</span>
-                <span className={cn('font-mono', plData.grossProfit < 0 && 'text-red-600')}>
+                <span
+                  className={cn(
+                    "font-mono",
+                    plData.grossProfit < 0 && "text-red-600",
+                  )}
+                >
                   ${plData.grossProfit.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b pl-4">
-                <span className="text-muted-foreground">Operating Expenses</span>
-                <span className="font-mono text-red-600">-${plData.operatingExpenses.toLocaleString()}</span>
+                <span className="text-muted-foreground">
+                  Operating Expenses
+                </span>
+                <span className="font-mono text-red-600">
+                  -${plData.operatingExpenses.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b font-semibold">
                 <span>Operating Income</span>
-                <span className={cn('font-mono', plData.operatingIncome < 0 && 'text-red-600')}>
+                <span
+                  className={cn(
+                    "font-mono",
+                    plData.operatingIncome < 0 && "text-red-600",
+                  )}
+                >
                   ${plData.operatingIncome.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b pl-4">
                 <span className="text-muted-foreground">Other Income</span>
-                <span className="font-mono text-green-600">+${plData.otherIncome.toLocaleString()}</span>
+                <span className="font-mono text-green-600">
+                  +${plData.otherIncome.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b pl-4">
                 <span className="text-muted-foreground">Other Expenses</span>
-                <span className="font-mono text-red-600">-${plData.otherExpenses.toLocaleString()}</span>
+                <span className="font-mono text-red-600">
+                  -${plData.otherExpenses.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center py-2 font-bold text-lg">
                 <span>Net Income</span>
-                <span className={cn('font-mono', plData.netIncome < 0 && 'text-red-600')}>
+                <span
+                  className={cn(
+                    "font-mono",
+                    plData.netIncome < 0 && "text-red-600",
+                  )}
+                >
                   ${plData.netIncome.toLocaleString()}
                 </span>
               </div>
@@ -390,23 +459,31 @@ export const FinancialReports: React.FC = () => {
   };
 
   const renderBalanceSheet = () => {
-    if (bsLoading) return <div className="py-8 text-center">Loading balance sheet...</div>;
-    if (!balanceSheet) return <div className="py-8 text-center">No data available</div>;
+    if (bsLoading)
+      return <div className="py-8 text-center">Loading balance sheet...</div>;
+    if (!balanceSheet)
+      return <div className="py-8 text-center">No data available</div>;
 
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-3 gap-4">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Assets</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Assets
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${balanceSheet.assets.total.toLocaleString()}</div>
+              <div className="text-2xl font-bold">
+                ${balanceSheet.assets.total.toLocaleString()}
+              </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Liabilities</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Liabilities
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
@@ -416,7 +493,9 @@ export const FinancialReports: React.FC = () => {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Equity</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Equity
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
@@ -434,19 +513,27 @@ export const FinancialReports: React.FC = () => {
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Current Assets</span>
-                <span className="font-mono">${balanceSheet.assets.current.toLocaleString()}</span>
+                <span className="font-mono">
+                  ${balanceSheet.assets.current.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Fixed Assets</span>
-                <span className="font-mono">${balanceSheet.assets.fixed.toLocaleString()}</span>
+                <span className="font-mono">
+                  ${balanceSheet.assets.fixed.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Other Assets</span>
-                <span className="font-mono">${balanceSheet.assets.other.toLocaleString()}</span>
+                <span className="font-mono">
+                  ${balanceSheet.assets.other.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center pt-4 border-t font-bold">
                 <span>Total Assets</span>
-                <span className="font-mono">${balanceSheet.assets.total.toLocaleString()}</span>
+                <span className="font-mono">
+                  ${balanceSheet.assets.total.toLocaleString()}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -457,52 +544,79 @@ export const FinancialReports: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Current Liabilities</span>
-                <span className="font-mono">${balanceSheet.liabilities.current.toLocaleString()}</span>
+                <span className="text-muted-foreground">
+                  Current Liabilities
+                </span>
+                <span className="font-mono">
+                  ${balanceSheet.liabilities.current.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Long-term Liabilities</span>
-                <span className="font-mono">${balanceSheet.liabilities.longTerm.toLocaleString()}</span>
+                <span className="text-muted-foreground">
+                  Long-term Liabilities
+                </span>
+                <span className="font-mono">
+                  ${balanceSheet.liabilities.longTerm.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center pt-4 border-t font-bold">
                 <span>Total Liabilities</span>
-                <span className="font-mono">${balanceSheet.liabilities.total.toLocaleString()}</span>
+                <span className="font-mono">
+                  ${balanceSheet.liabilities.total.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center pt-2">
-                <span className="text-muted-foreground">Contributed Capital</span>
-                <span className="font-mono">${balanceSheet.equity.contributed.toLocaleString()}</span>
+                <span className="text-muted-foreground">
+                  Contributed Capital
+                </span>
+                <span className="font-mono">
+                  ${balanceSheet.equity.contributed.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Retained Earnings</span>
-                <span className="font-mono">${balanceSheet.equity.retained.toLocaleString()}</span>
+                <span className="font-mono">
+                  ${balanceSheet.equity.retained.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between items-center pt-4 border-t font-bold">
                 <span>Total Equity</span>
-                <span className="font-mono">${balanceSheet.equity.total.toLocaleString()}</span>
+                <span className="font-mono">
+                  ${balanceSheet.equity.total.toLocaleString()}
+                </span>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <Alert className={cn(
-          balanceSheet.assets.total === balanceSheet.totalLiabilitiesAndEquity
-            ? 'bg-green-50 border-green-200'
-            : 'bg-red-50 border-red-200'
-        )}>
-          <Calculator className={cn(
-            'h-4 w-4',
+        <Alert
+          className={cn(
             balanceSheet.assets.total === balanceSheet.totalLiabilitiesAndEquity
-              ? 'text-green-600'
-              : 'text-red-600'
-          )} />
-          <AlertDescription className={cn(
-            balanceSheet.assets.total === balanceSheet.totalLiabilitiesAndEquity
-              ? 'text-green-800'
-              : 'text-red-800'
-          )}>
-            {balanceSheet.assets.total === balanceSheet.totalLiabilitiesAndEquity
-              ? '✓ Balance sheet is in balance'
-              : '✗ Balance sheet is out of balance'}
+              ? "bg-green-50 border-green-200"
+              : "bg-red-50 border-red-200",
+          )}
+        >
+          <Calculator
+            className={cn(
+              "h-4 w-4",
+              balanceSheet.assets.total ===
+                balanceSheet.totalLiabilitiesAndEquity
+                ? "text-green-600"
+                : "text-red-600",
+            )}
+          />
+          <AlertDescription
+            className={cn(
+              balanceSheet.assets.total ===
+                balanceSheet.totalLiabilitiesAndEquity
+                ? "text-green-800"
+                : "text-red-800",
+            )}
+          >
+            {balanceSheet.assets.total ===
+            balanceSheet.totalLiabilitiesAndEquity
+              ? "✓ Balance sheet is in balance"
+              : "✗ Balance sheet is out of balance"}
           </AlertDescription>
         </Alert>
       </div>
@@ -515,10 +629,11 @@ export const FinancialReports: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            {mainViewConfig.terminology.reports || 'Financial Reports'}
+            {mainViewConfig.terminology.reports || "Financial Reports"}
           </h1>
           <p className="text-muted-foreground">
-            View and analyze your {mainView === 'business' ? 'money' : 'financial'} performance
+            View and analyze your{" "}
+            {mainView === "business" ? "money" : "financial"} performance
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -526,7 +641,8 @@ export const FinancialReports: React.FC = () => {
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-auto">
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateRange.from ? format(dateRange.from, 'MMM dd') : ''} - {dateRange.to ? format(dateRange.to, 'MMM dd, yyyy') : ''}
+                {dateRange.from ? format(dateRange.from, "MMM dd") : ""} -{" "}
+                {dateRange.to ? format(dateRange.to, "MMM dd, yyyy") : ""}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -534,22 +650,34 @@ export const FinancialReports: React.FC = () => {
                 <Calendar
                   mode="single"
                   selected={dateRange.from}
-                  onSelect={(date) => date && setDateRange(prev => ({ ...prev, from: date }))}
+                  onSelect={(date) =>
+                    date && setDateRange((prev) => ({ ...prev, from: date }))
+                  }
                 />
                 <Calendar
                   mode="single"
                   selected={dateRange.to}
-                  onSelect={(date) => date && setDateRange(prev => ({ ...prev, to: date }))}
+                  onSelect={(date) =>
+                    date && setDateRange((prev) => ({ ...prev, to: date }))
+                  }
                 />
               </div>
             </PopoverContent>
           </Popover>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => handleExport('pdf')}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleExport("pdf")}
+            >
               <FileText className="h-4 w-4 mr-2" />
               PDF
             </Button>
-            <Button variant="outline" size="sm" onClick={() => handleExport('excel')}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleExport("excel")}
+            >
               <Download className="h-4 w-4 mr-2" />
               Excel
             </Button>

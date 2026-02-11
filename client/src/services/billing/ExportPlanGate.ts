@@ -83,10 +83,14 @@ class ExportPlanGate {
     requirement: "pdf_export" | "export_row_limit",
   ): string {
     const upgradePlan =
-      requirement === "pdf_export" ? requiredPlanForPdf(plan) : requiredPlanForRows(plan);
+      requirement === "pdf_export"
+        ? requiredPlanForPdf(plan)
+        : requiredPlanForRows(plan);
 
     const planName = upgradePlan[0].toUpperCase() + upgradePlan.slice(1);
-    const price = formatPriceUsd(SubscriptionPlanService.getPlanPrice(upgradePlan));
+    const price = formatPriceUsd(
+      SubscriptionPlanService.getPlanPrice(upgradePlan),
+    );
 
     if (requirement === "pdf_export") {
       return `Upgrade to ${planName} (${price}) to unlock PDF Export.`;
@@ -95,7 +99,10 @@ class ExportPlanGate {
     return `Upgrade to ${planName} (${price}) to increase your export row limit.`;
   }
 
-  static getUpgradeFeatures(from: SubscriptionPlan, to: SubscriptionPlan): string[] {
+  static getUpgradeFeatures(
+    from: SubscriptionPlan,
+    to: SubscriptionPlan,
+  ): string[] {
     return SubscriptionPlanService.compareFeatures(from, to);
   }
 }

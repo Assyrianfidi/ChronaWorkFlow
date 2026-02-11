@@ -243,7 +243,7 @@ const CustomersPage: React.FC = () => {
 
     if (customer.totalInvoices > 0) {
       toast.error(
-        `Cannot delete customer with ${customer.totalInvoices} active invoices. Please handle invoices first.`
+        `Cannot delete customer with ${customer.totalInvoices} active invoices. Please handle invoices first.`,
       );
       return;
     }

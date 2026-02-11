@@ -25,7 +25,9 @@ export const getReport = async (id: string): Promise<unknown> => {
 /**
  * Creates a new report
  */
-export const createReport = async (data: ReportFormValues): Promise<unknown> => {
+export const createReport = async (
+  data: ReportFormValues,
+): Promise<unknown> => {
   const formData = new FormData();
 
   // Append all form fields to FormData
@@ -121,7 +123,10 @@ export const deleteReport = async (id: string): Promise<unknown> => {
 /**
  * Uploads an attachment to a report
  */
-export const uploadAttachment = async (reportId: string, file: File): Promise<unknown> => {
+export const uploadAttachment = async (
+  reportId: string,
+  file: File,
+): Promise<unknown> => {
   const formData = new FormData();
   formData.append("file", file);
 

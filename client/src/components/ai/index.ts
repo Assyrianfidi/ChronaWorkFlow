@@ -3,5 +3,5 @@
  * Export all AI-related components
  */
 
-export { AICFOCopilot } from './AICFOCopilot';
-export { CashFlowForecast } from './CashFlowForecast';
+export { AICFOCopilot } from "./AICFOCopilot";
+export { CashFlowForecast } from "./CashFlowForecast";

@@ -3,14 +3,14 @@
  * Full-page component for bank reconciliation workflow
  */
 
-import React, { useState } from 'react';
-import { BankReconciliation } from '@/components/accounting';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/useToast';
-import { useView } from '@/contexts/ViewContext';
+import React, { useState } from "react";
+import { BankReconciliation } from "@/components/accounting";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/useToast";
+import { useView } from "@/contexts/ViewContext";
 import {
   Building2,
   CreditCard,
@@ -19,25 +19,45 @@ import {
   Plus,
   Download,
   Settings,
-} from 'lucide-react';
+} from "lucide-react";
 
 const BankReconciliationPage: React.FC = () => {
   const { toast } = useToast();
   const { mainViewConfig, mainView } = useView();
-  const [selectedAccount, setSelectedAccount] = useState<string>('operating');
+  const [selectedAccount, setSelectedAccount] = useState<string>("operating");
 
   // Mock bank accounts - in production, fetch from API
   const bankAccounts = [
-    { id: 'operating', name: 'Operating Account', bank: 'Chase Bank', balance: 450000, lastReconciled: '2024-01-15' },
-    { id: 'savings', name: 'Savings Account', bank: 'Chase Bank', balance: 800000, lastReconciled: '2024-01-15' },
-    { id: 'payroll', name: 'Payroll Account', bank: 'Wells Fargo', balance: 125000, lastReconciled: '2024-01-10' },
+    {
+      id: "operating",
+      name: "Operating Account",
+      bank: "Chase Bank",
+      balance: 450000,
+      lastReconciled: "2024-01-15",
+    },
+    {
+      id: "savings",
+      name: "Savings Account",
+      bank: "Chase Bank",
+      balance: 800000,
+      lastReconciled: "2024-01-15",
+    },
+    {
+      id: "payroll",
+      name: "Payroll Account",
+      bank: "Wells Fargo",
+      balance: 125000,
+      lastReconciled: "2024-01-10",
+    },
   ];
 
-  const selectedAccountData = bankAccounts.find(a => a.id === selectedAccount);
+  const selectedAccountData = bankAccounts.find(
+    (a) => a.id === selectedAccount,
+  );
 
-  const handleExport = (format: 'pdf' | 'csv') => {
+  const handleExport = (format: "pdf" | "csv") => {
     toast({
-      title: 'Export Started',
+      title: "Export Started",
       description: `Reconciliation report will be exported as ${format.toUpperCase()}`,
     });
   };
@@ -48,14 +68,18 @@ const BankReconciliationPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">
-            {mainViewConfig.terminology.reconciliation || 'Bank Reconciliation'}
+            {mainViewConfig.terminology.reconciliation || "Bank Reconciliation"}
           </h1>
           <p className="text-muted-foreground">
             Match bank transactions with ledger entries
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={() => handleExport('pdf')}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleExport("pdf")}
+          >
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
@@ -72,13 +96,15 @@ const BankReconciliationPage: React.FC = () => {
           <Card
             key={account.id}
             className={`cursor-pointer transition-all ${
-              selectedAccount === account.id ? 'ring-2 ring-primary' : ''
+              selectedAccount === account.id ? "ring-2 ring-primary" : ""
             }`}
             onClick={() => setSelectedAccount(account.id)}
           >
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium">{account.name}</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  {account.name}
+                </CardTitle>
                 <Building2 className="h-4 w-4 text-muted-foreground" />
               </div>
             </CardHeader>

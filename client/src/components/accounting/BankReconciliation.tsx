@@ -3,16 +3,23 @@
  * Match bank transactions with ledger entries
  */
 
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   CheckCircle,
   XCircle,
@@ -23,19 +30,19 @@ import {
   CreditCard,
   DollarSign,
   Filter,
-} from 'lucide-react';
-import { useToast } from '@/hooks/useToast';
-import { useView } from '@/contexts/ViewContext';
+} from "lucide-react";
+import { useToast } from "@/hooks/useToast";
+import { useView } from "@/contexts/ViewContext";
 
 interface BankTransaction {
   id: string;
   date: string;
   description: string;
   amount: number;
-  status: 'pending' | 'matched' | 'categorized' | 'reconciled' | 'excluded';
+  status: "pending" | "matched" | "categorized" | "reconciled" | "excluded";
   matchedTransactionId?: string;
   matchedConfidence?: number;
-  matchType?: 'exact' | 'fuzzy' | 'rule' | 'manual';
+  matchType?: "exact" | "fuzzy" | "rule" | "manual";
   bankAccountName: string;
 }
 
@@ -48,25 +55,49 @@ interface LedgerTransaction {
 }
 
 const STATUS_CONFIG = {
-  pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800', icon: AlertCircle },
-  matched: { label: 'Matched', color: 'bg-blue-100 text-blue-800', icon: ArrowRightLeft },
-  categorized: { label: 'Categorized', color: 'bg-purple-100 text-purple-800', icon: CheckCircle },
-  reconciled: { label: 'Reconciled', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  excluded: { label: 'Excluded', color: 'bg-gray-100 text-gray-800', icon: XCircle },
+  pending: {
+    label: "Pending",
+    color: "bg-yellow-100 text-yellow-800",
+    icon: AlertCircle,
+  },
+  matched: {
+    label: "Matched",
+    color: "bg-blue-100 text-blue-800",
+    icon: ArrowRightLeft,
+  },
+  categorized: {
+    label: "Categorized",
+    color: "bg-purple-100 text-purple-800",
+    icon: CheckCircle,
+  },
+  reconciled: {
+    label: "Reconciled",
+    color: "bg-green-100 text-green-800",
+    icon: CheckCircle,
+  },
+  excluded: {
+    label: "Excluded",
+    color: "bg-gray-100 text-gray-800",
+    icon: XCircle,
+  },
 };
 
 export const BankReconciliation: React.FC = () => {
   const { toast } = useToast();
   const { mainViewConfig } = useView();
   const queryClient = useQueryClient();
-  const [selectedTab, setSelectedTab] = useState('for-review');
-  const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(new Set());
+  const [selectedTab, setSelectedTab] = useState("for-review");
+  const [selectedTransactions, setSelectedTransactions] = useState<Set<string>>(
+    new Set(),
+  );
 
   // Fetch bank transactions
   const { data: transactions = [], isLoading } = useQuery({
-    queryKey: ['bank-transactions', selectedTab],
+    queryKey: ["bank-transactions", selectedTab],
     queryFn: async () => {
-      const response = await fetch(`/api/banking/transactions?status=${selectedTab}`);
+      const response = await fetch(
+        `/api/banking/transactions?status=${selectedTab}`,
+      );
       return response.json();
     },
   });
@@ -74,34 +105,37 @@ export const BankReconciliation: React.FC = () => {
   // Auto-match mutation
   const autoMatchMutation = useMutation({
     mutationFn: async (ids: string[]) => {
-      const response = await fetch('/api/banking/auto-match', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/banking/auto-match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ transactionIds: ids }),
       });
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bank-transactions'] });
-      toast({ title: 'Auto-matching complete', description: 'Matching suggestions have been generated.' });
+      queryClient.invalidateQueries({ queryKey: ["bank-transactions"] });
+      toast({
+        title: "Auto-matching complete",
+        description: "Matching suggestions have been generated.",
+      });
     },
   });
 
   // Bulk reconcile mutation
   const reconcileMutation = useMutation({
     mutationFn: async (ids: string[]) => {
-      const response = await fetch('/api/banking/bulk-reconcile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/banking/bulk-reconcile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ transactionIds: ids }),
       });
       return response.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['bank-transactions'] });
+      queryClient.invalidateQueries({ queryKey: ["bank-transactions"] });
       setSelectedTransactions(new Set());
       toast({
-        title: 'Reconciliation complete',
+        title: "Reconciliation complete",
         description: `${data.reconciledCount} transactions reconciled successfully.`,
       });
     },
@@ -130,8 +164,14 @@ export const BankReconciliation: React.FC = () => {
 
   const getConfidenceBadge = (confidence?: number) => {
     if (!confidence) return null;
-    if (confidence >= 94) return <Badge className="bg-green-100 text-green-800">{confidence}%</Badge>;
-    if (confidence >= 80) return <Badge className="bg-yellow-100 text-yellow-800">{confidence}%</Badge>;
+    if (confidence >= 94)
+      return (
+        <Badge className="bg-green-100 text-green-800">{confidence}%</Badge>
+      );
+    if (confidence >= 80)
+      return (
+        <Badge className="bg-yellow-100 text-yellow-800">{confidence}%</Badge>
+      );
     return <Badge className="bg-red-100 text-red-800">{confidence}%</Badge>;
   };
 
@@ -141,11 +181,19 @@ export const BankReconciliation: React.FC = () => {
     const isSelected = selectedTransactions.has(transaction.id);
 
     return (
-      <TableRow key={transaction.id} className={cn(isSelected && 'bg-muted/50')}>
+      <TableRow
+        key={transaction.id}
+        className={cn(isSelected && "bg-muted/50")}
+      >
         <TableCell>
-          <Checkbox checked={isSelected} onCheckedChange={() => toggleSelection(transaction.id)} />
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => toggleSelection(transaction.id)}
+          />
         </TableCell>
-        <TableCell>{format(new Date(transaction.date), 'MMM dd, yyyy')}</TableCell>
+        <TableCell>
+          {format(new Date(transaction.date), "MMM dd, yyyy")}
+        </TableCell>
         <TableCell>
           <div>
             <div className="font-medium">{transaction.description}</div>
@@ -155,20 +203,27 @@ export const BankReconciliation: React.FC = () => {
             </div>
           </div>
         </TableCell>
-        <TableCell className={cn('text-right font-mono', transaction.amount < 0 && 'text-red-600')}>
+        <TableCell
+          className={cn(
+            "text-right font-mono",
+            transaction.amount < 0 && "text-red-600",
+          )}
+        >
           ${Math.abs(transaction.amount).toFixed(2)}
-          {transaction.amount < 0 && ' (DR)'}
+          {transaction.amount < 0 && " (DR)"}
         </TableCell>
         <TableCell>
-          <Badge className={cn(status.color, 'flex items-center gap-1 w-fit')}>
+          <Badge className={cn(status.color, "flex items-center gap-1 w-fit")}>
             <StatusIcon className="h-3 w-3" />
             {status.label}
           </Badge>
         </TableCell>
-        <TableCell>{getConfidenceBadge(transaction.matchedConfidence)}</TableCell>
+        <TableCell>
+          {getConfidenceBadge(transaction.matchedConfidence)}
+        </TableCell>
         <TableCell>
           <div className="flex gap-2">
-            {transaction.status === 'matched' && (
+            {transaction.status === "matched" && (
               <Button
                 size="sm"
                 variant="outline"
@@ -179,14 +234,19 @@ export const BankReconciliation: React.FC = () => {
                 Confirm
               </Button>
             )}
-            {transaction.status === 'pending' && (
+            {transaction.status === "pending" && (
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => autoMatchMutation.mutate([transaction.id])}
                 disabled={autoMatchMutation.isPending}
               >
-                <RefreshCw className={cn('h-4 w-4 mr-1', autoMatchMutation.isPending && 'animate-spin')} />
+                <RefreshCw
+                  className={cn(
+                    "h-4 w-4 mr-1",
+                    autoMatchMutation.isPending && "animate-spin",
+                  )}
+                />
                 Find Match
               </Button>
             )}
@@ -198,24 +258,32 @@ export const BankReconciliation: React.FC = () => {
 
   const filteredTransactions = transactions.filter((t: BankTransaction) => {
     switch (selectedTab) {
-      case 'for-review':
-        return t.status === 'pending' || t.status === 'matched';
-      case 'categorized':
-        return t.status === 'categorized';
-      case 'reconciled':
-        return t.status === 'reconciled';
-      case 'excluded':
-        return t.status === 'excluded';
+      case "for-review":
+        return t.status === "pending" || t.status === "matched";
+      case "categorized":
+        return t.status === "categorized";
+      case "reconciled":
+        return t.status === "reconciled";
+      case "excluded":
+        return t.status === "excluded";
       default:
         return true;
     }
   });
 
   const stats = {
-    forReview: transactions.filter((t: BankTransaction) => t.status === 'pending' || t.status === 'matched').length,
-    categorized: transactions.filter((t: BankTransaction) => t.status === 'categorized').length,
-    reconciled: transactions.filter((t: BankTransaction) => t.status === 'reconciled').length,
-    excluded: transactions.filter((t: BankTransaction) => t.status === 'excluded').length,
+    forReview: transactions.filter(
+      (t: BankTransaction) => t.status === "pending" || t.status === "matched",
+    ).length,
+    categorized: transactions.filter(
+      (t: BankTransaction) => t.status === "categorized",
+    ).length,
+    reconciled: transactions.filter(
+      (t: BankTransaction) => t.status === "reconciled",
+    ).length,
+    excluded: transactions.filter(
+      (t: BankTransaction) => t.status === "excluded",
+    ).length,
   };
 
   return (
@@ -225,16 +293,36 @@ export const BankReconciliation: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold">Bank Reconciliation</h1>
           <p className="text-muted-foreground">
-            Match bank transactions with your {mainViewConfig.terminology.accounting}
+            Match bank transactions with your{" "}
+            {mainViewConfig.terminology.accounting}
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => autoMatchMutation.mutate(selectedTransactions.size > 0 ? Array.from(selectedTransactions) : ['all'])}>
-            <RefreshCw className={cn('h-4 w-4 mr-2', autoMatchMutation.isPending && 'animate-spin')} />
+          <Button
+            variant="outline"
+            onClick={() =>
+              autoMatchMutation.mutate(
+                selectedTransactions.size > 0
+                  ? Array.from(selectedTransactions)
+                  : ["all"],
+              )
+            }
+          >
+            <RefreshCw
+              className={cn(
+                "h-4 w-4 mr-2",
+                autoMatchMutation.isPending && "animate-spin",
+              )}
+            />
             Auto-Match
           </Button>
           {selectedTransactions.size > 0 && (
-            <Button onClick={() => reconcileMutation.mutate(Array.from(selectedTransactions))} disabled={reconcileMutation.isPending}>
+            <Button
+              onClick={() =>
+                reconcileMutation.mutate(Array.from(selectedTransactions))
+              }
+              disabled={reconcileMutation.isPending}
+            >
               <CheckCircle className="h-4 w-4 mr-2" />
               Reconcile Selected ({selectedTransactions.size})
             </Button>
@@ -288,7 +376,9 @@ export const BankReconciliation: React.FC = () => {
           <TabsTrigger value="for-review">
             For Review
             {stats.forReview > 0 && (
-              <Badge variant="secondary" className="ml-2">{stats.forReview}</Badge>
+              <Badge variant="secondary" className="ml-2">
+                {stats.forReview}
+              </Badge>
             )}
           </TabsTrigger>
           <TabsTrigger value="categorized">Categorized</TabsTrigger>
@@ -315,8 +405,14 @@ export const BankReconciliation: React.FC = () => {
                   <TableRow>
                     <TableHead className="w-12">
                       <Checkbox
-                        checked={selectedTransactions.size === filteredTransactions.length && filteredTransactions.length > 0}
-                        onCheckedChange={(checked) => checked ? selectAll() : clearSelection()}
+                        checked={
+                          selectedTransactions.size ===
+                            filteredTransactions.length &&
+                          filteredTransactions.length > 0
+                        }
+                        onCheckedChange={(checked) =>
+                          checked ? selectAll() : clearSelection()
+                        }
                       />
                     </TableHead>
                     <TableHead>Date</TableHead>
@@ -336,7 +432,10 @@ export const BankReconciliation: React.FC = () => {
                     </TableRow>
                   ) : filteredTransactions.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <TableCell
+                        colSpan={7}
+                        className="text-center py-8 text-muted-foreground"
+                      >
                         No transactions found in this category.
                       </TableCell>
                     </TableRow>

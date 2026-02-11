@@ -86,10 +86,7 @@ export function FormField({
         {label}
       </label>
       {description && (
-        <p
-          id={descriptionId}
-          className="text-xs text-muted-foreground"
-        >
+        <p id={descriptionId} className="text-xs text-muted-foreground">
           {description}
         </p>
       )}

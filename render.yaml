@@ -1,12 +1,14 @@
 services:
+  # Backend API Service
   - type: web
-    name: chronaworkflow
+    name: accubooks-backend
     env: node
     region: oregon
     plan: starter
     branch: main
-    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy && npm run build
-    startCommand: npm run start
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy
+    startCommand: node server.js
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
@@ -14,42 +16,48 @@ services:
       - key: PORT
         value: 10000
       - key: DATABASE_URL
-        sync: false
+        value: postgresql://accubooks_prod_user:FIaj1vhWzLIuSLO9DNfrGYD3wAMoFlI9@dpg-d66dqp0gjchc73d6ul7g-a.oregon-postgres.render.com/accubooks_prod?sslmode=require
       - key: JWT_SECRET
-        sync: false
-      - key: JWT_EXPIRES_IN
-        value: 7d
-      - key: REFRESH_TOKEN_SECRET
-        sync: false
-      - key: REFRESH_TOKEN_EXPIRES_IN
-        value: 30d
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
-      - key: CLIENT_URL
-        value: https://accubooks.com
-      - key: CEO_DASHBOARD_URL
-        value: https://ceo.accubooks.com
-      - key: SENTRY_DSN
+      - key: STRIPE_STARTER_PRICE_ID
         sync: false
-      - key: RELEASE_VERSION
-        value: 1.0.0
-      - key: SERVER_NAME
-        value: accubooks-api-render
-      - key: SMTP_HOST
-        value: smtp.gmail.com
-      - key: SMTP_PORT
-        value: 587
-      - key: SMTP_SECURE
-        value: false
-      - key: SMTP_USER
+      - key: STRIPE_PRO_PRICE_ID
         sync: false
-      - key: SMTP_PASSWORD
+      - key: STRIPE_ENTERPRISE_PRICE_ID
         sync: false
-      - key: SMTP_FROM
-        value: alerts@accubooks.com
-      - key: ALERT_EMAIL_RECIPIENTS
-        value: ceo@accubooks.com,devops@accubooks.com
-      - key: SLACK_WEBHOOK_URL
+      - key: CORS_ORIGIN
+        value: https://accubooks-frontend.onrender.com
+      - key: FRONTEND_URL
+        value: https://accubooks-frontend.onrender.com
+      - key: BACKEND_URL
+        value: https://accubooks-backend.onrender.com
+      - key: BCRYPT_ROUNDS
+        value: 12
+      - key: LOG_LEVEL
+        value: info
+      - key: ENABLE_AUDIT_LOGS
+        value: true
+
+  # Frontend Static Site
+  - type: web
+    name: accubooks-frontend
+    env: static
+    region: oregon
+    plan: starter
+    branch: main
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://accubooks-backend.onrender.com
+      - key: VITE_STRIPE_PUBLISHABLE_KEY
         sync: false

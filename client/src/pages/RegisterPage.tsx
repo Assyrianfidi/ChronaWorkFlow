@@ -21,7 +21,13 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
-  role: "OWNER" | "ADMIN" | "MANAGER" | "ACCOUNTANT" | "AUDITOR" | "INVENTORY_MANAGER";
+  role:
+    | "OWNER"
+    | "ADMIN"
+    | "MANAGER"
+    | "ACCOUNTANT"
+    | "AUDITOR"
+    | "INVENTORY_MANAGER";
   companyName: string;
 }
 

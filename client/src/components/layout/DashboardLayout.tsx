@@ -49,9 +49,7 @@ export default function DashboardLayout() {
       >
         <div className="flex items-center justify-between p-4 border-b border-border">
           {sidebarOpen ? (
-            <h1 className="text-xl font-bold text-foreground">
-              AccuBooks
-            </h1>
+            <h1 className="text-xl font-bold text-foreground">AccuBooks</h1>
           ) : (
             <div className="w-8 h-8 bg-primary rounded-md" />
           )}

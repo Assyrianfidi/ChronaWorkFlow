@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { VoiceCommandEngine } from './VoiceCommandEngine';
+import { VoiceCommandEngine } from "./VoiceCommandEngine";
 
 const meta: Meta<typeof VoiceCommandEngine> = {
   title: "Accessibility/VoiceCommandEngine",

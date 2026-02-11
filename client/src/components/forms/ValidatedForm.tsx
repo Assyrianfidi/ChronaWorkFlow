@@ -295,10 +295,7 @@ const EnhancedForm: React.FC<EnhancedFormProps> = ({
             Reset
           </Button>
 
-          <Button
-            type="submit"
-            disabled={!canSubmit || isSubmitting}
-          >
+          <Button type="submit" disabled={!canSubmit || isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit"}
           </Button>
         </div>

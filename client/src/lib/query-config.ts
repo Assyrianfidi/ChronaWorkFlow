@@ -167,10 +167,9 @@ export const cacheInvalidation = {
 // React Query DevTools configuration for development
 export const queryClientConfig = {
   // Enable devtools in development
-  devtools:
-    import.meta.env.DEV
-      ? {
-          initialIsOpen: false,
-        }
-      : false,
+  devtools: import.meta.env.DEV
+    ? {
+        initialIsOpen: false,
+      }
+    : false,
 };

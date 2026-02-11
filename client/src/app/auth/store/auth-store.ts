@@ -22,9 +22,16 @@ type AuthActions = {
     emailOrCredentials: string | { email: string; password: string },
     password?: string,
   ) => Promise<void>;
-  register: (input: { name: string; email: string; password: string }) => Promise<void>;
+  register: (input: {
+    name: string;
+    email: string;
+    password: string;
+  }) => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
-  resetPassword: (input: { token: string; newPassword: string }) => Promise<void>;
+  resetPassword: (input: {
+    token: string;
+    newPassword: string;
+  }) => Promise<void>;
   logout: () => void;
   clearError: () => void;
 };
@@ -77,7 +84,11 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         }
       },
 
-      register: async (input: { name: string; email: string; password: string }) => {
+      register: async (input: {
+        name: string;
+        email: string;
+        password: string;
+      }) => {
         set({ isLoading: true, error: null });
 
         try {

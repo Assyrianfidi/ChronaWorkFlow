@@ -3,7 +3,7 @@
  * Natural language query interface for financial insights
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import {
   MessageSquare,
   Send,
@@ -16,14 +16,14 @@ import {
   ChevronRight,
   Bot,
   User,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface DataPoint {
   label: string;
   value: number | string;
   change?: number;
   changePercent?: number;
-  trend?: 'up' | 'down' | 'stable';
+  trend?: "up" | "down" | "stable";
 }
 
 interface CopilotResponse {
@@ -40,31 +40,31 @@ interface CopilotResponse {
 
 interface Message {
   id: string;
-  type: 'user' | 'assistant';
+  type: "user" | "assistant";
   content: string;
   response?: CopilotResponse;
   timestamp: Date;
 }
 
 const suggestedQuestions = [
-  'Why did profit drop this month?',
-  'What are my top expenses?',
-  'How is my cash flow trending?',
-  'Any unusual transactions?',
-  'What should I focus on to improve margins?',
-  'Compare this month to last month',
+  "Why did profit drop this month?",
+  "What are my top expenses?",
+  "How is my cash flow trending?",
+  "Any unusual transactions?",
+  "What should I focus on to improve margins?",
+  "Compare this month to last month",
 ];
 
 export const AICFOCopilot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSend = async () => {
@@ -72,21 +72,21 @@ export const AICFOCopilot: React.FC = () => {
 
     const userMessage: Message = {
       id: `msg_${Date.now()}`,
-      type: 'user',
+      type: "user",
       content: input,
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/ai/copilot/ask', {
-        method: 'POST',
+      const response = await fetch("/api/ai/copilot/ask", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ query: input }),
       });
@@ -96,29 +96,31 @@ export const AICFOCopilot: React.FC = () => {
       if (data.success) {
         const assistantMessage: Message = {
           id: `msg_${Date.now()}`,
-          type: 'assistant',
+          type: "assistant",
           content: data.data.answer,
           response: data.data,
           timestamp: new Date(),
         };
-        setMessages(prev => [...prev, assistantMessage]);
+        setMessages((prev) => [...prev, assistantMessage]);
       } else {
         const errorMessage: Message = {
           id: `msg_${Date.now()}`,
-          type: 'assistant',
-          content: data.error || 'Sorry, I encountered an error. Please try again.',
+          type: "assistant",
+          content:
+            data.error || "Sorry, I encountered an error. Please try again.",
           timestamp: new Date(),
         };
-        setMessages(prev => [...prev, errorMessage]);
+        setMessages((prev) => [...prev, errorMessage]);
       }
     } catch (error) {
       const errorMessage: Message = {
         id: `msg_${Date.now()}`,
-        type: 'assistant',
-        content: 'Sorry, I could not connect to the server. Please check your connection.',
+        type: "assistant",
+        content:
+          "Sorry, I could not connect to the server. Please check your connection.",
         timestamp: new Date(),
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -130,18 +132,31 @@ export const AICFOCopilot: React.FC = () => {
   };
 
   const renderDataPoint = (dataPoint: DataPoint) => {
-    const TrendIcon = dataPoint.trend === 'up' ? TrendingUp : 
-                      dataPoint.trend === 'down' ? TrendingDown : null;
-    const trendColor = dataPoint.trend === 'up' ? 'text-green-500' : 
-                       dataPoint.trend === 'down' ? 'text-red-500' : 'text-gray-500';
+    const TrendIcon =
+      dataPoint.trend === "up"
+        ? TrendingUp
+        : dataPoint.trend === "down"
+          ? TrendingDown
+          : null;
+    const trendColor =
+      dataPoint.trend === "up"
+        ? "text-green-500"
+        : dataPoint.trend === "down"
+          ? "text-red-500"
+          : "text-gray-500";
 
     return (
-      <div key={dataPoint.label} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-        <div className="text-xs text-gray-500 dark:text-gray-400">{dataPoint.label}</div>
+      <div
+        key={dataPoint.label}
+        className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3"
+      >
+        <div className="text-xs text-gray-500 dark:text-gray-400">
+          {dataPoint.label}
+        </div>
         <div className="flex items-center gap-2 mt-1">
           <span className="text-lg font-semibold text-gray-900 dark:text-white">
-            {typeof dataPoint.value === 'number' 
-              ? `$${dataPoint.value.toLocaleString()}` 
+            {typeof dataPoint.value === "number"
+              ? `$${dataPoint.value.toLocaleString()}`
               : dataPoint.value}
           </span>
           {TrendIcon && (
@@ -156,7 +171,7 @@ export const AICFOCopilot: React.FC = () => {
   };
 
   const renderMessage = (message: Message) => {
-    if (message.type === 'user') {
+    if (message.type === "user") {
       return (
         <div key={message.id} className="flex justify-end mb-4">
           <div className="flex items-start gap-2 max-w-[80%]">
@@ -179,7 +194,9 @@ export const AICFOCopilot: React.FC = () => {
           </div>
           <div className="space-y-3">
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-              <p className="text-gray-800 dark:text-gray-200">{message.content}</p>
+              <p className="text-gray-800 dark:text-gray-200">
+                {message.content}
+              </p>
             </div>
 
             {message.response && (
@@ -198,7 +215,10 @@ export const AICFOCopilot: React.FC = () => {
                     </div>
                     <ul className="space-y-1">
                       {message.response.insights.map((insight, i) => (
-                        <li key={i} className="text-sm text-blue-600 dark:text-blue-300 flex items-start gap-2">
+                        <li
+                          key={i}
+                          className="text-sm text-blue-600 dark:text-blue-300 flex items-start gap-2"
+                        >
                           <ChevronRight className="w-4 h-4 mt-0.5 flex-shrink-0" />
                           {insight}
                         </li>
@@ -215,7 +235,10 @@ export const AICFOCopilot: React.FC = () => {
                     </div>
                     <ul className="space-y-1">
                       {message.response.recommendations.map((rec, i) => (
-                        <li key={i} className="text-sm text-amber-600 dark:text-amber-300 flex items-start gap-2">
+                        <li
+                          key={i}
+                          className="text-sm text-amber-600 dark:text-amber-300 flex items-start gap-2"
+                        >
                           <ChevronRight className="w-4 h-4 mt-0.5 flex-shrink-0" />
                           {rec}
                         </li>
@@ -225,7 +248,10 @@ export const AICFOCopilot: React.FC = () => {
                 )}
 
                 <div className="flex items-center gap-4 text-xs text-gray-400">
-                  <span>Confidence: {(message.response.confidence * 100).toFixed(0)}%</span>
+                  <span>
+                    Confidence: {(message.response.confidence * 100).toFixed(0)}
+                    %
+                  </span>
                   <span>•</span>
                   <span>{message.response.processingTime.toFixed(0)}ms</span>
                 </div>
@@ -238,9 +264,11 @@ export const AICFOCopilot: React.FC = () => {
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 ${isExpanded ? 'h-[600px]' : 'h-auto'}`}>
+    <div
+      className={`bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 ${isExpanded ? "h-[600px]" : "h-auto"}`}
+    >
       {/* Header */}
-      <div 
+      <div
         className="bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-3 cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -251,7 +279,9 @@ export const AICFOCopilot: React.FC = () => {
             </div>
             <div>
               <h3 className="text-white font-semibold">AI CFO Copilot</h3>
-              <p className="text-white/70 text-sm">Ask anything about your finances</p>
+              <p className="text-white/70 text-sm">
+                Ask anything about your finances
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -275,7 +305,8 @@ export const AICFOCopilot: React.FC = () => {
                   How can I help you today?
                 </h4>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 max-w-sm">
-                  Ask me anything about your financial data. I can analyze trends, explain changes, and provide recommendations.
+                  Ask me anything about your financial data. I can analyze
+                  trends, explain changes, and provide recommendations.
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center max-w-md">
                   {suggestedQuestions.slice(0, 4).map((question, i) => (
@@ -301,7 +332,9 @@ export const AICFOCopilot: React.FC = () => {
                       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-tl-sm px-4 py-3">
                         <div className="flex items-center gap-2">
                           <RefreshCw className="w-4 h-4 text-purple-500 animate-spin" />
-                          <span className="text-gray-500 dark:text-gray-400 text-sm">Analyzing your data...</span>
+                          <span className="text-gray-500 dark:text-gray-400 text-sm">
+                            Analyzing your data...
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -320,7 +353,7 @@ export const AICFOCopilot: React.FC = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                onKeyPress={(e) => e.key === "Enter" && handleSend()}
                 placeholder="Ask about your finances..."
                 className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 disabled={isLoading}

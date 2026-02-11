@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 
 interface KPICardProps {
   title: string;
   value: string | number;
   subtitle?: string;
-  trend?: 'up' | 'down' | 'neutral';
+  trend?: "up" | "down" | "neutral";
   trendValue?: string;
   icon?: React.ReactNode;
-  variant?: 'default' | 'success' | 'warning' | 'danger';
+  variant?: "default" | "success" | "warning" | "danger";
   loading?: boolean;
   className?: string;
 }
@@ -19,21 +19,21 @@ export const KPICard: React.FC<KPICardProps> = ({
   trend,
   trendValue,
   icon,
-  variant = 'default',
+  variant = "default",
   loading = false,
-  className = '',
+  className = "",
 }) => {
   const variantStyles = {
-    default: 'bg-white border-gray-200',
-    success: 'bg-green-50 border-green-200',
-    warning: 'bg-yellow-50 border-yellow-200',
-    danger: 'bg-red-50 border-red-200',
+    default: "bg-white border-gray-200",
+    success: "bg-green-50 border-green-200",
+    warning: "bg-yellow-50 border-yellow-200",
+    danger: "bg-red-50 border-red-200",
   };
 
   const trendStyles = {
-    up: 'text-green-600',
-    down: 'text-red-600',
-    neutral: 'text-gray-600',
+    up: "text-green-600",
+    down: "text-red-600",
+    neutral: "text-gray-600",
   };
 
   const trendIcons = {
@@ -108,20 +108,18 @@ export const KPICard: React.FC<KPICardProps> = ({
   return (
     <article
       className={`rounded-lg border p-6 ${variantStyles[variant]} ${className}`}
-      aria-labelledby={`kpi-${title.replace(/\s+/g, '-').toLowerCase()}`}
+      aria-labelledby={`kpi-${title.replace(/\s+/g, "-").toLowerCase()}`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <h3
-            id={`kpi-${title.replace(/\s+/g, '-').toLowerCase()}`}
+            id={`kpi-${title.replace(/\s+/g, "-").toLowerCase()}`}
             className="text-sm font-medium text-gray-600 mb-2"
           >
             {title}
           </h3>
           <p className="text-3xl font-bold text-gray-900 mb-1">{value}</p>
-          {subtitle && (
-            <p className="text-sm text-gray-500">{subtitle}</p>
-          )}
+          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
           {trend && trendValue && (
             <div
               className={`flex items-center mt-2 text-sm font-medium ${trendStyles[trend]}`}
@@ -130,7 +128,11 @@ export const KPICard: React.FC<KPICardProps> = ({
               {trendIcons[trend]}
               <span className="ml-1">{trendValue}</span>
               <span className="sr-only">
-                {trend === 'up' ? 'increasing' : trend === 'down' ? 'decreasing' : 'stable'}
+                {trend === "up"
+                  ? "increasing"
+                  : trend === "down"
+                    ? "decreasing"
+                    : "stable"}
               </span>
             </div>
           )}

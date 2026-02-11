@@ -11,7 +11,8 @@ const cardVariants = cva(
         elevated: "bg-card border-border shadow-md hover:shadow-lg",
         ghost: "bg-transparent border-transparent hover:bg-accent/50",
         outline: "bg-transparent border-border hover:border-border-strong",
-        interactive: "bg-card border-border shadow-sm hover:shadow-md hover:border-border-light cursor-pointer active:scale-[0.99]",
+        interactive:
+          "bg-card border-border shadow-sm hover:shadow-md hover:border-border-light cursor-pointer active:scale-[0.99]",
       },
       padding: {
         default: "p-6",
@@ -24,7 +25,7 @@ const cardVariants = cva(
       variant: "default",
       padding: "default",
     },
-  }
+  },
 );
 
 export interface CardProps
@@ -38,7 +39,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       className={cn(cardVariants({ variant, padding, className }))}
       {...props}
     />
-  )
+  ),
 );
 Card.displayName = "Card";
 
@@ -62,7 +63,7 @@ const CardTitle = React.forwardRef<
     ref={ref}
     className={cn(
       "text-lg font-semibold leading-none tracking-tight",
-      className
+      className,
     )}
     {...props}
   />
@@ -101,5 +102,12 @@ const CardFooter = React.forwardRef<
 ));
 CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+};
 export default Card;

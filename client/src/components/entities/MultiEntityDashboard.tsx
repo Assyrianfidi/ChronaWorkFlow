@@ -3,7 +3,7 @@
  * Provides CRUD operations for multiple business entities with real-time reporting
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Building2,
   Plus,
@@ -25,13 +25,13 @@ import {
   Eye,
   CheckCircle,
   AlertCircle,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface Entity {
   id: string;
   name: string;
-  type: 'llc' | 'corporation' | 'sole_proprietorship' | 'partnership';
-  status: 'active' | 'inactive' | 'pending';
+  type: "llc" | "corporation" | "sole_proprietorship" | "partnership";
+  status: "active" | "inactive" | "pending";
   createdAt: string;
   metrics: {
     revenue: number;
@@ -47,7 +47,7 @@ interface Entity {
 
 interface EntityFormData {
   name: string;
-  type: Entity['type'];
+  type: Entity["type"];
   taxId?: string;
   address?: string;
   industry?: string;
@@ -59,12 +59,14 @@ const MultiEntityDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
+    null,
+  );
   const [formData, setFormData] = useState<EntityFormData>({
-    name: '',
-    type: 'llc',
+    name: "",
+    type: "llc",
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -73,18 +75,18 @@ const MultiEntityDashboard: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/v1/companies', {
+      const response = await fetch("/api/v1/companies", {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      
-      if (!response.ok) throw new Error('Failed to fetch entities');
-      
+
+      if (!response.ok) throw new Error("Failed to fetch entities");
+
       const data = await response.json();
       setEntities(data.data || []);
     } catch (err) {
-      setError('Failed to load entities. Please try again.');
+      setError("Failed to load entities. Please try again.");
       // Use mock data for demo
       setEntities(getMockEntities());
     } finally {
@@ -99,28 +101,28 @@ const MultiEntityDashboard: React.FC = () => {
   // Create new entity
   const handleCreateEntity = async () => {
     try {
-      const response = await fetch('/api/v1/companies', {
-        method: 'POST',
+      const response = await fetch("/api/v1/companies", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error('Failed to create entity');
+      if (!response.ok) throw new Error("Failed to create entity");
 
       const data = await response.json();
       setEntities([...entities, data.data]);
       setIsCreating(false);
-      setFormData({ name: '', type: 'llc' });
+      setFormData({ name: "", type: "llc" });
     } catch (err) {
       // Demo mode: add mock entity
       const newEntity: Entity = {
         id: `entity_${Date.now()}`,
         name: formData.name,
         type: formData.type,
-        status: 'active',
+        status: "active",
         createdAt: new Date().toISOString(),
         metrics: {
           revenue: 0,
@@ -135,7 +137,7 @@ const MultiEntityDashboard: React.FC = () => {
       };
       setEntities([...entities, newEntity]);
       setIsCreating(false);
-      setFormData({ name: '', type: 'llc' });
+      setFormData({ name: "", type: "llc" });
     }
   };
 
@@ -145,27 +147,31 @@ const MultiEntityDashboard: React.FC = () => {
 
     try {
       const response = await fetch(`/api/v1/companies/${selectedEntity.id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error('Failed to update entity');
+      if (!response.ok) throw new Error("Failed to update entity");
 
       const data = await response.json();
-      setEntities(entities.map(e => e.id === selectedEntity.id ? data.data : e));
+      setEntities(
+        entities.map((e) => (e.id === selectedEntity.id ? data.data : e)),
+      );
       setIsEditing(false);
       setSelectedEntity(null);
     } catch (err) {
       // Demo mode: update locally
-      setEntities(entities.map(e => 
-        e.id === selectedEntity.id 
-          ? { ...e, name: formData.name, type: formData.type }
-          : e
-      ));
+      setEntities(
+        entities.map((e) =>
+          e.id === selectedEntity.id
+            ? { ...e, name: formData.name, type: formData.type }
+            : e,
+        ),
+      );
       setIsEditing(false);
       setSelectedEntity(null);
     }
@@ -175,52 +181,58 @@ const MultiEntityDashboard: React.FC = () => {
   const handleDeleteEntity = async (entityId: string) => {
     try {
       const response = await fetch(`/api/v1/companies/${entityId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      if (!response.ok) throw new Error('Failed to delete entity');
+      if (!response.ok) throw new Error("Failed to delete entity");
 
-      setEntities(entities.filter(e => e.id !== entityId));
+      setEntities(entities.filter((e) => e.id !== entityId));
       setShowDeleteConfirm(null);
     } catch (err) {
       // Demo mode: delete locally
-      setEntities(entities.filter(e => e.id !== entityId));
+      setEntities(entities.filter((e) => e.id !== entityId));
       setShowDeleteConfirm(null);
     }
   };
 
   // Filter entities
-  const filteredEntities = entities.filter(entity => {
-    const matchesSearch = entity.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || entity.status === filterStatus;
+  const filteredEntities = entities.filter((entity) => {
+    const matchesSearch = entity.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesFilter =
+      filterStatus === "all" || entity.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
   // Calculate totals
-  const totals = entities.reduce((acc, entity) => ({
-    revenue: acc.revenue + entity.metrics.revenue,
-    expenses: acc.expenses + entity.metrics.expenses,
-    profit: acc.profit + entity.metrics.profit,
-    cashPosition: acc.cashPosition + entity.metrics.cashPosition,
-  }), { revenue: 0, expenses: 0, profit: 0, cashPosition: 0 });
+  const totals = entities.reduce(
+    (acc, entity) => ({
+      revenue: acc.revenue + entity.metrics.revenue,
+      expenses: acc.expenses + entity.metrics.expenses,
+      profit: acc.profit + entity.metrics.profit,
+      cashPosition: acc.cashPosition + entity.metrics.cashPosition,
+    }),
+    { revenue: 0, expenses: 0, profit: 0, cashPosition: 0 },
+  );
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
@@ -244,7 +256,9 @@ const MultiEntityDashboard: React.FC = () => {
                 onClick={fetchEntities}
                 className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`}
+                />
               </button>
               <button
                 onClick={() => setIsCreating(true)}
@@ -264,7 +278,9 @@ const MultiEntityDashboard: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Revenue</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Total Revenue
+                </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                   {formatCurrency(totals.revenue)}
                 </p>
@@ -281,7 +297,9 @@ const MultiEntityDashboard: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Expenses</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Total Expenses
+                </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                   {formatCurrency(totals.expenses)}
                 </p>
@@ -298,7 +316,9 @@ const MultiEntityDashboard: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Net Profit</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Net Profit
+                </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                   {formatCurrency(totals.profit)}
                 </p>
@@ -308,14 +328,19 @@ const MultiEntityDashboard: React.FC = () => {
               </div>
             </div>
             <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
-              {totals.revenue > 0 ? ((totals.profit / totals.revenue) * 100).toFixed(1) : 0}% margin
+              {totals.revenue > 0
+                ? ((totals.profit / totals.revenue) * 100).toFixed(1)
+                : 0}
+              % margin
             </p>
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Cash Position</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Cash Position
+                </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
                   {formatCurrency(totals.cashPosition)}
                 </p>
@@ -391,14 +416,18 @@ const MultiEntityDashboard: React.FC = () => {
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center">
                       <RefreshCw className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-2" />
-                      <p className="text-gray-500 dark:text-gray-400">Loading entities...</p>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        Loading entities...
+                      </p>
                     </td>
                   </tr>
                 ) : filteredEntities.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center">
                       <Building2 className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                      <p className="text-gray-500 dark:text-gray-400 mb-2">No entities found</p>
+                      <p className="text-gray-500 dark:text-gray-400 mb-2">
+                        No entities found
+                      </p>
                       <button
                         onClick={() => setIsCreating(true)}
                         className="text-blue-600 hover:text-blue-700 font-medium"
@@ -409,14 +438,19 @@ const MultiEntityDashboard: React.FC = () => {
                   </tr>
                 ) : (
                   filteredEntities.map((entity) => (
-                    <tr key={entity.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <tr
+                      key={entity.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    >
                       <td className="px-6 py-4">
                         <div className="flex items-center">
                           <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-3">
                             <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-white">{entity.name}</p>
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {entity.name}
+                            </p>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                               Created {formatDate(entity.createdAt)}
                             </p>
@@ -425,19 +459,25 @@ const MultiEntityDashboard: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">
-                          {entity.type.replace('_', ' ')}
+                          {entity.type.replace("_", " ")}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          entity.status === 'active'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                            : entity.status === 'inactive'
-                            ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400'
-                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                        }`}>
-                          {entity.status === 'active' && <CheckCircle className="w-3 h-3 mr-1" />}
-                          {entity.status === 'pending' && <AlertCircle className="w-3 h-3 mr-1" />}
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            entity.status === "active"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                              : entity.status === "inactive"
+                                ? "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400"
+                                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                          }`}
+                        >
+                          {entity.status === "active" && (
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                          )}
+                          {entity.status === "pending" && (
+                            <AlertCircle className="w-3 h-3 mr-1" />
+                          )}
                           {entity.status}
                         </span>
                       </td>
@@ -447,11 +487,13 @@ const MultiEntityDashboard: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <span className={`text-sm font-medium ${
-                          entity.metrics.profit >= 0
-                            ? 'text-green-600 dark:text-green-400'
-                            : 'text-red-600 dark:text-red-400'
-                        }`}>
+                        <span
+                          className={`text-sm font-medium ${
+                            entity.metrics.profit >= 0
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-red-600 dark:text-red-400"
+                          }`}
+                        >
                           {formatCurrency(entity.metrics.profit)}
                         </span>
                       </td>
@@ -472,7 +514,10 @@ const MultiEntityDashboard: React.FC = () => {
                           <button
                             onClick={() => {
                               setSelectedEntity(entity);
-                              setFormData({ name: entity.name, type: entity.type });
+                              setFormData({
+                                name: entity.name,
+                                type: entity.type,
+                              });
                               setIsEditing(true);
                             }}
                             className="p-1.5 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -512,7 +557,7 @@ const MultiEntityDashboard: React.FC = () => {
                         {selectedEntity.name}
                       </h2>
                       <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-                        {selectedEntity.type.replace('_', ' ')}
+                        {selectedEntity.type.replace("_", " ")}
                       </p>
                     </div>
                   </div>
@@ -528,29 +573,39 @@ const MultiEntityDashboard: React.FC = () => {
               <div className="p-6">
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Revenue</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Revenue
+                    </p>
                     <p className="text-xl font-bold text-gray-900 dark:text-white">
                       {formatCurrency(selectedEntity.metrics.revenue)}
                     </p>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Expenses</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Expenses
+                    </p>
                     <p className="text-xl font-bold text-gray-900 dark:text-white">
                       {formatCurrency(selectedEntity.metrics.expenses)}
                     </p>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Net Profit</p>
-                    <p className={`text-xl font-bold ${
-                      selectedEntity.metrics.profit >= 0
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
-                    }`}>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Net Profit
+                    </p>
+                    <p
+                      className={`text-xl font-bold ${
+                        selectedEntity.metrics.profit >= 0
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
+                      }`}
+                    >
                       {formatCurrency(selectedEntity.metrics.profit)}
                     </p>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Cash Position</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Cash Position
+                    </p>
                     <p className="text-xl font-bold text-gray-900 dark:text-white">
                       {formatCurrency(selectedEntity.metrics.cashPosition)}
                     </p>
@@ -562,19 +617,27 @@ const MultiEntityDashboard: React.FC = () => {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {selectedEntity.metrics.transactionCount}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Transactions</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Transactions
+                    </p>
                   </div>
                   <div className="text-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                      {formatCurrency(selectedEntity.metrics.accountsReceivable)}
+                      {formatCurrency(
+                        selectedEntity.metrics.accountsReceivable,
+                      )}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">A/R</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      A/R
+                    </p>
                   </div>
                   <div className="text-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                       {formatCurrency(selectedEntity.metrics.accountsPayable)}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">A/P</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      A/P
+                    </p>
                   </div>
                 </div>
 
@@ -602,7 +665,7 @@ const MultiEntityDashboard: React.FC = () => {
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full">
               <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  {isCreating ? 'Create New Entity' : 'Edit Entity'}
+                  {isCreating ? "Create New Entity" : "Edit Entity"}
                 </h2>
               </div>
 
@@ -614,7 +677,9 @@ const MultiEntityDashboard: React.FC = () => {
                   <input
                     type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     placeholder="Enter entity name"
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                   />
@@ -626,12 +691,19 @@ const MultiEntityDashboard: React.FC = () => {
                   </label>
                   <select
                     value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as Entity['type'] })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        type: e.target.value as Entity["type"],
+                      })
+                    }
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="llc">LLC</option>
                     <option value="corporation">Corporation</option>
-                    <option value="sole_proprietorship">Sole Proprietorship</option>
+                    <option value="sole_proprietorship">
+                      Sole Proprietorship
+                    </option>
                     <option value="partnership">Partnership</option>
                   </select>
                 </div>
@@ -642,7 +714,7 @@ const MultiEntityDashboard: React.FC = () => {
                   onClick={() => {
                     setIsCreating(false);
                     setIsEditing(false);
-                    setFormData({ name: '', type: 'llc' });
+                    setFormData({ name: "", type: "llc" });
                   }}
                   className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
@@ -653,7 +725,7 @@ const MultiEntityDashboard: React.FC = () => {
                   disabled={!formData.name}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isCreating ? 'Create Entity' : 'Save Changes'}
+                  {isCreating ? "Create Entity" : "Save Changes"}
                 </button>
               </div>
             </div>
@@ -672,7 +744,8 @@ const MultiEntityDashboard: React.FC = () => {
                   Delete Entity?
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">
-                  This action cannot be undone. All data associated with this entity will be permanently deleted.
+                  This action cannot be undone. All data associated with this
+                  entity will be permanently deleted.
                 </p>
                 <div className="flex gap-3">
                   <button
@@ -701,11 +774,11 @@ const MultiEntityDashboard: React.FC = () => {
 function getMockEntities(): Entity[] {
   return [
     {
-      id: 'entity_1',
-      name: 'TechStart Inc.',
-      type: 'corporation',
-      status: 'active',
-      createdAt: '2024-01-15T00:00:00Z',
+      id: "entity_1",
+      name: "TechStart Inc.",
+      type: "corporation",
+      status: "active",
+      createdAt: "2024-01-15T00:00:00Z",
       metrics: {
         revenue: 450000,
         expenses: 320000,
@@ -715,14 +788,14 @@ function getMockEntities(): Entity[] {
         accountsPayable: 28000,
         transactionCount: 1250,
       },
-      lastSync: '2024-12-20T10:30:00Z',
+      lastSync: "2024-12-20T10:30:00Z",
     },
     {
-      id: 'entity_2',
-      name: 'Digital Solutions LLC',
-      type: 'llc',
-      status: 'active',
-      createdAt: '2024-03-01T00:00:00Z',
+      id: "entity_2",
+      name: "Digital Solutions LLC",
+      type: "llc",
+      status: "active",
+      createdAt: "2024-03-01T00:00:00Z",
       metrics: {
         revenue: 280000,
         expenses: 195000,
@@ -732,14 +805,14 @@ function getMockEntities(): Entity[] {
         accountsPayable: 18000,
         transactionCount: 780,
       },
-      lastSync: '2024-12-20T09:15:00Z',
+      lastSync: "2024-12-20T09:15:00Z",
     },
     {
-      id: 'entity_3',
-      name: 'Consulting Partners',
-      type: 'partnership',
-      status: 'active',
-      createdAt: '2024-06-10T00:00:00Z',
+      id: "entity_3",
+      name: "Consulting Partners",
+      type: "partnership",
+      status: "active",
+      createdAt: "2024-06-10T00:00:00Z",
       metrics: {
         revenue: 175000,
         expenses: 125000,
@@ -749,14 +822,14 @@ function getMockEntities(): Entity[] {
         accountsPayable: 12000,
         transactionCount: 420,
       },
-      lastSync: '2024-12-19T16:45:00Z',
+      lastSync: "2024-12-19T16:45:00Z",
     },
     {
-      id: 'entity_4',
-      name: 'Retail Ventures',
-      type: 'sole_proprietorship',
-      status: 'pending',
-      createdAt: '2024-11-20T00:00:00Z',
+      id: "entity_4",
+      name: "Retail Ventures",
+      type: "sole_proprietorship",
+      status: "pending",
+      createdAt: "2024-11-20T00:00:00Z",
       metrics: {
         revenue: 0,
         expenses: 5000,
@@ -766,7 +839,7 @@ function getMockEntities(): Entity[] {
         accountsPayable: 3000,
         transactionCount: 25,
       },
-      lastSync: '2024-12-18T14:00:00Z',
+      lastSync: "2024-12-18T14:00:00Z",
     },
   ];
 }

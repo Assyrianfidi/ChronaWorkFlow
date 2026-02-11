@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Check, Zap, Building2, Crown } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState } from "react";
+import { Check, Zap, Building2, Crown } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PricingTier {
   id: string;
@@ -20,104 +20,110 @@ interface PricingTier {
 
 const pricingTiers: PricingTier[] = [
   {
-    id: 'starter',
-    name: 'Starter',
+    id: "starter",
+    name: "Starter",
     price: 29,
-    priceId: process.env.VITE_STRIPE_STARTER_PRICE_ID || 'price_starter',
-    description: 'Perfect for small businesses and freelancers',
+    priceId: process.env.VITE_STRIPE_STARTER_PRICE_ID || "price_starter",
+    description: "Perfect for small businesses and freelancers",
     icon: <Zap className="w-6 h-6" />,
     features: [
-      'Up to 100 transactions/month',
-      'Basic financial reports',
-      '1 user account',
-      'Email support',
-      'Mobile app access',
-      'Bank reconciliation',
+      "Up to 100 transactions/month",
+      "Basic financial reports",
+      "1 user account",
+      "Email support",
+      "Mobile app access",
+      "Bank reconciliation",
     ],
-    cta: 'Start Free Trial',
+    cta: "Start Free Trial",
   },
   {
-    id: 'pro',
-    name: 'Pro',
+    id: "pro",
+    name: "Pro",
     price: 79,
-    priceId: process.env.VITE_STRIPE_PRO_PRICE_ID || 'price_pro',
-    description: 'For growing businesses that need more',
+    priceId: process.env.VITE_STRIPE_PRO_PRICE_ID || "price_pro",
+    description: "For growing businesses that need more",
     icon: <Building2 className="w-6 h-6" />,
     features: [
-      'Unlimited transactions',
-      'Advanced financial reports',
-      'Up to 5 user accounts',
-      'Priority email & chat support',
-      'Mobile app access',
-      'Bank reconciliation',
-      'Automated invoicing',
-      'Expense tracking',
-      'Multi-currency support',
+      "Unlimited transactions",
+      "Advanced financial reports",
+      "Up to 5 user accounts",
+      "Priority email & chat support",
+      "Mobile app access",
+      "Bank reconciliation",
+      "Automated invoicing",
+      "Expense tracking",
+      "Multi-currency support",
     ],
     popular: true,
-    cta: 'Start Free Trial',
+    cta: "Start Free Trial",
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
+    id: "enterprise",
+    name: "Enterprise",
     price: 299,
-    priceId: process.env.VITE_STRIPE_ENTERPRISE_PRICE_ID || 'price_enterprise',
-    description: 'For large organizations with complex needs',
+    priceId: process.env.VITE_STRIPE_ENTERPRISE_PRICE_ID || "price_enterprise",
+    description: "For large organizations with complex needs",
     icon: <Crown className="w-6 h-6" />,
     features: [
-      'Everything in Pro',
-      'Unlimited users',
-      'Custom integrations',
-      'Dedicated account manager',
-      '24/7 phone support',
-      'Advanced security & compliance',
-      'Custom workflows',
-      'API access',
-      'White-label options',
-      'SLA guarantee',
+      "Everything in Pro",
+      "Unlimited users",
+      "Custom integrations",
+      "Dedicated account manager",
+      "24/7 phone support",
+      "Advanced security & compliance",
+      "Custom workflows",
+      "API access",
+      "White-label options",
+      "SLA guarantee",
     ],
-    cta: 'Contact Sales',
+    cta: "Contact Sales",
   },
 ];
 
 export const PricingPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">(
+    "monthly",
+  );
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleSelectPlan = async (tier: PricingTier) => {
-    if (tier.id === 'enterprise') {
-      window.location.href = 'mailto:sales@accubooks.com?subject=Enterprise Plan Inquiry';
+    if (tier.id === "enterprise") {
+      window.location.href =
+        "mailto:sales@accubooks.com?subject=Enterprise Plan Inquiry";
       return;
     }
 
     if (!user) {
-      navigate('/register', { state: { selectedPlan: tier.id } });
+      navigate("/register", { state: { selectedPlan: tier.id } });
       return;
     }
 
     setLoading(tier.id);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/billing/create-checkout-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/billing/create-checkout-session`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            priceId: tier.priceId,
+            successUrl: `${window.location.origin}/billing/success`,
+            cancelUrl: `${window.location.origin}/pricing`,
+          }),
         },
-        body: JSON.stringify({
-          priceId: tier.priceId,
-          successUrl: `${window.location.origin}/billing/success`,
-          cancelUrl: `${window.location.origin}/pricing`,
-        }),
-      });
+      );
 
       const data = await response.json();
       if (data.url) {
         window.location.href = data.url;
       }
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      console.error("Error creating checkout session:", error);
     } finally {
       setLoading(null);
     }
@@ -137,27 +143,28 @@ export const PricingPage: React.FC = () => {
             Simple, transparent pricing
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Choose the perfect plan for your business. All plans include a 14-day free trial.
+            Choose the perfect plan for your business. All plans include a
+            14-day free trial.
           </p>
 
           {/* Billing Cycle Toggle */}
           <div className="mt-8 inline-flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
-              onClick={() => setBillingCycle('monthly')}
+              onClick={() => setBillingCycle("monthly")}
               className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                billingCycle === 'monthly'
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400'
+                billingCycle === "monthly"
+                  ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                  : "text-gray-600 dark:text-gray-400"
               }`}
             >
               Monthly
             </button>
             <button
-              onClick={() => setBillingCycle('annual')}
+              onClick={() => setBillingCycle("annual")}
               className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                billingCycle === 'annual'
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400'
+                billingCycle === "annual"
+                  ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+                  : "text-gray-600 dark:text-gray-400"
               }`}
             >
               Annual
@@ -177,8 +184,8 @@ export const PricingPage: React.FC = () => {
               key={tier.id}
               className={`relative flex flex-col ${
                 tier.popular
-                  ? 'border-2 border-primary shadow-xl scale-105'
-                  : 'border border-gray-200 dark:border-gray-800'
+                  ? "border-2 border-primary shadow-xl scale-105"
+                  : "border border-gray-200 dark:border-gray-800"
               }`}
             >
               {tier.popular && (
@@ -209,13 +216,16 @@ export const PricingPage: React.FC = () => {
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2">
                     <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                      ${billingCycle === 'monthly' ? tier.price : getAnnualPrice(tier.price)}
+                      $
+                      {billingCycle === "monthly"
+                        ? tier.price
+                        : getAnnualPrice(tier.price)}
                     </span>
                     <span className="text-gray-600 dark:text-gray-400">
-                      /{billingCycle === 'monthly' ? 'month' : 'year'}
+                      /{billingCycle === "monthly" ? "month" : "year"}
                     </span>
                   </div>
-                  {billingCycle === 'annual' && (
+                  {billingCycle === "annual" && (
                     <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
                       ${tier.price}/month billed annually
                     </p>
@@ -225,7 +235,7 @@ export const PricingPage: React.FC = () => {
                 {/* CTA Button */}
                 <Button
                   onClick={() => handleSelectPlan(tier)}
-                  variant={tier.popular ? 'default' : 'outline'}
+                  variant={tier.popular ? "default" : "outline"}
                   className="w-full mb-6"
                   loading={loading === tier.id}
                   disabled={loading !== null}
@@ -261,8 +271,8 @@ export const PricingPage: React.FC = () => {
               Can I change plans later?
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately,
-              and we'll prorate the difference.
+              Yes! You can upgrade or downgrade your plan at any time. Changes
+              take effect immediately, and we'll prorate the difference.
             </p>
           </div>
           <div>
@@ -270,8 +280,8 @@ export const PricingPage: React.FC = () => {
               What payment methods do you accept?
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              We accept all major credit cards (Visa, MasterCard, American Express) and ACH transfers
-              for annual plans.
+              We accept all major credit cards (Visa, MasterCard, American
+              Express) and ACH transfers for annual plans.
             </p>
           </div>
           <div>
@@ -279,7 +289,8 @@ export const PricingPage: React.FC = () => {
               Is there a free trial?
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              Yes! All plans come with a 14-day free trial. No credit card required to start.
+              Yes! All plans come with a 14-day free trial. No credit card
+              required to start.
             </p>
           </div>
           <div>
@@ -287,8 +298,8 @@ export const PricingPage: React.FC = () => {
               What happens after my trial ends?
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              You'll be automatically charged for your selected plan. You can cancel anytime before
-              the trial ends with no charges.
+              You'll be automatically charged for your selected plan. You can
+              cancel anytime before the trial ends with no charges.
             </p>
           </div>
         </div>

@@ -5,7 +5,7 @@ declare global {
 }
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { LoadingState } from '@/components/ui/LoadingState';
+import { LoadingState } from "@/components/ui/LoadingState";
 
 // Accessibility monitoring interfaces
 interface AccessibilityRule {

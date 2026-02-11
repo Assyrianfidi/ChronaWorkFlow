@@ -3,8 +3,8 @@
  * Provides utilities for role-based UI gating (NOT authentication)
  */
 
-import { useMemo } from 'react';
-import { useAuth, UserRole } from '@/contexts/AuthContext';
+import { useMemo } from "react";
+import { useAuth, UserRole } from "@/contexts/AuthContext";
 
 export interface RolePermissions {
   canViewFinancialDashboard: boolean;
@@ -23,7 +23,7 @@ export interface RolePermissions {
  */
 export function getRolePermissions(role: UserRole): RolePermissions {
   switch (role) {
-    case 'OWNER':
+    case "OWNER":
       return {
         canViewFinancialDashboard: true,
         canViewProfitLoss: true,
@@ -36,7 +36,7 @@ export function getRolePermissions(role: UserRole): RolePermissions {
         canViewFullDashboard: true,
       };
 
-    case 'ADMIN':
+    case "ADMIN":
       return {
         canViewFinancialDashboard: true,
         canViewProfitLoss: true,
@@ -49,7 +49,7 @@ export function getRolePermissions(role: UserRole): RolePermissions {
         canViewFullDashboard: true,
       };
 
-    case 'MANAGER':
+    case "MANAGER":
       return {
         canViewFinancialDashboard: true,
         canViewProfitLoss: true,
@@ -62,7 +62,7 @@ export function getRolePermissions(role: UserRole): RolePermissions {
         canViewFullDashboard: true,
       };
 
-    case 'ACCOUNTANT':
+    case "ACCOUNTANT":
       return {
         canViewFinancialDashboard: true,
         canViewProfitLoss: true,
@@ -75,7 +75,7 @@ export function getRolePermissions(role: UserRole): RolePermissions {
         canViewFullDashboard: false, // Limited dashboard view
       };
 
-    case 'AUDITOR':
+    case "AUDITOR":
       return {
         canViewFinancialDashboard: true,
         canViewProfitLoss: true,
@@ -88,7 +88,7 @@ export function getRolePermissions(role: UserRole): RolePermissions {
         canViewFullDashboard: false,
       };
 
-    case 'INVENTORY_MANAGER':
+    case "INVENTORY_MANAGER":
       return {
         canViewFinancialDashboard: false, // No financial access
         canViewProfitLoss: false,
@@ -124,22 +124,22 @@ export function useRoleBasedUI() {
 
   const permissions = useMemo(() => {
     if (!user) {
-      return getRolePermissions('ACCOUNTANT'); // Default fallback
+      return getRolePermissions("ACCOUNTANT"); // Default fallback
     }
     return getRolePermissions(user.role);
   }, [user]);
 
-  const role = user?.role || 'ACCOUNTANT';
+  const role = user?.role || "ACCOUNTANT";
 
   return {
     role,
     permissions,
-    isOwner: role === 'OWNER',
-    isAdmin: role === 'ADMIN',
-    isManager: role === 'MANAGER',
-    isAccountant: role === 'ACCOUNTANT',
-    isAuditor: role === 'AUDITOR',
-    isInventoryManager: role === 'INVENTORY_MANAGER',
+    isOwner: role === "OWNER",
+    isAdmin: role === "ADMIN",
+    isManager: role === "MANAGER",
+    isAccountant: role === "ACCOUNTANT",
+    isAuditor: role === "AUDITOR",
+    isInventoryManager: role === "INVENTORY_MANAGER",
   };
 }
 
@@ -151,15 +151,15 @@ export function getVisibleWidgets(role: UserRole): string[] {
   const widgets: string[] = [];
 
   if (permissions.canViewProfitLoss) {
-    widgets.push('profit-loss');
+    widgets.push("profit-loss");
   }
 
   if (permissions.canViewBankAccounts) {
-    widgets.push('bank-accounts');
+    widgets.push("bank-accounts");
   }
 
   if (permissions.canViewInvoices) {
-    widgets.push('invoices');
+    widgets.push("invoices");
   }
 
   return widgets;

@@ -634,10 +634,7 @@ const AdminSettingsPage: React.FC = () => {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() =>
-                                    handleUpdateUserStatus(
-                                      user.id,
-                                      "SUSPENDED",
-                                    )
+                                    handleUpdateUserStatus(user.id, "SUSPENDED")
                                   }
                                   aria-label={`Suspend ${user.name}`}
                                 >

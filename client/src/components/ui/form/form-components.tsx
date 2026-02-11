@@ -24,9 +24,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
         {description && (
-          <p className="text-xs text-muted-foreground">
-            {description}
-          </p>
+          <p className="text-xs text-muted-foreground">{description}</p>
         )}
         <input
           id={inputId}
@@ -79,9 +77,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           </label>
         )}
         {description && (
-          <p className="text-xs text-muted-foreground">
-            {description}
-          </p>
+          <p className="text-xs text-muted-foreground">{description}</p>
         )}
         <select
           id={selectId}
@@ -136,9 +132,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           </label>
         )}
         {description && (
-          <p className="text-xs text-muted-foreground">
-            {description}
-          </p>
+          <p className="text-xs text-muted-foreground">{description}</p>
         )}
         <textarea
           id={textareaId}
@@ -195,10 +189,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
             />
           </div>
           <div className="ml-3 text-sm">
-            <label
-              htmlFor={checkboxId}
-              className="font-medium text-foreground"
-            >
+            <label htmlFor={checkboxId} className="font-medium text-foreground">
               {label}
             </label>
             {description && (

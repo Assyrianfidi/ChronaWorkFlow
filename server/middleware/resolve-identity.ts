@@ -107,7 +107,7 @@ export function resolveIdentity() {
     );
 
     const ownerVerified = Boolean(data.ownerVerified);
-    const ownerEmailMatches = !!ownerEmail ? email?.toLowerCase() === ownerEmail : false;
+    const ownerEmailMatches = ownerEmail ? email?.toLowerCase() === ownerEmail : false;
     const isOwner = roles.includes("OWNER") && ownerVerified && ownerEmailMatches;
     const effectiveRoles = isOwner ? roles : roles.filter((r) => r !== "OWNER");
 

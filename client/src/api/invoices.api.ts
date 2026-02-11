@@ -1,5 +1,5 @@
-import api from './index';
-import type { ApiResponse } from './index';
+import api from "./index";
+import type { ApiResponse } from "./index";
 
 export interface Invoice {
   id: string;
@@ -10,7 +10,7 @@ export interface Invoice {
   customerEmail?: string;
   date: string;
   dueDate: string;
-  status: 'draft' | 'sent' | 'viewed' | 'paid' | 'overdue' | 'cancelled';
+  status: "draft" | "sent" | "viewed" | "paid" | "overdue" | "cancelled";
   subtotal: string;
   taxRate: string;
   taxAmount: string;
@@ -44,13 +44,13 @@ export interface CreateInvoiceRequest {
 }
 
 export interface UpdateInvoiceRequest {
-  status?: Invoice['status'];
+  status?: Invoice["status"];
   dueDate?: string;
   notes?: string;
 }
 
 export interface FinalizeInvoiceRequest {
-  targetStatus: 'sent' | 'issued' | 'approved' | 'finalized';
+  targetStatus: "sent" | "issued" | "approved" | "finalized";
 }
 
 export interface InvoiceListParams {
@@ -68,10 +68,14 @@ export const invoicesApi = {
    * List invoices for a company with optional filters
    */
   list: (params: InvoiceListParams) =>
-    api.get<ApiResponse<{ invoices: Invoice[]; total: number; page: number; totalPages: number }>>(
-      '/invoices',
-      { params }
-    ),
+    api.get<
+      ApiResponse<{
+        invoices: Invoice[];
+        total: number;
+        page: number;
+        totalPages: number;
+      }>
+    >("/invoices", { params }),
 
   /**
    * Get a single invoice by ID
@@ -85,8 +89,8 @@ export const invoicesApi = {
    * Create a new invoice
    */
   create: (data: CreateInvoiceRequest, idempotencyKey?: string) =>
-    api.post<ApiResponse<Invoice>>('/invoices', data, {
-      headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {},
+    api.post<ApiResponse<Invoice>>("/invoices", data, {
+      headers: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {},
     }),
 
   /**
@@ -101,13 +105,18 @@ export const invoicesApi = {
   /**
    * Finalize an invoice (posts to ledger)
    */
-  finalize: (id: string, companyId: string, data: FinalizeInvoiceRequest, idempotencyKey: string) =>
+  finalize: (
+    id: string,
+    companyId: string,
+    data: FinalizeInvoiceRequest,
+    idempotencyKey: string,
+  ) =>
     api.post<ApiResponse<{ invoice: Invoice; replayed: boolean }>>(
       `/invoices/${id}/finalize`,
       { ...data, companyId },
       {
-        headers: { 'Idempotency-Key': idempotencyKey },
-      }
+        headers: { "Idempotency-Key": idempotencyKey },
+      },
     ),
 
   /**
@@ -122,15 +131,17 @@ export const invoicesApi = {
    * Get invoice statistics
    */
   getStats: (companyId: string) =>
-    api.get<ApiResponse<{
-      total: number;
-      paid: number;
-      pending: number;
-      overdue: number;
-      totalAmount: string;
-      paidAmount: string;
-      pendingAmount: string;
-    }>>('/invoices/stats', {
+    api.get<
+      ApiResponse<{
+        total: number;
+        paid: number;
+        pending: number;
+        overdue: number;
+        totalAmount: string;
+        paidAmount: string;
+        pendingAmount: string;
+      }>
+    >("/invoices/stats", {
       params: { companyId },
     }),
 };

@@ -56,19 +56,119 @@ interface Vendor {
 // MOCK DATA
 // ========================================
 const VENDORS: Vendor[] = [
-  { id: "v1", name: "Microsoft Corporation", email: "billing@microsoft.com", phone: "(800) 642-7676", balance: 12500.00, status: "active", lastPayment: "2024-01-10" },
-  { id: "v2", name: "Amazon Web Services", email: "aws-billing@amazon.com", phone: "(206) 266-1000", balance: 8750.00, status: "active", lastPayment: "2024-01-12" },
-  { id: "v3", name: "Salesforce Inc", email: "invoices@salesforce.com", phone: "(415) 901-7000", balance: 4500.00, status: "active", lastPayment: "2024-01-08" },
-  { id: "v4", name: "Slack Technologies", email: "billing@slack.com", phone: "(415) 436-9333", balance: 1200.00, status: "active", lastPayment: "2024-01-05" },
-  { id: "v5", name: "Stripe Inc", email: "support@stripe.com", phone: "(888) 963-8442", balance: 2300.00, status: "active" },
+  {
+    id: "v1",
+    name: "Microsoft Corporation",
+    email: "billing@microsoft.com",
+    phone: "(800) 642-7676",
+    balance: 12500.0,
+    status: "active",
+    lastPayment: "2024-01-10",
+  },
+  {
+    id: "v2",
+    name: "Amazon Web Services",
+    email: "aws-billing@amazon.com",
+    phone: "(206) 266-1000",
+    balance: 8750.0,
+    status: "active",
+    lastPayment: "2024-01-12",
+  },
+  {
+    id: "v3",
+    name: "Salesforce Inc",
+    email: "invoices@salesforce.com",
+    phone: "(415) 901-7000",
+    balance: 4500.0,
+    status: "active",
+    lastPayment: "2024-01-08",
+  },
+  {
+    id: "v4",
+    name: "Slack Technologies",
+    email: "billing@slack.com",
+    phone: "(415) 436-9333",
+    balance: 1200.0,
+    status: "active",
+    lastPayment: "2024-01-05",
+  },
+  {
+    id: "v5",
+    name: "Stripe Inc",
+    email: "support@stripe.com",
+    phone: "(888) 963-8442",
+    balance: 2300.0,
+    status: "active",
+  },
 ];
 
 const BILLS: Bill[] = [
-  { id: "b1", vendor: "Microsoft Corporation", vendorId: "v1", billNumber: "MSFT-2024-001", date: "2024-01-01", dueDate: "2024-01-31", amount: 15000.00, balance: 12500.00, status: "partial", category: "Software", description: "Office 365 Enterprise licenses" },
-  { id: "b2", vendor: "Amazon Web Services", vendorId: "v2", billNumber: "AWS-789456123", date: "2024-01-05", dueDate: "2024-02-05", amount: 8750.00, balance: 8750.00, status: "open", category: "Hosting", description: "December 2023 cloud services" },
-  { id: "b3", vendor: "Salesforce Inc", vendorId: "v3", billNumber: "SF-2024-Q1", date: "2023-12-15", dueDate: "2024-01-15", amount: 4500.00, balance: 4500.00, status: "overdue", category: "CRM", description: "Q1 2024 CRM subscription", daysOverdue: 15 },
-  { id: "b4", vendor: "Slack Technologies", vendorId: "v4", billNumber: "SLACK-2024-01", date: "2024-01-01", dueDate: "2024-02-01", amount: 1200.00, balance: 1200.00, status: "open", category: "Communication", description: "Pro plan - 50 users" },
-  { id: "b5", vendor: "Stripe Inc", vendorId: "v5", billNumber: "STRIPE-2024-001", date: "2023-12-01", dueDate: "2023-12-31", amount: 2300.00, balance: 0.00, status: "paid", category: "Payment Processing", description: "Transaction fees - Dec 2023" },
+  {
+    id: "b1",
+    vendor: "Microsoft Corporation",
+    vendorId: "v1",
+    billNumber: "MSFT-2024-001",
+    date: "2024-01-01",
+    dueDate: "2024-01-31",
+    amount: 15000.0,
+    balance: 12500.0,
+    status: "partial",
+    category: "Software",
+    description: "Office 365 Enterprise licenses",
+  },
+  {
+    id: "b2",
+    vendor: "Amazon Web Services",
+    vendorId: "v2",
+    billNumber: "AWS-789456123",
+    date: "2024-01-05",
+    dueDate: "2024-02-05",
+    amount: 8750.0,
+    balance: 8750.0,
+    status: "open",
+    category: "Hosting",
+    description: "December 2023 cloud services",
+  },
+  {
+    id: "b3",
+    vendor: "Salesforce Inc",
+    vendorId: "v3",
+    billNumber: "SF-2024-Q1",
+    date: "2023-12-15",
+    dueDate: "2024-01-15",
+    amount: 4500.0,
+    balance: 4500.0,
+    status: "overdue",
+    category: "CRM",
+    description: "Q1 2024 CRM subscription",
+    daysOverdue: 15,
+  },
+  {
+    id: "b4",
+    vendor: "Slack Technologies",
+    vendorId: "v4",
+    billNumber: "SLACK-2024-01",
+    date: "2024-01-01",
+    dueDate: "2024-02-01",
+    amount: 1200.0,
+    balance: 1200.0,
+    status: "open",
+    category: "Communication",
+    description: "Pro plan - 50 users",
+  },
+  {
+    id: "b5",
+    vendor: "Stripe Inc",
+    vendorId: "v5",
+    billNumber: "STRIPE-2024-001",
+    date: "2023-12-01",
+    dueDate: "2023-12-31",
+    amount: 2300.0,
+    balance: 0.0,
+    status: "paid",
+    category: "Payment Processing",
+    description: "Transaction fees - Dec 2023",
+  },
 ];
 
 // ========================================
@@ -100,7 +200,12 @@ const getStatusBadge = (status: string) => {
     overdue: "bg-red-100 text-red-700",
   };
   return (
-    <span className={cn("px-2 py-0.5 text-xs font-medium rounded-full", variants[status] || "bg-slate-100")}>
+    <span
+      className={cn(
+        "px-2 py-0.5 text-xs font-medium rounded-full",
+        variants[status] || "bg-slate-100",
+      )}
+    >
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   );
@@ -110,19 +215,29 @@ const getStatusBadge = (status: string) => {
 // MAIN PAGE COMPONENT
 // ========================================
 const APPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"bills" | "vendors" | "payments" | "aging">("bills");
+  const [activeTab, setActiveTab] = useState<
+    "bills" | "vendors" | "payments" | "aging"
+  >("bills");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const filteredBills = BILLS.filter((bill) => {
-    const matchesSearch = bill.vendor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         bill.billNumber.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || bill.status === statusFilter;
+    const matchesSearch =
+      bill.vendor.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      bill.billNumber.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || bill.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  const totalOutstanding = BILLS.filter(b => b.status !== "paid").reduce((sum, b) => sum + b.balance, 0);
-  const overdueAmount = BILLS.filter(b => b.status === "overdue").reduce((sum, b) => sum + b.balance, 0);
+  const totalOutstanding = BILLS.filter((b) => b.status !== "paid").reduce(
+    (sum, b) => sum + b.balance,
+    0,
+  );
+  const overdueAmount = BILLS.filter((b) => b.status === "overdue").reduce(
+    (sum, b) => sum + b.balance,
+    0,
+  );
 
   return (
     <EnterpriseLayout>
@@ -135,7 +250,9 @@ const APPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-xl font-semibold">Accounts Payable</h1>
-              <p className="text-sm text-muted-foreground">Manage vendors, bills, and payments</p>
+              <p className="text-sm text-muted-foreground">
+                Manage vendors, bills, and payments
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -167,7 +284,7 @@ const APPage: React.FC = () => {
                   "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors",
                   activeTab === tab.id
                     ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted",
                 )}
               >
                 <Icon className="w-4 h-4" />
@@ -183,7 +300,11 @@ const APPage: React.FC = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder={activeTab === "vendors" ? "Search vendors..." : "Search bills by number or vendor..."}
+              placeholder={
+                activeTab === "vendors"
+                  ? "Search vendors..."
+                  : "Search bills by number or vendor..."
+              }
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-sm border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary"
@@ -219,20 +340,30 @@ const APPage: React.FC = () => {
               {/* Summary Cards */}
               <div className="grid grid-cols-4 gap-4">
                 <div className="p-4 rounded-lg border bg-card">
-                  <p className="text-sm text-muted-foreground">Total Outstanding</p>
-                  <p className="text-2xl font-bold text-amber-600">{formatCurrency(totalOutstanding)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Total Outstanding
+                  </p>
+                  <p className="text-2xl font-bold text-amber-600">
+                    {formatCurrency(totalOutstanding)}
+                  </p>
                 </div>
                 <div className="p-4 rounded-lg border bg-card">
                   <p className="text-sm text-muted-foreground">Overdue</p>
-                  <p className="text-2xl font-bold text-red-600">{formatCurrency(overdueAmount)}</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {formatCurrency(overdueAmount)}
+                  </p>
                 </div>
                 <div className="p-4 rounded-lg border bg-card">
                   <p className="text-sm text-muted-foreground">Due This Week</p>
                   <p className="text-2xl font-bold">{formatCurrency(20125)}</p>
                 </div>
                 <div className="p-4 rounded-lg border bg-card">
-                  <p className="text-sm text-muted-foreground">Active Vendors</p>
-                  <p className="text-2xl font-bold text-emerald-600">{VENDORS.length}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Active Vendors
+                  </p>
+                  <p className="text-2xl font-bold text-emerald-600">
+                    {VENDORS.length}
+                  </p>
                 </div>
               </div>
 
@@ -241,27 +372,58 @@ const APPage: React.FC = () => {
                 <table className="w-full text-sm">
                   <thead className="bg-muted/50">
                     <tr>
-                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Bill #</th>
-                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Vendor</th>
-                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Date</th>
-                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Due Date</th>
-                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Amount</th>
-                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Balance</th>
-                      <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Status</th>
-                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Description</th>
-                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Actions</th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                        Bill #
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                        Vendor
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                        Date
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                        Due Date
+                      </th>
+                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">
+                        Amount
+                      </th>
+                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">
+                        Balance
+                      </th>
+                      <th className="px-4 py-3 text-center font-semibold text-muted-foreground">
+                        Status
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                        Description
+                      </th>
+                      <th className="px-4 py-3 text-right font-semibold text-muted-foreground">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {filteredBills.map((bill) => (
-                      <tr key={bill.id} className="hover:bg-muted/30 transition-colors">
-                        <td className="px-4 py-3 font-mono text-muted-foreground">{bill.billNumber}</td>
+                      <tr
+                        key={bill.id}
+                        className="hover:bg-muted/30 transition-colors"
+                      >
+                        <td className="px-4 py-3 font-mono text-muted-foreground">
+                          {bill.billNumber}
+                        </td>
                         <td className="px-4 py-3 font-medium">{bill.vendor}</td>
                         <td className="px-4 py-3">{formatDate(bill.date)}</td>
-                        <td className={cn("px-4 py-3", bill.status === "overdue" && "text-red-600 font-medium")}>
+                        <td
+                          className={cn(
+                            "px-4 py-3",
+                            bill.status === "overdue" &&
+                              "text-red-600 font-medium",
+                          )}
+                        >
                           {formatDate(bill.dueDate)}
                           {bill.daysOverdue && (
-                            <span className="ml-2 text-xs text-red-600">({bill.daysOverdue} days overdue)</span>
+                            <span className="ml-2 text-xs text-red-600">
+                              ({bill.daysOverdue} days overdue)
+                            </span>
                           )}
                         </td>
                         <td className="px-4 py-3 text-right font-mono tabular-nums">
@@ -270,21 +432,35 @@ const APPage: React.FC = () => {
                         <td className="px-4 py-3 text-right font-mono tabular-nums">
                           {formatCurrency(bill.balance)}
                         </td>
-                        <td className="px-4 py-3 text-center">{getStatusBadge(bill.status)}</td>
+                        <td className="px-4 py-3 text-center">
+                          {getStatusBadge(bill.status)}
+                        </td>
                         <td className="px-4 py-3 text-muted-foreground max-w-xs truncate">
                           {bill.description}
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-1">
                             {bill.status !== "paid" && (
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                              >
                                 <DollarSign className="w-4 h-4" />
                               </Button>
                             )}
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
                               <Eye className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
                               <MoreHorizontal className="w-4 h-4" />
                             </Button>
                           </div>
@@ -302,44 +478,81 @@ const APPage: React.FC = () => {
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Vendor Name</th>
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Email</th>
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Phone</th>
-                    <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Balance</th>
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Status</th>
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Last Payment</th>
-                    <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Actions</th>
+                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                      Vendor Name
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                      Email
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                      Phone
+                    </th>
+                    <th className="px-4 py-3 text-right font-semibold text-muted-foreground">
+                      Balance
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                      Last Payment
+                    </th>
+                    <th className="px-4 py-3 text-right font-semibold text-muted-foreground">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {VENDORS.map((vendor) => (
-                    <tr key={vendor.id} className="hover:bg-muted/30 transition-colors">
+                    <tr
+                      key={vendor.id}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
                       <td className="px-4 py-3 font-medium">{vendor.name}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{vendor.email}</td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {vendor.email}
+                      </td>
                       <td className="px-4 py-3">{vendor.phone}</td>
                       <td className="px-4 py-3 text-right font-mono tabular-nums">
                         {formatCurrency(vendor.balance)}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={cn(
-                          "px-2 py-0.5 text-xs font-medium rounded-full",
-                          vendor.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700"
-                        )}>
+                        <span
+                          className={cn(
+                            "px-2 py-0.5 text-xs font-medium rounded-full",
+                            vendor.status === "active"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : "bg-slate-100 text-slate-700",
+                          )}
+                        >
                           {vendor.status}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
-                        {vendor.lastPayment ? formatDate(vendor.lastPayment) : "—"}
+                        {vendor.lastPayment
+                          ? formatDate(vendor.lastPayment)
+                          : "—"}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                          >
                             <FileText className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                          >
                             <Edit className="w-4 h-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                          >
                             <MoreHorizontal className="w-4 h-4" />
                           </Button>
                         </div>
@@ -355,8 +568,14 @@ const APPage: React.FC = () => {
             <div className="flex items-center justify-center h-64">
               <div className="text-center">
                 <Clock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-lg font-medium">{activeTab === "payments" ? "Payment History" : "Aging Report"}</p>
-                <p className="text-sm text-muted-foreground">Feature coming soon</p>
+                <p className="text-lg font-medium">
+                  {activeTab === "payments"
+                    ? "Payment History"
+                    : "Aging Report"}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Feature coming soon
+                </p>
               </div>
             </div>
           )}

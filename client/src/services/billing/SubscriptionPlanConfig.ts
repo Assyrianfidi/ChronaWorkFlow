@@ -70,7 +70,10 @@ class SubscriptionPlanService {
     return PLAN_FEATURES[plan];
   }
 
-  static canCreateDashboard(plan: SubscriptionPlan, currentCount: number): boolean {
+  static canCreateDashboard(
+    plan: SubscriptionPlan,
+    currentCount: number,
+  ): boolean {
     const limit = PLAN_FEATURES[plan].dashboardLimit;
     if (limit == null) return true;
     return currentCount < limit;
@@ -84,7 +87,10 @@ class SubscriptionPlanService {
     return PLAN_FEATURES[to].queuePriority < PLAN_FEATURES[from].queuePriority;
   }
 
-  static compareFeatures(from: SubscriptionPlan, to: SubscriptionPlan): string[] {
+  static compareFeatures(
+    from: SubscriptionPlan,
+    to: SubscriptionPlan,
+  ): string[] {
     const fromF = PLAN_FEATURES[from];
     const toF = PLAN_FEATURES[to];
     const features: string[] = [];
@@ -101,8 +107,10 @@ class SubscriptionPlanService {
       else features.push(`${toF.dashboardLimit} dashboards`);
     }
 
-    if (!fromF.priorityQueue && toF.priorityQueue) features.push("Priority export queue");
-    if (!fromF.teamAdminControls && toF.teamAdminControls) features.push("Team admin controls");
+    if (!fromF.priorityQueue && toF.priorityQueue)
+      features.push("Priority export queue");
+    if (!fromF.teamAdminControls && toF.teamAdminControls)
+      features.push("Team admin controls");
     if (!fromF.customRbac && toF.customRbac) features.push("Custom RBAC");
     if (!fromF.dedicatedSla && toF.dedicatedSla) features.push("Dedicated SLA");
 

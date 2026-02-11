@@ -73,7 +73,12 @@ const KPICard = React.forwardRef<HTMLDivElement, KPICardProps>(
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className={cn("text-sm font-medium mb-1", currentColor.accentText)}>
+              <p
+                className={cn(
+                  "text-sm font-medium mb-1",
+                  currentColor.accentText,
+                )}
+              >
                 {title}
               </p>
               <div className="text-3xl font-bold mb-2 text-foreground">
@@ -83,10 +88,15 @@ const KPICard = React.forwardRef<HTMLDivElement, KPICardProps>(
               {change !== undefined && (
                 <div className="flex items-center gap-1">
                   {TrendIcon && (
-                    <TrendIcon className={cn("h-4 w-4", currentColor.accentText)} />
+                    <TrendIcon
+                      className={cn("h-4 w-4", currentColor.accentText)}
+                    />
                   )}
                   <span
-                    className={cn("text-sm font-medium", currentColor.accentText)}
+                    className={cn(
+                      "text-sm font-medium",
+                      currentColor.accentText,
+                    )}
                   >
                     {changeType === "increase" ? "+" : "-"}
                     {Math.abs(change)}%

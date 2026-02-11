@@ -67,25 +67,26 @@ const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
 
   // Fetch admin dashboard data
-  const { data: dashboardData, isLoading, error } = useSWR<{
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+  } = useSWR<{
     success: boolean;
     data: {
       summary: DashboardSummary;
       activity: ActivityItem[];
     };
-  }>(
-    "/api/dashboard/admin",
-    async (url: string) => {
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch dashboard data");
-      return response.json();
-    },
-  );
+  }>("/api/dashboard/admin", async (url: string) => {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) throw new Error("Failed to fetch dashboard data");
+    return response.json();
+  });
 
   const summary = dashboardData?.data?.summary;
   const activity = dashboardData?.data?.activity;

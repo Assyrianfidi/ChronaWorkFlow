@@ -3,8 +3,8 @@
  * Reusable UI components for data fetching states
  */
 
-import React from 'react';
-import { AlertCircle, Inbox, RefreshCw } from 'lucide-react';
+import React from "react";
+import { AlertCircle, Inbox, RefreshCw } from "lucide-react";
 
 // ============================================================================
 // SKELETON COMPONENTS
@@ -79,8 +79,8 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({
-  title = 'Something went wrong',
-  message = 'We encountered an error loading this data. Please try again.',
+  title = "Something went wrong",
+  message = "We encountered an error loading this data. Please try again.",
   onRetry,
   showRetry = true,
 }: ErrorStateProps) {
@@ -128,15 +128,17 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-  title = 'No data available',
-  message = 'There is no data to display at this time.',
+  title = "No data available",
+  message = "There is no data to display at this time.",
   icon,
   action,
 }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <div className="w-16 h-16 rounded-full bg-surface flex items-center justify-center mb-4">
-        {icon || <Inbox className="w-8 h-8 text-textTertiary" aria-hidden="true" />}
+        {icon || (
+          <Inbox className="w-8 h-8 text-textTertiary" aria-hidden="true" />
+        )}
       </div>
       <h3 className="text-lg font-semibold text-textPrimary mb-2">{title}</h3>
       <p className="text-sm text-textSecondary mb-6 max-w-md">{message}</p>
@@ -166,15 +168,18 @@ export function EmptyCard({ title, message, icon, action }: EmptyStateProps) {
 // ============================================================================
 
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   className?: string;
 }
 
-export function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerProps) {
+export function LoadingSpinner({
+  size = "md",
+  className = "",
+}: LoadingSpinnerProps) {
   const sizeClasses = {
-    sm: 'w-4 h-4 border-2',
-    md: 'w-8 h-8 border-3',
-    lg: 'w-12 h-12 border-4',
+    sm: "w-4 h-4 border-2",
+    md: "w-8 h-8 border-3",
+    lg: "w-12 h-12 border-4",
   };
 
   return (
@@ -188,7 +193,11 @@ export function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerPr
   );
 }
 
-export function LoadingOverlay({ message = 'Loading...' }: { message?: string }) {
+export function LoadingOverlay({
+  message = "Loading...",
+}: {
+  message?: string;
+}) {
   return (
     <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center z-50 rounded-xl">
       <LoadingSpinner size="lg" />
@@ -201,7 +210,11 @@ export function LoadingOverlay({ message = 'Loading...' }: { message?: string })
 // INLINE LOADING STATE
 // ============================================================================
 
-export function InlineLoading({ message = 'Loading...' }: { message?: string }) {
+export function InlineLoading({
+  message = "Loading...",
+}: {
+  message?: string;
+}) {
   return (
     <div className="flex items-center gap-3 py-4">
       <LoadingSpinner size="sm" />
@@ -249,7 +262,7 @@ export function DataFetchWrapper<T>({
         {errorComponent || (
           <ErrorCard
             title="Failed to load data"
-            message={error?.message || 'An unexpected error occurred'}
+            message={error?.message || "An unexpected error occurred"}
             onRetry={onRetry}
           />
         )}

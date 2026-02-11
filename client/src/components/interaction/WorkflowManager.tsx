@@ -1213,17 +1213,17 @@ export function WorkflowBuilder() {
                       <span className="text-red-500 ml-1">*</span>
                     )}
                   </label>
-                  
-        <label htmlFor="input-1fa8mhum8" className="sr-only">
-          Field
-        </label>
-        <input id="input-1fa8mhum8"
+
+                  <label htmlFor="input-1fa8mhum8" className="sr-only">
+                    Field
+                  </label>
+                  <input
+                    id="input-1fa8mhum8"
                     type={variable.type === "number" ? "number" : "text"}
                     className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     placeholder={variable.description}
                     defaultValue={variable.defaultValue}
                     onChange={(e) =>
-      
                       setVariables((prev) => ({
                         ...prev,
                         [variable.id]:

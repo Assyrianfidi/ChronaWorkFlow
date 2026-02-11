@@ -31,8 +31,10 @@ class ApiClient {
   private baseURL: string;
   private defaultHeaders: Record<string, string>;
 
-  constructor(baseURL: string = "import.meta.env.VITE_API_URL/api") {
-    this.baseURL = baseURL;
+  constructor(
+    baseURL: string = import.meta.env.VITE_API_URL || "http://localhost:5000",
+  ) {
+    this.baseURL = `${baseURL}/api`;
     this.defaultHeaders = {
       "Content-Type": "application/json",
     };
@@ -64,7 +66,12 @@ class ApiClient {
         );
       }
 
-      if (response.ok && data && typeof data === "object" && "success" in data) {
+      if (
+        response.ok &&
+        data &&
+        typeof data === "object" &&
+        "success" in data
+      ) {
         // Basic envelope validation without contracts
         if (typeof data.success !== "boolean") {
           throw new ApiError(
