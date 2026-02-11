@@ -179,6 +179,17 @@ grafana/
 monitoring/
 docker-entrypoint-initdb.d/
 
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+terraform.tfplan
+.terraformrc
+terraform.rc
+
 # Generated files
 generated/
 evidence-store/
