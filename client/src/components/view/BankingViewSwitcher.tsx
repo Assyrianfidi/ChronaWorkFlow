@@ -5,8 +5,8 @@
 
 import React from "react";
 import { useView } from "@/contexts/ViewContext";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import { AlertCircle, CheckCircle, XCircle, List } from "lucide-react";
 import { BANKING_VIEWS } from "@/config/view.config";

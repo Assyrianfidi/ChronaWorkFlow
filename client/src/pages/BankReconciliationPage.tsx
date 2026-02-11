@@ -5,10 +5,10 @@
 
 import React, { useState } from "react";
 import { BankReconciliation } from "@/components/accounting";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import { useToast } from "@/hooks/useToast";
 import { useView } from "@/contexts/ViewContext";
 import {

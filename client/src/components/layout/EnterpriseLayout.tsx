@@ -15,7 +15,7 @@ import {
 } from "@/components/view/ViewSwitcher";
 
 // UI Components
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +24,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
 } from "@/components/ui/DropdownMenu";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 
 // Icons
 import {

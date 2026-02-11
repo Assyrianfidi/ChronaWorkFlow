@@ -5,7 +5,7 @@ import {
   type Transaction,
 } from "@/services/transactions.service";
 import { companiesService } from "@/services/companies.service";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Label from "@/components/ui/label";
 import { toast } from "sonner";

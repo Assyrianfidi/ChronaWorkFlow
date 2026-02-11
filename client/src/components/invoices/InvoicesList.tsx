@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { invoicesService, type Invoice } from "@/services/invoices.service";
 import { companiesService } from "@/services/companies.service";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Label from "@/components/ui/label";
 import { toast } from "sonner";

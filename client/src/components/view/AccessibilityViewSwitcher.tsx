@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { Eye, Contrast, Headphones, Check } from "lucide-react";
 import { ACCESSIBILITY_VIEWS } from "@/config/view.config";

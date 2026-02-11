@@ -5,7 +5,7 @@
 
 import React from "react";
 import { useView } from "@/contexts/ViewContext";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Minimize2 } from "lucide-react";
 
 export const PresentationModeExit: React.FC = () => {

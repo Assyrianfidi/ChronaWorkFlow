@@ -5,7 +5,7 @@
 
 import React from "react";
 import { useView } from "@/contexts/ViewContext";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { AlignJustify, List, Table, LayoutGrid } from "lucide-react";
 import { LIST_VIEWS } from "@/config/view.config";

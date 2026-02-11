@@ -1,6 +1,6 @@
 import React from "react";
 import Card, { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 import { ArrowLeft, Download, RefreshCw, Filter } from "lucide-react";
 import {
   LineChart,

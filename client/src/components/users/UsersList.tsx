@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { usersService, type User } from "@/services/users.service";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { toast } from "sonner";
 import {

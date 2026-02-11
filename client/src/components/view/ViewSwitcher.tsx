@@ -7,7 +7,7 @@
 import React from "react";
 import { useView } from "@/contexts/ViewContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import {
   Building2,

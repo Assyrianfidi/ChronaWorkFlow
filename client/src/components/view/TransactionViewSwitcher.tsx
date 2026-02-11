@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/DropdownMenu";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { FormInput, Minimize2, Columns, Check } from "lucide-react";
 import { TRANSACTION_VIEWS } from "@/config/view.config";

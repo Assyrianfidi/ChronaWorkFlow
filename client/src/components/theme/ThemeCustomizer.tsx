@@ -5,7 +5,7 @@
 
 import React, { useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,7 @@ import Input from "@/components/ui/Input";
 import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/Badge";
 import {
   Palette,
   Type,
