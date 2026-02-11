@@ -1,0 +1,513 @@
+{
+  "version": "1.0.0",
+  "currency": "usd",
+  "billingInterval": ["monthly", "yearly"],
+  "yearlyDiscount": 0.20,
+  "trialDays": 14,
+  "graceDays": 3,
+  "tiers": [
+    {
+      "id": "free",
+      "name": "Free",
+      "description": "Perfect for freelancers and solo entrepreneurs getting started",
+      "monthlyPrice": 0,
+      "yearlyPrice": 0,
+      "trialDays": 0,
+      "features": {
+        "users": {
+          "limit": 1,
+          "description": "Single user"
+        },
+        "clients": {
+          "limit": 5,
+          "description": "Up to 5 clients"
+        },
+        "invoices": {
+          "limit": 10,
+          "perMonth": true,
+          "description": "10 invoices per month"
+        },
+        "bankConnections": {
+          "limit": 1,
+          "description": "1 bank connection via Plaid"
+        },
+        "transactions": {
+          "limit": 100,
+          "perMonth": true,
+          "description": "100 transactions per month"
+        },
+        "storage": {
+          "limit": 1,
+          "unit": "GB",
+          "description": "1GB document storage"
+        },
+        "apiCalls": {
+          "limit": 1000,
+          "perMonth": true,
+          "description": "1,000 API calls per month"
+        },
+        "reports": {
+          "basic": true,
+          "advanced": false,
+          "description": "Basic financial reports only"
+        },
+        "integrations": {
+          "stripe": true,
+          "plaid": true,
+          "sendgrid": false,
+          "slack": false,
+          "quickbooks": false,
+          "description": "Basic integrations (Stripe, Plaid)"
+        },
+        "aiFeatures": {
+          "aiAssistant": false,
+          "aiCopilot": false,
+          "smartCategorization": false,
+          "description": "No AI features"
+        },
+        "support": {
+          "level": "community",
+          "responseTime": "72h",
+          "channels": ["community_forum"],
+          "description": "Community support only"
+        },
+        "ceoDashboard": false,
+        "exportFormats": ["csv"],
+        "whiteLabel": false,
+        "customDomain": false,
+        "priorityProcessing": false
+      },
+      "stripe": {
+        "productId": null,
+        "monthlyPriceId": null,
+        "yearlyPriceId": null
+      }
+    },
+    {
+      "id": "starter",
+      "name": "Starter",
+      "description": "For growing small businesses ready to professionalize their finances",
+      "monthlyPrice": 29,
+      "yearlyPrice": 279,
+      "trialDays": 14,
+      "popular": false,
+      "features": {
+        "users": {
+          "limit": 3,
+          "description": "Up to 3 users"
+        },
+        "clients": {
+          "limit": 25,
+          "description": "Up to 25 clients"
+        },
+        "invoices": {
+          "limit": 50,
+          "perMonth": true,
+          "description": "50 invoices per month"
+        },
+        "bankConnections": {
+          "limit": 2,
+          "description": "2 bank connections"
+        },
+        "transactions": {
+          "limit": 500,
+          "perMonth": true,
+          "description": "500 transactions per month"
+        },
+        "storage": {
+          "limit": 5,
+          "unit": "GB",
+          "description": "5GB document storage"
+        },
+        "apiCalls": {
+          "limit": 10000,
+          "perMonth": true,
+          "description": "10,000 API calls per month"
+        },
+        "reports": {
+          "basic": true,
+          "advanced": true,
+          "custom": false,
+          "description": "Basic & advanced reports"
+        },
+        "integrations": {
+          "stripe": true,
+          "plaid": true,
+          "sendgrid": true,
+          "slack": false,
+          "quickbooks": false,
+          "description": "Stripe, Plaid, SendGrid"
+        },
+        "aiFeatures": {
+          "aiAssistant": true,
+          "aiCopilot": false,
+          "smartCategorization": true,
+          "description": "AI Assistant & smart categorization"
+        },
+        "support": {
+          "level": "email",
+          "responseTime": "48h",
+          "channels": ["email", "community_forum"],
+          "description": "Email support (48h response)"
+        },
+        "ceoDashboard": false,
+        "exportFormats": ["csv", "excel"],
+        "whiteLabel": false,
+        "customDomain": false,
+        "priorityProcessing": false
+      },
+      "stripe": {
+        "productId": "prod_starter",
+        "monthlyPriceId": "price_starter_monthly",
+        "yearlyPriceId": "price_starter_yearly"
+      }
+    },
+    {
+      "id": "growth",
+      "name": "Growth",
+      "description": "For scaling businesses that need powerful financial insights",
+      "monthlyPrice": 79,
+      "yearlyPrice": 759,
+      "trialDays": 14,
+      "popular": true,
+      "features": {
+        "users": {
+          "limit": 10,
+          "description": "Up to 10 users"
+        },
+        "clients": {
+          "limit": 100,
+          "description": "Up to 100 clients"
+        },
+        "invoices": {
+          "limit": 200,
+          "perMonth": true,
+          "description": "200 invoices per month"
+        },
+        "bankConnections": {
+          "limit": 5,
+          "description": "5 bank connections"
+        },
+        "transactions": {
+          "limit": 2500,
+          "perMonth": true,
+          "description": "2,500 transactions per month"
+        },
+        "storage": {
+          "limit": 25,
+          "unit": "GB",
+          "description": "25GB document storage"
+        },
+        "apiCalls": {
+          "limit": 50000,
+          "perMonth": true,
+          "description": "50,000 API calls per month"
+        },
+        "reports": {
+          "basic": true,
+          "advanced": true,
+          "custom": true,
+          "scheduled": true,
+          "description": "All reports including custom & scheduled"
+        },
+        "integrations": {
+          "stripe": true,
+          "plaid": true,
+          "sendgrid": true,
+          "slack": true,
+          "quickbooks": true,
+          "description": "All standard integrations including QuickBooks"
+        },
+        "aiFeatures": {
+          "aiAssistant": true,
+          "aiCopilot": true,
+          "smartCategorization": true,
+          "forecasting": true,
+          "description": "Full AI suite including forecasting"
+        },
+        "support": {
+          "level": "priority",
+          "responseTime": "24h",
+          "channels": ["email", "chat", "community_forum"],
+          "description": "Priority email & chat support"
+        },
+        "ceoDashboard": true,
+        "ceoDashboardUsers": 1,
+        "exportFormats": ["csv", "excel", "pdf"],
+        "whiteLabel": false,
+        "customDomain": false,
+        "priorityProcessing": true
+      },
+      "stripe": {
+        "productId": "prod_growth",
+        "monthlyPriceId": "price_growth_monthly",
+        "yearlyPriceId": "price_growth_yearly"
+      }
+    },
+    {
+      "id": "professional",
+      "name": "Professional",
+      "description": "For established businesses requiring full financial control",
+      "monthlyPrice": 199,
+      "yearlyPrice": 1909,
+      "trialDays": 14,
+      "popular": false,
+      "features": {
+        "users": {
+          "limit": 25,
+          "description": "Up to 25 users"
+        },
+        "clients": {
+          "limit": 500,
+          "description": "Up to 500 clients"
+        },
+        "invoices": {
+          "limit": 1000,
+          "perMonth": true,
+          "description": "1,000 invoices per month"
+        },
+        "bankConnections": {
+          "limit": 10,
+          "description": "10 bank connections"
+        },
+        "transactions": {
+          "limit": 10000,
+          "perMonth": true,
+          "description": "10,000 transactions per month"
+        },
+        "storage": {
+          "limit": 100,
+          "unit": "GB",
+          "description": "100GB document storage"
+        },
+        "apiCalls": {
+          "limit": 200000,
+          "perMonth": true,
+          "description": "200,000 API calls per month"
+        },
+        "reports": {
+          "basic": true,
+          "advanced": true,
+          "custom": true,
+          "scheduled": true,
+          "consolidated": true,
+          "description": "All reports plus consolidated multi-company"
+        },
+        "integrations": {
+          "stripe": true,
+          "plaid": true,
+          "sendgrid": true,
+          "slack": true,
+          "quickbooks": true,
+          "hubspot": true,
+          "salesforce": true,
+          "description": "All integrations + CRM connectors"
+        },
+        "aiFeatures": {
+          "aiAssistant": true,
+          "aiCopilot": true,
+          "smartCategorization": true,
+          "forecasting": true,
+          "anomalyDetection": true,
+          "description": "AI suite + anomaly detection"
+        },
+        "support": {
+          "level": "dedicated",
+          "responseTime": "4h",
+          "channels": ["email", "chat", "phone", "community_forum"],
+          "description": "Dedicated support with phone (4h response)"
+        },
+        "ceoDashboard": true,
+        "ceoDashboardUsers": 3,
+        "exportFormats": ["csv", "excel", "pdf", "json"],
+        "whiteLabel": true,
+        "customDomain": true,
+        "priorityProcessing": true,
+        "auditLog": {
+          "retentionDays": 365,
+          "export": true
+        }
+      },
+      "stripe": {
+        "productId": "prod_professional",
+        "monthlyPriceId": "price_professional_monthly",
+        "yearlyPriceId": "price_professional_yearly"
+      }
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise",
+      "description": "For large organizations with complex needs and custom requirements",
+      "monthlyPrice": null,
+      "yearlyPrice": null,
+      "customPricing": true,
+      "trialDays": 30,
+      "popular": false,
+      "features": {
+        "users": {
+          "limit": -1,
+          "description": "Unlimited users"
+        },
+        "clients": {
+          "limit": -1,
+          "description": "Unlimited clients"
+        },
+        "invoices": {
+          "limit": -1,
+          "description": "Unlimited invoices"
+        },
+        "bankConnections": {
+          "limit": -1,
+          "description": "Unlimited bank connections"
+        },
+        "transactions": {
+          "limit": -1,
+          "description": "Unlimited transactions"
+        },
+        "storage": {
+          "limit": -1,
+          "unit": "GB",
+          "description": "Unlimited storage"
+        },
+        "apiCalls": {
+          "limit": -1,
+          "description": "Unlimited API calls"
+        },
+        "reports": {
+          "basic": true,
+          "advanced": true,
+          "custom": true,
+          "scheduled": true,
+          "consolidated": true,
+          "whiteLabeled": true,
+          "description": "All reports + custom white-labeled"
+        },
+        "integrations": {
+          "stripe": true,
+          "plaid": true,
+          "sendgrid": true,
+          "slack": true,
+          "quickbooks": true,
+          "hubspot": true,
+          "salesforce": true,
+          "custom": true,
+          "description": "All integrations + custom development"
+        },
+        "aiFeatures": {
+          "aiAssistant": true,
+          "aiCopilot": true,
+          "smartCategorization": true,
+          "forecasting": true,
+          "anomalyDetection": true,
+          "customModels": true,
+          "description": "Full AI suite + custom ML models"
+        },
+        "support": {
+          "level": "whiteglove",
+          "responseTime": "1h",
+          "channels": ["email", "chat", "phone", "dedicated_manager", "community_forum"],
+          "sla": "99.9% uptime",
+          "description": "White-glove with dedicated account manager"
+        },
+        "ceoDashboard": true,
+        "ceoDashboardUsers": -1,
+        "exportFormats": ["csv", "excel", "pdf", "json", "xml"],
+        "whiteLabel": true,
+        "customDomain": true,
+        "priorityProcessing": true,
+        "auditLog": {
+          "retentionDays": 2555,
+          "export": true,
+          "tamperProof": true
+        },
+        "security": {
+          "soc2": true,
+          "gdpr": true,
+          "hipaa": true,
+          "customCompliance": true
+        },
+        "deployment": {
+          "options": ["cloud", "onPremise", "hybrid"],
+          "regions": ["us", "eu", "apac"],
+          "dedicatedInfrastructure": true
+        }
+      },
+      "stripe": {
+        "productId": "prod_enterprise",
+        "monthlyPriceId": null,
+        "yearlyPriceId": null,
+        "customQuote": true
+      }
+    }
+  ],
+  "addOns": [
+    {
+      "id": "extra_users",
+      "name": "Additional Users",
+      "description": "Add more users to your plan",
+      "pricePerUnit": 10,
+      "unit": "user/month",
+      "availableFor": ["starter", "growth", "professional"],
+      "maxQuantity": 100
+    },
+    {
+      "id": "extra_storage",
+      "name": "Additional Storage",
+      "description": "Extra document storage",
+      "pricePerUnit": 5,
+      "unit": "10GB/month",
+      "availableFor": ["starter", "growth", "professional"],
+      "maxQuantity": 50
+    },
+    {
+      "id": "priority_support",
+      "name": "Priority Support",
+      "description": "Upgrade to priority support",
+      "pricePerUnit": 50,
+      "unit": "month",
+      "availableFor": ["starter"]
+    },
+    {
+      "id": "api_pack",
+      "name": "API Call Pack",
+      "description": "Additional API calls",
+      "pricePerUnit": 20,
+      "unit": "50k calls/month",
+      "availableFor": ["starter", "growth", "professional"],
+      "maxQuantity": 10
+    }
+  ],
+  "billing": {
+    "prorationEnabled": true,
+    "prorationBehavior": "create_prorations",
+    "failedPaymentRetries": [1, 3, 5, 7],
+    "retryIntervals": ["1 day", "3 days", "5 days", "7 days"],
+    "cancellationPolicy": "end_of_period",
+    "refundPolicy": "prorated",
+    "gracePeriodDays": 3,
+    "invoiceDelivery": ["email", "dashboard"],
+    "receiptDelivery": ["email"],
+    "paymentMethods": ["card", "ach_debit", "wire_transfer"],
+    "acceptedCards": ["visa", "mastercard", "amex", "discover"]
+  },
+  "upgrades": {
+    "allowDowngrade": true,
+    "allowUpgrade": true,
+    "proratedUpgrades": true,
+    "featurePreservation": true,
+    "trialResetOnUpgrade": false
+  },
+  "limits": {
+    "enforceHard": false,
+    "warningAt": 0.8,
+    "graceOverage": 0.1,
+    "notifyAt": [0.5, 0.75, 0.9, 1.0]
+  },
+  "notifications": {
+    "trialEnding": [7, 3, 1],
+    "paymentFailed": true,
+    "subscriptionCanceled": true,
+    "limitApproaching": true,
+    "invoiceGenerated": true
+  }
+}

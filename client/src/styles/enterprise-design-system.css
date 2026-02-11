@@ -1,0 +1,501 @@
+/**
+ * AccuBooks Enterprise Design System
+ * Three themes: Business (QuickBooks-style), Financial Dark, Command Center
+ * Professional financial operating system aesthetics
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ========================================
+       BUSINESS THEME (QuickBooks-style)
+       Light, professional, approachable
+       ======================================== */
+    --business-bg: 0 0% 100%;
+    --business-fg: 215 25% 12%;
+    --business-card: 0 0% 100%;
+    --business-card-foreground: 215 25% 12%;
+    --business-popover: 0 0% 100%;
+    --business-popover-foreground: 215 25% 12%;
+    --business-primary: 217 91% 45%;
+    --business-primary-foreground: 0 0% 100%;
+    --business-secondary: 210 20% 96%;
+    --business-secondary-foreground: 215 25% 20%;
+    --business-muted: 210 20% 96%;
+    --business-muted-foreground: 215 16% 47%;
+    --business-accent: 210 20% 96%;
+    --business-accent-foreground: 215 25% 20%;
+    --business-destructive: 0 84% 60%;
+    --business-destructive-foreground: 0 0% 100%;
+    --business-border: 214 20% 90%;
+    --business-input: 214 20% 90%;
+    --business-ring: 217 91% 45%;
+    --business-success: 142 76% 36%;
+    --business-warning: 38 92% 50%;
+    --business-error: 0 84% 60%;
+    --business-info: 217 91% 45%;
+    --business-radius: 0.5rem;
+    --business-sidebar-bg: 215 25% 15%;
+    --business-sidebar-fg: 210 20% 96%;
+
+    /* ========================================
+       FINANCIAL DARK THEME
+       Sophisticated, data-focused, subdued
+       ======================================== */
+    --financial-bg: 222 47% 6%;
+    --financial-fg: 210 20% 96%;
+    --financial-card: 222 47% 8%;
+    --financial-card-foreground: 210 20% 96%;
+    --financial-popover: 222 47% 8%;
+    --financial-popover-foreground: 210 20% 96%;
+    --financial-primary: 263 70% 58%;
+    --financial-primary-foreground: 0 0% 100%;
+    --financial-secondary: 222 47% 12%;
+    --financial-secondary-foreground: 210 20% 96%;
+    --financial-muted: 222 47% 12%;
+    --financial-muted-foreground: 215 20% 65%;
+    --financial-accent: 263 70% 58%;
+    --financial-accent-foreground: 0 0% 100%;
+    --financial-destructive: 0 84% 60%;
+    --financial-destructive-foreground: 0 0% 100%;
+    --financial-border: 222 47% 15%;
+    --financial-input: 222 47% 15%;
+    --financial-ring: 263 70% 58%;
+    --financial-success: 142 76% 36%;
+    --financial-warning: 38 92% 50%;
+    --financial-error: 0 84% 60%;
+    --financial-info: 217 91% 60%;
+    --financial-radius: 0.5rem;
+    --financial-sidebar-bg: 222 47% 4%;
+    --financial-sidebar-fg: 210 20% 96%;
+
+    /* ========================================
+       COMMAND CENTER THEME
+       Mission control, war room, cockpit
+       ======================================== */
+    --command-bg: 222 47% 4%;
+    --command-fg: 210 20% 98%;
+    --command-card: 222 47% 6%;
+    --command-card-foreground: 210 20% 98%;
+    --command-popover: 222 47% 6%;
+    --command-popover-foreground: 210 20% 98%;
+    --command-primary: 160 84% 39%;
+    --command-primary-foreground: 0 0% 100%;
+    --command-secondary: 222 47% 10%;
+    --command-secondary-foreground: 210 20% 96%;
+    --command-muted: 222 47% 10%;
+    --command-muted-foreground: 215 20% 60%;
+    --command-accent: 160 84% 39%;
+    --command-accent-foreground: 0 0% 100%;
+    --command-destructive: 0 84% 60%;
+    --command-destructive-foreground: 0 0% 100%;
+    --command-border: 222 47% 14%;
+    --command-input: 222 47% 14%;
+    --command-ring: 160 84% 39%;
+    --command-success: 160 84% 39%;
+    --command-warning: 38 92% 50%;
+    --command-error: 0 84% 60%;
+    --command-info: 217 91% 60%;
+    --command-radius: 0.75rem;
+    --command-sidebar-bg: 222 47% 3%;
+    --command-sidebar-fg: 210 20% 98%;
+
+    /* Default to business theme */
+    --background: var(--business-bg);
+    --foreground: var(--business-fg);
+    --card: var(--business-card);
+    --card-foreground: var(--business-card-foreground);
+    --popover: var(--business-popover);
+    --popover-foreground: var(--business-popover-foreground);
+    --primary: var(--business-primary);
+    --primary-foreground: var(--business-primary-foreground);
+    --secondary: var(--business-secondary);
+    --secondary-foreground: var(--business-secondary-foreground);
+    --muted: var(--business-muted);
+    --muted-foreground: var(--business-muted-foreground);
+    --accent: var(--business-accent);
+    --accent-foreground: var(--business-accent-foreground);
+    --destructive: var(--business-destructive);
+    --destructive-foreground: var(--business-destructive-foreground);
+    --border: var(--business-border);
+    --input: var(--business-input);
+    --ring: var(--business-ring);
+    --success: var(--business-success);
+    --warning: var(--business-warning);
+    --error: var(--business-error);
+    --info: var(--business-info);
+    --radius: var(--business-radius);
+    --sidebar-bg: var(--business-sidebar-bg);
+    --sidebar-fg: var(--business-sidebar-fg);
+  }
+
+  /* Theme classes */
+  .theme-business {
+    --background: var(--business-bg);
+    --foreground: var(--business-fg);
+    --card: var(--business-card);
+    --card-foreground: var(--business-card-foreground);
+    --popover: var(--business-popover);
+    --popover-foreground: var(--business-popover-foreground);
+    --primary: var(--business-primary);
+    --primary-foreground: var(--business-primary-foreground);
+    --secondary: var(--business-secondary);
+    --secondary-foreground: var(--business-secondary-foreground);
+    --muted: var(--business-muted);
+    --muted-foreground: var(--business-muted-foreground);
+    --accent: var(--business-accent);
+    --accent-foreground: var(--business-accent-foreground);
+    --destructive: var(--business-destructive);
+    --destructive-foreground: var(--business-destructive-foreground);
+    --border: var(--business-border);
+    --input: var(--business-input);
+    --ring: var(--business-ring);
+    --success: var(--business-success);
+    --warning: var(--business-warning);
+    --error: var(--business-error);
+    --info: var(--business-info);
+    --radius: var(--business-radius);
+    --sidebar-bg: var(--business-sidebar-bg);
+    --sidebar-fg: var(--business-sidebar-fg);
+  }
+
+  .theme-financial {
+    --background: var(--financial-bg);
+    --foreground: var(--financial-fg);
+    --card: var(--financial-card);
+    --card-foreground: var(--financial-card-foreground);
+    --popover: var(--financial-popover);
+    --popover-foreground: var(--financial-popover-foreground);
+    --primary: var(--financial-primary);
+    --primary-foreground: var(--financial-primary-foreground);
+    --secondary: var(--financial-secondary);
+    --secondary-foreground: var(--financial-secondary-foreground);
+    --muted: var(--financial-muted);
+    --muted-foreground: var(--financial-muted-foreground);
+    --accent: var(--financial-accent);
+    --accent-foreground: var(--financial-accent-foreground);
+    --destructive: var(--financial-destructive);
+    --destructive-foreground: var(--financial-destructive-foreground);
+    --border: var(--financial-border);
+    --input: var(--financial-input);
+    --ring: var(--financial-ring);
+    --success: var(--financial-success);
+    --warning: var(--financial-warning);
+    --error: var(--financial-error);
+    --info: var(--financial-info);
+    --radius: var(--financial-radius);
+    --sidebar-bg: var(--financial-sidebar-bg);
+    --sidebar-fg: var(--financial-sidebar-fg);
+  }
+
+  .theme-command {
+    --background: var(--command-bg);
+    --foreground: var(--command-fg);
+    --card: var(--command-card);
+    --card-foreground: var(--command-card-foreground);
+    --popover: var(--command-popover);
+    --popover-foreground: var(--command-popover-foreground);
+    --primary: var(--command-primary);
+    --primary-foreground: var(--command-primary-foreground);
+    --secondary: var(--command-secondary);
+    --secondary-foreground: var(--command-secondary-foreground);
+    --muted: var(--command-muted);
+    --muted-foreground: var(--command-muted-foreground);
+    --accent: var(--command-accent);
+    --accent-foreground: var(--command-accent-foreground);
+    --destructive: var(--command-destructive);
+    --destructive-foreground: var(--command-destructive-foreground);
+    --border: var(--command-border);
+    --input: var(--command-input);
+    --ring: var(--command-ring);
+    --success: var(--command-success);
+    --warning: var(--command-warning);
+    --error: var(--command-error);
+    --info: var(--command-info);
+    --radius: var(--command-radius);
+    --sidebar-bg: var(--command-sidebar-bg);
+    --sidebar-fg: var(--command-sidebar-fg);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1, "ss02" 1;
+  }
+
+  /* Tabular numerics for financial data */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* Financial data styling */
+  .financial-value {
+    @apply tabular-nums font-medium tracking-tight;
+  }
+
+  .financial-value-positive {
+    @apply financial-value text-emerald-600 dark:text-emerald-400;
+  }
+
+  .financial-value-negative {
+    @apply financial-value text-red-600 dark:text-red-400;
+  }
+
+  .financial-value-neutral {
+    @apply financial-value text-slate-600 dark:text-slate-400;
+  }
+}
+
+@layer components {
+  /* Enterprise Card Variants */
+  .card-enterprise {
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-200;
+  }
+
+  .card-enterprise-hover {
+    @apply card-enterprise hover:shadow-md hover:border-border/80;
+  }
+
+  .card-enterprise-elevated {
+    @apply card-enterprise shadow-md hover:shadow-lg;
+  }
+
+  .card-enterprise-interactive {
+    @apply card-enterprise cursor-pointer hover:shadow-md active:scale-[0.995] transition-transform;
+  }
+
+  /* Glassmorphism for Command Center */
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+
+  .glass-dark {
+    @apply bg-black/20 backdrop-blur-xl border border-white/5;
+  }
+
+  /* Navigation Rail */
+  .nav-rail {
+    @apply flex flex-col h-full bg-sidebar text-sidebar-fg;
+  }
+
+  .nav-rail-item {
+    @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md transition-all duration-150;
+    @apply hover:bg-white/10 hover:text-white;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+  }
+
+  .nav-rail-item-active {
+    @apply nav-rail-item bg-primary/20 text-primary border-r-2 border-primary;
+  }
+
+  /* Top Command Bar */
+  .command-bar {
+    @apply flex items-center gap-4 px-4 py-2 bg-card border-b;
+  }
+
+  .command-bar-search {
+    @apply flex-1 max-w-xl;
+  }
+
+  /* Workspace Canvas */
+  .workspace-canvas {
+    @apply flex-1 overflow-auto bg-muted/30 p-6;
+  }
+
+  /* Data Table - Accounting First */
+  .data-table-enterprise {
+    @apply w-full text-sm border-collapse;
+  }
+
+  .data-table-enterprise th {
+    @apply px-4 py-3 text-left font-semibold text-muted-foreground bg-muted/50 border-b whitespace-nowrap;
+    @apply first:rounded-tl-md last:rounded-tr-md;
+  }
+
+  .data-table-enterprise td {
+    @apply px-4 py-3 border-b border-border/50;
+  }
+
+  .data-table-enterprise tr {
+    @apply hover:bg-muted/30 transition-colors;
+  }
+
+  .data-table-enterprise tr.selected {
+    background-color: hsl(var(--primary) / 0.05);
+    @apply border-l-2 border-primary;
+  }
+
+  /* Status Indicators */
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .status-success {
+    @apply status-badge bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400;
+  }
+
+  .status-warning {
+    @apply status-badge bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400;
+  }
+
+  .status-error {
+    @apply status-badge bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400;
+  }
+
+  .status-info {
+    @apply status-badge bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400;
+  }
+
+  .status-neutral {
+    @apply status-badge bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400;
+  }
+
+  /* Priority Stack (Command Center) */
+  .priority-item {
+    @apply flex items-start gap-3 p-3 rounded-lg border transition-all duration-200;
+    @apply hover:border-primary/50 hover:shadow-sm;
+  }
+
+  .priority-critical {
+    @apply priority-item border-red-500/30 bg-red-500/5;
+  }
+
+  .priority-high {
+    @apply priority-item border-amber-500/30 bg-amber-500/5;
+  }
+
+  .priority-medium {
+    @apply priority-item border-blue-500/30 bg-blue-500/5;
+  }
+
+  .priority-low {
+    @apply priority-item border-slate-500/30 bg-slate-500/5;
+  }
+
+  /* Ambient Effects (Command Center) */
+  .ambient-glow {
+    @apply fixed inset-0 overflow-hidden pointer-events-none;
+  }
+
+  .ambient-blob {
+    @apply absolute rounded-full mix-blend-screen filter blur-[120px] opacity-20;
+    animation: blob-float 8s ease-in-out infinite;
+  }
+
+  @keyframes blob-float {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+  }
+
+  /* Metric Cards */
+  .metric-card {
+    @apply p-4 rounded-lg border bg-card;
+  }
+
+  .metric-label {
+    @apply text-xs font-medium text-muted-foreground uppercase tracking-wider;
+  }
+
+  .metric-value {
+    @apply text-2xl font-bold tabular-nums mt-1;
+  }
+
+  .metric-change {
+    @apply text-xs font-medium mt-1;
+  }
+
+  /* Quick Actions */
+  .quick-action-btn {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    @apply transition-all duration-150 active:scale-[0.98];
+  }
+
+  /* Audit Trail */
+  .audit-trail {
+    @apply text-xs text-muted-foreground border-l-2 border-border pl-3 py-1;
+  }
+
+  /* Inline Edit */
+  .inline-edit {
+    @apply px-2 py-1 rounded border border-transparent hover:border-input;
+    @apply focus:border-primary focus:ring-1 focus:ring-primary;
+    @apply transition-all duration-150;
+  }
+}
+
+@layer utilities {
+  /* Animation delays for ambient blobs */
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+
+  .animation-delay-6000 {
+    animation-delay: 6s;
+  }
+
+  /* Scrollbar styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 3px;
+  }
+
+  /* Focus visible */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
+  /* Text balance for headings */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Screen reader only */
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

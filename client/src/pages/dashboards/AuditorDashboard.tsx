@@ -13,11 +13,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardShell } from "../../components/ui/layout/DashboardShell";
-import {
-  getDemoAuditLogs,
-  getDemoComplianceMetrics,
-  isDemoModeEnabled,
-} from "@/lib/demo";
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "elevated" | "outlined" | "glass";
@@ -69,43 +64,33 @@ interface ComplianceMetrics {
 const AuditorDashboard: React.FC = () => {
   const { user } = useAuth();
 
-  // Fetch compliance metrics
-  const { data: metrics, isLoading: metricsLoading } =
-    useSWR<ComplianceMetrics>(
-      "/api/dashboard/compliance-metrics",
-      async (url: string) => {
-        if (isDemoModeEnabled()) {
-          return getDemoComplianceMetrics() as any;
-        }
-        const response = await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (!response.ok) throw new Error("Failed to fetch compliance metrics");
-        return response.json();
-      },
-    );
+  // Fetch auditor dashboard data
+  const { data: dashboardData, isLoading, error } = useSWR<{
+    success: boolean;
+    data: {
+      metrics: ComplianceMetrics;
+      logs: AuditLog[];
+    };
+  }>(
+    "/api/dashboard/auditor",
+    async (url: string) => {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch dashboard data");
+      return response.json();
+    },
+  );
 
-  // Fetch audit logs
-  const {
-    data: auditLogs,
-    error: logsError,
-    isLoading: logsLoading,
-  } = useSWR<AuditLog[]>("/api/dashboard/audit-logs", async (url: string) => {
-    if (isDemoModeEnabled()) {
-      return getDemoAuditLogs() as any;
-    }
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) throw new Error("Failed to fetch audit logs");
-    return response.json();
-  });
+  const metrics = dashboardData?.data?.metrics;
+  const logs = dashboardData?.data?.logs;
+  const metricsLoading = isLoading;
+  const logsLoading = isLoading;
+  const metricsError = error;
+  const logsError = error;
 
   const complianceMetrics = [
     {
@@ -258,9 +243,9 @@ const AuditorDashboard: React.FC = () => {
                     <div className="p-6 text-center text-destructive dark:text-destructive-500">
                       Failed to load audit logs
                     </div>
-                  ) : auditLogs && auditLogs.length > 0 ? (
+                  ) : logs && logs.length > 0 ? (
                     <ul className="divide-y divide-border">
-                      {auditLogs.map((log) => (
+                      {logs.map((log) => (
                         <li
                           key={log.id}
                           className="px-6 py-4 bg-card hover:bg-muted transition-colors shadow-soft hover:shadow-elevated hover:-translate-y-[1px] duration-150"

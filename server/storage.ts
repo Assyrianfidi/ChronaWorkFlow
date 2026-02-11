@@ -3,7 +3,10 @@ import crypto from "node:crypto";
 import { db } from "./db";
 import { eq, and, desc, sql, sum, inArray } from "drizzle-orm";
 import * as schema from "../shared/schema";
-import { assertCompanyScope, getRequestContext } from "./runtime/request-context";
+import { assertCompanyScope, assertTenantScope, getRequestContext } from "./runtime/request-context";
+import { generateBalanceSheet, generateCashFlowDirect, generateIncomeStatement } from "./finance/financial-statements";
+import { DrizzleLedgerStore, LedgerEngine } from "./finance/ledger-engine";
+import { LedgerTransaction } from "./finance/ledger-invariants";
 
 // Import only the schema object to access all tables
 const s = schema;
@@ -87,6 +90,32 @@ type InsertInventoryAdjustment = typeof s.inventoryAdjustments.$inferInsert;
 type AuditLog = typeof s.auditLogs.$inferSelect;
 type InsertAuditLog = typeof s.auditLogs.$inferInsert;
 
+function centsToMoneyString(cents: bigint): string {
+  const neg = cents < 0n;
+  const abs = neg ? -cents : cents;
+  const whole = abs / 100n;
+  const frac = (abs % 100n).toString().padStart(2, "0");
+  return `${neg ? "-" : ""}${whole.toString()}.${frac}`;
+}
+
+function centsToNumber(cents: bigint): number {
+  return parseFloat(centsToMoneyString(cents));
+}
+
+async function requireAccountIdByCode(input: { tx: any; companyId: string; code: string }): Promise<string> {
+  const [row] = await input.tx
+    .select({ id: accounts.id })
+    .from(accounts)
+    .where(and(eq(accounts.companyId, input.companyId), eq(accounts.code, input.code)))
+    .limit(1);
+
+  if (!row?.id) {
+    throw new Error(`Missing required account code ${input.code} for company`);
+  }
+
+  return String(row.id);
+}
+
 // Export enums
 type PayFrequency = 'weekly' | 'bi-weekly' | 'semi-monthly' | 'monthly';
 type PayRunStatus = 'draft' | 'pending_approval' | 'approved' | 'processing' | 'completed' | 'cancelled';
@@ -124,6 +153,8 @@ const {
   payments,
   bankTransactions,
   auditLogs,
+  tenantCompanies,
+  userTenants,
 
   // Insert schemas
   insertEmployeeSchema,
@@ -175,6 +206,18 @@ function enforceWriteCompanyScope(companyId: string | null | undefined, operatio
   }
 }
 
+function enforceWriteTenantScope(tenantId: string | null | undefined, operation: string): void {
+  const ctx = getRequestContext();
+  if (typeof ctx?.tenantId === "string" && ctx.tenantId) {
+    if (typeof tenantId !== "string" || !tenantId) {
+      throw new Error(
+        `Tenant scope invariant violated: write (${operation}) missing explicit tenantId while request context is tenant-scoped`,
+      );
+    }
+    assertTenantScope(tenantId);
+  }
+}
+
 function deterministicUuidV4(seed: string): string {
   const bytes = crypto.createHash("sha256").update(seed).digest().subarray(0, 16);
 
@@ -198,6 +241,15 @@ export interface IStorage {
   getCompany(id: string): Promise<Company | undefined>;
   getCompanies(): Promise<Company[]>;
   hasUserCompanyAccess(userId: string, companyId: string): Promise<boolean>;
+  hasUserTenantAccess(userId: string, tenantId: string): Promise<boolean>;
+  isCompanyInTenant(tenantId: string, companyId: string): Promise<boolean>;
+  createCompanyInTenant(input: {
+    tenantId: string;
+    userId: string;
+    company: InsertCompany;
+    role?: string;
+    setAsCurrent?: boolean;
+  }): Promise<Company>;
   createCompany(company: InsertCompany): Promise<Company>;
   updateCompany(id: string, updates: Partial<InsertCompany>): Promise<Company | undefined>;
 
@@ -244,7 +296,29 @@ export interface IStorage {
   getInvoiceWithItemsByCompany(companyId: string, id: string): Promise<{ invoice: Invoice; items: InvoiceItem[] } | undefined>;
   createInvoice(invoice: InsertInvoice, items: InsertInvoiceItem[], idempotencyKey: string): Promise<{ invoice: Invoice; replayed: boolean }>;
   updateInvoice(id: string, updates: Partial<InsertInvoice>): Promise<Invoice | undefined>;
+  updateInvoiceByCompany(companyId: string, id: string, updates: Partial<InsertInvoice>): Promise<Invoice | undefined>;
+  deleteInvoiceByCompany(companyId: string, id: string): Promise<{ invoice: Invoice; itemsDeleted: number } | undefined>;
   updateInvoiceStatus(id: string, status: string): Promise<void>;
+
+  getProfitLossReportByCompany(companyId: string, period?: { startDate?: string; endDate?: string }): Promise<{
+    revenue: { total: number; accounts: Account[] };
+    expenses: { total: number; accounts: Account[] };
+    netIncome: number;
+    period: { startDate?: string; endDate?: string };
+  }>;
+  getBalanceSheetReportByCompany(companyId: string, asOfDate?: string): Promise<{
+    assets: { total: number; accounts: Account[] };
+    liabilities: { total: number; accounts: Account[] };
+    equity: { total: number; accounts: Account[] };
+    asOfDate: string;
+  }>;
+  getCashFlowReportByCompany(companyId: string, asOfDate?: string): Promise<{
+    operatingActivities: { total: number };
+    investingActivities: { total: number };
+    financingActivities: { total: number };
+    netChange: number;
+    asOfDate: string;
+  }>;
 
   // Payments
   getPaymentsByInvoice(invoiceId: string): Promise<Payment[]>;
@@ -333,6 +407,69 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(userCompanyAccess.userId, userId), eq(userCompanyAccess.companyId, companyId)))
       .limit(1);
     return !!row;
+  }
+
+  async hasUserTenantAccess(userId: string, tenantId: string): Promise<boolean> {
+    const [row] = await db
+      .select({ id: userTenants.id })
+      .from(userTenants)
+      .where(and(eq(userTenants.userId, userId), eq(userTenants.tenantId, tenantId)))
+      .limit(1);
+    return !!row;
+  }
+
+  async isCompanyInTenant(tenantId: string, companyId: string): Promise<boolean> {
+    const [row] = await db
+      .select({ id: tenantCompanies.id })
+      .from(tenantCompanies)
+      .where(and(eq(tenantCompanies.tenantId, tenantId), eq(tenantCompanies.companyId, companyId)))
+      .limit(1);
+    return !!row;
+  }
+
+  async createCompanyInTenant(input: {
+    tenantId: string;
+    userId: string;
+    company: InsertCompany;
+    role?: string;
+    setAsCurrent?: boolean;
+  }): Promise<Company> {
+    enforceWriteTenantScope(input.tenantId, "createCompanyInTenant");
+
+    const parsedCompany = insertCompanySchema.parse(input.company as any);
+
+    const role = typeof input.role === "string" && input.role ? input.role : "admin";
+    const setAsCurrent = input.setAsCurrent !== false;
+
+    const result = await db.transaction(async (tx: any) => {
+      const [company] = await tx.insert(companies).values(parsedCompany as any).returning();
+
+      await tx
+        .insert(tenantCompanies)
+        .values({ tenantId: input.tenantId, companyId: company.id } as any)
+        .onConflictDoNothing();
+
+      await tx
+        .insert(userTenants)
+        .values({ userId: input.userId, tenantId: input.tenantId } as any)
+        .onConflictDoNothing();
+
+      await tx
+        .insert(userCompanyAccess)
+        .values({ userId: input.userId, companyId: company.id, role } as any)
+        .onConflictDoNothing();
+
+      if (setAsCurrent) {
+        await tx
+          .update(users)
+          .set({ currentCompanyId: company.id, updatedAt: new Date() })
+          .where(eq(users.id, input.userId));
+      }
+
+      return company;
+    });
+
+    return result;
   }
 
   async createCompany(company: InsertCompany): Promise<Company> {
@@ -1112,6 +1249,68 @@ export class DatabaseStorage implements IStorage {
           return { payRun: existingPayRun, replayed: true };
         }
 
+        const hasLedgerPost = typeof (existingPayRun as any).transactionId === "string" && String((existingPayRun as any).transactionId).trim();
+
+        let postedTransactionId: string | null = hasLedgerPost ? String((existingPayRun as any).transactionId) : null;
+
+        if (!hasLedgerPost && targetStatus === "completed") {
+          const payrollExpenseAccountId = await requireAccountIdByCode({ tx, companyId, code: "5100" });
+          const cashAccountId = await requireAccountIdByCode({ tx, companyId, code: "1110" });
+
+          const amount = String((existingPayRun as any).totalAmount ?? "0");
+          const currency = "USD";
+
+          const transactionNumber = `PAYROLL-${payRunId}`;
+          const txnIdempotencyKey = `payroll:${payRunId}:execute:${key}`;
+          const transactionId = deterministicUuidV4(`company:${companyId}:ledger:payroll:${payRunId}:key:${key}`);
+
+          const ledger = new LedgerEngine(new DrizzleLedgerStore(tx) as any);
+
+          const ledgerTxn: LedgerTransaction = {
+            companyId,
+            transactionId,
+            transactionNumber,
+            date: new Date((existingPayRun as any).payDate ?? new Date()),
+            type: "expense",
+            description: `Payroll ${String((existingPayRun as any).payPeriodStart ?? "")} - ${String((existingPayRun as any).payPeriodEnd ?? "")}`,
+            referenceNumber: String((existingPayRun as any).id ?? ""),
+            createdBy: String((existingPayRun as any).processedBy ?? (existingPayRun as any).createdBy ?? "system"),
+            idempotencyKey: txnIdempotencyKey,
+            currency,
+            reversalOfTransactionId: null,
+            lines: [
+              {
+                companyId,
+                transactionId,
+                lineId: deterministicUuidV4(`company:${companyId}:ledger:payroll:${payRunId}:line:expense:key:${key}`),
+                accountId: payrollExpenseAccountId,
+                side: "DEBIT",
+                amount,
+                currency,
+                description: "Payroll Expense",
+              },
+              {
+                companyId,
+                transactionId,
+                lineId: deterministicUuidV4(`company:${companyId}:ledger:payroll:${payRunId}:line:cash:key:${key}`),
+                accountId: cashAccountId,
+                side: "CREDIT",
+                amount,
+                currency,
+                description: "Cash",
+              },
+            ],
+          };
+
+          const posted = await ledger.post(ledgerTxn);
+          postedTransactionId = posted.transactionId;
+
+          await tx
+            .update(payRuns)
+            .set({ transactionId: postedTransactionId, updatedAt: new Date() })
+            .where(and(eq(payRuns.id, payRunId), eq(payRuns.companyId, companyId)));
+        }
+
         const [updatedPayRun] = await tx
           .update(payRuns)
           .set({
@@ -1121,6 +1320,10 @@ export class DatabaseStorage implements IStorage {
           })
           .where(and(eq(payRuns.id, payRunId), eq(payRuns.companyId, companyId)))
           .returning();
+
+        if (postedTransactionId && String((updatedPayRun as any).transactionId ?? "") !== postedTransactionId) {
+          (updatedPayRun as any).transactionId = postedTransactionId;
+        }
 
         await tx.insert(s.payrollExecutions).values({
           id: deterministicId,
@@ -1320,6 +1523,53 @@ export class DatabaseStorage implements IStorage {
     return updatedInvoice;
   }
 
+  async updateInvoiceByCompany(
+    companyId: string,
+    id: string,
+    updates: Partial<InsertInvoice>,
+  ): Promise<Invoice | undefined> {
+    enforceWriteCompanyScope(companyId, "updateInvoiceByCompany");
+    const [updatedInvoice] = await db
+      .update(invoices)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(and(eq(invoices.id, id), eq(invoices.companyId, companyId)))
+      .returning();
+    return updatedInvoice;
+  }
+
+  async deleteInvoiceByCompany(
+    companyId: string,
+    id: string,
+  ): Promise<{ invoice: Invoice; itemsDeleted: number } | undefined> {
+    enforceWriteCompanyScope(companyId, "deleteInvoiceByCompany");
+
+    const result = await db.transaction(async (tx: any) => {
+      const [invoice] = await tx
+        .select()
+        .from(invoices)
+        .where(and(eq(invoices.id, id), eq(invoices.companyId, companyId)))
+        .limit(1);
+
+      if (!invoice) return undefined;
+
+      const deletedItems = await tx
+        .delete(invoiceItems)
+        .where(eq(invoiceItems.invoiceId, id))
+        .returning({ id: invoiceItems.id });
+
+      const [deletedInvoice] = await tx
+        .delete(invoices)
+        .where(and(eq(invoices.id, id), eq(invoices.companyId, companyId)))
+        .returning();
+
+      if (!deletedInvoice) return undefined;
+
+      return { invoice: deletedInvoice, itemsDeleted: deletedItems.length };
+    });
+
+    return result;
+  }
+
   async updateInvoiceStatus(id: string, status: "draft" | "sent" | "viewed" | "paid" | "overdue" | "cancelled"): Promise<void> {
     forbidUnscopedWrite("updateInvoiceStatus");
     await db
@@ -1329,6 +1579,152 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date()
       })
       .where(eq(invoices.id, id));
+  }
+
+  async getProfitLossReportByCompany(
+    companyId: string,
+    period: { startDate?: string; endDate?: string } = {},
+  ) {
+    assertCompanyScope(companyId);
+
+    const ctx = getRequestContext();
+    const actorId = typeof ctx?.userId === "string" && ctx.userId ? ctx.userId : "system";
+    const correlationId = typeof ctx?.requestId === "string" && ctx.requestId ? ctx.requestId : `reports:${companyId}:${Date.now()}`;
+
+    const now = new Date();
+    const to = period.endDate ? new Date(period.endDate) : now;
+    const from = (() => {
+      if (period.startDate) return new Date(period.startDate);
+      const d = new Date(Date.UTC(to.getUTCFullYear(), to.getUTCMonth(), 1, 0, 0, 0, 0));
+      return d;
+    })();
+
+    const income = await generateIncomeStatement({
+      companyId,
+      from,
+      to,
+      actorId,
+      correlationId,
+    });
+
+    const ids = Array.from(new Set([...income.revenue, ...income.expenses].flatMap((l) => l.accountIds)));
+    const byAccountId = new Map<string, bigint>();
+    for (const l of income.revenue) {
+      const id = l.accountIds[0];
+      if (id) byAccountId.set(id, (byAccountId.get(id) ?? 0n) + l.amountCents);
+    }
+    for (const l of income.expenses) {
+      const id = l.accountIds[0];
+      if (id) byAccountId.set(id, (byAccountId.get(id) ?? 0n) + l.amountCents);
+    }
+
+    const accountRows = ids.length
+      ? await db.select().from(accounts).where(and(eq(accounts.companyId, companyId), inArray(accounts.id, ids)))
+      : [];
+
+    const revenueAccounts = accountRows
+      .filter((a: any) => a.type === "revenue")
+      .map((a: any) => ({ ...a, balance: centsToMoneyString(byAccountId.get(a.id) ?? 0n) }));
+
+    const expenseAccounts = accountRows
+      .filter((a: any) => a.type === "expense")
+      .map((a: any) => ({ ...a, balance: centsToMoneyString(byAccountId.get(a.id) ?? 0n) }));
+
+    const totalRevenueCents = income.revenue.reduce((sum, l) => sum + l.amountCents, 0n);
+    const totalExpensesCents = income.expenses.reduce((sum, l) => sum + l.amountCents, 0n);
+
+    return {
+      revenue: { total: centsToNumber(totalRevenueCents), accounts: revenueAccounts },
+      expenses: { total: centsToNumber(totalExpensesCents), accounts: expenseAccounts },
+      netIncome: centsToNumber(income.netIncomeCents),
+      period: { startDate: from.toISOString(), endDate: to.toISOString() },
+      integrityHash: income.integrityHash,
+    };
+  }
+
+  async getBalanceSheetReportByCompany(companyId: string, asOfDate?: string) {
+    assertCompanyScope(companyId);
+
+    const ctx = getRequestContext();
+    const actorId = typeof ctx?.userId === "string" && ctx.userId ? ctx.userId : "system";
+    const correlationId = typeof ctx?.requestId === "string" && ctx.requestId ? ctx.requestId : `reports:${companyId}:${Date.now()}`;
+
+    const asOf = asOfDate ? new Date(asOfDate) : new Date();
+    const bs = await generateBalanceSheet({ companyId, asOf, actorId, correlationId });
+
+    const accountIds = Array.from(new Set([...bs.assets, ...bs.liabilities, ...bs.equity].flatMap((l) => l.accountIds)));
+    const byAccountId = new Map<string, bigint>();
+    for (const l of [...bs.assets, ...bs.liabilities, ...bs.equity]) {
+      const id = l.accountIds[0];
+      if (id) byAccountId.set(id, (byAccountId.get(id) ?? 0n) + l.amountCents);
+    }
+
+    const accountRows = accountIds.length
+      ? await db.select().from(accounts).where(and(eq(accounts.companyId, companyId), inArray(accounts.id, accountIds)))
+      : [];
+
+    const assets = accountRows
+      .filter((a: any) => a.type === "asset")
+      .map((a: any) => ({ ...a, balance: centsToMoneyString(byAccountId.get(a.id) ?? 0n) }));
+    const liabilities = accountRows
+      .filter((a: any) => a.type === "liability")
+      .map((a: any) => ({ ...a, balance: centsToMoneyString(byAccountId.get(a.id) ?? 0n) }));
+    const equity = accountRows
+      .filter((a: any) => a.type === "equity")
+      .map((a: any) => ({ ...a, balance: centsToMoneyString(byAccountId.get(a.id) ?? 0n) }));
+
+    const totalAssetsCents = bs.assets.reduce((sum, l) => sum + l.amountCents, 0n);
+    const totalLiabilitiesCents = bs.liabilities.reduce((sum, l) => sum + l.amountCents, 0n);
+    const totalEquityCents = bs.equity.reduce((sum, l) => sum + l.amountCents, 0n);
+
+    return {
+      assets: { total: centsToNumber(totalAssetsCents), accounts: assets },
+      liabilities: { total: centsToNumber(totalLiabilitiesCents), accounts: liabilities },
+      equity: { total: centsToNumber(totalEquityCents), accounts: equity },
+      asOfDate: asOf.toISOString(),
+      balanced: bs.balanced,
+      integrityHash: bs.integrityHash,
+    };
+  }
+
+  async getCashFlowReportByCompany(companyId: string, asOfDate?: string) {
+    assertCompanyScope(companyId);
+
+    const ctx = getRequestContext();
+    const actorId = typeof ctx?.userId === "string" && ctx.userId ? ctx.userId : "system";
+    const correlationId = typeof ctx?.requestId === "string" && ctx.requestId ? ctx.requestId : `reports:${companyId}:${Date.now()}`;
+
+    const to = asOfDate ? new Date(asOfDate) : new Date();
+    const from = new Date(Date.UTC(to.getUTCFullYear(), to.getUTCMonth(), 1, 0, 0, 0, 0));
+
+    const cashAccounts = await db
+      .select({ id: accounts.id, code: accounts.code, name: accounts.name })
+      .from(accounts)
+      .where(eq(accounts.companyId, companyId));
+
+    const cashAccountIds = cashAccounts
+      .filter((a: any) => String(a.code ?? "") === "1110" || String(a.name ?? "").toLowerCase().includes("cash"))
+      .map((a: any) => a.id);
+
+    const cf = await generateCashFlowDirect({
+      companyId,
+      from,
+      to,
+      cashAccountIds,
+      actorId,
+      correlationId,
+    });
+
+    const netChange = centsToNumber(cf.netCashChangeCents);
+
+    return {
+      operatingActivities: { total: netChange },
+      investingActivities: { total: 0 },
+      financingActivities: { total: 0 },
+      netChange,
+      asOfDate: to.toISOString(),
+      integrityHash: cf.integrityHash,
+    };
   }
 
   async finalizeInvoice(
@@ -1362,6 +1758,68 @@ export class DatabaseStorage implements IStorage {
           return { invoice: existingInvoice, replayed: true };
         }
 
+        const hasLedgerPost = typeof (existingInvoice as any).transactionId === "string" && String((existingInvoice as any).transactionId).trim();
+
+        let postedTransactionId: string | null = hasLedgerPost ? String((existingInvoice as any).transactionId) : null;
+
+        if (!hasLedgerPost) {
+          const arAccountId = await requireAccountIdByCode({ tx, companyId, code: "1120" });
+          const revenueAccountId = await requireAccountIdByCode({ tx, companyId, code: "4100" });
+
+          const amount = String((existingInvoice as any).total ?? (existingInvoice as any).subtotal ?? "0");
+          const currency = "USD";
+
+          const transactionNumber = `INV-${invoiceId}`;
+          const txnIdempotencyKey = `invoice:${invoiceId}:finalize:${key}`;
+          const transactionId = deterministicUuidV4(`company:${companyId}:ledger:invoice:${invoiceId}:key:${key}`);
+
+          const ledger = new LedgerEngine(new DrizzleLedgerStore(tx) as any);
+
+          const ledgerTxn: LedgerTransaction = {
+            companyId,
+            transactionId,
+            transactionNumber,
+            date: new Date((existingInvoice as any).date ?? new Date()),
+            type: "invoice",
+            description: `Invoice ${String((existingInvoice as any).invoiceNumber ?? invoiceId)}`,
+            referenceNumber: String((existingInvoice as any).invoiceNumber ?? ""),
+            createdBy: String((existingInvoice as any).createdBy ?? "system"),
+            idempotencyKey: txnIdempotencyKey,
+            currency,
+            reversalOfTransactionId: null,
+            lines: [
+              {
+                companyId,
+                transactionId,
+                lineId: deterministicUuidV4(`company:${companyId}:ledger:invoice:${invoiceId}:line:ar:key:${key}`),
+                accountId: arAccountId,
+                side: "DEBIT",
+                amount,
+                currency,
+                description: "Accounts Receivable",
+              },
+              {
+                companyId,
+                transactionId,
+                lineId: deterministicUuidV4(`company:${companyId}:ledger:invoice:${invoiceId}:line:rev:key:${key}`),
+                accountId: revenueAccountId,
+                side: "CREDIT",
+                amount,
+                currency,
+                description: "Revenue",
+              },
+            ],
+          };
+
+          const posted = await ledger.post(ledgerTxn);
+          postedTransactionId = posted.transactionId;
+
+          await tx
+            .update(invoices)
+            .set({ transactionId: postedTransactionId, updatedAt: new Date() })
+            .where(and(eq(invoices.id, invoiceId), eq(invoices.companyId, companyId)));
+        }
+
         const [updatedInvoice] = await tx
           .update(invoices)
           .set({
@@ -1370,6 +1828,10 @@ export class DatabaseStorage implements IStorage {
           })
           .where(and(eq(invoices.id, invoiceId), eq(invoices.companyId, companyId)))
           .returning();
+
+        if (postedTransactionId && String((updatedInvoice as any).transactionId ?? "") !== postedTransactionId) {
+          (updatedInvoice as any).transactionId = postedTransactionId;
+        }
 
         await tx.insert(s.invoiceFinalizations).values({
           id: deterministicId,
@@ -1434,6 +1896,12 @@ export class DatabaseStorage implements IStorage {
     const companyId = String((payment as any)?.companyId ?? "");
     const invoiceId = String((payment as any)?.invoiceId ?? "");
 
+    enforceWriteCompanyScope(companyId, "createPayment");
+
+    if (!invoiceId) {
+      throw new Error("invoiceId is required for createPayment");
+    }
+
     // Use the canonical idempotent write helper
     const { withIdempotentWrite } = await import("./resilience/idempotent-write");
 
@@ -1456,12 +1924,78 @@ export class DatabaseStorage implements IStorage {
 
       executeWrite: async (tx: any) => {
         const deterministicId = deterministicUuidV4(`company:${companyId}:op:createPayment:key:${idempotencyKey.trim()}`);
+
+        const [inv] = await tx
+          .select({ id: invoices.id, transactionId: invoices.transactionId })
+          .from(invoices)
+          .where(and(eq(invoices.id, invoiceId), eq(invoices.companyId, companyId)))
+          .limit(1);
+
+        if (!inv) {
+          throw new Error("Invoice not found for createPayment");
+        }
+
+        const invoiceTxnId = typeof (inv as any).transactionId === "string" ? String((inv as any).transactionId).trim() : "";
+        if (!invoiceTxnId) {
+          throw new Error("Invoice must be finalized and posted to ledger before recording payments");
+        }
+
+        const cashAccountId = await requireAccountIdByCode({ tx, companyId, code: "1110" });
+        const arAccountId = await requireAccountIdByCode({ tx, companyId, code: "1120" });
+
+        const amount = String((payment as any).amount ?? "0");
+        const currency = "USD";
+
+        const paymentTransactionNumber = `PMT-${deterministicId}`;
+        const ledgerTransactionId = deterministicUuidV4(`company:${companyId}:ledger:payment:${deterministicId}`);
+        const txnIdempotencyKey = `payment:${invoiceId}:${deterministicId}`;
+
+        const ledger = new LedgerEngine(new DrizzleLedgerStore(tx) as any);
+
+        const ledgerTxn: LedgerTransaction = {
+          companyId,
+          transactionId: ledgerTransactionId,
+          transactionNumber: paymentTransactionNumber,
+          date: new Date((payment as any).date ?? new Date()),
+          type: "payment",
+          description: `Payment for invoice ${invoiceId}`,
+          referenceNumber: String((payment as any).referenceNumber ?? ""),
+          createdBy: String((payment as any).createdBy ?? "system"),
+          idempotencyKey: txnIdempotencyKey,
+          currency,
+          reversalOfTransactionId: null,
+          lines: [
+            {
+              companyId,
+              transactionId: ledgerTransactionId,
+              lineId: deterministicUuidV4(`company:${companyId}:ledger:payment:${deterministicId}:line:cash`),
+              accountId: cashAccountId,
+              side: "DEBIT",
+              amount,
+              currency,
+              description: "Cash",
+            },
+            {
+              companyId,
+              transactionId: ledgerTransactionId,
+              lineId: deterministicUuidV4(`company:${companyId}:ledger:payment:${deterministicId}:line:ar`),
+              accountId: arAccountId,
+              side: "CREDIT",
+              amount,
+              currency,
+              description: "Accounts Receivable",
+            },
+          ],
+        };
+
+        const posted = await ledger.post(ledgerTxn);
         
         const [newPayment] = await tx
           .insert(payments)
           .values({
             ...(payment as any),
             id: deterministicId,
+            transactionId: posted.transactionId,
           })
           .returning();
 

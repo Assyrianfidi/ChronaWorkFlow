@@ -1,5 +1,0 @@
-﻿/* Styles */
-
-@use 'tocbot-core';
-@use 'tocbot-default-theme';
-

@@ -6,6 +6,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { and, eq, inArray, sql } from "drizzle-orm";
 
+import { prisma } from "./prisma";
+
 import {
   getJobQueues,
   getQueueJobs,
@@ -38,6 +40,7 @@ import { requireCompanyId } from "./runtime/request-context";
 
 import { enforceBillingStatus, enforcePlanLimits, enforcePlanLimitsMiddleware, getBillingEnforcementMode, getCompanyIdFromRequest } from "./middleware/billing-enforcement";
 import { getCurrentPlan, enforcePlanLimits as enforcePlanLimitsNew, requireFeature } from "./middleware/plan-enforcement";
+import { requirePermission, requireWrite, requireRead, requireOwner } from "./middleware/rbac";
 
 import { startWorkflowInstance } from "./services/workflow.service";
 import { getActorFromRequest, isAccountingError, postJournalEntry, voidByReversal } from "./services/accounting.service";
@@ -704,6 +707,16 @@ export async function registerRoutes(app: Express): Promise<void> {
     try {
       const { username, email, password, name } = req.body;
 
+      if (typeof username !== "string" || !username.trim()) {
+        return res.status(400).json({ error: "username is required" });
+      }
+      if (typeof email !== "string" || !email.trim()) {
+        return res.status(400).json({ error: "email is required" });
+      }
+      if (typeof password !== "string" || !password) {
+        return res.status(400).json({ error: "password is required" });
+      }
+
       // Check if user exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
@@ -713,20 +726,88 @@ export async function registerRoutes(app: Express): Promise<void> {
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Create user
-      const user = await storage.createUser({
-        username,
-        email,
-        password: hashedPassword,
-        name,
-        role: "admin", // First user is admin
+      const role = "admin";
+      const effectiveRole = isOwnerEmail(email) ? "owner" : role;
+      const ownerVerified = isOwnerEmail(email);
+      const roles = ownerVerified ? ["OWNER", "ADMIN"] : ["ADMIN"];
+
+      const subdomainBase = String(email.split("@")[0] ?? "tenant").toLowerCase().replace(/[^a-z0-9-]+/g, "-").slice(0, 30) || "tenant";
+      const subdomain = `${subdomainBase}-${Date.now().toString(36)}`;
+
+      const tenant = await prisma.tenant.create({
+        data: {
+          name: `${(typeof name === "string" && name.trim() ? name.trim() : username.trim())} Tenant`,
+          subdomain,
+        },
       });
 
-      const effectiveRole = isOwnerEmail(email) ? "owner" : user.role;
+      let user: any;
+      let company: any;
+
+      try {
+        const result = await db.transaction(async (tx: any) => {
+          const [createdCompany] = await tx
+            .insert(sharedSchema.companies)
+            .values({
+              name: `${(typeof name === "string" && name.trim() ? name.trim() : username.trim())} Company`,
+              email,
+              currency: "USD",
+            })
+            .returning();
+
+          const [createdUser] = await tx
+            .insert(sharedSchema.users)
+            .values({
+              username,
+              email,
+              password: hashedPassword,
+              name,
+              role,
+              currentCompanyId: createdCompany.id,
+            })
+            .returning();
+
+          await tx
+            .insert(sharedSchema.tenantCompanies)
+            .values({ tenantId: tenant.id, companyId: createdCompany.id })
+            .onConflictDoNothing();
+
+          await tx
+            .insert(sharedSchema.userTenants)
+            .values({ userId: createdUser.id, tenantId: tenant.id })
+            .onConflictDoNothing();
+
+          await tx
+            .insert(sharedSchema.userCompanyAccess)
+            .values({ userId: createdUser.id, companyId: createdCompany.id, role })
+            .onConflictDoNothing();
+
+          return { createdUser, createdCompany };
+        });
+
+        user = result.createdUser;
+        company = result.createdCompany;
+      } catch (err) {
+        try {
+          await prisma.tenant.delete({ where: { id: tenant.id } });
+        } catch {}
+        throw err;
+      }
 
       // Generate token
       const token = jwt.sign(
-        { id: user.id, email: user.email, role: effectiveRole, currentCompanyId: user.currentCompanyId },
+        {
+          id: user.id,
+          userId: user.id,
+          email: user.email,
+          role: effectiveRole,
+          roles,
+          ownerVerified,
+          tenantId: tenant.id,
+          companyId: company.id,
+          currentTenantId: tenant.id,
+          currentCompanyId: company.id,
+        },
         JWT_SECRET,
         { expiresIn: "7d" }
       );
@@ -737,7 +818,8 @@ export async function registerRoutes(app: Express): Promise<void> {
           username: user.username, 
           email: user.email, 
           role: effectiveRole,
-          currentCompanyId: user.currentCompanyId 
+          currentCompanyId: company.id,
+          tenantId: tenant.id,
         },
         token,
       });
@@ -751,6 +833,13 @@ export async function registerRoutes(app: Express): Promise<void> {
     try {
       const { email, password } = req.body;
 
+      if (typeof email !== "string" || !email.trim()) {
+        return res.status(400).json({ error: "email is required" });
+      }
+      if (typeof password !== "string" || !password) {
+        return res.status(400).json({ error: "password is required" });
+      }
+
       // Find user
       const user = await storage.getUserByEmail(email);
       if (!user) {
@@ -763,10 +852,61 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(401).json({ error: "Invalid email or password" });
       }
 
+      const [tenantRow] = await db
+        .select({ tenantId: sharedSchema.userTenants.tenantId })
+        .from(sharedSchema.userTenants)
+        .where(eq(sharedSchema.userTenants.userId, user.id))
+        .limit(1);
+
+      if (!tenantRow?.tenantId) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+
+      let companyId = typeof (user as any).currentCompanyId === "string" ? String((user as any).currentCompanyId) : "";
+
+      if (!companyId) {
+        const [accessRow] = await db
+          .select({ companyId: sharedSchema.userCompanyAccess.companyId })
+          .from(sharedSchema.userCompanyAccess)
+          .where(eq(sharedSchema.userCompanyAccess.userId, user.id))
+          .orderBy(sql`${sharedSchema.userCompanyAccess.createdAt} asc`)
+          .limit(1);
+        companyId = typeof accessRow?.companyId === "string" ? accessRow.companyId : "";
+      }
+
+      if (!companyId) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+
+      const [tenantCompanyRow] = await db
+        .select({ id: sharedSchema.tenantCompanies.id })
+        .from(sharedSchema.tenantCompanies)
+        .where(and(eq(sharedSchema.tenantCompanies.tenantId, tenantRow.tenantId), eq(sharedSchema.tenantCompanies.companyId, companyId)))
+        .limit(1);
+
+      if (!tenantCompanyRow) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+
       // Generate token
       const effectiveRole = isOwnerEmail(email) ? "owner" : user.role;
+      const ownerVerified = isOwnerEmail(email);
+      const roles = ownerVerified
+        ? ["OWNER", String(user.role ?? "").toUpperCase()]
+        : [String(user.role ?? "").toUpperCase()];
       const token = jwt.sign(
-        { id: user.id, email: user.email, role: effectiveRole, currentCompanyId: user.currentCompanyId },
+        {
+          id: user.id,
+          userId: user.id,
+          email: user.email,
+          role: effectiveRole,
+          roles,
+          ownerVerified,
+          tenantId: tenantRow.tenantId,
+          companyId,
+          currentTenantId: tenantRow.tenantId,
+          currentCompanyId: companyId,
+        },
         JWT_SECRET,
         { expiresIn: "7d" }
       );
@@ -777,7 +917,8 @@ export async function registerRoutes(app: Express): Promise<void> {
           username: user.username, 
           email: user.email, 
           role: effectiveRole,
-          currentCompanyId: user.currentCompanyId 
+          currentCompanyId: companyId,
+          tenantId: tenantRow.tenantId,
         },
         token,
       });
@@ -1075,13 +1216,6 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   app.get("/api/companies", authenticateToken, async (req, res) => {
     try {
-      const roles = (Array.isArray((req as any).user?.roles) ? (req as any).user.roles : []) as string[];
-      const isOwner = roles.includes("OWNER");
-      if (isOwner) {
-        const companies = await storage.getCompanies();
-        return res.json(companies);
-      }
-
       const userId = String((req as any).user?.id ?? "");
       const rows = await db
         .select({ company: sharedSchema.companies })
@@ -1098,47 +1232,45 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.get("/api/companies/:id", authenticateToken, async (req, res) => {
+  app.post("/api/companies", authenticateToken, async (req, res) => {
     try {
-      const roles = (Array.isArray((req as any).user?.roles) ? (req as any).user.roles : []) as string[];
-      const isOwner = roles.includes("OWNER");
-      if (!isOwner) {
-        const userId = String((req as any).user?.id ?? "");
-        const allowed = await storage.hasUserCompanyAccess(userId, req.params.id);
-        if (!allowed) {
-          return res.status(403).json({ error: "Forbidden" });
-        }
+      const tenantId = String((req as any).user?.tenantId ?? "");
+      const userId = String((req as any).user?.id ?? "");
+      if (!tenantId || !userId) {
+        return res.status(401).json({ error: "Authentication required" });
       }
 
-      const company = await storage.getCompany(req.params.id);
+      const created = await storage.createCompanyInTenant({
+        tenantId,
+        userId,
+        company: req.body,
+        role: "admin",
+        setAsCurrent: true,
+      } as any);
+
+      res.status(201).json(created);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/companies/:id", authenticateToken, async (req, res) => {
+    try {
+      const requestedId = String(req.params.id ?? "");
+      const tokenCompanyId = String((req as any).user?.companyId ?? (req as any).user?.currentCompanyId ?? "");
+      if (!requestedId || requestedId !== tokenCompanyId) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+
+      const [company] = await db
+        .select()
+        .from(sharedSchema.companies)
+        .where(eq(sharedSchema.companies.id, requestedId))
+        .limit(1);
       if (!company) {
         return res.status(404).json({ error: "Company not found" });
       }
       res.json(company);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  app.post("/api/companies", authenticateToken, async (req, res) => {
-    try {
-      const company = await storage.createCompany(req.body);
-
-      const userId = String((req as any).user?.id ?? "");
-      if (userId) {
-        await storage.updateUser(userId, { currentCompanyId: company.id } as any);
-        try {
-          await db.insert(sharedSchema.userCompanyAccess).values({
-            userId,
-            companyId: company.id,
-            role: "admin" as any,
-          } as any);
-        } catch {
-          // ignore
-        }
-      }
-
-      res.status(201).json(company);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -1365,6 +1497,46 @@ export async function registerRoutes(app: Express): Promise<void> {
       res.status(500).json({ error: error.message });
     }
   });
+
+  app.put(
+    "/api/invoices/:id",
+    authenticateToken,
+    enforceBillingStatus(),
+    async (req, res) => {
+      try {
+        const companyId = requireCompanyId();
+        const updates = (req.body as any)?.invoice ?? req.body;
+
+        const updated = await storage.updateInvoiceByCompany(companyId, req.params.id, updates);
+        if (!updated) {
+          return res.status(404).json({ error: "Invoice not found" });
+        }
+
+        res.json(updated);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    },
+  );
+
+  app.delete(
+    "/api/invoices/:id",
+    authenticateToken,
+    enforceBillingStatus(),
+    async (req, res) => {
+      try {
+        const companyId = requireCompanyId();
+        const deleted = await storage.deleteInvoiceByCompany(companyId, req.params.id);
+        if (!deleted) {
+          return res.status(404).json({ error: "Invoice not found" });
+        }
+
+        res.json({ success: true, ...deleted });
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    },
+  );
 
   app.post(
     "/api/invoices",
@@ -1634,32 +1806,11 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(400).json({ error: "companyId is required" });
       }
 
-      // Get revenue and expense accounts
-      const accounts = await storage.getAccountsByCompany(companyId);
-      const revenueAccounts = accounts.filter((a) => a.type === "revenue");
-      const expenseAccounts = accounts.filter((a) => a.type === "expense");
-
-      const totalRevenue = revenueAccounts.reduce(
-        (sum, acc) => sum + parseFloat(acc.balance),
-        0
-      );
-      const totalExpenses = expenseAccounts.reduce(
-        (sum, acc) => sum + parseFloat(acc.balance),
-        0
-      );
-
-      res.json({
-        revenue: {
-          total: totalRevenue,
-          accounts: revenueAccounts,
-        },
-        expenses: {
-          total: totalExpenses,
-          accounts: expenseAccounts,
-        },
-        netIncome: totalRevenue - totalExpenses,
-        period: { startDate, endDate },
+      const report = await storage.getProfitLossReportByCompany(companyId, {
+        startDate,
+        endDate,
       });
+      res.json(report);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -1672,34 +1823,12 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(400).json({ error: "companyId is required" });
       }
 
-      const accounts = await storage.getAccountsByCompany(companyId);
-      
-      const assets = accounts.filter((a) => a.type === "asset");
-      const liabilities = accounts.filter((a) => a.type === "liability");
-      const equity = accounts.filter((a) => a.type === "equity");
-
-      const totalAssets = assets.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
-      const totalLiabilities = liabilities.reduce(
-        (sum, acc) => sum + parseFloat(acc.balance),
-        0
+      const report = await storage.getBalanceSheetReportByCompany(
+        companyId,
+        req.query.asOfDate as string,
       );
-      const totalEquity = equity.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
 
-      res.json({
-        assets: {
-          total: totalAssets,
-          accounts: assets,
-        },
-        liabilities: {
-          total: totalLiabilities,
-          accounts: liabilities,
-        },
-        equity: {
-          total: totalEquity,
-          accounts: equity,
-        },
-        asOfDate: new Date().toISOString(),
-      });
+      res.json(report);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -1712,50 +1841,11 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(400).json({ error: "companyId is required" });
       }
 
-      // Simple cash flow based on cash account balance changes
-      const accounts = await storage.getAccountsByCompany(companyId);
-      const cashAccount = accounts.find((a) => a.code === "1110" || a.name.toLowerCase().includes("cash"));
-
-      res.json({
-        operatingActivities: {
-          total: cashAccount ? parseFloat(cashAccount.balance) : 0,
-        },
-        investingActivities: {
-          total: 0,
-        },
-        financingActivities: {
-          total: 0,
-        },
-        netChange: cashAccount ? parseFloat(cashAccount.balance) : 0,
-      });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  app.get("/api/reports/cash-flow", authenticateToken, async (req, res) => {
-    try {
-      const companyId = req.query.companyId as string;
-      if (!companyId) {
-        return res.status(400).json({ error: "companyId is required" });
-      }
-
-      // Simple cash flow based on cash account balance changes
-      const accounts = await storage.getAccountsByCompany(companyId);
-      const cashAccount = accounts.find((a) => a.code === "1110" || a.name.toLowerCase().includes("cash"));
-
-      res.json({
-        operatingActivities: {
-          total: cashAccount ? parseFloat(cashAccount.balance) : 0,
-        },
-        investingActivities: {
-          total: 0,
-        },
-        financingActivities: {
-          total: 0,
-        },
-        netChange: cashAccount ? parseFloat(cashAccount.balance) : 0,
-      });
+      const report = await storage.getCashFlowReportByCompany(
+        companyId,
+        req.query.asOfDate as string,
+      );
+      res.json(report);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -2339,18 +2429,91 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.get("/api/billing/status", authenticateToken, enforceBillingStatus(), async (req, res) => {
-    try {
-      const companyId = getCompanyIdFromRequest(req as any);
-      if (!companyId) {
-        return res.status(400).json({ error: "companyId is required" });
-      }
-      const { mode, subscription } = await getBillingEnforcementMode(companyId);
-      res.json({ mode, subscription });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+  // Import billing status handlers
+  const { getBillingStatus, getBillingLimits } = require("./routes/billing-status");
+  
+  app.get("/api/billing/status", authenticateToken, getBillingStatus);
+  app.get("/api/billing/limits", authenticateToken, getBillingLimits);
+
+  // Import dashboard handlers
+  const { getUserDashboard, getManagerDashboard, getAdminDashboard, getAuditorDashboard } = require("./routes/dashboard");
+  
+  app.get("/api/dashboard/user", authenticateToken, getUserDashboard);
+  app.get("/api/dashboard/manager", authenticateToken, getManagerDashboard);
+  app.get("/api/dashboard/admin", authenticateToken, getAdminDashboard);
+  app.get("/api/dashboard/auditor", authenticateToken, getAuditorDashboard);
+
+  // Import ledger verification handlers
+  const { getLedgerVerifySummary, getLedgerVerifyTransactions, getLedgerVerifyExport } = require("./routes/ledger-verify");
+  
+  app.get("/api/ledger/verify/summary", authenticateToken, requireRead("audit"), getLedgerVerifySummary);
+  app.get("/api/ledger/verify/transactions", authenticateToken, requireRead("audit"), getLedgerVerifyTransactions);
+  app.get("/api/ledger/verify/export", authenticateToken, requireRead("audit"), getLedgerVerifyExport);
+
+  // Import ledger explanation handlers
+  const { postLedgerExplain, getLedgerExplainRevenue, getLedgerExplainExpenses, getLedgerExplainAccount } = require("./routes/ledger-explain");
+  
+  app.post("/api/ledger/explain", authenticateToken, requireRead("reports"), postLedgerExplain);
+  app.get("/api/ledger/explain/revenue", authenticateToken, requireRead("reports"), getLedgerExplainRevenue);
+  app.get("/api/ledger/explain/expenses", authenticateToken, requireRead("reports"), getLedgerExplainExpenses);
+  app.get("/api/ledger/explain/account/:accountId", authenticateToken, requireRead("reports"), getLedgerExplainAccount);
+
+  // Import decision intelligence handlers
+  const { getDecisionSignals, getDecisionExplainSummary, postDecisionScenario, getDecisionRunway, getDecisionRisks } = require("./routes/decision-intelligence");
+  
+  app.get("/api/decision/signals", authenticateToken, requirePermission("view:signals"), getDecisionSignals);
+  app.get("/api/decision/explain/summary", authenticateToken, requireRead("decisions"), getDecisionExplainSummary);
+  app.post("/api/decision/scenario", authenticateToken, requirePermission("run:scenarios"), postDecisionScenario);
+  app.get("/api/decision/runway", authenticateToken, requireRead("decisions"), getDecisionRunway);
+  app.get("/api/decision/risks", authenticateToken, requirePermission("view:signals"), getDecisionRisks);
+
+  // Import decision memory handlers
+  const { 
+    getMemoryDecisions, 
+    getMemoryDecision, 
+    postMemoryDecision, 
+    putMemoryDecisionStatus,
+    postMemoryDecisionApprove,
+    postMemoryDecisionExecute,
+    getMemoryDecisionVariance,
+    postMemoryDecisionVariance,
+    getMemoryVarianceReport,
+    getMemoryExport,
+    getMemoryVerify
+  } = require("./routes/decision-memory");
+  
+  app.get("/api/memory/decisions", authenticateToken, requireRead("decisions"), getMemoryDecisions);
+  app.get("/api/memory/decision/:id", authenticateToken, requireRead("decisions"), getMemoryDecision);
+  app.post("/api/memory/decision", authenticateToken, requireWrite("decisions"), postMemoryDecision);
+  app.put("/api/memory/decision/:id/status", authenticateToken, requireWrite("decisions"), putMemoryDecisionStatus);
+  app.post("/api/memory/decision/:id/approve", authenticateToken, postMemoryDecisionApprove);
+  app.post("/api/memory/decision/:id/execute", authenticateToken, requireWrite("decisions"), postMemoryDecisionExecute);
+  app.get("/api/memory/decision/:id/variance", authenticateToken, requireRead("decisions"), getMemoryDecisionVariance);
+  app.post("/api/memory/decision/:id/variance", authenticateToken, requireWrite("decisions"), postMemoryDecisionVariance);
+  app.get("/api/memory/variance-report", authenticateToken, requireRead("reports"), getMemoryVarianceReport);
+  app.get("/api/memory/export", authenticateToken, requireRead("audit"), getMemoryExport);
+  app.get("/api/memory/verify", authenticateToken, requireRead("audit"), getMemoryVerify);
+
+  // Import risk radar handlers
+  const {
+    getRiskSignals,
+    getRiskSignal,
+    getRiskSignalTransactions,
+    postRiskAcknowledge,
+    postRiskResolve,
+    getRiskSummary,
+    postRiskDetect,
+    getRiskExport
+  } = require("./routes/risk-radar");
+  
+  app.get("/api/risk/signals", authenticateToken, requireRead("reports"), getRiskSignals);
+  app.get("/api/risk/signal/:id", authenticateToken, requireRead("reports"), getRiskSignal);
+  app.get("/api/risk/transactions/:signalId", authenticateToken, requireRead("reports"), getRiskSignalTransactions);
+  app.post("/api/risk/acknowledge/:signalId", authenticateToken, requireWrite("reports"), postRiskAcknowledge);
+  app.post("/api/risk/resolve/:signalId", authenticateToken, requireWrite("reports"), postRiskResolve);
+  app.get("/api/risk/summary", authenticateToken, requireRead("reports"), getRiskSummary);
+  app.post("/api/risk/detect", authenticateToken, postRiskDetect);
+  app.get("/api/risk/export", authenticateToken, requireRead("audit"), getRiskExport);
 
   // ==================== JOB MANAGEMENT ====================
 
@@ -2387,6 +2550,23 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post("/api/stripe/refunds/:paymentIntentId", authenticateToken, refundPayment);
   app.get("/api/stripe/balance", authenticateToken, getBalance);
   app.get("/api/stripe/health", stripeHealthCheck);
+
+  // ==================== LEDGER / ACCOUNTING ====================
+  // Ledger API Routes - Enterprise Double-Entry Accounting
+  const ledgerRouter = require('./routes/ledger.routes');
+  app.use('/api/ledger', authenticateToken, ledgerRouter);
+
+  // Accounts Receivable Routes
+  const arRouter = require('./routes/ar.routes');
+  app.use('/api/ar', authenticateToken, arRouter);
+
+  // Accounts Payable Routes
+  const apRouter = require('./routes/ap.routes');
+  app.use('/api/ap', authenticateToken, apRouter);
+
+  // Inventory Routes
+  const inventoryRouter = require('./routes/inventory.routes');
+  app.use('/api/inventory', authenticateToken, inventoryRouter);
 
   // ==================== PLAID INTEGRATION ====================
 

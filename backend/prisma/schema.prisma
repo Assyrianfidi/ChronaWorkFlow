@@ -532,3 +532,56 @@ enum DocumentCategory {
   CONTRACT
   OTHER
 }
+
+model StripeWebhookEvent {
+  id          Int      @id @default(autoincrement())
+  eventId     String   @unique
+  eventType   String
+  processed   Boolean  @default(false)
+  processedAt DateTime?
+  payload     Json
+  createdAt   DateTime @default(now())
+
+  @@index([eventId])
+  @@index([eventType])
+  @@index([processed])
+  @@map("stripe_webhook_events")
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  userId      Int?
+  userEmail   String?
+  userRole    String?
+  action      String
+  resource    String
+  resourceId  String?
+  details     String?
+  ipAddress   String?
+  userAgent   String?
+  status      String   @default("success")
+  errorMessage String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([status])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+enum AuditAction {
+  LOGIN
+  LOGOUT
+  CREATE
+  UPDATE
+  DELETE
+  SUSPEND
+  ACTIVATE
+  RESET_PASSWORD
+  EMERGENCY_ACTION
+  BILLING_PAUSE
+  MAINTENANCE_MODE
+}

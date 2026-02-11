@@ -181,4 +181,11 @@ export const transactionsApi = {
     api.post<ApiResponse<any>>("/transactions", transactionData),
 };
 
+// Export specialized API modules
+export { invoicesApi } from './invoices.api';
+export { paymentsApi } from './payments.api';
+export { reportsApi } from './reports.api';
+export { payrollApi } from './payroll.api';
+export { billingApi } from './billing.api';
+
 export default api;

@@ -7,6 +7,7 @@ import {
   AuditorDashboard,
   InventoryDashboard,
 } from "./dashboards";
+import OwnerDashboardPage from "./owner/OwnerDashboardPage";
 
 const DashboardRouter: React.FC = () => {
   const { user } = useAuth();
@@ -25,6 +26,8 @@ const DashboardRouter: React.FC = () => {
   }
 
   switch (user.role) {
+    case "OWNER":
+      return <OwnerDashboardPage />;
     case "ADMIN":
       return <AdminDashboard />;
     case "MANAGER":

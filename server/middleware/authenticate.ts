@@ -16,6 +16,8 @@ export type AuthenticatedUser = {
   role?: string;
   roles: Role[];
   currentCompanyId?: string;
+  currentTenantId?: string;
+  tenantId?: string;
 };
 
 function normalizeRole(role: unknown): Role {
@@ -86,7 +88,14 @@ export function authenticate() {
       const data = (payload ?? {}) as any;
       const id = String(data.id ?? "");
       const email = typeof data.email === "string" ? data.email : undefined;
-      const currentCompanyId = typeof data.currentCompanyId === "string" ? data.currentCompanyId : undefined;
+      const currentTenantId =
+        typeof data.currentTenantId === "string"
+          ? data.currentTenantId
+          : typeof data.tenantId === "string"
+            ? data.tenantId
+            : undefined;
+      const currentCompanyIdRaw = typeof data.currentCompanyId === "string" ? data.currentCompanyId : undefined;
+      const currentCompanyId = currentCompanyIdRaw ?? currentTenantId;
       const baseRole = normalizeRole(data.role);
       const roles = new Set<Role>();
       roles.add(baseRole);
@@ -101,6 +110,8 @@ export function authenticate() {
         role: typeof data.role === "string" ? data.role : undefined,
         roles: Array.from(roles),
         currentCompanyId,
+        currentTenantId: currentTenantId ?? currentCompanyId,
+        tenantId: currentTenantId ?? currentCompanyId,
       } as any;
 
       return next();

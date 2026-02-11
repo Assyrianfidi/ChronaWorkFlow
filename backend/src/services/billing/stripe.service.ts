@@ -218,9 +218,30 @@ export class StripeService {
     }
   }
 
-  // Handle webhook events
+  // Handle webhook events with idempotency
   async handleWebhook(event: Stripe.Event): Promise<void> {
     try {
+      // Check if event already processed (idempotency)
+      const existingEvent = await prisma.stripeWebhookEvent.findUnique({
+        where: { eventId: event.id },
+      });
+
+      if (existingEvent) {
+        logger.info(`Webhook event ${event.id} already processed, skipping`);
+        return;
+      }
+
+      // Store event for idempotency
+      await prisma.stripeWebhookEvent.create({
+        data: {
+          eventId: event.id,
+          eventType: event.type,
+          processed: false,
+          payload: event as any,
+        },
+      });
+
+      // Process event
       switch (event.type) {
         case "invoice.payment_succeeded":
           await this.handleInvoicePaymentSucceeded(
@@ -245,8 +266,29 @@ export class StripeService {
         default:
           logger.info(`Unhandled webhook event type: ${event.type}`);
       }
+
+      // Mark as processed
+      await prisma.stripeWebhookEvent.update({
+        where: { eventId: event.id },
+        data: {
+          processed: true,
+          processedAt: new Date(),
+        },
+      });
+
+      logger.info(`Successfully processed webhook event ${event.id} (${event.type})`);
     } catch (error) {
-      logger.error("Error handling webhook:", error);
+      logger.error(`Error handling webhook ${event.id}:`, error);
+      
+      // Update event with error status
+      await prisma.stripeWebhookEvent.updateMany({
+        where: { eventId: event.id },
+        data: {
+          processed: false,
+          processedAt: new Date(),
+        },
+      });
+      
       throw error;
     }
   }

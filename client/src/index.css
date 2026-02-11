@@ -1,5 +1,7 @@
-﻿@import "./styles/globals.css";
+﻿@import "./styles/design-system.css";
+@import "./styles/globals.css";
 @import "./styles/financial-dashboard-theme.css";
+@import "./styles/enterprise-design-system.css";
 
 @tailwind base;
 @tailwind components;

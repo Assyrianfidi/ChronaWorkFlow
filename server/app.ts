@@ -1,8 +1,8 @@
 import express from "express";
 import { logEvent, recordRequest } from "../shared/logging";
 import { newRequestId } from "./runtime/audit-log";
-import { authenticate } from "./middleware/authenticate";
-import { authorizeRequest, enforceCompanyIsolation } from "./middleware/authorize";
+import { authorizeRequest } from "./middleware/authorize";
+import { resolveIdentity } from "./middleware/resolve-identity";
 import { enforceBillingStatus } from "./middleware/billing-status";
 import { enforcePlanLimits } from "./middleware/plan-limits";
 import monitoringRoutes from "./api/monitoring.routes.js";
@@ -77,18 +77,11 @@ export function createApp() {
   });
 
   // Apply authentication middleware to all /api routes EXCEPT /api/monitoring
-  app.use("/api", (req, res, next) => {
-    // Skip authentication for monitoring endpoints
-    if (req.path.startsWith('/monitoring')) {
-      return next('route'); // Skip to next route handler, bypassing auth middleware
-    }
-    next(); // Continue to auth middleware
-  });
+  app.use((_req, _res, next) => next());
   
   app.use(
     "/api",
-    authenticate(),
-    enforceCompanyIsolation(),
+    resolveIdentity(),
     authorizeRequest(),
     enforceBillingStatus(),
     enforcePlanLimits(),

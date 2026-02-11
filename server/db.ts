@@ -79,7 +79,11 @@ export const pool = new Proxy({} as NeonPool | PgPool, {
     if (!_dbAvailable || !_pool) {
       throw new Error('Database unavailable. Server running in degraded mode.');
     }
-    return (_pool as any)[prop];
+    const value = (_pool as any)[prop];
+    if (typeof value === 'function') {
+      return value.bind(_pool);
+    }
+    return value;
   }
 });
 
@@ -94,7 +98,11 @@ export const db = new Proxy({} as any, {
     if (!_dbAvailable || !_db) {
       throw new Error('Database unavailable. Server running in degraded mode.');
     }
-    return _db[prop];
+    const value = _db[prop];
+    if (typeof value === 'function') {
+      return value.bind(_db);
+    }
+    return value;
   }
 });
 

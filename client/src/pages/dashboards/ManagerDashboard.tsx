@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import useSWR from "swr";
+import { ExplainButton } from "../../components/ledger/ExplainButton";
 import { DashboardMetricCard, QuickActions } from "../../components/dashboard";
 import {
   TrendingUp,
@@ -12,11 +13,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardShell } from "../../components/ui/layout/DashboardShell";
-import {
-  getDemoManagerFinancialKPIs,
-  getDemoManagerTeamActivity,
-  isDemoModeEnabled,
-} from "@/lib/demo";
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "elevated" | "outlined" | "glass";
@@ -67,49 +63,33 @@ interface TeamActivity {
 const ManagerDashboard: React.FC = () => {
   const { user } = useAuth();
 
-  // Fetch financial KPIs
-  const {
-    data: kpis,
-    error: kpisError,
-    isLoading: kpisLoading,
-  } = useSWR<FinancialKPIs>(
-    "/api/dashboard/financial-kpis",
+  // Fetch manager dashboard data
+  const { data: dashboardData, isLoading, error } = useSWR<{
+    success: boolean;
+    data: {
+      kpis: FinancialKPIs;
+      teamActivity: TeamActivity[];
+    };
+  }>(
+    "/api/dashboard/manager",
     async (url: string) => {
-      if (isDemoModeEnabled()) {
-        return getDemoManagerFinancialKPIs() as any;
-      }
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch financial KPIs");
+      if (!response.ok) throw new Error("Failed to fetch dashboard data");
       return response.json();
     },
   );
 
-  // Fetch team activity
-  const {
-    data: activity,
-    error: activityError,
-    isLoading: activityLoading,
-  } = useSWR<TeamActivity[]>(
-    "/api/dashboard/team-activity",
-    async (url: string) => {
-      if (isDemoModeEnabled()) {
-        return getDemoManagerTeamActivity() as any;
-      }
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch team activity");
-      return response.json();
-    },
-  );
+  const kpis = dashboardData?.data?.kpis;
+  const teamActivity = dashboardData?.data?.teamActivity;
+  const kpisLoading = isLoading;
+  const activityLoading = isLoading;
+  const kpisError = error;
+  const activityError = error;
 
   const metrics = [
     {
@@ -261,9 +241,9 @@ const ManagerDashboard: React.FC = () => {
                   <div className="text-center py-8 text-destructive dark:text-destructive-500">
                     Failed to load team activity
                   </div>
-                ) : activity && activity.length > 0 ? (
+                ) : teamActivity && teamActivity.length > 0 ? (
                   <div className="space-y-2">
-                    {activity.map((item) => (
+                    {teamActivity.map((item) => (
                       <div
                         key={item.id}
                         className="flex items-start gap-3 p-3 rounded-xl border border-border bg-card hover:bg-muted hover:-translate-y-[1px] hover:shadow-elevated transition-transform transition-shadow duration-150"

@@ -1,13 +1,14 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
-  default as Card,
+  Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "../components/ui/Card";
-import Button from "../components/ui/Button";
+import { Button } from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Badge from "../components/ui/Badge";
 import {
@@ -48,118 +49,117 @@ import {
   Clock,
   AlertCircle,
 } from "lucide-react";
+import { invoicesApi, type Invoice } from "../api/invoices.api";
+import { useCompanyContext } from "../hooks/useCompanyContext";
+import { useBillingContext } from "../hooks/useBillingContext";
+import { BillingBanner, UsageMeter } from "../components/billing/BillingGuard";
+import { useAuth } from "../contexts/AuthContext";
+import { cn } from "@/lib/utils";
 
-interface Invoice {
-  id: string;
-  invoiceNumber: string;
-  customerName: string;
-  customerEmail: string;
-  amount: number;
-  status: "DRAFT" | "SENT" | "PAID" | "OVERDUE" | "CANCELLED";
-  dueDate: string;
-  createdAt: string;
-  description?: string;
-}
+// Skeleton component
+const Skeleton: React.FC<{ className?: string }> = ({ className }) => (
+  <div className={cn("animate-pulse bg-secondary rounded", className)} />
+);
 
-const mockInvoices: Invoice[] = [
-  {
-    id: "1",
-    invoiceNumber: "INV-001",
-    customerName: "ABC Corporation",
-    customerEmail: "billing@abc-corp.com",
-    amount: 2500.0,
-    status: "PAID",
-    dueDate: "2024-12-15",
-    createdAt: "2024-12-01",
-    description: "Web development services - November 2024",
-  },
-  {
-    id: "2",
-    invoiceNumber: "INV-002",
-    customerName: "XYZ Industries",
-    customerEmail: "accounts@xyz-ind.com",
-    amount: 1800.5,
-    status: "SENT",
-    dueDate: "2024-12-20",
-    createdAt: "2024-12-05",
-    description: "SEO consulting services",
-  },
-  {
-    id: "3",
-    invoiceNumber: "INV-003",
-    customerName: "Tech Solutions Ltd",
-    customerEmail: "finance@tech-solutions.io",
-    amount: 3200.0,
-    status: "OVERDUE",
-    dueDate: "2024-11-30",
-    createdAt: "2024-11-15",
-    description: "Cloud infrastructure setup",
-  },
-  {
-    id: "4",
-    invoiceNumber: "INV-004",
-    customerName: "Global Marketing Inc",
-    customerEmail: "payments@global-marketing.com",
-    amount: 950.0,
-    status: "DRAFT",
-    dueDate: "2024-12-25",
-    createdAt: "2024-12-10",
-    description: "Marketing campaign management",
-  },
-  {
-    id: "5",
-    invoiceNumber: "INV-005",
-    customerName: "StartUp Ventures",
-    customerEmail: "admin@startup-ventures.co",
-    amount: 1500.0,
-    status: "SENT",
-    dueDate: "2024-12-18",
-    createdAt: "2024-12-08",
-    description: "Mobile app development consultation",
-  },
-];
+type InvoiceStatus = Invoice["status"];
 
-const statusConfig = {
-  DRAFT: { color: "bg-gray-100 text-gray-800", icon: Edit, label: "Draft" },
-  SENT: { color: "bg-blue-100 text-blue-800", icon: Send, label: "Sent" },
-  PAID: {
-    color: "bg-green-100 text-green-800",
+const statusConfig: Record<
+  InvoiceStatus,
+  { color: string; icon: any; label: string }
+> = {
+  draft: {
+    color: "bg-secondary text-secondary-foreground",
+    icon: Edit,
+    label: "Draft",
+  },
+  sent: { color: "bg-primary-100 text-primary-700", icon: Send, label: "Sent" },
+  viewed: {
+    color: "bg-accent-100 text-accent-700",
+    icon: Eye,
+    label: "Viewed",
+  },
+  paid: {
+    color: "bg-success-100 text-success-700",
     icon: CheckCircle,
     label: "Paid",
   },
-  OVERDUE: {
-    color: "bg-red-100 text-red-800",
+  overdue: {
+    color: "bg-error-100 text-error-700",
     icon: AlertCircle,
     label: "Overdue",
   },
-  CANCELLED: {
-    color: "bg-yellow-100 text-yellow-800",
+  cancelled: {
+    color: "bg-warning-100 text-warning-700",
     icon: Trash2,
     label: "Cancelled",
   },
 };
 
 const InvoicesPage: React.FC = () => {
-  const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices);
-  const [filteredInvoices, setFilteredInvoices] =
-    useState<Invoice[]>(mockInvoices);
+  const { companyId } = useCompanyContext();
+  const { canWrite, isOverLimit, fetchBillingStatus, fetchBillingLimits } =
+    useBillingContext();
+  const { hasPermission } = useAuth();
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Mock fetch invoices
+  // Fetch billing status on mount
+  useEffect(() => {
+    if (companyId) {
+      fetchBillingStatus(companyId);
+      fetchBillingLimits(companyId);
+    }
+  }, [companyId, fetchBillingStatus, fetchBillingLimits]);
+
+  // Check permissions and billing
+  const hasWritePermission = hasPermission("write:invoices");
+  const canCreateInvoice =
+    hasWritePermission && canWrite() && !isOverLimit("invoices");
+  const createDisabledReason = !hasWritePermission
+    ? "You don't have permission to create invoices"
+    : !canWrite()
+      ? "Account is suspended or in read-only mode"
+      : isOverLimit("invoices")
+        ? "Invoice limit reached for this month"
+        : null;
+
+  // Fetch invoices from backend
   const fetchInvoices = async () => {
+    if (!companyId) {
+      setError("Company context required");
+      return;
+    }
+
     setIsLoading(true);
+    setError(null);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      console.log("📄 Fetching invoices...");
-      // In real app: const response = await fetch('/api/invoices')
-      setInvoices(mockInvoices);
-      setFilteredInvoices(mockInvoices);
-    } catch (error) {
-      console.error("Failed to fetch invoices:", error);
+      const response = await invoicesApi.list({
+        companyId,
+        page,
+        limit: 50,
+        status: statusFilter !== "all" ? statusFilter : undefined,
+        search: searchTerm || undefined,
+      });
+
+      const data = response.data.data;
+      setInvoices(data.invoices);
+      setFilteredInvoices(data.invoices);
+      setTotalPages(data.totalPages);
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to fetch invoices";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      console.error("Failed to fetch invoices:", err);
     } finally {
       setIsLoading(false);
     }
@@ -196,70 +196,109 @@ const InvoicesPage: React.FC = () => {
   }, [invoices, searchTerm, statusFilter]);
 
   const handleCreateInvoice = async (formData: any) => {
+    if (!companyId) {
+      toast.error("Company context required");
+      return;
+    }
+
     try {
-      console.log("📄 Creating invoice:", formData);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const idempotencyKey = `create-invoice-${Date.now()}-${Math.random()}`;
+      await invoicesApi.create(
+        {
+          companyId,
+          customerId: formData.customerId,
+          date: new Date().toISOString(),
+          dueDate: formData.dueDate,
+          subtotal: formData.amount,
+          taxRate: "0",
+          taxAmount: "0",
+          total: formData.amount,
+          description: formData.description,
+        },
+        idempotencyKey,
+      );
 
-      const newInvoice: Invoice = {
-        id: Date.now().toString(),
-        invoiceNumber: `INV-${String(invoices.length + 1).padStart(3, "0")}`,
-        customerName: formData.customerName,
-        customerEmail: formData.customerEmail,
-        amount: parseFloat(formData.amount),
-        status: "DRAFT",
-        dueDate: formData.dueDate,
-        createdAt: new Date().toISOString().split("T")[0],
-        description: formData.description,
-      };
-
-      setInvoices([newInvoice, ...invoices]);
+      toast.success("Invoice created successfully");
       setIsCreateDialogOpen(false);
-      console.log("✅ Invoice created successfully");
-    } catch (error) {
-      console.error("Failed to create invoice:", error);
+      fetchInvoices();
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to create invoice";
+      toast.error(errorMessage);
+      console.error("Failed to create invoice:", err);
     }
   };
 
-  const handleUpdateStatus = async (
+  const handleFinalizeInvoice = async (
     invoiceId: string,
-    newStatus: Invoice["status"],
+    targetStatus: "sent" | "issued" | "approved" | "finalized",
   ) => {
-    try {
-      console.log("📄 Updating invoice status:", invoiceId, newStatus);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+    if (!companyId) {
+      toast.error("Company context required");
+      return;
+    }
 
-      setInvoices(
-        invoices.map((invoice) =>
-          invoice.id === invoiceId
-            ? { ...invoice, status: newStatus }
-            : invoice,
-        ),
+    try {
+      const idempotencyKey = `finalize-invoice-${invoiceId}-${Date.now()}`;
+      await invoicesApi.finalize(
+        invoiceId,
+        companyId,
+        { targetStatus },
+        idempotencyKey,
       );
-      console.log("✅ Invoice status updated successfully");
-    } catch (error) {
-      console.error("Failed to update invoice status:", error);
+
+      toast.success("Invoice finalized and posted to ledger");
+      fetchInvoices();
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to finalize invoice";
+      toast.error(errorMessage);
+      console.error("Failed to finalize invoice:", err);
     }
   };
 
   const handleDeleteInvoice = async (invoiceId: string) => {
-    if (!confirm("Are you sure you want to delete this invoice?")) return;
+    // Use a custom confirmation dialog instead of browser confirm()
+    const confirmed = await new Promise<boolean>((resolve) => {
+      toast.warning("Are you sure you want to delete this invoice?", {
+        description: "This action cannot be undone.",
+        action: {
+          label: "Delete",
+          onClick: () => resolve(true),
+        },
+        cancel: {
+          label: "Cancel",
+          onClick: () => resolve(false),
+        },
+        duration: 10000,
+      });
+    });
+
+    if (!confirmed) return;
 
     try {
-      console.log("📄 Deleting invoice:", invoiceId);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      setInvoices(invoices.filter((invoice) => invoice.id !== invoiceId));
-      console.log("✅ Invoice deleted successfully");
-    } catch (error) {
-      console.error("Failed to delete invoice:", error);
+      await invoicesApi.delete(invoiceId, companyId);
+      toast.success("Invoice deleted successfully");
+      fetchInvoices();
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to delete invoice";
+      toast.error(errorMessage);
+      console.error("Failed to delete invoice:", err);
     }
   };
 
   return (
     <div className="space-y-6">
+      {/* Billing Banner */}
+      <BillingBanner />
+
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -268,7 +307,11 @@ const InvoicesPage: React.FC = () => {
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-enterprise-navy hover:bg-enterprise-navy/90">
+            <Button
+              className="bg-enterprise-navy hover:bg-enterprise-navy/90"
+              disabled={!canCreateInvoice}
+              title={createDisabledReason || "Create new invoice"}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Create Invoice
             </Button>
@@ -297,6 +340,9 @@ const InvoicesPage: React.FC = () => {
           <CardContent>
             <div className="text-2xl font-bold">{invoices.length}</div>
             <p className="text-xs text-muted-foreground">All time invoices</p>
+            <div className="mt-3">
+              <UsageMeter resourceType="invoices" label="This Month" />
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -306,7 +352,7 @@ const InvoicesPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              {invoices.filter((i) => i.status === "PAID").length}
+              {invoices.filter((i) => i.status === "paid").length}
             </div>
             <p className="text-xs text-muted-foreground">Paid invoices</p>
           </CardContent>
@@ -318,7 +364,7 @@ const InvoicesPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
-              {invoices.filter((i) => i.status === "SENT").length}
+              {invoices.filter((i) => i.status === "sent").length}
             </div>
             <p className="text-xs text-muted-foreground">Awaiting payment</p>
           </CardContent>
@@ -330,7 +376,7 @@ const InvoicesPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
-              {invoices.filter((i) => i.status === "OVERDUE").length}
+              {invoices.filter((i) => i.status === "overdue").length}
             </div>
             <p className="text-xs text-muted-foreground">Overdue invoices</p>
           </CardContent>
@@ -361,11 +407,12 @@ const InvoicesPage: React.FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="DRAFT">Draft</SelectItem>
-                <SelectItem value="SENT">Sent</SelectItem>
-                <SelectItem value="PAID">Paid</SelectItem>
-                <SelectItem value="OVERDUE">Overdue</SelectItem>
-                <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="sent">Sent</SelectItem>
+                <SelectItem value="viewed">Viewed</SelectItem>
+                <SelectItem value="paid">Paid</SelectItem>
+                <SelectItem value="overdue">Overdue</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
             <Button variant="outline">
@@ -390,9 +437,28 @@ const InvoicesPage: React.FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
+          {error ? (
+            <div className="flex flex-col items-center justify-center py-8 text-red-600">
+              <AlertCircle className="w-12 h-12 mb-2" />
+              <p className="text-lg font-semibold">{error}</p>
+              <Button
+                onClick={fetchInvoices}
+                className="mt-4"
+                variant="outline"
+              >
+                Retry
+              </Button>
+            </div>
+          ) : isLoading ? (
             <div className="flex justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-enterprise-navy"></div>
+            </div>
+          ) : invoices.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+              <p className="text-lg">No invoices found</p>
+              <p className="text-sm mt-2">
+                Create your first invoice to get started
+              </p>
             </div>
           ) : (
             <Table>
@@ -418,22 +484,28 @@ const InvoicesPage: React.FC = () => {
                       <TableCell>
                         <div>
                           <div className="font-medium">
-                            {invoice.customerName}
+                            {invoice.customerName || "N/A"}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {invoice.customerEmail}
+                            {invoice.customerEmail || ""}
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>${invoice.amount.toFixed(2)}</TableCell>
+                      <TableCell>
+                        ${parseFloat(invoice.total).toFixed(2)}
+                      </TableCell>
                       <TableCell>
                         <Badge className={statusConfig[invoice.status].color}>
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {statusConfig[invoice.status].label}
                         </Badge>
                       </TableCell>
-                      <TableCell>{invoice.dueDate}</TableCell>
-                      <TableCell>{invoice.createdAt}</TableCell>
+                      <TableCell>
+                        {new Date(invoice.dueDate).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(invoice.createdAt).toLocaleDateString()}
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="ghost" size="sm">
@@ -442,24 +514,34 @@ const InvoicesPage: React.FC = () => {
                           <Button variant="ghost" size="sm">
                             <Edit className="w-4 h-4" />
                           </Button>
-                          {invoice.status === "SENT" && (
+                          {invoice.status === "draft" && hasWritePermission && (
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() =>
-                                handleUpdateStatus(invoice.id, "PAID")
+                                handleFinalizeInvoice(invoice.id, "sent")
                               }
+                              title="Finalize and send"
+                              disabled={!canWrite()}
                             >
-                              <CheckCircle className="w-4 h-4" />
+                              <Send className="w-4 h-4" />
                             </Button>
                           )}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteInvoice(invoice.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+                          {hasWritePermission && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteInvoice(invoice.id)}
+                              disabled={!canWrite()}
+                              title={
+                                !canWrite()
+                                  ? "Account is read-only"
+                                  : "Delete invoice"
+                              }
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -494,7 +576,7 @@ const CreateInvoiceForm: React.FC<{ onSubmit: (data: any) => void }> = ({
       !formData.amount ||
       !formData.dueDate
     ) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
     onSubmit(formData);

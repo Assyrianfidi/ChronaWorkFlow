@@ -1,7 +1,7 @@
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
 import { redis, queues, JOB_QUEUES, jobProcessors, JobResult, JobStats, WorkerStats, type WorkflowTimerJobData } from './config';
 import { logger } from '../utils/logger';
-import { runAsSystem, runWithCompanyContext } from '../runtime/request-context';
+import { runAsSystem, runWithCompanyContext, runWithTenantCompanyContext } from '../runtime/request-context';
 
 export class JobService {
   private workers: Map<string, Worker> = new Map();
@@ -12,6 +12,11 @@ export class JobService {
   private redisAvailable: boolean = false;
 
   constructor() {
+    if (process.env.NODE_ENV === 'test' || process.env.VITEST === 'true') {
+      this.redisAvailable = false;
+      this.initialized = false;
+      return;
+    }
     // Delay initialization to allow Redis connection to be established
     this.initializeAsync().catch(err => {
       logger.warn('Job service initialization failed:', err.message);
@@ -136,8 +141,13 @@ export class JobService {
       }
 
       try {
+        const tenantId = typeof (job as any)?.data?.tenantId === 'string' ? String((job as any).data.tenantId) : '';
         const companyId = typeof (job as any)?.data?.companyId === 'string' ? String((job as any).data.companyId) : '';
-        const runner = companyId ? () => runWithCompanyContext(companyId, () => processor(job)) : () => runAsSystem(() => processor(job));
+        const runner = tenantId && companyId
+          ? () => runWithTenantCompanyContext(tenantId, companyId, () => processor(job))
+          : companyId
+            ? () => runWithCompanyContext(companyId, () => processor(job))
+            : () => runAsSystem(() => processor(job));
         const result = await runner();
         const duration = Date.now() - startTime;
 

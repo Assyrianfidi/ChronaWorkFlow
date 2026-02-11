@@ -1,0 +1,868 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Authentication models
+enum Role {
+  OWNER
+  ADMIN
+  MANAGER
+  ACCOUNTANT
+  AUDITOR
+  INVENTORY_MANAGER
+  STAFF
+  VIEWER
+}
+
+enum SubscriptionPlan {
+  FREE
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  TRIAL
+  CANCELLED
+}
+
+model User {
+  id                String        @id @default(cuid())
+  name              String?
+  email             String?       @unique
+  emailVerified     DateTime?     @map("email_verified")
+  image             String?
+  password          String?       @db.Text
+  role              Role          @default(VIEWER)
+  tenantId          String        @map("tenant_id")
+  isActive          Boolean       @default(true) @map("is_active")
+  lastLogin         DateTime?     @map("last_login")
+  refreshToken      String?       @db.Text @map("refresh_token")
+  resetToken        String?       @db.Text @map("reset_token")
+  resetTokenExpiry  DateTime?     @map("reset_token_expiry")
+  accounts          Account[]
+  sessions          Session[]
+  dashboardLayouts  DashboardLayout[]
+  auditLogs         AuditLog[]
+  tenant            Tenant        @relation(fields: [tenantId], references: [id])
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  createdBy         String?       @map("created_by")
+  updatedBy         String?       @map("updated_by")
+  deletedAt         DateTime?     @map("deleted_at")
+
+  @@index([tenantId])
+  @@index([email])
+  @@map("users")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refreshToken       String? @db.Text @map("refresh_token")
+  accessToken        String? @db.Text @map("access_token")
+  expiresAt          Int?    @map("expires_at")
+  tokenType          String? @map("token_type")
+  scope              String?
+  idToken            String? @db.Text @map("id_token")
+  sessionState       String? @map("session_state")
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token") @db.Text
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent") @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Multi-Tenant System
+model Tenant {
+  id            String           @id @default(cuid())
+  name          String
+  subdomain     String           @unique
+  customDomain  String?          @unique @map("custom_domain")
+  logo          Json?            // { light: string, dark: string }
+  favicon       String?
+  theme         Json?            // Theme colors and typography
+  featureFlags  Json             @default("{}") @map("feature_flags")
+  settings      Json             @default("{}") // Tenant-specific settings
+  plan          SubscriptionPlan @default(FREE)
+  status        TenantStatus     @default(TRIAL)
+  users         User[]
+  dashboardLayouts DashboardLayout[]
+  auditLogs     AuditLog[]
+  analyticsEvents AnalyticsEvent[]
+  automationRules AutomationRule[]
+  automationExecutions AutomationExecution[]
+  smartInsights SmartInsight[]
+  automationMetrics AutomationUsageMetric[]
+  paymentMethods PaymentMethod[]
+  payments      Payment[]
+  paymentReconciliations PaymentReconciliation[]
+  paymentExplainability PaymentExplainability[]
+  cashControlRules CashControlRule[]
+  cashControlExecutions CashControlExecution[]
+  paymentAnalytics PaymentAnalytics[]
+  financialForecasts FinancialForecast[]
+  scenarios     Scenario[]
+  scenarioAnalytics ScenarioAnalytics[]
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  @@index([subdomain])
+  @@index([status])
+  @@map("tenants")
+}
+
+// Dashboard Composition System
+model DashboardLayout {
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id") // Null for role defaults
+  role      Role?    // Null for user-specific layouts
+  tenantId  String   @map("tenant_id")
+  name      String
+  isDefault Boolean  @default(false) @map("is_default")
+  layout    Json     // { desktop: [], tablet: [], mobile: [] }
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, tenantId])
+  @@unique([role, tenantId, isDefault])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([role])
+  @@map("dashboard_layouts")
+}
+
+// RBAC Audit Logging
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String   @map("tenant_id")
+  userId      String   @map("user_id")
+  action      String   // Permission name or action type
+  resource    String?  // Resource type (invoice, report, etc.)
+  resourceId  String?  @map("resource_id")
+  allowed     Boolean  // true = allowed, false = denied
+  reason      String?  // Denial reason if applicable
+  metadata    Json?    // Additional context
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent") @db.Text
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([tenantId, createdAt])
+  @@index([userId, createdAt])
+  @@index([action])
+  @@index([allowed])
+  @@map("audit_logs")
+}
+
+// Feature Flag Analytics
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  eventId     String   @unique @map("event_id") // Client-generated ID
+  eventType   String   @map("event_type") // VIEWED, CLICKED, USED
+  featureFlag String   @map("feature_flag")
+  featureName String   @map("feature_name")
+  userId      String   @map("user_id")
+  userRole    Role     @map("user_role")
+  tenantId    String   @map("tenant_id")
+  sessionId   String   @map("session_id")
+  metadata    Json?    // Additional event data
+  timestamp   DateTime // Client timestamp
+  serverTimestamp DateTime @default(now()) @map("server_timestamp")
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent") @db.Text
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, timestamp])
+  @@index([featureFlag, timestamp])
+  @@index([userId, timestamp])
+  @@index([eventType])
+  @@map("analytics_events")
+}
+
+// Finance Automation & Intelligence Engine
+
+enum AutomationTriggerType {
+  INVOICE_OVERDUE
+  CASH_BALANCE_THRESHOLD
+  EXPENSE_ANOMALY
+  REVENUE_DROP
+  REVENUE_INCREASE
+  MONTH_END
+  QUARTER_END
+  YEAR_END
+  SCHEDULED_DAILY
+  SCHEDULED_WEEKLY
+  SCHEDULED_MONTHLY
+  MANUAL
+  TRANSACTION_CREATED
+  PAYMENT_RECEIVED
+  PAYMENT_FAILED
+  BUDGET_EXCEEDED
+  LOW_INVENTORY
+  LATE_PAYMENT_PATTERN
+}
+
+enum AutomationActionType {
+  SEND_EMAIL
+  SEND_IN_APP_NOTIFICATION
+  GENERATE_REPORT
+  LOCK_ACTION
+  FLAG_TRANSACTION
+  CREATE_TASK
+  NOTIFY_ROLE
+  WEBHOOK
+  UPDATE_FIELD
+  CREATE_APPROVAL_REQUEST
+}
+
+enum AutomationStatus {
+  ACTIVE
+  PAUSED
+  DRAFT
+  ARCHIVED
+}
+
+enum AutomationExecutionStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+  SKIPPED
+  CANCELLED
+}
+
+enum InsightType {
+  EXPENSE_ANOMALY
+  CASH_FLOW_WARNING
+  REVENUE_TREND
+  PAYMENT_PATTERN
+  BUDGET_ALERT
+  PROFITABILITY_CHANGE
+  SEASONAL_PATTERN
+  VENDOR_RISK
+}
+
+enum InsightSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+model AutomationRule {
+  id              String                @id @default(cuid())
+  tenantId        String                @map("tenant_id")
+  name            String
+  description     String?               @db.Text
+  triggerType     AutomationTriggerType @map("trigger_type")
+  triggerConfig   Json                  @map("trigger_config") // Trigger-specific configuration
+  conditions      Json                  @default("[]") // Array of condition objects with AND/OR logic
+  actions         Json                  @default("[]") // Array of action objects
+  status          AutomationStatus      @default(DRAFT)
+  isTemplate      Boolean               @default(false) @map("is_template")
+  requiresApproval Boolean              @default(false) @map("requires_approval")
+  createdBy       String                @map("created_by")
+  updatedBy       String?               @map("updated_by")
+  lastTriggered   DateTime?             @map("last_triggered")
+  executionCount  Int                   @default(0) @map("execution_count")
+  successCount    Int                   @default(0) @map("success_count")
+  failureCount    Int                   @default(0) @map("failure_count")
+  tenant          Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  executions      AutomationExecution[]
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+
+  @@index([tenantId, status])
+  @@index([triggerType])
+  @@index([status])
+  @@map("automation_rules")
+}
+
+model AutomationExecution {
+  id              String                    @id @default(cuid())
+  ruleId          String                    @map("rule_id")
+  tenantId        String                    @map("tenant_id")
+  status          AutomationExecutionStatus @default(PENDING)
+  triggeredBy     String?                   @map("triggered_by") // User ID if manual
+  triggerData     Json                      @map("trigger_data") // Context data that triggered the rule
+  conditionsEvaluated Json                  @map("conditions_evaluated") // Results of condition checks
+  conditionsMet   Boolean                   @map("conditions_met")
+  actionsExecuted Json                      @default("[]") @map("actions_executed") // Results of each action
+  isDryRun        Boolean                   @default(false) @map("is_dry_run")
+  errorMessage    String?                   @db.Text @map("error_message")
+  executionTime   Int?                      @map("execution_time") // Milliseconds
+  retryCount      Int                       @default(0) @map("retry_count")
+  nextRetryAt     DateTime?                 @map("next_retry_at")
+  completedAt     DateTime?                 @map("completed_at")
+  rule            AutomationRule            @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  tenant          Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt       DateTime                  @default(now()) @map("created_at")
+
+  @@index([tenantId, createdAt])
+  @@index([ruleId, status])
+  @@index([status, nextRetryAt])
+  @@map("automation_executions")
+}
+
+model SmartInsight {
+  id              String          @id @default(cuid())
+  tenantId        String          @map("tenant_id")
+  insightType     InsightType     @map("insight_type")
+  severity        InsightSeverity @default(INFO)
+  title           String
+  description     String          @db.Text
+  explanation     String          @db.Text // Why this was flagged
+  confidence      Float           @default(1.0) // 0.0 to 1.0
+  metadata        Json            @default("{}") // Supporting data, calculations
+  relatedEntities Json            @default("[]") @map("related_entities") // IDs of invoices, transactions, etc.
+  actionable      Boolean         @default(true)
+  suggestedActions Json           @default("[]") @map("suggested_actions")
+  dismissedBy     String?         @map("dismissed_by")
+  dismissedAt     DateTime?       @map("dismissed_at")
+  dismissReason   String?         @db.Text @map("dismiss_reason")
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  expiresAt       DateTime?       @map("expires_at")
+
+  @@index([tenantId, createdAt])
+  @@index([insightType, severity])
+  @@index([dismissedAt])
+  @@map("smart_insights")
+}
+
+model AutomationTemplate {
+  id              String                @id @default(cuid())
+  name            String
+  description     String                @db.Text
+  category        String // "Cash Flow", "Invoicing", "Expense Management", etc.
+  triggerType     AutomationTriggerType @map("trigger_type")
+  triggerConfig   Json                  @map("trigger_config")
+  conditions      Json                  @default("[]")
+  actions         Json                  @default("[]")
+  requiredPlan    SubscriptionPlan      @map("required_plan") // Minimum plan required
+  popularity      Int                   @default(0) // Usage count
+  isPublic        Boolean               @default(true) @map("is_public")
+  createdBy       String                @map("created_by")
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@index([requiredPlan])
+  @@map("automation_templates")
+}
+
+model AutomationUsageMetric {
+  id              String   @id @default(cuid())
+  tenantId        String   @map("tenant_id")
+  ruleId          String   @map("rule_id")
+  executionId     String   @map("execution_id")
+  actionType      String   @map("action_type")
+  success         Boolean
+  executionTime   Int      @map("execution_time") // Milliseconds
+  costImpact      Float?   @map("cost_impact") // Estimated cost saved/incurred
+  businessImpact  Json?    @map("business_impact") // Metrics like time saved, errors prevented
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  timestamp       DateTime @default(now())
+
+  @@index([tenantId, timestamp])
+  @@index([ruleId])
+  @@map("automation_usage_metrics")
+}
+
+// Embedded Payments & Cash Control Engine
+
+enum PaymentMethodType {
+  ACH
+  CREDIT_CARD
+  DEBIT_CARD
+  BANK_ACCOUNT
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  DISPUTED
+  REQUIRES_ACTION
+}
+
+enum PaymentType {
+  INVOICE_PAYMENT
+  VENDOR_PAYMENT
+  TAX_RESERVE
+  REFUND
+  MANUAL
+}
+
+enum ReconciliationStatus {
+  PENDING
+  MATCHED
+  UNMATCHED
+  DISPUTED
+  RESOLVED
+}
+
+enum CashControlRuleType {
+  AUTO_COLLECT_OVERDUE
+  RETRY_FAILED_PAYMENT
+  AUTO_RESERVE_TAXES
+  AUTO_PAY_VENDOR
+  PAUSE_ON_DISPUTE
+  SCHEDULE_PAYMENT
+}
+
+model PaymentMethod {
+  id              String            @id @default(cuid())
+  tenantId        String            @map("tenant_id")
+  customerId      String?           @map("customer_id") // Customer/vendor ID
+  type            PaymentMethodType
+  isDefault       Boolean           @default(false) @map("is_default")
+  
+  // Tokenized data (PCI-safe)
+  token           String            @unique // Payment processor token
+  last4           String?           @map("last_4") // Last 4 digits for display
+  brand           String?           // Card brand or bank name
+  expiryMonth     Int?              @map("expiry_month")
+  expiryYear      Int?              @map("expiry_year")
+  
+  // Bank account details (tokenized)
+  accountType     String?           @map("account_type") // checking, savings
+  routingNumber   String?           @map("routing_number") // Masked
+  
+  // Metadata
+  nickname        String?
+  billingAddress  Json?             @map("billing_address")
+  metadata        Json              @default("{}")
+  
+  // Status
+  isActive        Boolean           @default(true) @map("is_active")
+  verifiedAt      DateTime?         @map("verified_at")
+  
+  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  payments        Payment[]
+  
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  @@index([tenantId, customerId])
+  @@index([token])
+  @@map("payment_methods")
+}
+
+model Payment {
+  id                    String              @id @default(cuid())
+  tenantId              String              @map("tenant_id")
+  paymentMethodId       String?             @map("payment_method_id")
+  invoiceId             String?             @map("invoice_id")
+  
+  // Payment details
+  type                  PaymentType
+  status                PaymentStatus       @default(PENDING)
+  amount                Float
+  currency              String              @default("USD")
+  description           String?             @db.Text
+  
+  // Processing
+  processorId           String?             @map("processor_id") // Stripe/Plaid ID
+  processorStatus       String?             @map("processor_status")
+  processorResponse     Json?               @map("processor_response")
+  
+  // Automation context
+  automationRuleId      String?             @map("automation_rule_id")
+  automationExecutionId String?             @map("automation_execution_id")
+  isAutomated           Boolean             @default(false) @map("is_automated")
+  
+  // Scheduling
+  scheduledFor          DateTime?           @map("scheduled_for")
+  processedAt           DateTime?           @map("processed_at")
+  
+  // Retry logic
+  retryCount            Int                 @default(0) @map("retry_count")
+  maxRetries            Int                 @default(3) @map("max_retries")
+  nextRetryAt           DateTime?           @map("next_retry_at")
+  
+  // Reconciliation
+  reconciledAt          DateTime?           @map("reconciled_at")
+  ledgerEntryId         String?             @map("ledger_entry_id")
+  
+  // Fees & impact
+  processingFee         Float?              @map("processing_fee")
+  netAmount             Float?              @map("net_amount")
+  
+  // Dispute handling
+  isDisputed            Boolean             @default(false) @map("is_disputed")
+  disputeReason         String?             @db.Text @map("dispute_reason")
+  disputedAt            DateTime?           @map("disputed_at")
+  
+  // Approval workflow
+  requiresApproval      Boolean             @default(false) @map("requires_approval")
+  approvedBy            String?             @map("approved_by")
+  approvedAt            DateTime?           @map("approved_at")
+  
+  // Metadata
+  metadata              Json                @default("{}")
+  failureReason         String?             @db.Text @map("failure_reason")
+  
+  tenant                Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  paymentMethod         PaymentMethod?      @relation(fields: [paymentMethodId], references: [id])
+  reconciliation        PaymentReconciliation?
+  explainability        PaymentExplainability?
+  
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt @map("updated_at")
+
+  @@index([tenantId, status])
+  @@index([invoiceId])
+  @@index([automationRuleId])
+  @@index([scheduledFor])
+  @@index([status, nextRetryAt])
+  @@map("payments")
+}
+
+model PaymentReconciliation {
+  id                  String                @id @default(cuid())
+  paymentId           String                @unique @map("payment_id")
+  tenantId            String                @map("tenant_id")
+  
+  status              ReconciliationStatus  @default(PENDING)
+  
+  // Ledger matching
+  ledgerEntryId       String?               @map("ledger_entry_id")
+  accountId           String?               @map("account_id")
+  
+  // Matching details
+  matchedAmount       Float?                @map("matched_amount")
+  variance            Float?                // Difference if any
+  varianceReason      String?               @db.Text @map("variance_reason")
+  
+  // Reconciliation metadata
+  reconciledBy        String?               @map("reconciled_by")
+  reconciledAt        DateTime?             @map("reconciled_at")
+  notes               String?               @db.Text
+  
+  payment             Payment               @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  tenant              Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt           DateTime              @default(now()) @map("created_at")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
+
+  @@index([tenantId, status])
+  @@index([ledgerEntryId])
+  @@map("payment_reconciliations")
+}
+
+model PaymentExplainability {
+  id                  String    @id @default(cuid())
+  paymentId           String    @unique @map("payment_id")
+  tenantId            String    @map("tenant_id")
+  
+  // Trigger explanation
+  trigger             String    // "automation_rule" | "manual" | "scheduled"
+  triggerDetails      Json      @map("trigger_details")
+  
+  // Conditions met
+  conditionsMet       Json      @map("conditions_met")
+  
+  // Amount calculation
+  amountCalculation   String    @db.Text @map("amount_calculation")
+  baseAmount          Float     @map("base_amount")
+  adjustments         Json      @default("[]")
+  
+  // Confidence & safeguards
+  confidenceScore     Float     @map("confidence_score")
+  safeguards          Json      @default("[]")
+  riskFactors         Json      @default("[]") @map("risk_factors")
+  
+  // Approval status
+  approvalRequired    Boolean   @map("approval_required")
+  approvalStatus      String?   @map("approval_status")
+  
+  // Business impact
+  businessImpact      Json      @map("business_impact")
+  estimatedTimeSaved  Int?      @map("estimated_time_saved") // Minutes
+  
+  // Plain English explanation
+  explanation         String    @db.Text
+  
+  payment             Payment   @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  tenant              Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  @@index([tenantId])
+  @@map("payment_explainability")
+}
+
+model CashControlRule {
+  id                  String              @id @default(cuid())
+  tenantId            String              @map("tenant_id")
+  
+  name                String
+  description         String?             @db.Text
+  ruleType            CashControlRuleType @map("rule_type")
+  
+  // Configuration
+  config              Json                @default("{}")
+  conditions          Json                @default("[]")
+  
+  // Status
+  isActive            Boolean             @default(true) @map("is_active")
+  requiresApproval    Boolean             @default(false) @map("requires_approval")
+  
+  // Execution stats
+  executionCount      Int                 @default(0) @map("execution_count")
+  successCount        Int                 @default(0) @map("success_count")
+  failureCount        Int                 @default(0) @map("failure_count")
+  totalAmountProcessed Float              @default(0) @map("total_amount_processed")
+  
+  // Metadata
+  createdBy           String              @map("created_by")
+  lastExecuted        DateTime?           @map("last_executed")
+  
+  tenant              Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  executions          CashControlExecution[]
+  
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  @@index([tenantId, isActive])
+  @@index([ruleType])
+  @@map("cash_control_rules")
+}
+
+model CashControlExecution {
+  id                  String        @id @default(cuid())
+  ruleId              String        @map("rule_id")
+  tenantId            String        @map("tenant_id")
+  
+  status              String        // SUCCESS, FAILED, SKIPPED
+  
+  // Execution context
+  triggerData         Json          @map("trigger_data")
+  conditionsEvaluated Json          @map("conditions_evaluated")
+  
+  // Payment created
+  paymentId           String?       @map("payment_id")
+  amount              Float?
+  
+  // Results
+  success             Boolean
+  errorMessage        String?       @db.Text @map("error_message")
+  executionTime       Int?          @map("execution_time") // Milliseconds
+  
+  // Dry run
+  isDryRun            Boolean       @default(false) @map("is_dry_run")
+  
+  rule                CashControlRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  tenant              Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt           DateTime      @default(now()) @map("created_at")
+
+  @@index([tenantId, createdAt])
+  @@index([ruleId, status])
+  @@map("cash_control_executions")
+}
+
+model PaymentAnalytics {
+  id                  String    @id @default(cuid())
+  tenantId            String    @map("tenant_id")
+  
+  // Metrics
+  paymentId           String?   @map("payment_id")
+  eventType           String    @map("event_type") // PAYMENT_INITIATED, PAYMENT_SUCCEEDED, etc.
+  
+  amount              Float?
+  processingFee       Float?    @map("processing_fee")
+  
+  // Automation context
+  isAutomated         Boolean   @map("is_automated")
+  automationRuleId    String?   @map("automation_rule_id")
+  
+  // Performance
+  timeToCash          Int?      @map("time_to_cash") // Seconds from invoice to payment
+  retryCount          Int?      @map("retry_count")
+  
+  // Business impact
+  revenueImpact       Float?    @map("revenue_impact")
+  
+  tenant              Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  timestamp           DateTime  @default(now())
+
+  @@index([tenantId, timestamp])
+  @@index([eventType])
+  @@map("payment_analytics")
+}
+
+// Predictive Financial Control & Scenario Intelligence Engine
+
+enum ForecastType {
+  CASH_RUNWAY
+  BURN_RATE
+  REVENUE_GROWTH
+  EXPENSE_TRAJECTORY
+  PAYMENT_INFLOW
+}
+
+enum ScenarioType {
+  HIRING
+  LARGE_PURCHASE
+  REVENUE_CHANGE
+  PAYMENT_DELAY
+  AUTOMATION_CHANGE
+  CUSTOM
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model FinancialForecast {
+  id                  String        @id @default(cuid())
+  tenantId            String        @map("tenant_id")
+  forecastType        ForecastType  @map("forecast_type")
+  
+  // Forecast results
+  value               Float
+  unit                String        // "days", "months", "dollars", "percentage"
+  confidenceScore     Float         @map("confidence_score") // 0-100
+  
+  // Time range
+  forecastDate        DateTime      @map("forecast_date")
+  forecastHorizon     Int           @map("forecast_horizon") // Days into future
+  
+  // Explainability
+  formula             String        @db.Text
+  assumptions         Json          @default("[]")
+  dataSources         Json          @map("data_sources") @default("[]")
+  historicalBaseline  Json?         @map("historical_baseline")
+  
+  // Metadata
+  calculatedAt        DateTime      @default(now()) @map("calculated_at")
+  
+  tenant              Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, forecastType])
+  @@index([forecastDate])
+  @@map("financial_forecasts")
+}
+
+model Scenario {
+  id                  String        @id @default(cuid())
+  tenantId            String        @map("tenant_id")
+  
+  name                String
+  description         String?       @db.Text
+  scenarioType        ScenarioType  @map("scenario_type")
+  
+  // Scenario configuration
+  config              Json          @default("{}")
+  
+  // Results
+  baselineRunway      Float?        @map("baseline_runway") // Days
+  projectedRunway     Float?        @map("projected_runway") // Days
+  runwayChange        Float?        @map("runway_change") // Days difference
+  
+  riskLevel           RiskLevel?    @map("risk_level")
+  riskScore           Float?        @map("risk_score") // 0-100
+  successProbability  Float?        @map("success_probability") // 0-100
+  
+  // Risk analysis
+  topRiskDrivers      Json          @map("top_risk_drivers") @default("[]")
+  criticalAssumptions Json          @map("critical_assumptions") @default("[]")
+  
+  // Impact analysis
+  cashFlowImpact      Json?         @map("cash_flow_impact")
+  automationImpact    Json?         @map("automation_impact")
+  paymentImpact       Json?         @map("payment_impact")
+  
+  // Recommendations
+  recommendations     Json          @default("[]")
+  
+  // Metadata
+  createdBy           String        @map("created_by")
+  isArchived          Boolean       @default(false) @map("is_archived")
+  
+  tenant              Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+
+  @@index([tenantId, scenarioType])
+  @@index([createdBy])
+  @@map("scenarios")
+}
+
+model ScenarioAnalytics {
+  id                  String    @id @default(cuid())
+  tenantId            String    @map("tenant_id")
+  scenarioId          String?   @map("scenario_id")
+  
+  eventType           String    @map("event_type") // SCENARIO_CREATED, DECISION_INFLUENCED, etc.
+  scenarioType        String?   @map("scenario_type")
+  
+  // Decision tracking
+  decisionMade        Boolean?  @map("decision_made")
+  decisionOutcome     String?   @map("decision_outcome")
+  riskAvoided         Boolean?  @map("risk_avoided")
+  
+  // Upgrade tracking
+  upgradeTriggered    Boolean?  @map("upgrade_triggered")
+  planBefore          String?   @map("plan_before")
+  planAfter           String?   @map("plan_after")
+  
+  // Performance
+  timeToDecision      Int?      @map("time_to_decision") // Seconds
+  
+  tenant              Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  timestamp           DateTime  @default(now())
+
+  @@index([tenantId, timestamp])
+  @@index([eventType])
+  @@map("scenario_analytics")
+}

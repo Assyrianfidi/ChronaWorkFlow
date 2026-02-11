@@ -43,6 +43,8 @@ function getAudit() {
 }
 
 export class DrizzleLedgerStore implements LedgerStore {
+  constructor(private readonly executor: any = db) {}
+
   private computeTotalAmount(txn: LedgerTransaction): string {
     let debits = 0n;
     for (const line of txn.lines) {
@@ -61,12 +63,12 @@ export class DrizzleLedgerStore implements LedgerStore {
   async getAccountSnapshots(companyId: string, accountIds: string[]) {
     if (accountIds.length === 0) return [];
 
-    const rows = await db
+    const rows = await this.executor
       .select({ id: s.accounts.id, companyId: s.accounts.companyId, type: s.accounts.type })
       .from(s.accounts)
       .where(and(eq(s.accounts.companyId, companyId), inArray(s.accounts.id, accountIds)));
 
-    return rows.map((r) => ({
+    return rows.map((r: any) => ({
       accountId: r.id,
       companyId: r.companyId,
       type: r.type as any,
@@ -77,7 +79,7 @@ export class DrizzleLedgerStore implements LedgerStore {
     const m = new Map<string, bigint>();
     if (accountIds.length === 0) return m;
 
-    const rows = await db
+    const rows = await this.executor
       .select({
         accountId: s.transactionLines.accountId,
         balance: sql<string>`coalesce(sum(${s.transactionLines.debit} - ${s.transactionLines.credit}), 0)`,
@@ -107,7 +109,7 @@ export class DrizzleLedgerStore implements LedgerStore {
   }
 
   async getPostedTransactionByNumber(companyId: string, transactionNumber: string): Promise<LedgerPostedTransactionSnapshot | null> {
-    const [txn] = await db
+    const [txn] = await this.executor
       .select()
       .from(s.transactions)
       .where(and(eq(s.transactions.companyId, companyId), eq(s.transactions.transactionNumber, transactionNumber)))
@@ -115,13 +117,13 @@ export class DrizzleLedgerStore implements LedgerStore {
 
     if (!txn) return null;
 
-    const lines = await db
+    const lines = await this.executor
       .select()
       .from(s.transactionLines)
       .where(eq(s.transactionLines.transactionId, txn.id));
 
     const mappedLines = lines
-      .flatMap((l) => {
+      .flatMap((l: any) => {
         const debit = parseMoneyToCents(l.debit);
         const credit = parseMoneyToCents(l.credit);
         const out: any[] = [];
@@ -168,8 +170,48 @@ export class DrizzleLedgerStore implements LedgerStore {
   }
 
   async commitAppendOnly(txn: LedgerTransaction): Promise<void> {
-    await db.transaction(async (tx) => {
-      await tx.insert(s.transactions).values({
+    if (this.executor === db) {
+      await db.transaction(async (tx: any) => {
+        await tx.insert(s.transactions).values({
+          id: txn.transactionId,
+          companyId: txn.companyId,
+          transactionNumber: txn.transactionNumber,
+          date: txn.date,
+          type: txn.type as any,
+          description: txn.description ?? null,
+          referenceNumber: txn.referenceNumber ?? null,
+          totalAmount: this.computeTotalAmount(txn),
+          reversalOfTransactionId: txn.reversalOfTransactionId ?? null,
+          isVoid: false,
+          createdBy: txn.createdBy,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as any);
+
+        const values: any[] = [];
+        for (const line of txn.lines) {
+          values.push({
+            id: line.lineId,
+            transactionId: txn.transactionId,
+            accountId: line.accountId,
+            debit: line.side === 'DEBIT' ? line.amount : '0',
+            credit: line.side === 'CREDIT' ? line.amount : '0',
+            description: line.description ?? null,
+            createdAt: new Date(),
+          });
+        }
+
+        if (values.length) {
+          await tx.insert(s.transactionLines).values(values as any);
+        }
+      });
+
+      return;
+    }
+
+    const tx = this.executor;
+
+    await tx.insert(s.transactions).values({
         id: txn.transactionId,
         companyId: txn.companyId,
         transactionNumber: txn.transactionNumber,
@@ -183,25 +225,24 @@ export class DrizzleLedgerStore implements LedgerStore {
         createdBy: txn.createdBy,
         createdAt: new Date(),
         updatedAt: new Date(),
-      } as any);
+    } as any);
 
-      const values: any[] = [];
-      for (const line of txn.lines) {
-        values.push({
-          id: line.lineId,
-          transactionId: txn.transactionId,
-          accountId: line.accountId,
-          debit: line.side === 'DEBIT' ? line.amount : '0',
-          credit: line.side === 'CREDIT' ? line.amount : '0',
-          description: line.description ?? null,
-          createdAt: new Date(),
-        });
-      }
+    const values: any[] = [];
+    for (const line of txn.lines) {
+      values.push({
+        id: line.lineId,
+        transactionId: txn.transactionId,
+        accountId: line.accountId,
+        debit: line.side === 'DEBIT' ? line.amount : '0',
+        credit: line.side === 'CREDIT' ? line.amount : '0',
+        description: line.description ?? null,
+        createdAt: new Date(),
+      });
+    }
 
-      if (values.length) {
-        await tx.insert(s.transactionLines).values(values as any);
-      }
-    });
+    if (values.length) {
+      await tx.insert(s.transactionLines).values(values as any);
+    }
   }
 
   async listPostedTransactions(companyId: string, from?: Date, to?: Date) {
@@ -213,17 +254,17 @@ export class DrizzleLedgerStore implements LedgerStore {
       txnWhere.push(sql`${s.transactions.date} <= ${to}` as any);
     }
 
-    const transactions = await db
+    const transactions = await this.executor
       .select()
       .from(s.transactions)
       .where(and(...(txnWhere as any)))
       .orderBy(desc(s.transactions.date), desc(s.transactions.createdAt));
 
-    const ids = transactions.map((t) => t.id);
+    const ids = transactions.map((t: any) => t.id);
     const linesByTxn = new Map<string, any[]>();
 
     if (ids.length) {
-      const lines = await db.select().from(s.transactionLines).where(inArray(s.transactionLines.transactionId, ids));
+      const lines = await this.executor.select().from(s.transactionLines).where(inArray(s.transactionLines.transactionId, ids));
       for (const l of lines) {
         const arr = linesByTxn.get(l.transactionId) ?? [];
         arr.push(l);
@@ -231,7 +272,7 @@ export class DrizzleLedgerStore implements LedgerStore {
       }
     }
 
-    return transactions.map((t) => ({ transaction: t, lines: linesByTxn.get(t.id) ?? [] }));
+    return transactions.map((t: any) => ({ transaction: t, lines: linesByTxn.get(t.id) ?? [] }));
   }
 }
 

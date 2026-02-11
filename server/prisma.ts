@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { getDatabaseConfig } from './config/env-validation';
+import { createRequire } from 'node:module';
 
 declare global {
   // allow global `var` declarations
@@ -7,13 +7,24 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
-const prismaClient = globalThis.prisma || new PrismaClient({
-  datasources: {
-    db: {
-      url: getDatabaseConfig(),
+const prismaClient = (() => {
+  if (globalThis.prisma) return globalThis.prisma;
+
+  const isTestEnv = process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
+  if (isTestEnv) {
+    return {} as PrismaClient;
+  }
+
+  const require = createRequire(import.meta.url);
+  const { getDatabaseConfig } = require('./config/env-validation');
+  return new PrismaClient({
+    datasources: {
+      db: {
+        url: getDatabaseConfig(),
+      },
     },
-  },
-});
+  });
+})();
 
 if (process.env.NODE_ENV !== 'production') {
   globalThis.prisma = prismaClient;

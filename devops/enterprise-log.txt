@@ -1,9 +1,0 @@
-[2025-11-26T23:39:03.3526420-08:00] Phase 1 initiated on branch enterprise/fix-fullstack-20251126232708
-[2025-11-26T23:39:17.9052230-08:00] Killing node processes
-[2025-11-26T23:41:41.0453603-08:00] npm list --all (baseline snapshot)
-[2025-11-26T23:45:17.1236595-08:00] npm audit --json baseline
-[2025-11-26T23:46:59.3597168-08:00] Capturing Storybook HEAD probe
-[2025-11-26T23:48:03.5282282-08:00] Running Storybook HEAD probe
-[2025-11-26T23:48:21.2611745-08:00] Phase 1 artifacts captured (npm list errors recorded, audit snapshot, Storybook probe)
-[2025-11-26T23:58:49.9527447-08:00] Added stub for security/scripts/scan-secrets.mjs to unblock pre-commit
-[2025-11-27T10:52:32.9384202-08:00] Phase 2 start (Soft enforcement)

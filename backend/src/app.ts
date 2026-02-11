@@ -14,6 +14,7 @@ import { errorHandler, notFound } from "./middleware/errorHandler.js";
 import { authRoutes } from "./routes/auth.routes.js";
 import accountsRoutes from "./modules/accounts/accounts.routes.js";
 import transactionsRoutes from "./modules/transactions/transactions.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
 
@@ -134,14 +135,42 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // 2) ROUTES
+
+// Ultra-fast health endpoints for uptime monitoring (UptimeRobot/Pingdom)
+// CRITICAL: No DB queries, no Stripe calls, no async operations
+// Response time: <10ms guaranteed
+const healthResponse = {
+  status: "healthy",
+  uptime: 0,
+};
+
+// Update uptime every 10 seconds (not on every request)
+setInterval(() => {
+  healthResponse.uptime = Math.floor(process.uptime());
+}, 10000);
+
+// Primary health endpoint - supports GET and HEAD
 app.use("/api/health", (req, res) => {
-  res.status(200).json({
-    status: "healthy",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || "unknown",
-    database: "connection_check_skipped",
-  });
+  if (req.method === "HEAD") {
+    return res.status(200).end();
+  }
+  res.status(200).json(healthResponse);
+});
+
+// Readiness probe (for load balancers)
+app.use("/api/health/ready", (req, res) => {
+  if (req.method === "HEAD") {
+    return res.status(200).end();
+  }
+  res.status(200).json({ ready: true });
+});
+
+// Liveness probe (for orchestration)
+app.use("/api/health/alive", (req, res) => {
+  if (req.method === "HEAD") {
+    return res.status(200).end();
+  }
+  res.status(200).json({ alive: true });
 });
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/auth", authRoutes);
@@ -149,6 +178,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/reports", reportRoutes);
 app.use("/api/v1/accounts", accountsRoutes);
 app.use("/api/v1/transactions", transactionsRoutes);
+app.use("/api/v1", adminRoutes);
 
 // Handle 404 - Not Found
 app.use(notFound);

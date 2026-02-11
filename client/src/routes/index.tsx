@@ -1,12 +1,15 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { lazy } from "react";
 import { MainLayout } from "../components/layout/MainLayout";
+import { EnterpriseLayout } from "../components/layout/EnterpriseLayout";
 import PrivateRoute from "./PrivateRoute";
 import { ProtectedRoute, PublicRoute, SuspenseWrapper } from "./RouteGuards";
 import { FeatureRoute } from "./FeatureRoute";
 
-// Lazy load pages for better performance
 const DashboardRouter = lazy(() => import("../pages/DashboardRouter"));
+const ExecutiveCommandCenter = lazy(() => import("../components/dashboards/ExecutiveCommandCenter"));
+const LedgerPage = lazy(() => import("../pages/ledger/LedgerPage"));
+const APPage = lazy(() => import("../pages/ap/APPage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("../pages/ForgotPasswordPage"));
@@ -92,17 +95,140 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
-  // Protected routes
+  // Protected routes - Executive Command Center with Enterprise Layout
   {
     path: "/dashboard",
     element: (
       <ProtectedRoute>
-        <MainLayout>
+        <EnterpriseLayout>
           <SuspenseWrapper>
-            <DashboardRouter />
+            <ExecutiveCommandCenter />
           </SuspenseWrapper>
-        </MainLayout>
+        </EnterpriseLayout>
       </ProtectedRoute>
+    ),
+  },
+  // General Ledger Routes
+  {
+    path: "/ledger",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+        <EnterpriseLayout>
+          <SuspenseWrapper>
+            <LedgerPage />
+          </SuspenseWrapper>
+        </EnterpriseLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/ledger/accounts",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+        <EnterpriseLayout>
+          <SuspenseWrapper>
+            <LedgerPage />
+          </SuspenseWrapper>
+        </EnterpriseLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/ledger/journal",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}>
+        <EnterpriseLayout>
+          <SuspenseWrapper>
+            <LedgerPage />
+          </SuspenseWrapper>
+        </EnterpriseLayout>
+      </PrivateRoute>
+    ),
+  },
+  // Accounts Payable Routes
+  {
+    path: "/ap",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK"]}>
+        <EnterpriseLayout>
+          <SuspenseWrapper>
+            <APPage />
+          </SuspenseWrapper>
+        </EnterpriseLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/ap/bills",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK"]}>
+        <EnterpriseLayout>
+          <SuspenseWrapper>
+            <APPage />
+          </SuspenseWrapper>
+        </EnterpriseLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/ap/payments",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK", "TREASURER"]}>
+        <EnterpriseLayout>
+          <SuspenseWrapper>
+            <APPage />
+          </SuspenseWrapper>
+        </EnterpriseLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/vendors",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AP_CLERK"]}>
+        <EnterpriseLayout>
+          <SuspenseWrapper>
+            <CustomersPage />
+          </SuspenseWrapper>
+        </EnterpriseLayout>
+      </PrivateRoute>
+    ),
+  },
+  // Accounts Receivable Routes
+  {
+    path: "/ar",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AR_CLERK"]}>
+        <EnterpriseLayout>
+          <SuspenseWrapper>
+            <InvoicesPage />
+          </SuspenseWrapper>
+        </EnterpriseLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/ar/collections",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AR_CLERK"]}>
+        <EnterpriseLayout>
+          <SuspenseWrapper>
+            <InvoicesPage />
+          </SuspenseWrapper>
+        </EnterpriseLayout>
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/ar/aging",
+    element: (
+      <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT"]}>
+        <EnterpriseLayout>
+          <SuspenseWrapper>
+            <InvoicesPage />
+          </SuspenseWrapper>
+        </EnterpriseLayout>
+      </PrivateRoute>
     ),
   },
   {
@@ -121,11 +247,11 @@ const router = createBrowserRouter([
         requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
       >
         <FeatureRoute feature="INVOICING">
-          <MainLayout>
+          <EnterpriseLayout>
             <SuspenseWrapper>
               <InvoicesPage />
             </SuspenseWrapper>
-          </MainLayout>
+          </EnterpriseLayout>
         </FeatureRoute>
       </PrivateRoute>
     ),
@@ -135,11 +261,11 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT"]}>
         <FeatureRoute feature="CUSTOMERS">
-          <MainLayout>
+          <EnterpriseLayout>
             <SuspenseWrapper>
               <CustomersPage />
             </SuspenseWrapper>
-          </MainLayout>
+          </EnterpriseLayout>
         </FeatureRoute>
       </PrivateRoute>
     ),
@@ -151,11 +277,11 @@ const router = createBrowserRouter([
         requiredRole={["ADMIN", "MANAGER", "ACCOUNTANT", "AUDITOR"]}
       >
         <FeatureRoute feature="TRANSACTIONS">
-          <MainLayout>
+          <EnterpriseLayout>
             <SuspenseWrapper>
               <TransactionsPage />
             </SuspenseWrapper>
-          </MainLayout>
+          </EnterpriseLayout>
         </FeatureRoute>
       </PrivateRoute>
     ),
@@ -165,11 +291,11 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute requiredRole={["ADMIN", "MANAGER", "AUDITOR"]}>
         <FeatureRoute feature="REPORTS">
-          <MainLayout>
+          <EnterpriseLayout>
             <SuspenseWrapper>
               <ReportsPage />
             </SuspenseWrapper>
-          </MainLayout>
+          </EnterpriseLayout>
         </FeatureRoute>
       </PrivateRoute>
     ),

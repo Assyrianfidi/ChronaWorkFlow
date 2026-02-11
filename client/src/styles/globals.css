@@ -1,4 +1,5 @@
 @import "../design-system/tokens.css";
+@import "./design-system.css";
 
 /* NOTE: globals.css reconciled to prefer tokens from design-system/tokens.css.
    This reduces conflicts with tokenized components that rely on Tailwind
@@ -8,7 +9,7 @@
 
 /* ===========================================
    ACCUBOOKS ENTERPRISE DESIGN SYSTEM
-   Professional CSS for PostCSS compatibility
+   "Quiet Authority FinTech" - Professional CSS
    =========================================== */
 
 /* ===== RESET STYLES ===== */

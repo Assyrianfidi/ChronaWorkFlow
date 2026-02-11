@@ -1,13 +1,14 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
-  default as Card,
+  Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "../components/ui/Card";
-import Button from "../components/ui/Button";
+import { Button } from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Badge from "../components/ui/Badge";
 import {
@@ -44,6 +45,12 @@ import {
   TrendingDown,
 } from "lucide-react";
 import { DashboardShell } from "../components/ui/layout/DashboardShell";
+import { cn } from "@/lib/utils";
+
+// Skeleton component
+const Skeleton: React.FC<{ className?: string }> = ({ className }) => (
+  <div className={cn("animate-pulse bg-secondary rounded", className)} />
+);
 
 interface Customer {
   id: string;
@@ -235,23 +242,35 @@ const CustomersPage: React.FC = () => {
     if (!customer) return;
 
     if (customer.totalInvoices > 0) {
-      alert(
-        `Cannot delete customer with ${customer.totalInvoices} active invoices. Please handle invoices first.`,
+      toast.error(
+        `Cannot delete customer with ${customer.totalInvoices} active invoices. Please handle invoices first.`
       );
       return;
     }
 
-    if (!confirm("Are you sure you want to delete this customer?")) return;
-
-    try {
-      console.log("👥 Deleting customer:", customerId);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      setCustomers(customers.filter((customer) => customer.id !== customerId));
-      console.log("✅ Customer deleted successfully");
-    } catch (error) {
-      console.error("Failed to delete customer:", error);
-    }
+    // Use toast-based confirmation instead of browser confirm()
+    toast.warning(`Delete ${customer.name}?`, {
+      description: "This action cannot be undone.",
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            console.log("👥 Deleting customer:", customerId);
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            setCustomers(customers.filter((c) => c.id !== customerId));
+            toast.success("Customer deleted");
+          } catch (error) {
+            console.error("Failed to delete customer:", error);
+            toast.error("Failed to delete customer");
+          }
+        },
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => {},
+      },
+      duration: 10000,
+    });
   };
 
   const totalRevenue = customers.reduce(
@@ -523,7 +542,7 @@ const CreateCustomerForm: React.FC<{ onSubmit: (data: any) => void }> = ({
       !formData.phone ||
       !formData.address
     ) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
     onSubmit(formData);

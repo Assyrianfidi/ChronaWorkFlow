@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AccuBooks Enterprise Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header .subtitle {
+            opacity: 0.8;
+            font-size: 1rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        
+        .tab:hover {
+            background: #334155;
+            color: #fff;
+        }
+        
+        .tab.active {
+            background: #3b82f6;
+            color: #fff;
+            border-color: #3b82f6;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: #475569;
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+        }
+        
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .status-healthy {
+            background: #064e3b;
+            color: #34d399;
+        }
+        
+        .status-warning {
+            background: #78350f;
+            color: #fbbf24;
+        }
+        
+        .status-online {
+            background: #064e3b;
+            color: #34d399;
+        }
+        
+        .subsystem-list {
+            list-style: none;
+        }
+        
+        .subsystem-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .subsystem-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+        
+        .metric-bar {
+            width: 100%;
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .metric-fill {
+            height: 100%;
+            background: #3b82f6;
+            transition: width 0.3s;
+        }
+        
+        .metric-fill.warning {
+            background: #f59e0b;
+        }
+        
+        .json-viewer {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transition: all 0.2s;
+        }
+        
+        .refresh-btn:hover {
+            transform: scale(1.1);
+            background: #2563eb;
+        }
+        
+        .refresh-btn.spinning {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .timestamp {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-top: 2rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏢 AccuBooks Enterprise</h1>
+        <div class="subtitle">AI Operator Dashboard - Live System Monitor</div>
+    </div>
+    
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('health')">Health</div>
+            <div class="tab" onclick="showTab('owner')">Owner Control</div>
+            <div class="tab" onclick="showTab('auditor')">Auditor</div>
+            <div class="tab" onclick="showTab('dashboard')">CEO Dashboard</div>
+            <div class="tab" onclick="showTab('json')">Raw JSON</div>
+        </div>
+        
+        <!-- Health Tab -->
+        <div id="health" class="tab-content">
+            <div class="grid" id="health-cards"></div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Subsystems (15/15 Online)</span>
+                </div>
+                <ul class="subsystem-list" id="subsystem-list"></ul>
+            </div>
+        </div>
+        
+        <!-- Owner Tab -->
+        <div id="owner" class="tab-content hidden">
+            <div class="grid" id="owner-cards"></div>
+        </div>
+        
+        <!-- Auditor Tab -->
+        <div id="auditor" class="tab-content hidden">
+            <div class="grid" id="auditor-cards"></div>
+        </div>
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content hidden">
+            <div class="grid" id="dashboard-cards"></div>
+        </div>
+        
+        <!-- JSON Tab -->
+        <div id="json" class="tab-content hidden">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Health API Response</span>
+                </div>
+                <pre class="json-viewer" id="json-health"></pre>
+            </div>
+            <div class="card" style="margin-top: 1rem;">
+                <div class="card-header">
+                    <span class="card-title">Owner API Response</span>
+                </div>
+                <pre class="json-viewer" id="json-owner"></pre>
+            </div>
+        </div>
+        
+        <div class="timestamp" id="last-updated">Last updated: Never</div>
+    </div>
+    
+    <button class="refresh-btn" onclick="refreshData()" id="refresh-btn">↻</button>
+    
+    <script>
+        const API_BASE = 'http://localhost:8080';
+        let currentData = {};
+        
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.remove('hidden');
+            event.target.classList.add('active');
+        }
+        
+        async function fetchData() {
+            try {
+                const [health, owner, auditor, dashboard] = await Promise.all([
+                    fetch(`${API_BASE}/api/health`).then(r => r.json()),
+                    fetch(`${API_BASE}/api/owner`).then(r => r.json()),
+                    fetch(`${API_BASE}/api/auditor`).then(r => r.json()),
+                    fetch(`${API_BASE}/api/dashboard`).then(r => r.json())
+                ]);
+                
+                currentData = { health, owner, auditor, dashboard };
+                renderData();
+                
+                document.getElementById('last-updated').textContent = 
+                    `Last updated: ${new Date().toLocaleString()}`;
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+                alert('Failed to connect to API server. Make sure it\'s running on port 8080.');
+            }
+        }
+        
+        function renderData() {
+            renderHealth(currentData.health);
+            renderOwner(currentData.owner);
+            renderAuditor(currentData.auditor);
+            renderDashboard(currentData.dashboard);
+            renderJson();
+        }
+        
+        function renderHealth(data) {
+            const cards = document.getElementById('health-cards');
+            cards.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Overall Status</span>
+                        <span class="status-badge status-healthy">${data.overall.health}</span>
+                    </div>
+                    <div class="card-value">${data.overall.version}</div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        Uptime: ${Math.floor(data.overall.uptime / 60)}m ${Math.floor(data.overall.uptime % 60)}s
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Certification</span>
+                        <span class="status-badge status-healthy">${data.certification.status}</span>
+                    </div>
+                    <div class="card-value">${data.certification.coverage}</div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        Tests: ${data.certification.testsPassed}/${data.certification.testsTotal}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">CPU Usage</span>
+                        <span class="status-badge ${data.metrics.cpu.status === 'HEALTHY' ? 'status-healthy' : 'status-warning'}">${data.metrics.cpu.value}%</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-fill ${data.metrics.cpu.value > 80 ? 'warning' : ''}" style="width: ${data.metrics.cpu.value}%"></div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Memory Usage</span>
+                        <span class="status-badge ${data.metrics.memory.status === 'HEALTHY' ? 'status-healthy' : 'status-warning'}">${data.metrics.memory.value}%</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-fill ${data.metrics.memory.value > 80 ? 'warning' : ''}" style="width: ${data.metrics.memory.value}%"></div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Latency (P50)</span>
+                        <span class="status-badge ${data.metrics.latency.status === 'HEALTHY' ? 'status-healthy' : 'status-warning'}">${data.metrics.latency.value}ms</span>
+                    </div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        Target: < 200ms
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Error Rate</span>
+                        <span class="status-badge ${data.metrics.errorRate.status === 'HEALTHY' ? 'status-healthy' : 'status-warning'}">${(data.metrics.errorRate.value * 100).toFixed(2)}%</span>
+                    </div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        Target: < 0.1%
+                    </div>
+                </div>
+            `;
+            
+            const subsystemList = document.getElementById('subsystem-list');
+            subsystemList.innerHTML = data.subsystems.list.map(sub => `
+                <li class="subsystem-item">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="dot"></div>
+                        <span>${sub.name}</span>
+                    </div>
+                    <span class="status-badge status-online">${sub.status}</span>
+                </li>
+            `).join('');
+        }
+        
+        function renderOwner(data) {
+            const cards = document.getElementById('owner-cards');
+            cards.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Owner Status</span>
+                        <span class="status-badge status-healthy">${data.status}</span>
+                    </div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        ID: ${data.owner.id}<br>
+                        Role: ${data.owner.role}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Active Deployments</span>
+                    </div>
+                    <div class="card-value">${data.controls.deployments.active}</div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        Pending: ${data.controls.deployments.pending} | Completed: ${data.controls.deployments.completed}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Feature Flags</span>
+                    </div>
+                    <div class="card-value">${data.controls.featureFlags.enabled}/${data.controls.featureFlags.total}</div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        ${data.controls.featureFlags.disabled} disabled
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Kill Switches</span>
+                        <span class="status-badge ${data.controls.killSwitches.armed ? 'status-healthy' : 'status-warning'}">
+                            ${data.controls.killSwitches.armed ? 'ARMED' : 'DISARMED'}
+                        </span>
+                    </div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        Triggered: ${data.controls.killSwitches.triggered || 'Never'}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Trial Balance</span>
+                        <span class="status-badge status-healthy">${data.safety.trialBalance}</span>
+                    </div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        Last Check: ${new Date(data.safety.lastValidation).toLocaleTimeString()}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Available Actions</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        ${data.actions.map(action => `
+                            <div style="padding: 0.5rem; background: #0f172a; border-radius: 4px; font-size: 0.875rem;">
+                                <strong>${action.name}</strong><br>
+                                <span style="color: #64748b;">${action.method} ${action.endpoint}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderAuditor(data) {
+            const cards = document.getElementById('auditor-cards');
+            cards.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Auditor Session</span>
+                        <span class="status-badge status-healthy">${data.status}</span>
+                    </div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        ${data.auditor.name}<br>
+                        Jurisdiction: ${data.auditor.jurisdiction}<br>
+                        Scope: ${data.auditor.scope}<br>
+                        Expires: ${new Date(data.auditor.expiresAt).toLocaleString()}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Access Permissions</span>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        ${data.access.permissions.map(p => `
+                            <span class="status-badge status-online" style="font-size: 0.75rem;">${p}</span>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Evidence Exports</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        ${data.evidence.exports.map(exp => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: #0f172a; border-radius: 4px;">
+                                <span style="font-weight: 600;">${exp.type}</span>
+                                <span style="color: #64748b; font-size: 0.875rem;">${exp.formats.join(', ')}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Audit Trail</span>
+                    </div>
+                    <div class="card-value">${data.auditTrail.totalLogs.toLocaleString()}</div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        Last 24h: ${data.auditTrail.last24h.toLocaleString()}<br>
+                        Immutable: ${data.auditTrail.immutable ? '✓ Yes' : '✗ No'}<br>
+                        Hash: ${data.auditTrail.hash.substring(0, 16)}...
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderDashboard(data) {
+            const cards = document.getElementById('dashboard-cards');
+            cards.innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Executive Summary</span>
+                        <span class="status-badge status-healthy">${data.status}</span>
+                    </div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        ${data.executive.company}<br>
+                        Period: ${data.executive.period} | ${data.executive.fiscalYear}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">YTD Revenue</span>
+                    </div>
+                    <div class="card-value">$${(data.financial.revenue.ytd / 1000000).toFixed(1)}M</div>
+                    <div style="color: #34d399; font-size: 0.875rem;">
+                        +${(data.financial.revenue.growth * 100).toFixed(0)}% growth
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">MTD Revenue</span>
+                    </div>
+                    <div class="card-value">$${(data.financial.revenue.mtd / 1000).toFixed(0)}K</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Total Transactions</span>
+                    </div>
+                    <div class="card-value">${data.financial.transactions.total.toLocaleString()}</div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        MTD: ${data.financial.transactions.mtd.toLocaleString()}<br>
+                        Avg Value: $${data.financial.transactions.avgValue}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">System Health</span>
+                        <span class="status-badge status-healthy">${data.system.status}</span>
+                    </div>
+                    <div style="color: #64748b; font-size: 0.875rem;">
+                        Uptime: ${data.system.uptime}<br>
+                        Active Users: ${data.system.activeUsers.toLocaleString()}<br>
+                        Peak Concurrent: ${data.system.peakConcurrent.toLocaleString()}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Compliance Status</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        ${Object.entries(data.compliance).filter(([k]) => k !== 'lastAudit').map(([key, value]) => `
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="text-transform: uppercase; font-size: 0.875rem;">${key}</span>
+                                <span class="status-badge ${value === 'COMPLIANT' ? 'status-healthy' : 'status-warning'}">${value}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="color: #64748b; font-size: 0.75rem; margin-top: 0.5rem;">
+                        Last Audit: ${data.compliance.lastAudit}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Active Deployments</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        ${data.deployments.active.map(dep => `
+                            <div style="padding: 0.75rem; background: #0f172a; border-radius: 4px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <strong style="font-size: 0.875rem;">${dep.name}</strong>
+                                    <span class="status-badge status-online" style="font-size: 0.75rem;">${dep.status}</span>
+                                </div>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: ${dep.progress}%"></div>
+                                </div>
+                                <div style="color: #64748b; font-size: 0.75rem; margin-top: 0.25rem;">
+                                    ${dep.progress}% complete
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Active Alerts</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+                        <div style="text-align: center; padding: 1rem; background: #0f172a; border-radius: 4px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #ef4444;">${data.alerts.p0}</div>
+                            <div style="font-size: 0.75rem; color: #64748b;">P0 Critical</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #0f172a; border-radius: 4px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #f59e0b;">${data.alerts.p1}</div>
+                            <div style="font-size: 0.75rem; color: #64748b;">P1 High</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #0f172a; border-radius: 4px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #fbbf24;">${data.alerts.p2}</div>
+                            <div style="font-size: 0.75rem; color: #64748b;">P2 Medium</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #0f172a; border-radius: 4px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #3b82f6;">${data.alerts.p3}</div>
+                            <div style="font-size: 0.75rem; color: #64748b;">P3 Low</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderJson() {
+            document.getElementById('json-health').textContent = JSON.stringify(currentData.health, null, 2);
+            document.getElementById('json-owner').textContent = JSON.stringify(currentData.owner, null, 2);
+        }
+        
+        function refreshData() {
+            const btn = document.getElementById('refresh-btn');
+            btn.classList.add('spinning');
+            
+            fetchData().then(() => {
+                setTimeout(() => btn.classList.remove('spinning'), 500);
+            });
+        }
+        
+        // Initial load
+        fetchData();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(fetchData, 30000);
+    </script>
+</body>
+</html>

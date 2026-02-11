@@ -21,7 +21,8 @@ interface FormData {
   email: string;
   password: string;
   confirmPassword: string;
-  role: "ADMIN" | "MANAGER" | "ACCOUNTANT" | "AUDITOR" | "INVENTORY_MANAGER";
+  role: "OWNER" | "ADMIN" | "MANAGER" | "ACCOUNTANT" | "AUDITOR" | "INVENTORY_MANAGER";
+  companyName: string;
 }
 
 const RegisterPage: React.FC = () => {
@@ -30,7 +31,8 @@ const RegisterPage: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "MANAGER",
+    role: "OWNER",
+    companyName: "",
   });
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -149,6 +151,20 @@ const RegisterPage: React.FC = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="companyName">Company Name</Label>
+                <Input
+                  id="companyName"
+                  name="companyName"
+                  type="text"
+                  placeholder="Your Company LLC"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="role">Account Type</Label>
                 <select
                   id="role"
@@ -158,12 +174,16 @@ const RegisterPage: React.FC = () => {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60"
                   disabled={isLoading}
                 >
+                  <option value="OWNER">Owner / CEO (Full Access)</option>
                   <option value="ADMIN">Administrator</option>
                   <option value="MANAGER">Manager</option>
                   <option value="ACCOUNTANT">Accountant</option>
                   <option value="AUDITOR">Auditor</option>
                   <option value="INVENTORY_MANAGER">Inventory Manager</option>
                 </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Select "Owner / CEO" if you're the business owner or creator
+                </p>
               </div>
 
               <div className="space-y-2">

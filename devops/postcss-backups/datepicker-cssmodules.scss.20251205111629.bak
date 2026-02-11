@@ -1,6 +1,0 @@
-﻿@use "sass:meta";
-
-:global {
-  @include meta.load-css("datepicker");
-}
-

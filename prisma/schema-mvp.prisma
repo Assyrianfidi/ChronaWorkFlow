@@ -1,0 +1,245 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Authentication models
+enum Role {
+  OWNER
+  ADMIN
+  MANAGER
+  ACCOUNTANT
+  AUDITOR
+  INVENTORY_MANAGER
+  STAFF
+  VIEWER
+}
+
+enum SubscriptionPlan {
+  FREE
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+  TRIAL
+  CANCELLED
+}
+
+model User {
+  id                String        @id @default(cuid())
+  name              String?
+  email             String?       @unique
+  emailVerified     DateTime?     @map("email_verified")
+  image             String?
+  password          String?       @db.Text
+  role              Role          @default(VIEWER)
+  tenantId          String        @map("tenant_id")
+  isActive          Boolean       @default(true) @map("is_active")
+  lastLogin         DateTime?     @map("last_login")
+  refreshToken      String?       @db.Text @map("refresh_token")
+  resetToken        String?       @db.Text @map("reset_token")
+  resetTokenExpiry  DateTime?     @map("reset_token_expiry")
+  companies         Company[]
+  sessions          Session[]
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  createdBy         String?       @map("created_by")
+  updatedBy         String?       @map("updated_by")
+  deletedAt         DateTime?     @map("deleted_at")
+
+  @@index([tenantId])
+  @@index([email])
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token") @db.Text
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent") @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Multi-Tenant System
+model Tenant {
+  id            String           @id @default(cuid())
+  name          String
+  subdomain     String           @unique
+  customDomain  String?          @unique @map("custom_domain")
+  logo          Json?            // { light: string, dark: string }
+  favicon       String?
+  theme         Json?            // Theme colors and typography
+  featureFlags  Json             @default("{}") @map("feature_flags")
+  settings      Json             @default("{}") // Tenant-specific settings
+  plan          SubscriptionPlan @default(FREE)
+  status        TenantStatus     @default(TRIAL)
+  users         User[]
+  companies     Company[]
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  @@index([subdomain])
+  @@index([status])
+  @@map("tenants")
+}
+
+// Core Accounting Models
+model Company {
+  id          String   @id @default(cuid())
+  tenantId    String   @map("tenant_id")
+  name        String
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdBy   String?  @map("created_by")
+  updatedBy   String?  @map("updated_by")
+  deletedAt   DateTime? @map("deleted_at")
+
+  accounts       Account[]
+  journalEntries JournalEntry[]
+  trialBalances  TrialBalance[]
+  user           User[]    @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@map("companies")
+}
+
+model Account {
+  id          String   @id @default(cuid())
+  companyId   String   @map("company_id")
+  code        String
+  name        String
+  type        String   // asset, liability, equity, revenue, expense
+  subtype     String?  // accounts_receivable, cash, accounts_payable, etc.
+  balance     Decimal  @default(0) @db.Decimal(15, 2)
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdBy   String?  @map("created_by")
+  updatedBy   String?  @map("updated_by")
+  deletedAt   DateTime? @map("deleted_at")
+
+  debitLines  JournalLine[]
+  creditLines JournalLine[]
+  company     Company   @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, code])
+  @@index([companyId, type])
+  @@map("accounts")
+}
+
+model JournalEntry {
+  id            String    @id @default(cuid())
+  companyId     String    @map("company_id")
+  date          DateTime
+  number        String    @unique
+  description   String?
+  reference     String?
+  status        String    @default("draft") // draft, posted, void
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  createdBy     String?   @map("created_by")
+  updatedBy     String?   @map("updated_by")
+  deletedAt     DateTime? @map("deleted_at")
+
+  lines         JournalLine[]
+  trialBalances TrialBalance[]
+  company       Company   @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, number])
+  @@index([companyId, date])
+  @@index([status])
+  @@map("journal_entries")
+}
+
+model JournalLine {
+  id              String    @id @default(cuid())
+  journalEntryId  String    @map("journal_entry_id")
+  accountId       String    @map("account_id")
+  debit           Decimal   @default(0) @db.Decimal(15, 2)
+  credit          Decimal   @default(0) @db.Decimal(15, 2)
+  description     String?
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  account         Account     @relation(fields: [accountId], references: [id])
+  journalEntry    JournalEntry @relation(fields: [journalEntryId], references: [id])
+
+  @@index([journalEntryId])
+  @@index([accountId])
+  @@map("journal_lines")
+}
+
+model TrialBalance {
+  id            String    @id @default(cuid())
+  companyId     String    @map("company_id")
+  periodStart   DateTime  @map("period_start")
+  periodEnd     DateTime  @map("period_end")
+  status        String    @default("draft") // draft, posted
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  createdBy     String?   @map("created_by")
+  updatedBy     String?   @map("updated_by")
+
+  company       Company       @relation(fields: [companyId], references: [id])
+  journalEntries JournalEntry[]
+
+  @@unique([companyId, periodStart, periodEnd])
+  @@index([companyId, periodStart])
+  @@map("trial_balances")
+}
+
+// RBAC System
+model Permission {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description  String?
+  resource    String
+  action      String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([resource, action])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String @id @default(cuid())
+  role         Role
+  permissionId String @map("permission_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([role, permissionId])
+  @@map("role_permissions")
+}

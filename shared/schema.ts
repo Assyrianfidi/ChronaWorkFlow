@@ -3,6 +3,10 @@ import { pgTable, text, varchar, timestamp, numeric, integer, boolean, pgEnum, u
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// ========================================
+// MAIN SCHEMA
+// ========================================
+
 // Enums
 export const employeeStatusEnum = pgEnum('employee_status', ['active', 'on_leave', 'terminated', 'retired']);
 export const payFrequencyEnum = pgEnum('pay_frequency', ['weekly', 'bi-weekly', 'semi-monthly', 'monthly']);
@@ -18,6 +22,11 @@ export const subscriptionStatusEnum = pgEnum('subscription_status', ['trialing',
 export const billingInvoiceStatusEnum = pgEnum('billing_invoice_status', ['draft', 'open', 'paid', 'uncollectible', 'void']);
 export const billingPaymentStatusEnum = pgEnum('billing_payment_status', ['requires_payment_method', 'requires_action', 'processing', 'succeeded', 'failed', 'canceled']);
 export const usageMetricTypeEnum = pgEnum('usage_metric_type', ['api_calls', 'ai_tokens', 'invoices_created', 'users_count']);
+export const decisionTypeEnum = pgEnum('decision_type', ['scenario_execution', 'override', 'strategic_choice', 'risk_acknowledgement', 'policy_change', 'budget_approval']);
+export const decisionStatusEnum = pgEnum('decision_status', ['proposed', 'approved', 'executed', 'monitoring', 'completed', 'failed']);
+export const riskSignalTypeEnum = pgEnum('risk_signal_type', ['unusual_transaction', 'cash_runway_critical', 'negative_balance', 'expense_spike', 'margin_erosion', 'revenue_decline', 'duplicate_transaction', 'missing_expected_entry', 'policy_violation', 'approval_anomaly', 'account_anomaly', 'variance_threshold']);
+export const riskSeverityEnum = pgEnum('risk_severity', ['critical', 'warning', 'info']);
+export const riskStatusEnum = pgEnum('risk_status', ['active', 'acknowledged', 'mitigated', 'resolved', 'dismissed']);
 
 // Employees table
 export const employees = pgTable("employees", {
@@ -246,6 +255,43 @@ export const inventoryItems = pgTable("inventory_items", {
   uniqueCompanySku: uniqueIndex("unique_company_sku").on(table.companyId, table.sku),
 }));
 
+// Inventory Transactions (missing - adding now)
+export const inventoryTransactions = pgTable("inventory_transactions", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull(),
+  itemId: varchar("item_id", { length: 36 }).notNull().references(() => inventoryItems.id),
+  locationId: varchar("location_id", { length: 36 }).notNull(),
+  type: varchar("type", { length: 20 }).notNull(), // purchase, sale, adjustment, transfer
+  quantity: integer("quantity").notNull(),
+  unitCost: numeric("unit_cost", { precision: 10, scale: 2 }),
+  referenceId: varchar("reference_id", { length: 36 }),
+  referenceType: varchar("reference_type", { length: 20 }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Inventory Balances (missing - adding now)
+export const inventoryBalances = pgTable("inventory_balances", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull(),
+  itemId: varchar("item_id", { length: 36 }).notNull().references(() => inventoryItems.id),
+  locationId: varchar("location_id", { length: 36 }).notNull(),
+  quantityOnHand: integer("quantity_on_hand").default(0).notNull(),
+  unitCost: numeric("unit_cost", { precision: 10, scale: 2 }),
+  totalValue: numeric("total_value", { precision: 15, scale: 2 }).default("0").notNull(),
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+});
+
+// Inventory Locations (missing - adding now)
+export const inventoryLocations = pgTable("inventory_locations", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  address: text("address"),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Purchase Orders
 export const purchaseOrders = pgTable("purchase_orders", {
   id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
@@ -266,6 +312,62 @@ export const purchaseOrders = pgTable("purchase_orders", {
 }, (table) => ({
   uniqueCompanyPoNumber: uniqueIndex("unique_company_po_number").on(table.companyId, table.poNumber),
 }));
+
+// Credit Memos
+export const creditMemos = pgTable("credit_memos", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull(),
+  customerId: varchar("customer_id", { length: 36 }).notNull().references(() => customers.id),
+  number: varchar("number", { length: 50 }).notNull(),
+  date: timestamp("date").notNull(),
+  reason: text("reason").notNull(),
+  amount: numeric("amount", { precision: 15, scale: 2 }).notNull(),
+  status: varchar("status", { length: 20 }).default("draft").notNull(),
+  createdBy: varchar("created_by", { length: 36 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Credit Memo Applications
+export const creditMemoApplications = pgTable("credit_memo_applications", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  creditMemoId: varchar("credit_memo_id", { length: 36 }).notNull().references(() => creditMemos.id),
+  invoiceId: varchar("invoice_id", { length: 36 }).notNull().references(() => invoices.id),
+  amount: numeric("amount", { precision: 15, scale: 2 }).notNull(),
+  appliedAt: timestamp("applied_at").defaultNow().notNull(),
+});
+
+// Write Offs
+export const writeOffs = pgTable("write_offs", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull(),
+  customerId: varchar("customer_id", { length: 36 }).notNull().references(() => customers.id),
+  invoiceId: varchar("invoice_id", { length: 36 }).references(() => invoices.id),
+  amount: numeric("amount", { precision: 15, scale: 2 }).notNull(),
+  reason: text("reason").notNull(),
+  status: varchar("status", { length: 20 }).default("pending").notNull(),
+  approvedBy: varchar("approved_by", { length: 36 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Vendor 1099 Payments
+export const vendor1099Payments = pgTable("vendor_1099_payments", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  vendorId: varchar("vendor_id", { length: 36 }).notNull().references(() => vendors.id),
+  year: integer("year").notNull(),
+  box1: numeric("box1", { precision: 15, scale: 2 }).default("0"), // Nonemployee compensation
+  box2: numeric("box2", { precision: 15, scale: 2 }).default("0"), // Services
+  box3: numeric("box3", { precision: 15, scale: 2 }).default("0"), // Other income
+  box4: numeric("box4", { precision: 15, scale: 2 }).default("0"), // Federal income tax withheld
+  box5: numeric("box5", { precision: 15, scale: 2 }).default("0"), // Employer contributions
+  box6: numeric("box6", { precision: 15, scale: 2 }).default("0"), // Medical and health care payments
+  box7: numeric("box7", { precision: 15, scale: 2 }).default("0"), // Nonemployee compensation
+  totalPayments: numeric("total_payments", { precision: 15, scale: 2 }).notNull(),
+  taxYear: varchar("tax_year", { length: 4 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
 // Purchase Order Items
 export const purchaseOrderItems = pgTable("purchase_order_items", {
@@ -313,6 +415,16 @@ export const companies = pgTable("companies", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const tenantCompanies = pgTable("tenant_companies", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id", { length: 36 }).notNull(),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueTenantCompany: uniqueIndex("unique_tenant_company").on(table.tenantId, table.companyId),
+  uniqueCompanyTenant: uniqueIndex("unique_company_tenant").on(table.companyId),
+}));
+
 // Users table
 export const users = pgTable("users", {
   id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
@@ -325,6 +437,16 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const userTenants = pgTable("user_tenants", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+  tenantId: varchar("tenant_id", { length: 36 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueUserTenant: uniqueIndex("unique_user_tenant").on(table.userId),
+  uniqueTenantUser: uniqueIndex("unique_tenant_user").on(table.tenantId, table.userId),
+}));
 
 // User Company Access (many-to-many)
 export const userCompanyAccess = pgTable("user_company_access", {
@@ -344,6 +466,7 @@ export const accounts = pgTable("accounts", {
   code: text("code").notNull(),
   name: text("name").notNull(),
   type: accountTypeEnum("type").notNull(),
+  subtype: varchar("subtype", { length: 50 }), // Added missing subtype field
   parentId: varchar("parent_id", { length: 36 }),
   balance: numeric("balance", { precision: 15, scale: 2 }).default("0").notNull(),
   description: text("description"),
@@ -1049,6 +1172,9 @@ export const billingPayments = pgTable("billing_payments", {
   uniqueStripePaymentIntentId: uniqueIndex("unique_stripe_payment_intent_id").on(table.stripePaymentIntentId),
 }));
 
+// Alias for billPayments to maintain compatibility with APService
+export const billPayments = billingPayments;
+
 export const usageMetrics = pgTable("usage_metrics", {
   id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
   companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
@@ -1264,6 +1390,29 @@ export const inventoryItemsRelations = relations(inventoryItems, ({ one, many })
   }),
   purchaseOrderItems: many(purchaseOrderItems),
   adjustments: many(inventoryAdjustments),
+  transactions: many(inventoryTransactions),
+  balances: many(inventoryBalances),
+}));
+
+export const inventoryTransactionsRelations = relations(inventoryTransactions, ({ one }) => ({
+  item: one(inventoryItems, {
+    fields: [inventoryTransactions.itemId],
+    references: [inventoryItems.id],
+  }),
+}));
+
+export const inventoryBalancesRelations = relations(inventoryBalances, ({ one }) => ({
+  item: one(inventoryItems, {
+    fields: [inventoryBalances.itemId],
+    references: [inventoryItems.id],
+  }),
+}));
+
+export const inventoryLocationsRelations = relations(inventoryLocations, ({ one, many }) => ({
+  company: one(companies, {
+    fields: [inventoryLocations.companyId],
+    references: [companies.id],
+  }),
 }));
 
 export const purchaseOrdersRelations = relations(purchaseOrders, ({ one, many }) => ({
@@ -1280,6 +1429,51 @@ export const purchaseOrdersRelations = relations(purchaseOrders, ({ one, many })
     references: [users.id],
   }),
   items: many(purchaseOrderItems),
+}));
+
+export const creditMemosRelations = relations(creditMemos, ({ one, many }) => ({
+  company: one(companies, {
+    fields: [creditMemos.companyId],
+    references: [companies.id],
+  }),
+  customer: one(customers, {
+    fields: [creditMemos.customerId],
+    references: [customers.id],
+  }),
+  applications: many(creditMemoApplications),
+}));
+
+export const creditMemoApplicationsRelations = relations(creditMemoApplications, ({ one }) => ({
+  creditMemo: one(creditMemos, {
+    fields: [creditMemoApplications.creditMemoId],
+    references: [creditMemos.id],
+  }),
+  invoice: one(invoices, {
+    fields: [creditMemoApplications.invoiceId],
+    references: [invoices.id],
+  }),
+}));
+
+export const writeOffsRelations = relations(writeOffs, ({ one }) => ({
+  company: one(companies, {
+    fields: [writeOffs.companyId],
+    references: [companies.id],
+  }),
+  customer: one(customers, {
+    fields: [writeOffs.customerId],
+    references: [customers.id],
+  }),
+  invoice: one(invoices, {
+    fields: [writeOffs.invoiceId],
+    references: [invoices.id],
+  }),
+}));
+
+export const vendor1099PaymentsRelations = relations(vendor1099Payments, ({ one }) => ({
+  vendor: one(vendors, {
+    fields: [vendor1099Payments.vendorId],
+    references: [vendors.id],
+  }),
 }));
 
 export const purchaseOrderItemsRelations = relations(purchaseOrderItems, ({ one }) => ({
@@ -1915,5 +2109,579 @@ export type InsertWorkflowApproval = z.infer<typeof insertWorkflowApprovalSchema
 export type WorkflowTimer = typeof workflowTimers.$inferSelect;
 export type InsertWorkflowTimer = z.infer<typeof insertWorkflowTimerSchema>;
 
+// Decision Memory tables
+export const decisionMemory = pgTable("decision_memory", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id", { length: 36 }).notNull(),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+  userRole: roleEnum("user_role").notNull(),
+  
+  // Decision metadata
+  decisionType: decisionTypeEnum("decision_type").notNull(),
+  status: decisionStatusEnum("status").default("proposed").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  rationale: text("rationale"), // User-provided reasoning
+  
+  // Ledger linkage
+  ledgerSnapshotHash: text("ledger_snapshot_hash").notNull(), // Hash of ledger state at decision time
+  ledgerTransactionCount: integer("ledger_transaction_count").notNull(),
+  ledgerDateRange: jsonb("ledger_date_range").notNull(), // { start, end }
+  
+  // Signal context
+  triggeredBySignals: jsonb("triggered_by_signals"), // Array of signal IDs that triggered this decision
+  signalSnapshot: jsonb("signal_snapshot"), // Full signal data at decision time
+  
+  // Scenario linkage (if applicable)
+  scenarioId: text("scenario_id"), // Links to scenario execution
+  scenarioAssumptions: jsonb("scenario_assumptions"), // Assumptions made
+  scenarioProjections: jsonb("scenario_projections"), // Expected outcomes
+  
+  // Financial impact
+  expectedImpact: jsonb("expected_impact"), // { revenue, expenses, margin, cashRunway }
+  actualImpact: jsonb("actual_impact"), // Filled in after monitoring period
+  variance: jsonb("variance"), // Expected vs actual
+  
+  // Approval workflow
+  approvedBy: varchar("approved_by", { length: 36 }).references(() => users.id),
+  approvedAt: timestamp("approved_at"),
+  executedAt: timestamp("executed_at"),
+  completedAt: timestamp("completed_at"),
+  
+  // Cryptographic verification
+  decisionHash: text("decision_hash").notNull(), // SHA-256 of decision data
+  previousDecisionHash: text("previous_decision_hash"), // Chain to previous decision
+  
+  // Metadata
+  tags: jsonb("tags"), // Array of tags for categorization
+  attachments: jsonb("attachments"), // Links to supporting documents
+  
+  // Immutability
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  // No updatedAt - decisions are immutable once created
+}, (table) => ({
+  companyIdx: uniqueIndex("decision_memory_company_idx").on(table.companyId, table.createdAt),
+  tenantIdx: uniqueIndex("decision_memory_tenant_idx").on(table.tenantId, table.createdAt),
+  userIdx: uniqueIndex("decision_memory_user_idx").on(table.userId, table.createdAt),
+}));
+
+export const decisionMemoryUpdates = pgTable("decision_memory_updates", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  decisionId: varchar("decision_id", { length: 36 }).notNull().references(() => decisionMemory.id),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+  updateType: text("update_type").notNull(), // "status_change", "variance_update", "outcome_recorded"
+  previousValue: jsonb("previous_value"),
+  newValue: jsonb("new_value"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const decisionMemoryAccess = pgTable("decision_memory_access", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  decisionId: varchar("decision_id", { length: 36 }).notNull().references(() => decisionMemory.id),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+  accessType: text("access_type").notNull(), // "view", "export", "audit"
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  accessedAt: timestamp("accessed_at").defaultNow().notNull(),
+});
+
 export type WorkflowEventLog = typeof workflowEventLog.$inferSelect;
 export type InsertWorkflowEventLog = z.infer<typeof insertWorkflowEventLogSchema>;
+
+export const insertDecisionMemorySchema = createInsertSchema(decisionMemory).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDecisionMemoryUpdateSchema = createInsertSchema(decisionMemoryUpdates).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDecisionMemoryAccessSchema = createInsertSchema(decisionMemoryAccess).omit({
+  id: true,
+  accessedAt: true,
+});
+
+export type DecisionMemory = typeof decisionMemory.$inferSelect;
+export type InsertDecisionMemory = z.infer<typeof insertDecisionMemorySchema>;
+
+export type DecisionMemoryUpdate = typeof decisionMemoryUpdates.$inferSelect;
+export type InsertDecisionMemoryUpdate = z.infer<typeof insertDecisionMemoryUpdateSchema>;
+
+export type DecisionMemoryAccess = typeof decisionMemoryAccess.$inferSelect;
+export type InsertDecisionMemoryAccess = z.infer<typeof insertDecisionMemoryAccessSchema>;
+
+// Risk Radar tables
+export const riskSignals = pgTable("risk_signals", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id", { length: 36 }).notNull(),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  
+  // Signal metadata
+  signalType: riskSignalTypeEnum("signal_type").notNull(),
+  severity: riskSeverityEnum("severity").notNull(),
+  status: riskStatusEnum("status").default("active").notNull(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  
+  // Detection context
+  detectedAt: timestamp("detected_at").defaultNow().notNull(),
+  detectionPeriod: jsonb("detection_period").notNull(), // { start, end }
+  
+  // Contributing data
+  contributingTransactions: jsonb("contributing_transactions"), // Array of transaction IDs
+  contributingAccounts: jsonb("contributing_accounts"), // Array of account IDs
+  affectedMetrics: jsonb("affected_metrics"), // { metric, expected, actual, variance }
+  
+  // Root cause analysis
+  rootCause: text("root_cause").notNull(), // Narrative explanation
+  evidence: jsonb("evidence").notNull(), // Ledger proof
+  
+  // Thresholds and detection logic
+  detectionThreshold: jsonb("detection_threshold"), // { metric, threshold, actual }
+  historicalBaseline: jsonb("historical_baseline"), // { metric, average, stdDev }
+  
+  // Recommendations
+  recommendedActions: jsonb("recommended_actions"), // Array of action objects
+  mitigationScenarios: jsonb("mitigation_scenarios"), // Array of scenario IDs
+  
+  // Acknowledgment tracking
+  acknowledgedBy: varchar("acknowledged_by", { length: 36 }).references(() => users.id),
+  acknowledgedAt: timestamp("acknowledged_at"),
+  acknowledgmentNotes: text("acknowledgment_notes"),
+  
+  // Resolution tracking
+  resolvedBy: varchar("resolved_by", { length: 36 }).references(() => users.id),
+  resolvedAt: timestamp("resolved_at"),
+  resolutionNotes: text("resolution_notes"),
+  resolutionDecisionId: varchar("resolution_decision_id", { length: 36 }).references(() => decisionMemory.id),
+  
+  // Cryptographic verification
+  signalHash: text("signal_hash").notNull(), // SHA-256 of signal data
+  ledgerSnapshotHash: text("ledger_snapshot_hash").notNull(), // Ledger state at detection
+  
+  // Metadata
+  tags: jsonb("tags"),
+  metadata: jsonb("metadata"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  companyIdx: uniqueIndex("risk_signals_company_idx").on(table.companyId, table.detectedAt),
+  statusIdx: uniqueIndex("risk_signals_status_idx").on(table.status, table.severity),
+  typeIdx: uniqueIndex("risk_signals_type_idx").on(table.signalType, table.companyId),
+}));
+
+export const riskSignalUpdates = pgTable("risk_signal_updates", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  signalId: varchar("signal_id", { length: 36 }).notNull().references(() => riskSignals.id),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+  updateType: text("update_type").notNull(), // "status_change", "acknowledgment", "resolution", "escalation"
+  previousValue: jsonb("previous_value"),
+  newValue: jsonb("new_value"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const riskSignalAccess = pgTable("risk_signal_access", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  signalId: varchar("signal_id", { length: 36 }).notNull().references(() => riskSignals.id),
+  userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id),
+  accessType: text("access_type").notNull(), // "view", "acknowledge", "resolve", "export"
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  accessedAt: timestamp("accessed_at").defaultNow().notNull(),
+});
+
+export const insertRiskSignalSchema = createInsertSchema(riskSignals).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertRiskSignalUpdateSchema = createInsertSchema(riskSignalUpdates).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertRiskSignalAccessSchema = createInsertSchema(riskSignalAccess).omit({
+  id: true,
+  accessedAt: true,
+});
+
+export type RiskSignal = typeof riskSignals.$inferSelect;
+export type InsertRiskSignal = z.infer<typeof insertRiskSignalSchema>;
+
+export type RiskSignalUpdate = typeof riskSignalUpdates.$inferSelect;
+export type InsertRiskSignalUpdate = z.infer<typeof insertRiskSignalUpdateSchema>;
+
+export type RiskSignalAccess = typeof riskSignalAccess.$inferSelect;
+export type InsertRiskSignalAccess = z.infer<typeof insertRiskSignalAccessSchema>;
+
+// ========================================
+// BANK FEEDS & RECONCILIATION TABLES
+// ========================================
+
+export const bankFeedConnections = pgTable("bank_feed_connections", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  accountId: varchar("account_id", { length: 36 }).notNull().references(() => accounts.id),
+  bankName: text("bank_name").notNull(),
+  accountNumberMask: text("account_number_mask").notNull(),
+  status: text("status").default("active").notNull(), // active, disconnected, error
+  lastSyncAt: timestamp("last_sync_at"),
+  lastSyncStatus: text("last_sync_status"), // success, error
+  errorMessage: text("error_message"),
+  provider: text("provider").notNull(), // plaid, yodlee, finicity, manual
+  providerAccessToken: text("provider_access_token"),
+  providerItemId: text("provider_item_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const categorizationRules = pgTable("categorization_rules", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  name: text("name").notNull(),
+  descriptionPattern: text("description_pattern"), // regex pattern
+  payeePattern: text("payee_pattern"), // regex pattern
+  minAmount: numeric("min_amount", { precision: 15, scale: 2 }),
+  maxAmount: numeric("max_amount", { precision: 15, scale: 2 }),
+  accountId: varchar("account_id", { length: 36 }).notNull().references(() => accounts.id),
+  priority: integer("priority").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Relations for Bank Feed tables
+export const bankFeedConnectionsRelations = relations(bankFeedConnections, ({ one }) => ({
+  company: one(companies, {
+    fields: [bankFeedConnections.companyId],
+    references: [companies.id],
+  }),
+  account: one(accounts, {
+    fields: [bankFeedConnections.accountId],
+    references: [accounts.id],
+  }),
+}));
+
+export const categorizationRulesRelations = relations(categorizationRules, ({ one }) => ({
+  company: one(companies, {
+    fields: [categorizationRules.companyId],
+    references: [companies.id],
+  }),
+  account: one(accounts, {
+    fields: [categorizationRules.accountId],
+    references: [accounts.id],
+  }),
+}));
+
+// Insert schemas for bank feed tables
+export const insertBankFeedConnectionSchema = createInsertSchema(bankFeedConnections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCategorizationRuleSchema = createInsertSchema(categorizationRules).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Types for bank feed tables
+export type BankFeedConnection = typeof bankFeedConnections.$inferSelect;
+export type InsertBankFeedConnection = z.infer<typeof insertBankFeedConnectionSchema>;
+
+export type CategorizationRule = typeof categorizationRules.$inferSelect;
+export type InsertCategorizationRule = z.infer<typeof insertCategorizationRuleSchema>;
+
+// ========================================
+// RECURRING INVOICES (Phase 2 - AR System)
+// ========================================
+
+export const recurringInvoices = pgTable("recurring_invoices", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  customerId: varchar("customer_id", { length: 36 }).notNull().references(() => customers.id),
+  templateName: text("template_name").notNull(),
+  description: text("description"),
+  status: text("status").default("active").notNull(), // active, paused, cancelled
+  
+  // Schedule configuration
+  frequency: text("frequency").notNull(), // daily, weekly, biweekly, monthly, quarterly, yearly
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date"),
+  nextRunDate: timestamp("next_run_date").notNull(),
+  lastRunDate: timestamp("last_run_date"),
+  maxOccurrences: integer("max_occurrences"),
+  occurrenceCount: integer("occurrence_count").default(0).notNull(),
+  
+  // Invoice template (stored as JSON)
+  lineItems: jsonb("line_items").notNull().default("[]"),
+  subtotal: numeric("subtotal", { precision: 15, scale: 2 }).notNull(),
+  taxRate: numeric("tax_rate", { precision: 5, scale: 4 }).default("0"),
+  taxAmount: numeric("tax_amount", { precision: 15, scale: 2 }).default("0"),
+  total: numeric("total", { precision: 15, scale: 2 }).notNull(),
+  currency: text("currency").default("USD").notNull(),
+  
+  // Settings
+  autoSend: boolean("auto_send").default(false).notNull(),
+  paymentTerms: text("payment_terms").default("Net 30"),
+  dueDateOffset: integer("due_date_offset").default(30).notNull(),
+  memo: text("memo"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const recurringInvoicesRelations = relations(recurringInvoices, ({ one }) => ({
+  company: one(companies, {
+    fields: [recurringInvoices.companyId],
+    references: [companies.id],
+  }),
+  customer: one(customers, {
+    fields: [recurringInvoices.customerId],
+    references: [customers.id],
+  }),
+}));
+
+export const insertRecurringInvoiceSchema = createInsertSchema(recurringInvoices).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  occurrenceCount: true,
+  lastRunDate: true,
+});
+
+export type RecurringInvoice = typeof recurringInvoices.$inferSelect;
+export type InsertRecurringInvoice = z.infer<typeof insertRecurringInvoiceSchema>;
+
+// ========================================
+// PAYMENT LINKS (Phase 2 - AR System)
+// ========================================
+
+export const paymentLinks = pgTable("payment_links", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  invoiceId: varchar("invoice_id", { length: 36 }),
+  customerId: varchar("customer_id", { length: 36 }),
+  
+  // Link configuration
+  amount: numeric("amount", { precision: 15, scale: 2 }).notNull(),
+  currency: text("currency").default("USD").notNull(),
+  description: text("description").notNull(),
+  expiresAt: timestamp("expires_at"),
+  maxPayments: integer("max_payments"),
+  
+  // Stripe integration
+  stripePaymentLinkId: text("stripe_payment_link_id"),
+  stripeCheckoutSessionId: text("stripe_checkout_session_id"),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  
+  // Status
+  status: text("status").default("active").notNull(), // active, used, expired, cancelled
+  usageCount: integer("usage_count").default(0).notNull(),
+  
+  // URL
+  publicUrl: text("public_url").notNull(),
+  internalReference: text("internal_reference").notNull(),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const paymentLinksRelations = relations(paymentLinks, ({ one }) => ({
+  company: one(companies, {
+    fields: [paymentLinks.companyId],
+    references: [companies.id],
+  }),
+  invoice: one(invoices, {
+    fields: [paymentLinks.invoiceId],
+    references: [invoices.id],
+  }),
+  customer: one(customers, {
+    fields: [paymentLinks.customerId],
+    references: [customers.id],
+  }),
+}));
+
+export const insertPaymentLinkSchema = createInsertSchema(paymentLinks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  usageCount: true,
+  stripePaymentLinkId: true,
+  stripeCheckoutSessionId: true,
+  stripePaymentIntentId: true,
+});
+
+export type PaymentLink = typeof paymentLinks.$inferSelect;
+export type InsertPaymentLink = z.infer<typeof insertPaymentLinkSchema>;
+
+// ========================================
+// AP WORKFLOW TABLES (Phase 3 - AP System)
+// ========================================
+
+export const bills = pgTable("bills", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  vendorId: varchar("vendor_id", { length: 36 }).notNull().references(() => vendors.id),
+  billNumber: text("bill_number").notNull(),
+  date: timestamp("date").notNull(),
+  dueDate: timestamp("due_date").notNull(),
+  status: text("status").default("draft").notNull(), // draft, pending_approval, approved, rejected, paid, partial
+  subtotal: numeric("subtotal", { precision: 15, scale: 2 }).notNull(),
+  taxRate: numeric("tax_rate", { precision: 5, scale: 4 }).default("0"),
+  taxAmount: numeric("tax_amount", { precision: 15, scale: 2 }).default("0"),
+  total: numeric("total", { precision: 15, scale: 2 }).notNull(),
+  amountPaid: numeric("amount_paid", { precision: 15, scale: 2 }).default("0"),
+  balanceDue: numeric("balance_due", { precision: 15, scale: 2 }).notNull(),
+  currency: text("currency").default("USD").notNull(),
+  memo: text("memo"),
+  lineItems: jsonb("line_items").notNull().default("[]"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const billApprovalWorkflows = pgTable("bill_approval_workflows", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  name: text("name").notNull(),
+  description: text("description"),
+  isActive: boolean("is_active").default(true).notNull(),
+  minAmount: numeric("min_amount", { precision: 15, scale: 2 }).notNull(),
+  maxAmount: numeric("max_amount", { precision: 15, scale: 2 }),
+  vendorIds: jsonb("vendor_ids"),
+  expenseAccountIds: jsonb("expense_account_ids"),
+  steps: jsonb("steps").notNull().default("[]"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const billApprovalRequests = pgTable("bill_approval_requests", {
+  id: varchar("id", { length: 36 }).primaryKey().default(sql`gen_random_uuid()`),
+  billId: varchar("bill_id", { length: 36 }).notNull().references(() => bills.id),
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  workflowId: varchar("workflow_id", { length: 36 }).references(() => billApprovalWorkflows.id),
+  status: text("status").default("pending").notNull(), // pending, approved, rejected, escalated
+  currentStep: integer("current_step").default(0).notNull(),
+  submissions: jsonb("submissions").notNull().default("[]"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const billsRelations = relations(bills, ({ one, many }) => ({
+  company: one(companies, {
+    fields: [bills.companyId],
+    references: [companies.id],
+  }),
+  vendor: one(vendors, {
+    fields: [bills.vendorId],
+    references: [vendors.id],
+  }),
+}));
+
+export const billApprovalWorkflowsRelations = relations(billApprovalWorkflows, ({ one }) => ({
+  company: one(companies, {
+    fields: [billApprovalWorkflows.companyId],
+    references: [companies.id],
+  }),
+}));
+
+export const billApprovalRequestsRelations = relations(billApprovalRequests, ({ one }) => ({
+  bill: one(bills, {
+    fields: [billApprovalRequests.billId],
+    references: [bills.id],
+  }),
+  company: one(companies, {
+    fields: [billApprovalRequests.companyId],
+    references: [companies.id],
+  }),
+  workflow: one(billApprovalWorkflows, {
+    fields: [billApprovalRequests.workflowId],
+    references: [billApprovalWorkflows.id],
+  }),
+}));
+
+export const insertBillSchema = createInsertSchema(bills).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  amountPaid: true,
+});
+
+export const insertBillApprovalWorkflowSchema = createInsertSchema(billApprovalWorkflows).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBillApprovalRequestSchema = createInsertSchema(billApprovalRequests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  currentStep: true,
+  submissions: true,
+});
+
+export type Bill = typeof bills.$inferSelect;
+export type InsertBill = z.infer<typeof insertBillSchema>;
+
+export type BillApprovalWorkflow = typeof billApprovalWorkflows.$inferSelect;
+export type InsertBillApprovalWorkflow = z.infer<typeof insertBillApprovalWorkflowSchema>;
+
+export type BillApprovalRequest = typeof billApprovalRequests.$inferSelect;
+export type InsertBillApprovalRequest = z.infer<typeof insertBillApprovalRequestSchema>;
+
+// ========================================
+// VENDOR TAX INFO (Phase 3 - 1099 Tracking)
+// ========================================
+
+export const vendorTaxInfo = pgTable("vendor_tax_info", {
+  id: text("id").primaryKey(), // companyId-vendorId
+  companyId: varchar("company_id", { length: 36 }).notNull().references(() => companies.id),
+  vendorId: varchar("vendor_id", { length: 36 }).notNull().references(() => vendors.id),
+  taxIdType: text("tax_id_type"), // ein, ssn, tin
+  taxIdNumber: text("tax_id_number"), // Last 4 digits only
+  legalName: text("legal_name").notNull(),
+  businessName: text("business_name"),
+  addressLine1: text("address_line1").notNull(),
+  addressLine2: text("address_line2"),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  country: text("country").default("US").notNull(),
+  isW9OnFile: boolean("is_w9_on_file").default(false).notNull(),
+  w9ReceivedAt: timestamp("w9_received_at"),
+  is1099Required: boolean("is_1099_required").default(false).notNull(),
+  is1099Eligible: boolean("is_1099_eligible").default(false).notNull(),
+  yearToDatePayments: numeric("year_to_date_payments", { precision: 15, scale: 2 }).default("0"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const vendorTaxInfoRelations = relations(vendorTaxInfo, ({ one }) => ({
+  company: one(companies, {
+    fields: [vendorTaxInfo.companyId],
+    references: [companies.id],
+  }),
+  vendor: one(vendors, {
+    fields: [vendorTaxInfo.vendorId],
+    references: [vendors.id],
+  }),
+}));
+
+export const insertVendorTaxInfoSchema = createInsertSchema(vendorTaxInfo).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  yearToDatePayments: true,
+});
+
+export type VendorTaxInfo = typeof vendorTaxInfo.$inferSelect;
+export type InsertVendorTaxInfo = z.infer<typeof insertVendorTaxInfoSchema>;

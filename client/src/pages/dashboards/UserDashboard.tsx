@@ -12,11 +12,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DashboardShell } from "../../components/ui/layout/DashboardShell";
-import {
-  getDemoUserActivity,
-  getDemoUserStats,
-  isDemoModeEnabled,
-} from "@/lib/demo";
 
 interface EnterpriseCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "elevated" | "outlined" | "glass";
@@ -65,45 +60,32 @@ interface UserStats {
 const UserDashboard: React.FC = () => {
   const { user } = useAuth();
 
-  // Fetch user stats
-  const { data: stats, isLoading: statsLoading } = useSWR<UserStats>(
-    "/api/dashboard/user-stats",
+  // Fetch user dashboard data
+  const { data: dashboardData, isLoading, error } = useSWR<{
+    success: boolean;
+    data: {
+      stats: UserStats;
+      activity: UserActivity[];
+    };
+  }>(
+    "/api/dashboard/user",
     async (url: string) => {
-      if (isDemoModeEnabled()) {
-        return getDemoUserStats() as any;
-      }
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch user stats");
+      if (!response.ok) throw new Error("Failed to fetch dashboard data");
       return response.json();
     },
   );
 
-  // Fetch user activity
-  const {
-    data: activity,
-    error: activityError,
-    isLoading: activityLoading,
-  } = useSWR<UserActivity[]>(
-    "/api/dashboard/user-activity",
-    async (url: string) => {
-      if (isDemoModeEnabled()) {
-        return getDemoUserActivity() as any;
-      }
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Failed to fetch user activity");
-      return response.json();
-    },
-  );
+  const stats = dashboardData?.data?.stats;
+  const activity = dashboardData?.data?.activity;
+  const statsLoading = isLoading;
+  const activityLoading = isLoading;
+  const activityError = error;
 
   const metrics = [
     {

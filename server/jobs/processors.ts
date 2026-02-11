@@ -1,11 +1,17 @@
 import { Job } from 'bullmq';
 import { RecurringInvoiceJobData, ReportGenerationJobData, BackupJobData, NotificationJobData, WorkflowTimerJobData } from './config';
 import { logger } from '../utils/logger';
-import { runWithCompanyContext } from '../runtime/request-context';
+import { runWithCompanyContext, runWithTenantCompanyContext } from '../runtime/request-context';
 
 // Recurring Invoice Processor
 export async function processRecurringInvoice(job: Job<RecurringInvoiceJobData>) {
-  return runWithCompanyContext(job.data.companyId, async () => {
+  const tenantId = job.data.tenantId;
+  const companyId = job.data.companyId;
+  const run = tenantId
+    ? <T>(fn: () => Promise<T>) => runWithTenantCompanyContext(tenantId, companyId, fn)
+    : <T>(fn: () => Promise<T>) => runWithCompanyContext(companyId, fn);
+
+  return run(async () => {
     logger.info(`Processing recurring invoice job for company ${job.data.companyId}`);
 
   // Implementation would:
@@ -24,7 +30,13 @@ export async function processRecurringInvoice(job: Job<RecurringInvoiceJobData>)
 
 // Payroll Processing Processor
 export async function processPayroll(job: Job<any>) {
-  return runWithCompanyContext(String(job.data.companyId), async () => {
+  const tenantId = typeof job.data?.tenantId === 'string' ? job.data.tenantId : '';
+  const companyId = String(job.data.companyId);
+  const run = tenantId
+    ? <T>(fn: () => Promise<T>) => runWithTenantCompanyContext(tenantId, companyId, fn)
+    : <T>(fn: () => Promise<T>) => runWithCompanyContext(companyId, fn);
+
+  return run(async () => {
     logger.info(`Processing payroll for company ${job.data.companyId}`);
 
   // Implementation would:
@@ -45,7 +57,13 @@ export async function processPayroll(job: Job<any>) {
 
 // Report Generation Processor
 export async function generateReport(job: Job<ReportGenerationJobData>) {
-  return runWithCompanyContext(job.data.companyId, async () => {
+  const tenantId = job.data.tenantId;
+  const companyId = job.data.companyId;
+  const run = tenantId
+    ? <T>(fn: () => Promise<T>) => runWithTenantCompanyContext(tenantId, companyId, fn)
+    : <T>(fn: () => Promise<T>) => runWithCompanyContext(companyId, fn);
+
+  return run(async () => {
     logger.info(`Generating ${job.data.reportType} report for company ${job.data.companyId}`);
 
   // Implementation would:
@@ -65,7 +83,13 @@ export async function generateReport(job: Job<ReportGenerationJobData>) {
 
 // Backup Processor
 export async function createBackup(job: Job<BackupJobData>) {
-  return runWithCompanyContext(job.data.companyId, async () => {
+  const tenantId = job.data.tenantId;
+  const companyId = job.data.companyId;
+  const run = tenantId
+    ? <T>(fn: () => Promise<T>) => runWithTenantCompanyContext(tenantId, companyId, fn)
+    : <T>(fn: () => Promise<T>) => runWithCompanyContext(companyId, fn);
+
+  return run(async () => {
     logger.info(`Creating ${job.data.backupType} backup for company ${job.data.companyId}`);
 
   // Implementation would:
@@ -87,7 +111,13 @@ export async function createBackup(job: Job<BackupJobData>) {
 
 // Notification Processor
 export async function sendNotification(job: Job<NotificationJobData>) {
-  return runWithCompanyContext(job.data.companyId, async () => {
+  const tenantId = job.data.tenantId;
+  const companyId = job.data.companyId;
+  const run = tenantId
+    ? <T>(fn: () => Promise<T>) => runWithTenantCompanyContext(tenantId, companyId, fn)
+    : <T>(fn: () => Promise<T>) => runWithCompanyContext(companyId, fn);
+
+  return run(async () => {
     logger.info(`Sending ${job.data.type} notification for company ${job.data.companyId}`);
 
   // Implementation would:
@@ -107,21 +137,27 @@ export async function sendNotification(job: Job<NotificationJobData>) {
 }
 
 export async function processWorkflowTimer(job: Job<WorkflowTimerJobData>) {
-  return runWithCompanyContext(job.data.companyId, async () => {
-    logger.info(`Firing workflow timer ${job.data.workflowTimerId} for company ${job.data.companyId}`);
+  const tenantId = job.data.tenantId;
+  const companyId = job.data.companyId;
+  const run = tenantId
+    ? <T>(fn: () => Promise<T>) => runWithTenantCompanyContext(tenantId, companyId, fn)
+    : <T>(fn: () => Promise<T>) => runWithCompanyContext(companyId, fn);
 
-    const mod = await import('../services/workflow.service');
-    await mod.fireTimer({
-      companyId: job.data.companyId,
-      workflowTimerId: job.data.workflowTimerId,
-      workflowInstanceId: job.data.workflowInstanceId,
-    });
+  return run(async () => {
+        logger.info(`Firing workflow timer ${job.data.workflowTimerId} for company ${job.data.companyId}`);
 
-    return {
-      success: true,
-      workflowTimerId: job.data.workflowTimerId,
-      workflowInstanceId: job.data.workflowInstanceId,
-      message: 'Workflow timer fired successfully',
-    };
-  });
+        const mod = await import('../services/workflow.service');
+        await mod.fireTimer({
+          companyId: job.data.companyId,
+          workflowTimerId: job.data.workflowTimerId,
+          workflowInstanceId: job.data.workflowInstanceId,
+        });
+
+        return {
+          success: true,
+          workflowTimerId: job.data.workflowTimerId,
+          workflowInstanceId: job.data.workflowInstanceId,
+          message: 'Workflow timer fired successfully',
+        };
+      });
 }

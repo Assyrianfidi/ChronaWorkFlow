@@ -24,26 +24,19 @@ function storageAvailable() {
   );
 }
 
-function persistAuth(user: User, token: string, demo: boolean) {
+function persistAuth(user: User, token: string) {
   if (!storageAvailable()) return;
   localStorage.setItem(STORAGE_KEYS.token, token);
   localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
-  if (demo) {
-    localStorage.setItem(STORAGE_KEYS.companyId, DEMO_COMPANY_ID);
-  }
   localStorage.setItem("token", token);
   localStorage.setItem("auth_token", token);
   localStorage.setItem("auth_user", JSON.stringify(user));
-
-  if (demo) localStorage.setItem(STORAGE_KEYS.demo, "true");
-  else localStorage.removeItem(STORAGE_KEYS.demo);
 }
 
 function clearAuthStorage() {
   if (!storageAvailable()) return;
   localStorage.removeItem(STORAGE_KEYS.token);
   localStorage.removeItem(STORAGE_KEYS.user);
-  localStorage.removeItem(STORAGE_KEYS.demo);
   localStorage.removeItem(STORAGE_KEYS.companyId);
   localStorage.removeItem("token");
   localStorage.removeItem("auth_token");
@@ -219,7 +212,7 @@ export const useAuth = create<AuthState>((set, get) => {
           permissions: getPermissionsForRole(role),
         };
 
-        persistAuth(transformedUser, String(accessToken || ""), false);
+        persistAuth(transformedUser, String(accessToken || ""));
 
         set({ user: transformedUser, isAuthenticated: true, isLoading: false });
       } catch (error) {
@@ -266,7 +259,7 @@ export const useAuth = create<AuthState>((set, get) => {
           permissions: getPermissionsForRole(role),
         };
 
-        persistAuth(transformedUser, String(accessToken || ""), false);
+        persistAuth(transformedUser, String(accessToken || ""));
 
         set({ user: transformedUser, isAuthenticated: true, isLoading: false });
       } catch (error) {

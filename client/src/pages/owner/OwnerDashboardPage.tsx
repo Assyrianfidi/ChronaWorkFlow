@@ -1,5 +1,19 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import {
+  Users,
+  CreditCard,
+  Settings,
+  Shield,
+  Activity,
+  TrendingUp,
+  DollarSign,
+  Building2,
+  AlertCircle,
+  CheckCircle2,
+  MoreHorizontal,
+} from "lucide-react";
 
 import Card, {
   CardContent,
@@ -8,6 +22,7 @@ import Card, {
   CardTitle,
 } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
 import { OwnerLayout } from "@/components/layout/OwnerLayout";
 import { ownerApi } from "@/api";
 
@@ -46,9 +61,18 @@ function formatMoney(value: number) {
 
 function HealthBadge({ status }: { status: SystemHealthStatus }) {
   const variant =
-    status === "healthy" ? "default" : status === "unhealthy" ? "destructive" : "secondary";
+    status === "healthy"
+      ? "default"
+      : status === "unhealthy"
+        ? "destructive"
+        : "secondary";
 
-  const label = status === "healthy" ? "Healthy" : status === "unhealthy" ? "Unhealthy" : "Unknown";
+  const label =
+    status === "healthy"
+      ? "Healthy"
+      : status === "unhealthy"
+        ? "Unhealthy"
+        : "Unknown";
 
   return <Badge variant={variant}>{label}</Badge>;
 }
@@ -69,10 +93,50 @@ export default function OwnerDashboardPage() {
 
   return (
     <OwnerLayout
-      title="Owner Overview"
-      subtitle="Enterprise-grade visibility across subscriptions, risk, and platform health"
+      title="Owner Control Center"
+      subtitle="Complete visibility and control over your AccuBooks platform"
     >
       <div className="space-y-6">
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Link to="/owner/subscriptions">
+            <Button
+              variant="outline"
+              className="w-full h-auto py-4 flex flex-col items-center gap-2"
+            >
+              <CreditCard className="h-5 w-5" />
+              <span className="text-sm">Subscriptions</span>
+            </Button>
+          </Link>
+          <Link to="/owner/users">
+            <Button
+              variant="outline"
+              className="w-full h-auto py-4 flex flex-col items-center gap-2"
+            >
+              <Users className="h-5 w-5" />
+              <span className="text-sm">All Users</span>
+            </Button>
+          </Link>
+          <Link to="/owner/plans">
+            <Button
+              variant="outline"
+              className="w-full h-auto py-4 flex flex-col items-center gap-2"
+            >
+              <Building2 className="h-5 w-5" />
+              <span className="text-sm">Billing Plans</span>
+            </Button>
+          </Link>
+          <Link to="/admin/settings">
+            <Button
+              variant="outline"
+              className="w-full h-auto py-4 flex flex-col items-center gap-2"
+            >
+              <Settings className="h-5 w-5" />
+              <span className="text-sm">Settings</span>
+            </Button>
+          </Link>
+        </div>
+
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           <Card>
             <CardHeader className="pb-3">
@@ -160,12 +224,18 @@ export default function OwnerDashboardPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                  {Object.entries(data?.activeSubscriptionsByTier ?? {}).map(([tier, count]) => (
-                    <div key={tier} className="rounded-lg border bg-card p-4">
-                      <div className="text-xs font-medium text-muted-foreground">{tier}</div>
-                      <div className="mt-1 text-2xl font-semibold">{count.toLocaleString()}</div>
-                    </div>
-                  ))}
+                  {Object.entries(data?.activeSubscriptionsByTier ?? {}).map(
+                    ([tier, count]) => (
+                      <div key={tier} className="rounded-lg border bg-card p-4">
+                        <div className="text-xs font-medium text-muted-foreground">
+                          {tier}
+                        </div>
+                        <div className="mt-1 text-2xl font-semibold">
+                          {count.toLocaleString()}
+                        </div>
+                      </div>
+                    ),
+                  )}
                 </div>
               )}
             </CardContent>
@@ -178,9 +248,13 @@ export default function OwnerDashboardPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between gap-4">
-                <div className="text-sm text-muted-foreground">Failed payments</div>
+                <div className="text-sm text-muted-foreground">
+                  Failed payments
+                </div>
                 <div className="text-sm font-semibold">
-                  {isLoading ? "…" : (data?.failedPayments ?? 0).toLocaleString()}
+                  {isLoading
+                    ? "…"
+                    : (data?.failedPayments ?? 0).toLocaleString()}
                 </div>
               </div>
 
@@ -192,14 +266,20 @@ export default function OwnerDashboardPage() {
               </div>
 
               <div className="flex items-center justify-between gap-4">
-                <div className="text-sm text-muted-foreground">Trial → Paid</div>
+                <div className="text-sm text-muted-foreground">
+                  Trial → Paid
+                </div>
                 <div className="text-sm font-semibold">
-                  {isLoading ? "…" : formatPercent(data?.trialToPaidConversion ?? 0)}
+                  {isLoading
+                    ? "…"
+                    : formatPercent(data?.trialToPaidConversion ?? 0)}
                 </div>
               </div>
 
               <div className="space-y-2 rounded-lg border bg-card p-3">
-                <div className="text-xs font-medium text-muted-foreground">System health</div>
+                <div className="text-xs font-medium text-muted-foreground">
+                  System health
+                </div>
                 <div className="flex items-center justify-between gap-4">
                   <div className="text-sm">API</div>
                   <HealthBadge status={data?.systemHealth?.api ?? "unknown"} />
@@ -210,7 +290,9 @@ export default function OwnerDashboardPage() {
                 </div>
                 <div className="flex items-center justify-between gap-4">
                   <div className="text-sm">Workers</div>
-                  <HealthBadge status={data?.systemHealth?.workers ?? "unknown"} />
+                  <HealthBadge
+                    status={data?.systemHealth?.workers ?? "unknown"}
+                  />
                 </div>
               </div>
             </CardContent>
