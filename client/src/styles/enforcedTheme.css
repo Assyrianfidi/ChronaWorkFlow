@@ -1,0 +1,160 @@
+/**
+ * ENFORCED THEME - ChronaWorkFlow Design System
+ * 
+ * This file enforces consistent styling across the entire application.
+ * It overrides any conflicting styles to ensure CEO-level production quality.
+ * 
+ * CRITICAL RULES:
+ * - Body background: ALWAYS gray-50 (#f9fafb)
+ * - All cards: ALWAYS white with shadow
+ * - All text: ALWAYS high contrast (gray-900 or gray-700)
+ * - NO white text on white backgrounds
+ * - NO low contrast combinations
+ */
+
+/* ===== GLOBAL BODY ENFORCEMENT ===== */
+body {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ===== CARD ENFORCEMENT ===== */
+.card,
+[class*="card"],
+.bg-white,
+.bg-card {
+  background: white !important;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid #e5e7eb;
+}
+
+/* ===== TEXT COLOR ENFORCEMENT ===== */
+/* Ensure all text is readable with high contrast */
+h1, h2, h3, h4, h5, h6,
+p, span, div, label, a,
+button, input, textarea, select {
+  color: #111827;
+}
+
+/* Override any white text unless on dark background */
+.text-white:not(.bg-blue-600):not(.bg-gray-900):not(.bg-primary):not([class*="bg-blue"]):not([class*="bg-gray-9"]) {
+  color: #111827 !important;
+}
+
+/* ===== INPUT ENFORCEMENT ===== */
+input, textarea, select {
+  background-color: white !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  background-color: white !important;
+}
+
+/* ===== BUTTON ENFORCEMENT ===== */
+button:not(.bg-blue-600):not(.bg-primary):not([class*="bg-blue"]) {
+  color: #111827;
+}
+
+/* ===== LINK ENFORCEMENT ===== */
+a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* ===== PREVENT WHITE-ON-WHITE ===== */
+.bg-white .text-white,
+.bg-card .text-white,
+[class*="bg-white"] .text-white {
+  color: #111827 !important;
+}
+
+/* ===== MAIN CONTENT AREA ===== */
+main,
+.main-content,
+.page-content {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+/* ===== ENSURE CONTRAST IN COMPONENTS ===== */
+.text-gray-50,
+.text-gray-100 {
+  color: #4b5563 !important;
+}
+
+/* ===== ACCESSIBILITY ENFORCEMENT ===== */
+/* Ensure minimum WCAG AA contrast ratio of 4.5:1 */
+.text-muted {
+  color: #6b7280 !important;
+}
+
+.text-secondary {
+  color: #4b5563 !important;
+}
+
+/* ===== OVERRIDE ANY CONFLICTING GRADIENTS ===== */
+.soft-professional-gradient {
+  background: #f9fafb !important;
+}
+
+/* ===== SIDEBAR EXCEPTION ===== */
+/* Allow sidebar to have its own styling */
+.sidebar,
+[class*="sidebar"] {
+  /* Sidebar can override these rules */
+}
+
+/* ===== ALERT ENFORCEMENT ===== */
+.alert {
+  border-radius: 8px;
+  padding: 12px 16px;
+  border: 1px solid;
+}
+
+.alert-error {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.alert-success {
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border-color: #86efac;
+}
+
+.alert-warning {
+  background-color: #fffbeb;
+  color: #d97706;
+  border-color: #fcd34d;
+}
+
+.alert-info {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border-color: #93c5fd;
+}
