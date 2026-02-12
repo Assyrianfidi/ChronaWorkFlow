@@ -337,17 +337,6 @@ export default function LoginPage() {
                   {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
 
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setEmail("demo@accubooks.com");
-                    setPassword("demo123");
-                  }}
-                  className={`w-full py-3 font-medium transition-all duration-300 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 hover:scale-[1.02] hover:shadow-md`}
-                >
-                  Continue as Demo
-                </Button>
-
                 <div className={`text-center text-sm ${classes.mutedText}`}>
                   Don&apos;t have an account?{" "}
                   <Link to="/register" className={classes.link}>
@@ -361,15 +350,6 @@ export default function LoginPage() {
           {/* Footer */}
           <footer className="mt-8 pt-6 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
-              <Link
-                to="/demo"
-                className={
-                  classes.mutedText + " hover:text-accent transition-colors"
-                }
-              >
-                Demo Accounts
-              </Link>
-              <span className="hidden sm:inline text-gray-400">•</span>
               <Link
                 to="/privacy"
                 className={

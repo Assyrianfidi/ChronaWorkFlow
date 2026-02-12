@@ -20,8 +20,6 @@ import {
   Loader2,
   Mail,
   Lock,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 
 const LoginPage: React.FC = () => {
@@ -33,7 +31,6 @@ const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
-  const [showDemoAccounts, setShowDemoAccounts] = React.useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -75,18 +72,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleDemoLogin = async () => {
-    setError("");
-    setIsLoading(true);
-    try {
-      await login("admin@accubooks.com", "admin123");
-      navigate("/dashboard");
-    } catch (err) {
-      setError("Unable to start demo session. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // Load remembered email on mount
   React.useEffect(() => {
@@ -99,22 +84,6 @@ const LoginPage: React.FC = () => {
       }));
     }
   }, []);
-
-  const demoAccounts = [
-    {
-      email: "admin@accubooks.com",
-      password: "admin123",
-      role: "Administrator",
-    },
-    { email: "manager@accubooks.com", password: "manager123", role: "Manager" },
-    { email: "user@accubooks.com", password: "user123", role: "User" },
-    { email: "auditor@accubooks.com", password: "auditor123", role: "Auditor" },
-    {
-      email: "inventory@accubooks.com",
-      password: "inventory123",
-      role: "Inventory Manager",
-    },
-  ];
 
   return (
     <div className="min-h-screen soft-professional-gradient flex flex-col">
@@ -285,15 +254,6 @@ const LoginPage: React.FC = () => {
                   )}
                 </Button>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full h-12 text-base font-semibold"
-                  disabled={isLoading}
-                  onClick={handleDemoLogin}
-                >
-                  Continue as Demo
-                </Button>
               </div>
               <CardFooter className="flex flex-col space-y-4 pt-6">
                 <div className="text-center text-sm text-gray-600 font-medium">
@@ -307,50 +267,6 @@ const LoginPage: React.FC = () => {
                 </div>
               </CardFooter>
             </form>
-          </Card>
-
-          {/* Demo Accounts - Collapsible Card */}
-          <Card className="mt-6 glass-card border border-gray-200 animate-slide-in-from-bottom">
-            <CardContent className="p-0">
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full h-12 rounded-t-lg rounded-b-none border-0 font-semibold text-gray-700 hover:bg-gray-50 transition-all duration-200 flex items-center justify-between px-6"
-                onClick={() => setShowDemoAccounts(!showDemoAccounts)}
-              >
-                <span>Demo Accounts</span>
-                {showDemoAccounts ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-              </Button>
-
-              {showDemoAccounts && (
-                <div className="px-6 pb-6 pt-2 animate-fade-in">
-                  <div className="space-y-3">
-                    {demoAccounts.map((account, index) => (
-                      <div
-                        key={index}
-                        className="bg-gray-50 rounded-lg p-3 border border-gray-200 hover:border-primary-300 transition-colors duration-200"
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-semibold text-sm text-gray-900">
-                            {account.role}
-                          </span>
-                          <span className="text-xs font-medium text-primary-600 bg-primary-50 px-2 py-1 rounded">
-                            Quick Access
-                          </span>
-                        </div>
-                        <div className="text-xs font-mono text-gray-600">
-                          {account.email} / {account.password}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </CardContent>
           </Card>
         </div>
       </div>
