@@ -1,0 +1,212 @@
+{
+  "file_usage_report": {
+    "timestamp": "2026-02-12T19:07:00Z",
+    "audit_type": "COMPREHENSIVE_FORENSIC_FILE_AUDIT",
+    "status": "CRITICAL_ISSUES_FOUND",
+    "critical_findings": {
+      "duplicate_login_component_found": true,
+      "wrong_framework_imports": true,
+      "multiple_css_conflicts": true,
+      "router_verification_status": "VERIFIED_BUT_DUPLICATES_EXIST"
+    },
+    "login_files_audit": {
+      "active_file": {
+        "path": "client/src/pages/LoginPage.tsx",
+        "status": "ACTIVE - Used by router",
+        "router_import": "const LoginPage = lazy(() => import('../pages/LoginPage'));",
+        "router_files": [
+          "client/src/routes/index.tsx (line 15)",
+          "client/src/routes/accubooks-routes.tsx (line 12)"
+        ],
+        "framework": "React Router",
+        "recently_rebuilt": true,
+        "uses_design_system": true
+      },
+      "duplicate_files_found": [
+        {
+          "path": "client/src/app/auth/login/LoginPage.tsx",
+          "status": "DUPLICATE - NOT USED BY ROUTER",
+          "framework": "Next.js (WRONG FRAMEWORK!)",
+          "imports": [
+            "useRouter from 'next/navigation'",
+            "useForm from 'react-hook-form'",
+            "Link from 'next/link'"
+          ],
+          "issue": "This file uses Next.js imports but this is a React Router project",
+          "action_required": "DELETE IMMEDIATELY"
+        }
+      ],
+      "test_files": [
+        "client/src/app/auth/login/__tests__/LoginPage.fixed.test.tsx",
+        "client/src/app/auth/login/__tests__/LoginPage.new.test.tsx",
+        "client/src/app/auth/login/__tests__/LoginPage.test.tsx",
+        "client/src/pages/auth/LoginPage.test.tsx"
+      ],
+      "related_components": [
+        "client/src/components/auth/SocialLogin.tsx"
+      ]
+    },
+    "register_files_audit": {
+      "active_file": {
+        "path": "client/src/pages/RegisterPage.tsx",
+        "status": "ACTIVE - Used by router",
+        "router_import": "const RegisterPage = lazy(() => import('../pages/RegisterPage'));",
+        "framework": "React Router",
+        "recently_rebuilt": true,
+        "uses_design_system": true
+      },
+      "test_files": [
+        "client/src/app/auth/register/__tests__/RegisterPage.basic.test.tsx",
+        "client/src/app/auth/register/__tests__/RegisterPage.full.test.tsx",
+        "client/src/app/auth/register/__tests__/RegisterPage.simple.test.tsx",
+        "client/src/app/auth/register/__tests__/RegisterPage.stable.test.tsx",
+        "client/src/app/auth/register/__tests__/RegisterPage.test.tsx"
+      ]
+    },
+    "css_files_audit": {
+      "entry_point": {
+        "file": "client/src/index.css",
+        "imports": [
+          "./styles/design-system.css",
+          "./styles/globals.css",
+          "./styles/financial-dashboard-theme.css",
+          "./styles/enterprise-design-system.css",
+          "@tailwind base",
+          "@tailwind components",
+          "@tailwind utilities"
+        ],
+        "issue": "Multiple CSS imports creating conflicts"
+      },
+      "all_css_files": [
+        "client/src/App.css",
+        "client/src/design-system/css-variables.css",
+        "client/src/design-system/tokens.css",
+        "client/src/index.css",
+        "client/src/styles/design-system.css",
+        "client/src/styles/dynamic-theme.css",
+        "client/src/styles/enterprise-design-system.css",
+        "client/src/styles/enterprise-theme.css",
+        "client/src/styles/financial-dashboard-theme.css",
+        "client/src/styles/globals.css",
+        "client/src/styles/view-architecture.css"
+      ],
+      "total_css_files": 11,
+      "issue": "TOO MANY CSS FILES - Causing style conflicts and overrides"
+    },
+    "globals_css_analysis": {
+      "file": "client/src/styles/globals.css",
+      "size": "900 lines",
+      "imports": [
+        "../design-system/tokens.css",
+        "./design-system.css"
+      ],
+      "body_styles": {
+        "color": "var(--text-default)",
+        "background": "var(--surface-1)"
+      },
+      "input_styles": {
+        "color": "#000000",
+        "background": "#ffffff"
+      },
+      "issues": [
+        "Uses CSS variables that may not be defined",
+        "Multiple gradient classes",
+        "Legacy sidebar theme with !important overrides",
+        "Accessibility flatten mode that forces colors"
+      ]
+    },
+    "tailwind_config_audit": {
+      "file": "client/tailwind.config.cjs",
+      "status": "EXISTS",
+      "needs_verification": true
+    },
+    "router_verification": {
+      "login_route": {
+        "path": "/login",
+        "component": "LoginPage",
+        "import_path": "../pages/LoginPage",
+        "resolved_file": "client/src/pages/LoginPage.tsx",
+        "verified": true
+      },
+      "register_route": {
+        "path": "/register",
+        "component": "RegisterPage",
+        "import_path": "../pages/RegisterPage",
+        "resolved_file": "client/src/pages/RegisterPage.tsx",
+        "verified": true
+      },
+      "duplicate_routes": false,
+      "orphan_imports": false
+    },
+    "white_on_white_text_scan": {
+      "files_with_potential_issues": [
+        "client/src/components/adaptive/AccessibilityModes.tsx (5 matches)",
+        "client/src/components/adaptive/UserExperienceMode.tsx (4 matches)",
+        "client/src/components/entities/MultiEntityDashboard.tsx (4 matches)",
+        "client/src/pages/pricing/PricingPage.tsx (2 matches)",
+        "client/src/components/ai/AICFOCopilot.tsx (1 match)",
+        "client/src/components/interaction/WorkflowManager.tsx (1 match)"
+      ],
+      "total_files_with_issues": 6,
+      "requires_manual_review": true
+    },
+    "action_items": {
+      "immediate": [
+        {
+          "priority": "CRITICAL",
+          "action": "DELETE client/src/app/auth/login/LoginPage.tsx",
+          "reason": "Duplicate login component using wrong framework (Next.js instead of React Router)"
+        },
+        {
+          "priority": "CRITICAL",
+          "action": "DELETE client/src/app/auth/login/ directory",
+          "reason": "Contains orphaned Next.js login component and tests"
+        },
+        {
+          "priority": "HIGH",
+          "action": "Consolidate CSS files",
+          "reason": "11 CSS files causing conflicts - need single source of truth"
+        },
+        {
+          "priority": "HIGH",
+          "action": "Fix white-on-white text in 6 component files",
+          "reason": "Accessibility and visibility issues"
+        },
+        {
+          "priority": "MEDIUM",
+          "action": "Verify tailwind.config.cjs content paths",
+          "reason": "Ensure only correct files are scanned"
+        }
+      ],
+      "secondary": [
+        {
+          "action": "Review and consolidate test files",
+          "reason": "Multiple test files for deleted components"
+        },
+        {
+          "action": "Remove unused CSS variables",
+          "reason": "Reduce complexity and potential conflicts"
+        },
+        {
+          "action": "Document active vs legacy components",
+          "reason": "Prevent future confusion"
+        }
+      ]
+    },
+    "summary": {
+      "total_login_files": 2,
+      "active_login_files": 1,
+      "duplicate_login_files": 1,
+      "total_register_files": 1,
+      "active_register_files": 1,
+      "total_css_files": 11,
+      "router_mappings_correct": true,
+      "duplicates_exist": true,
+      "wrong_framework_imports": true,
+      "style_conflicts_detected": true,
+      "white_on_white_issues": true,
+      "production_ready": false,
+      "requires_immediate_action": true
+    }
+  }
+}
