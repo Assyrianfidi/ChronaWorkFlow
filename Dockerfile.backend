@@ -8,11 +8,11 @@ RUN apk add --no-cache python3 make g++ curl
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install dependencies
-RUN npm install --legacy-peer-deps
-
-# Copy source code
+# Copy source code BEFORE npm install to avoid postinstall script failure
 COPY . .
+
+# Install dependencies with ignore-scripts to skip postinstall
+RUN npm install --legacy-peer-deps --ignore-scripts
 
 # Generate Prisma client
 RUN npx prisma generate
