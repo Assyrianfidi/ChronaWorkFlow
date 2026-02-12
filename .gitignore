@@ -137,6 +137,7 @@ coverage/
 !vite.config.ts
 !client/src/config/*.config.ts
 tsconfig*.json
+!tsconfig.server.json
 jest.config.*
 .eslintrc.*
 .eslintignore

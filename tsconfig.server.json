@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "outDir": "./dist/server",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "sourceMap": false,
+    "lib": ["ES2020"],
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./server/*"],
+      "shared/*": ["./shared/*"]
+    },
+    "allowSyntheticDefaultImports": true,
+    "noEmitOnError": false,
+    "noEmit": false,
+    "allowImportingTsExtensions": false
+  },
+  "include": [
+    "server/index.ts",
+    "server/routes.ts",
+    "server/routes/*.ts",
+    "server/middleware/*.ts",
+    "server/db.ts",
+    "server/prisma.ts",
+    "shared/schema.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "client",
+    "server/**/*test*.ts",
+    "server/**/__tests__/**",
+    "server/security/**/*.ts",
+    "server/services/**/*.ts",
+    "server/seed.ts",
+    "server/test/**",
+    "server/tenant/**/*.ts",
+    "server/observability/**/*.ts"
+  ]
+}
