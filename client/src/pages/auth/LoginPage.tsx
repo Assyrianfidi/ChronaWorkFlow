@@ -337,6 +337,17 @@ export default function LoginPage() {
                   {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
 
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setEmail("demo@accubooks.com");
+                    setPassword("demo123");
+                  }}
+                  className={`w-full py-3 font-medium transition-all duration-300 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 hover:scale-[1.02] hover:shadow-md`}
+                >
+                  Continue as Demo
+                </Button>
+
                 <div className={`text-center text-sm ${classes.mutedText}`}>
                   Don&apos;t have an account?{" "}
                   <Link to="/register" className={classes.link}>
