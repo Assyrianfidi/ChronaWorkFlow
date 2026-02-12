@@ -18,6 +18,7 @@
     "build:prod": "cross-env NODE_ENV=production vite build",
     "build:server": "cross-env NODE_ENV=production npx tsc --project tsconfig.server.json",
     "build:backend": "cross-env NODE_ENV=production npx tsc --project tsconfig.server.json",
+    "build:simple": "cross-env NODE_ENV=production npx tsc server/simple-production-server.ts --outDir dist --target ES2020 --module ESNext --moduleResolution node --esModuleInterop --allowSyntheticDefaultImports",
     "start": "cross-env NODE_ENV=production node dist/server/production-server.js",
     "start:dev": "cross-env NODE_ENV=development nodemon --exec tsx server/index.ts",
     "start:worker": "cross-env NODE_ENV=production node dist/worker/index.js",
@@ -171,12 +172,12 @@
     "wouter": "^3.3.5",
     "ws": "^8.18.0",
     "zod": "^3.24.2",
-    "zod-validation-error": "^3.4.0"
+    "zod-validation-error": "^3.4.0",
+    "@prisma/client": "^6.19.0"
   },
   "devDependencies": {
     "@envelop/on-resolve": "^4.0.0",
     "@playwright/test": "^1.56.1",
-    "@prisma/client": "^6.19.0",
     "@replit/vite-plugin-cartographer": "^0.3.1",
     "@replit/vite-plugin-dev-banner": "^0.1.1",
     "@replit/vite-plugin-runtime-error-modal": "^0.0.3",

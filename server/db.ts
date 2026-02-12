@@ -47,7 +47,7 @@ export async function initializeDatabase(): Promise<{ success: boolean; error?: 
     }
 
     // Test connection with timeout
-    const testQuery = _pool.query('SELECT 1 as test');
+    const testQuery = _pool.query({ text: 'SELECT 1 as test' });
     const timeout = new Promise((_, reject) => 
       setTimeout(() => reject(new Error('Database connection timeout')), 5000)
     );
