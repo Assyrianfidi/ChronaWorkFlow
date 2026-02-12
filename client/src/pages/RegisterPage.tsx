@@ -82,11 +82,13 @@ const RegisterPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Note: Adjust register function call based on actual AuthContext signature
-      await register(formData.email, formData.password);
+      await register(formData.fullName, formData.email, formData.password);
+      
+      // Redirect to dashboard after successful registration
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Registration failed. Please try again.");
+      const errorMessage = err?.response?.data?.error || err?.message || "Registration failed. Please try again.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

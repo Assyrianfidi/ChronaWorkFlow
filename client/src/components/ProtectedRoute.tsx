@@ -1,32 +1,38 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, UserRole } from "../contexts/AuthContext";
+import { FullPageLoading } from "./ui/EnterpriseLoading";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: string;
+  roles?: UserRole[];
+  requireAuth?: boolean;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  requiredRole,
+  roles,
+  requireAuth = true,
 }) => {
-  const { user, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
+  // Show loading spinner while checking authentication
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <FullPageLoading />;
   }
 
-  if (!user) {
-    return <Navigate to="/auth/signin" replace />;
+  // Redirect to login if authentication is required and user is not authenticated
+  if (requireAuth && !isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
-    return <Navigate to="/unauthorized" replace />;
+  // Check role-based access if roles are specified
+  if (roles && roles.length > 0 && user) {
+    const hasRequiredRole = roles.includes(user.role);
+    
+    if (!hasRequiredRole) {
+      return <Navigate to="/unauthorized" replace />;
+    }
   }
 
   return <>{children}</>;

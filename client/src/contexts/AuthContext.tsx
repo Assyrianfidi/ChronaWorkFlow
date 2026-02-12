@@ -1,6 +1,7 @@
 import * as React from "react";
 import { create } from "zustand";
 import { authApi } from "@/api";
+import { useNavigate } from "react-router-dom";
 
 const STORAGE_KEYS = {
   token: "accubooks_token",
@@ -50,10 +51,13 @@ export type UserRole =
   | "MANAGER"
   | "ACCOUNTANT"
   | "AUDITOR"
-  | "INVENTORY_MANAGER";
+  | "INVENTORY_MANAGER"
+  | "EMPLOYEE"
+  | "CUSTOMER"
+  | "USER";
 
 function normalizeRole(role: unknown): UserRole {
-  if (typeof role !== "string") return "ACCOUNTANT";
+  if (typeof role !== "string") return "CUSTOMER";
 
   const normalized = role.trim().toUpperCase();
 
@@ -63,10 +67,11 @@ function normalizeRole(role: unknown): UserRole {
   if (normalized === "ACCOUNTANT") return "ACCOUNTANT";
   if (normalized === "AUDITOR") return "AUDITOR";
   if (normalized === "INVENTORY_MANAGER") return "INVENTORY_MANAGER";
+  if (normalized === "EMPLOYEE") return "EMPLOYEE";
+  if (normalized === "CUSTOMER") return "CUSTOMER";
+  if (normalized === "USER") return "USER";
 
-  if (normalized === "USER") return "ACCOUNTANT";
-
-  return "ACCOUNTANT";
+  return "CUSTOMER";
 }
 
 interface User {
@@ -168,6 +173,24 @@ function getPermissionsForRole(role: UserRole): string[] {
         "read:settings",
         "write:settings",
       ];
+    case "EMPLOYEE":
+      return [
+        "read:dashboard",
+        "read:reports",
+      ];
+    case "CUSTOMER":
+      return [
+        "read:dashboard",
+        "read:profile",
+        "write:profile",
+        "read:invoices",
+        "read:billing",
+      ];
+    case "USER":
+      return [
+        "read:dashboard",
+        "read:profile",
+      ];
     default:
       return [];
   }
@@ -193,9 +216,8 @@ export const useAuth = create<AuthState>((set, get) => {
       try {
         const response = await authApi.login(email, password);
         const payload = response?.data as any;
-        const user = payload?.data?.user ?? payload?.user ?? payload;
-        const accessToken =
-          payload?.data?.accessToken ?? payload?.accessToken ?? payload?.token;
+        const user = payload?.user ?? payload?.data?.user ?? payload;
+        const accessToken = payload?.token ?? payload?.accessToken ?? payload?.data?.token;
 
         const role = normalizeRole(user?.role);
         const name =
@@ -214,8 +236,9 @@ export const useAuth = create<AuthState>((set, get) => {
         };
 
         persistAuth(transformedUser, String(accessToken || ""));
-
         set({ user: transformedUser, isAuthenticated: true, isLoading: false });
+
+        // Role-based redirect handled by LoginPage
       } catch (error) {
         set({ isLoading: false });
         throw error;
@@ -226,7 +249,7 @@ export const useAuth = create<AuthState>((set, get) => {
       name: string;
       email: string;
       password: string;
-      role: UserRole;
+      role?: UserRole;
     }) => {
       set({ isLoading: true });
 
@@ -241,9 +264,8 @@ export const useAuth = create<AuthState>((set, get) => {
           lastName,
         });
         const payload = response?.data as any;
-        const user = payload?.data?.user ?? payload?.user ?? payload;
-        const accessToken =
-          payload?.data?.accessToken ?? payload?.accessToken ?? payload?.token;
+        const user = payload?.user ?? payload?.data?.user ?? payload;
+        const accessToken = payload?.token ?? payload?.accessToken ?? payload?.data?.token;
 
         const role = normalizeRole(user?.role);
         const name =
@@ -262,17 +284,24 @@ export const useAuth = create<AuthState>((set, get) => {
         };
 
         persistAuth(transformedUser, String(accessToken || ""));
-
         set({ user: transformedUser, isAuthenticated: true, isLoading: false });
+
+        // Redirect handled by RegisterPage
       } catch (error) {
         set({ isLoading: false });
         throw error;
       }
     },
 
-    logout: () => {
-      set({ user: null, isAuthenticated: false });
-      clearAuthStorage();
+    logout: async () => {
+      try {
+        await authApi.logout();
+      } catch (error) {
+        console.error('Logout error:', error);
+      } finally {
+        set({ user: null, isAuthenticated: false });
+        clearAuthStorage();
+      }
     },
 
     updateUser: (userData: Partial<User>) => {

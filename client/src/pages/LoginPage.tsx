@@ -52,9 +52,20 @@ const LoginPage: React.FC = () => {
         localStorage.removeItem("accubooks_remember");
       }
 
-      navigate("/dashboard");
-    } catch (err) {
-      setError("Invalid email or password. Please try again.");
+      // Get user from auth state to determine redirect
+      const { user } = useAuth.getState();
+      
+      // Role-based redirect
+      if (user?.role === "OWNER" || user?.role === "ADMIN") {
+        navigate("/admin-dashboard");
+      } else if (user?.role === "MANAGER" || user?.role === "ACCOUNTANT") {
+        navigate("/manager-dashboard");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err: any) {
+      const errorMessage = err?.response?.data?.error || err?.message || "Invalid email or password. Please try again.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
