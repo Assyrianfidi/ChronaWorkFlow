@@ -37,12 +37,6 @@
     "dist",
     "client",
     "server/**/*test*.ts",
-    "server/**/__tests__/**",
-    "server/security/**/*.ts",
-    "server/services/**/*.ts",
-    "server/seed.ts",
-    "server/test/**",
-    "server/tenant/**/*.ts",
-    "server/observability/**/*.ts"
+    "server/**/__tests__/**"
   ]
 }

@@ -33,34 +33,35 @@ ENV NODE_ENV=production
 WORKDIR /app/client
 RUN npm run build
 
-# Build the backend
-WORKDIR /app
-RUN npm run build:server
+# Production image - serve frontend static files
+FROM nginx:alpine AS runner
+WORKDIR /usr/share/nginx/html
 
-# Production image
-FROM base AS runner
-WORKDIR /app
+# Remove default nginx static assets
+RUN rm -rf ./*
 
-ENV NODE_ENV=production
+# Copy built frontend from builder
+COPY --from=builder /app/client/dist .
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Copy nginx configuration
+COPY <<EOF /etc/nginx/conf.d/default.conf
+server {
+    listen 80;
+    server_name _;
 
-# Copy built application
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./package.json
+    root /usr/share/nginx/html;
+    index index.html;
 
-# Install only production dependencies
-RUN npm install --legacy-peer-deps --production --ignore-scripts
-RUN npm install -g --legacy-peer-deps cross-env
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
 
-USER nextjs
+    # Enable gzip compression
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+}
+EOF
 
-EXPOSE 5000
+EXPOSE 80
 
-ENV PORT=5000
-ENV HOSTNAME="0.0.0.0"
-
-# Start the application
-CMD ["npm", "start"]
+CMD ["nginx", "-g", "daemon off;"]
