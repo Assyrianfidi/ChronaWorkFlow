@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json package-lock.json* ./
-RUN npm install --only=production --ignore-scripts || npm install --production
+RUN npm ci --only=production --ignore-scripts || npm install --production --legacy-peer-deps
 
 # =======================================
 # Builder Stage
