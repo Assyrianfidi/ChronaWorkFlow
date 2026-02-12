@@ -1,53 +1,41 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import Button from "../components/ui/Button";
+import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react";
 import Logo from "../assets/chronaworkflow-logo.png";
-import { InputWithIcon } from "../components/ui/InputWithIcon";
-import Label from "../components/ui/Label";
-import {
-  default as Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/Card";
-import { Alert, AlertDescription } from "../components/ui/Alert";
-import {
-  Eye,
-  EyeOff,
-  Loader2,
-  Mail,
-  Lock,
-} from "lucide-react";
+import { designSystem, cn } from "../styles/designSystem";
 
+/**
+ * LoginPage - CEO-Level SaaS Authentication
+ * 
+ * Clean, modern, accessible login page following ChronaWorkFlow design system.
+ * No demo features, high contrast, WCAG compliant.
+ */
 const LoginPage: React.FC = () => {
-  const [formData, setFormData] = React.useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [error, setError] = React.useState("");
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]:
-        e.target.type === "checkbox" ? e.target.checked : e.target.value,
-    });
-  };
+  // Load remembered email on mount
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem("accubooks_remember");
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!formData.email || !formData.password) {
+    if (!email || !password) {
       setError("Please enter both email and password");
       return;
     }
@@ -55,244 +43,214 @@ const LoginPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await login(formData.email, formData.password);
+      await login(email, password);
 
       // Store remember me preference
-      if (formData.rememberMe) {
-        localStorage.setItem("accubooks_remember", formData.email);
+      if (rememberMe) {
+        localStorage.setItem("accubooks_remember", email);
       } else {
         localStorage.removeItem("accubooks_remember");
       }
 
       navigate("/dashboard");
-    } catch (error) {
+    } catch (err) {
       setError("Invalid email or password. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-
-  // Load remembered email on mount
-  React.useEffect(() => {
-    const rememberedEmail = localStorage.getItem("accubooks_remember");
-    if (rememberedEmail) {
-      setFormData((prev) => ({
-        ...prev,
-        email: rememberedEmail,
-        rememberMe: true,
-      }));
-    }
-  }, []);
-
   return (
-    <div className="min-h-screen soft-professional-gradient flex flex-col">
-      {/* Background Pattern Overlay */}
-      <div className="fixed inset-0 opacity-5">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231E4DB7' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        ></div>
-      </div>
-
-      {/* Main Content */}
-      <div
-        role="main"
-        className="flex-1 flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 relative z-10"
-      >
-        <div className="w-full max-w-md animate-fade-in">
-          {/* Logo and Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-6">
-              <img
-                src={Logo}
-                alt="AccuBooks Enterprise Logo"
-                width={128}
-                height={128}
-                loading="lazy"
-                className="rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
-              />
-            </div>
-            <h1 className="text-4xl font-bold text-foreground mb-2 tracking-tight">
-              Welcome to AccuBooks
-            </h1>
-            <p className="text-lg text-muted-foreground font-normal">
-              Sign in to manage your business finances
-            </p>
+    <div className={designSystem.components.container.centered}>
+      <div className="w-full max-w-md">
+        {/* Logo and Header */}
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-6">
+            <img
+              src={Logo}
+              alt="ChronaWorkFlow Logo"
+              className="h-20 w-auto transition-transform duration-300 hover:scale-105"
+            />
           </div>
+          <h1 className={cn(designSystem.typography.h2, "mb-2")}>
+            Welcome to AccuBooks
+          </h1>
+          <p className={designSystem.typography.small}>
+            Sign in to manage your business finances
+          </p>
+        </div>
 
-          {/* Authentication Card */}
-          <Card className="glass-card shadow-2xl border-0 animate-scale-in">
-            <CardHeader className="space-y-2 pb-6">
-              <CardTitle className="text-2xl font-bold text-center text-foreground">
-                Sign In
-              </CardTitle>
-              <CardDescription className="text-center text-muted-foreground text-base">
-                Enter your credentials to access your account
-              </CardDescription>
-            </CardHeader>
-            <form
-              onSubmit={handleSubmit}
-              aria-label="Sign in to your AccuBooks account"
-            >
-              <CardContent className="space-y-5">
-                {error && (
-                  <Alert
-                    variant="destructive"
-                    className="border-0 shadow-md"
-                    aria-live="polite"
-                  >
-                    <AlertDescription className="text-sm font-medium">
-                      {error}
-                    </AlertDescription>
-                  </Alert>
-                )}
+        {/* Login Card */}
+        <div className={designSystem.components.card.base}>
+          <div className={designSystem.spacing.cardPadding}>
+            <form onSubmit={handleSubmit} className={designSystem.spacing.formSpacing}>
+              {/* Error Alert */}
+              {error && (
+                <div className={designSystem.components.alert.error} role="alert">
+                  <p className="text-sm font-medium">{error}</p>
+                </div>
+              )}
 
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="email"
-                    className="text-sm font-semibold text-foreground"
-                  >
-                    Email Address
-                  </Label>
-                  <InputWithIcon
+              {/* Email Field */}
+              <div className={designSystem.spacing.tightSpacing}>
+                <label
+                  htmlFor="email"
+                  className={designSystem.typography.label}
+                >
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    disabled={isLoading}
                     autoComplete="email"
-                    icon={<Mail className="w-5 h-5" />}
-                    iconPosition="left"
-                    className="h-12"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                    className={cn(
+                      designSystem.components.input.base,
+                      "pl-10",
+                      isLoading && "opacity-50 cursor-not-allowed"
+                    )}
+                    placeholder="name@company.com"
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="password"
-                    className="text-sm font-semibold text-foreground"
-                  >
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <InputWithIcon
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      disabled={isLoading}
-                      autoComplete="current-password"
-                      icon={<Lock className="w-5 h-5" />}
-                      iconPosition="left"
-                      className="h-12 pr-12"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100 transition-colors duration-200"
-                      onClick={() => setShowPassword(!showPassword)}
-                      disabled={isLoading}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-gray-500" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-gray-500" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <div className="flex items-center space-x-3">
-                    <input
-                      id="rememberMe"
-                      name="rememberMe"
-                      type="checkbox"
-                      checked={formData.rememberMe}
-                      onChange={handleChange}
-                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded transition-colors duration-200"
-                      disabled={isLoading}
-                    />
-                    <Label
-                      htmlFor="rememberMe"
-                      className="text-sm font-medium text-gray-700 cursor-pointer"
-                    >
-                      Remember me
-                    </Label>
-                  </div>
-                  <Link
-                    to="/forgot-password"
-                    className="text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors duration-200 hover:underline"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-              </CardContent>
-              <div className="flex flex-col gap-4">
-                <Button
-                  type="submit"
-                  className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-black"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Signing In...
-                    </>
-                  ) : (
-                    "Sign In"
-                  )}
-                </Button>
-
               </div>
-              <CardFooter className="flex flex-col space-y-4 pt-6">
-                <div className="text-center text-sm text-gray-600 font-medium">
-                  Don&apos;t have an account?{" "}
+
+              {/* Password Field */}
+              <div className={designSystem.spacing.tightSpacing}>
+                <label
+                  htmlFor="password"
+                  className={designSystem.typography.label}
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                    className={cn(
+                      designSystem.components.input.base,
+                      "pl-10 pr-10",
+                      isLoading && "opacity-50 cursor-not-allowed"
+                    )}
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Remember Me & Forgot Password */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    id="rememberMe"
+                    name="rememberMe"
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    disabled={isLoading}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-colors"
+                  />
+                  <label
+                    htmlFor="rememberMe"
+                    className="ml-2 block text-sm text-gray-700"
+                  >
+                    Remember me
+                  </label>
+                </div>
+                <Link
+                  to="/forgot-password"
+                  className={designSystem.components.link.primary}
+                >
+                  Forgot password?
+                </Link>
+              </div>
+
+              {/* Sign In Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={cn(
+                  designSystem.components.button.primary,
+                  "w-full",
+                  isLoading && designSystem.components.button.disabled
+                )}
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center">
+                    <Loader2 className="animate-spin h-5 w-5 mr-2" />
+                    Signing in...
+                  </span>
+                ) : (
+                  "Sign In"
+                )}
+              </button>
+
+              {/* Register Link */}
+              <div className="text-center">
+                <p className={designSystem.typography.small}>
+                  Don't have an account?{" "}
                   <Link
                     to="/register"
-                    className="font-semibold text-primary-600 hover:text-primary-700 transition-colors duration-200 hover:underline"
+                    className={designSystem.components.link.primary}
                   >
                     Sign up
                   </Link>
-                </div>
-              </CardFooter>
+                </p>
+              </div>
             </form>
-          </Card>
+          </div>
         </div>
-      </div>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-gray-200 bg-white/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-gray-600">
+        {/* Footer */}
+        <footer className="mt-8 text-center">
+          <div className="flex items-center justify-center space-x-4 text-sm text-gray-500">
             <Link
               to="/privacy"
-              className="hover:text-primary-600 transition-colors duration-200 font-medium"
+              className={designSystem.components.link.secondary}
             >
               Privacy Policy
             </Link>
-            <span className="hidden sm:inline text-gray-400">•</span>
+            <span className="text-gray-300">•</span>
             <Link
               to="/terms"
-              className="hover:text-primary-600 transition-colors duration-200 font-medium"
+              className={designSystem.components.link.secondary}
             >
               Terms of Service
             </Link>
-            <span className="hidden sm:inline text-gray-400">•</span>
-            <span className="font-medium">© AccuBooks 2025</span>
           </div>
-        </div>
-      </footer>
+          <p className="mt-4 text-xs text-gray-500">
+            © {new Date().getFullYear()} AccuBooks. All rights reserved.
+          </p>
+        </footer>
+      </div>
     </div>
   );
 };
