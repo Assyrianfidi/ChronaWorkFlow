@@ -40,7 +40,7 @@ const LoginForm = ({ methods, onSubmit }: LoginFormProps): ReactElement => (
         <Input
           id="email"
           type="email"
-          placeholder="demo@accubooks.com"
+          placeholder="Enter your email"
           data-testid="input-email"
           {...methods.register("email")}
         />
@@ -72,11 +72,6 @@ const LoginForm = ({ methods, onSubmit }: LoginFormProps): ReactElement => (
         )}
       </div>
 
-      <div className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-        <p className="font-medium mb-1">Demo Credentials:</p>
-        <p>Email: demo@accubooks.com</p>
-        <p>Password: Demo123!</p>
-      </div>
     </CardContent>
 
     <CardFooter className="flex flex-col gap-4">
