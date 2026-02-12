@@ -7,7 +7,7 @@ import { Label } from "@/components/components/ui/label";
 import { Card, CardContent } from "@/components/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/Alert";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import Logo from "@/assets/AccubooksEnterprise_Logo16_.jpg";
+import Logo from "@/assets/chronaworkflow-logo.png";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -138,18 +138,17 @@ export default function LoginPage() {
               width={variant === "C" ? 160 : 128}
               height={variant === "C" ? 160 : 128}
               loading="lazy"
-              className="mb-6 rounded-xl shadow-2xl hover:scale-105 transition-transform duration-300"
+              className="mb-6 rounded-xl shadow-2xl hover:scale-105 transition-transform duration-300 animate-fade-in"
             />
             <h2
-              className={`text-3xl lg:text-4xl font-bold mb-4 ${variant === "C" ? "text-white" : classes.text}`}
+              className={`text-3xl lg:text-4xl font-bold mb-4 ${variant === "C" ? "text-white" : classes.text} animate-fade-in`}
             >
               AccuBooks
             </h2>
             <p
               className={`text-center ${variant === "C" ? "text-gray-300" : classes.mutedText} max-w-md`}
             >
-              Enterprise financial operations reimagined. Manage your business
-              with confidence and precision.
+              Sign in to manage your business finances
             </p>
           </div>
         )}
@@ -331,7 +330,7 @@ export default function LoginPage() {
                   className={`w-full py-3 font-medium transition-all duration-300 ${
                     isLoading
                       ? "opacity-75 cursor-not-allowed"
-                      : "hover:scale-[1.02]"
+                      : "hover:scale-[1.02] hover:shadow-lg"
                   } ${classes.button} text-black`}
                   disabled={isLoading}
                 >
@@ -352,6 +351,15 @@ export default function LoginPage() {
           <footer className="mt-8 pt-6 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
               <Link
+                to="/demo"
+                className={
+                  classes.mutedText + " hover:text-accent transition-colors"
+                }
+              >
+                Demo Accounts
+              </Link>
+              <span className="hidden sm:inline text-gray-400">•</span>
+              <Link
                 to="/privacy"
                 className={
                   classes.mutedText + " hover:text-accent transition-colors"
@@ -370,7 +378,7 @@ export default function LoginPage() {
               </Link>
             </div>
             <p className={`text-center text-xs ${classes.mutedText} mt-4`}>
-              © 2025 AccuBooks. All rights reserved.
+              © AccuBooks 2025
             </p>
           </footer>
         </section>
