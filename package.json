@@ -18,7 +18,7 @@
     "build:prod": "cross-env NODE_ENV=production vite build",
     "build:server": "cross-env NODE_ENV=production npx tsc --project tsconfig.server.json",
     "build:backend": "cross-env NODE_ENV=production npx tsc --project tsconfig.server.json",
-    "start": "cross-env NODE_ENV=production node dist/server/index.js",
+    "start": "cross-env NODE_ENV=production node dist/server/production-server.js",
     "start:dev": "cross-env NODE_ENV=development nodemon --exec tsx server/index.ts",
     "start:worker": "cross-env NODE_ENV=production node dist/worker/index.js",
     "start:all": "concurrently \"npm run start:dev\" \"npm run start:worker\"",

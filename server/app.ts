@@ -5,6 +5,7 @@ import { authorizeRequest } from "./middleware/authorize";
 import { resolveIdentity } from "./middleware/resolve-identity";
 import { enforceBillingStatus } from "./middleware/billing-status";
 import { enforcePlanLimits } from "./middleware/plan-limits";
+import { corsMiddleware, logCorsConfig } from "./middleware/cors.js";
 import monitoringRoutes from "./api/monitoring.routes.js";
 
 declare module "http" {
@@ -24,6 +25,12 @@ declare global {
 
 export function createApp() {
   const app = express();
+
+  // CORS must be first to handle preflight requests
+  app.use(corsMiddleware);
+  
+  // Log CORS configuration on startup
+  logCorsConfig();
 
   app.get("/", (req, res) => {
     res.json({ status: "ok", message: "AccuBooks API is running" });
