@@ -9,7 +9,7 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 
 // Environment configuration
-const PORT = process.env.PORT || 10000;
+const PORT = parseInt(process.env.PORT || '10000', 10);
 const NODE_ENV = process.env.NODE_ENV || 'production';
 const DATABASE_URL = process.env.DATABASE_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -166,8 +166,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-// Start server
-const server = app.listen(PORT, () => {
+// Start server - bind to 0.0.0.0 for Docker/Render
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log('='.repeat(60));
   console.log('🚀 ChronaWorkflow Backend API');
   console.log('='.repeat(60));

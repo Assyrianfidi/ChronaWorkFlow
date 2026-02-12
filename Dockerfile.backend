@@ -1,24 +1,15 @@
-# =======================================
-# AccuBooks Backend - Production Build
-# =======================================
-FROM node:18-alpine AS deps
-RUN apk add --no-cache libc6-compat python3 make g++
+FROM node:18-alpine
+
 WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache python3 make g++ curl
 
 # Copy package files
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production --ignore-scripts || npm install --production --legacy-peer-deps
 
-# =======================================
-# Builder Stage
-# =======================================
-FROM node:18-alpine AS builder
-WORKDIR /app
-RUN apk add --no-cache python3 make g++
-
-# Copy package files and install ALL dependencies (including dev)
-COPY package.json package-lock.json* ./
-RUN npm install --ignore-scripts || npm install
+# Install dependencies
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -26,39 +17,14 @@ COPY . .
 # Generate Prisma client
 RUN npx prisma generate
 
-# Build backend with tsconfig.server.json
+# Build backend
 RUN npm run build:backend
 
-# =======================================
-# Production Runtime
-# =======================================
-FROM node:18-alpine AS runner
-WORKDIR /app
+# Remove dev dependencies
+RUN npm prune --production
 
 ENV NODE_ENV=production
-ENV PORT=10000
-
-# Install runtime dependencies
-RUN apk add --no-cache dumb-init curl
-
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nodejs
-
-# Copy production dependencies
-COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nodejs:nodejs /app/package.json ./package.json
-
-# Copy shared directory if exists
-COPY --from=builder --chown=nodejs:nodejs /app/shared ./shared
-
-USER nodejs
 
 EXPOSE 10000
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:10000/api/health || exit 1
-
-CMD ["dumb-init", "node", "dist/server/production-server.js"]
+CMD ["node", "dist/server/production-server.js"]
