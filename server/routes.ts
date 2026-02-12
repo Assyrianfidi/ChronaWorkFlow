@@ -702,7 +702,12 @@ export async function registerRoutes(app: Express): Promise<void> {
   const { registerHighRiskRoute } = await import("./resilience/high-risk-route-gate");
 
   // ==================== AUTHENTICATION ====================
+  // Import and mount unified auth router
+  const authRouter = (await import("./routes/auth-unified")).default;
+  app.use("/api/auth", authRouter);
   
+  // OLD INLINE AUTH REMOVED - NOW USING UNIFIED ROUTER
+  /*
   app.post("/api/auth/register", async (req, res) => {
     try {
       const { username, email, password, name } = req.body;
@@ -829,6 +834,11 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  */
+  // END OLD INLINE AUTH - NOW USING UNIFIED ROUTER ABOVE
+  
+  // OLD LOGIN ALSO REMOVED
+  /*
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -927,6 +937,8 @@ export async function registerRoutes(app: Express): Promise<void> {
       res.status(500).json({ error: "Login failed: " + error.message });
     }
   });
+  */
+  // END OLD INLINE LOGIN
 
   registerOwnerAiAuditRoutes(app);
 

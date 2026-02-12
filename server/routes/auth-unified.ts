@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { db } from '../db';
 import { prisma } from '../prisma';
 import * as schema from '../../shared/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { logger } from '../utils/logger';
 
 const router = Router();
@@ -40,20 +40,6 @@ const loginSchema = z.object({
   rememberMe: z.boolean().optional(),
 });
 
-const verifyEmailSchema = z.object({
-  token: z.string(),
-});
-
-const forgotPasswordSchema = z.object({
-  email: z.string().email(),
-});
-
-const resetPasswordSchema = z.object({
-  token: z.string(),
-  password: z.string().min(8),
-});
-
-// Types
 interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
@@ -286,295 +272,173 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 });
 
-// Email verification
-export async function verifyEmail(req: Request, res: Response) {
+/**
+ * POST /api/auth/login/owner
+ * Special owner login endpoint
+ */
+router.post('/login/owner', async (req: Request, res: Response) => {
   try {
-    const { token } = verifyEmailSchema.parse(req.body);
+    const validatedData = loginSchema.parse(req.body);
 
-    // Find user with token
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.emailVerificationToken, token))
-      .limit(1);
-
-    if (user.length === 0) {
-      return res.status(400).json({ error: 'Invalid verification token' });
+    // Verify this is the owner email
+    if (!isOwnerEmail(validatedData.email)) {
+      return res.status(403).json({ error: 'Access denied' });
     }
-
-    const userData = user[0];
-
-    // Update user as verified
-    await db
-      .update(users)
-      .set({
-        emailVerified: true,
-        emailVerificationToken: null,
-      })
-      .where(eq(users.id, userData.id));
-
-    // Log verification event
-    logger.info('Email verified', {
-      userId: userData.id,
-      tenantId: userData.tenantId,
-      email: userData.email,
-    });
-
-    res.json({ message: 'Email verified successfully' });
-
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors });
-    }
-
-    logger.error('Email verification error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-}
-
-// Forgot password
-export async function forgotPassword(req: Request, res: Response) {
-  try {
-    const { email } = forgotPasswordSchema.parse(req.body);
 
     // Find user
-    const user = await db
+    const [user] = await db
       .select()
-      .from(users)
-      .where(eq(users.email, email))
+      .from(schema.users)
+      .where(eq(schema.users.email, validatedData.email))
       .limit(1);
 
-    if (user.length === 0) {
-      // Don't reveal if email exists
-      return res.json({ message: 'If an account with that email exists, a password reset link has been sent' });
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const userData = user[0];
+    // Verify password
+    const validPassword = await bcrypt.compare(validatedData.password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
 
-    // Generate reset token
-    const resetToken = crypto.randomUUID();
-    const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    // Get tenant
+    const [tenantRow] = await db
+      .select({ tenantId: schema.userTenants.tenantId })
+      .from(schema.userTenants)
+      .where(eq(schema.userTenants.userId, user.id))
+      .limit(1);
 
-    // Update user with reset token
-    await db
-      .update(users)
-      .set({
-        passwordResetToken: resetToken,
-        passwordResetExpires: resetExpires,
-      })
-      .where(eq(users.id, userData.id));
+    if (!tenantRow) {
+      return res.status(403).json({ error: 'No tenant access' });
+    }
 
-    // Send password reset email
-    await sendEmail({
-      to: email,
-      template: 'password-reset',
-      data: {
-        firstName: userData.firstName,
-        resetUrl: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`,
+    const companyId = user.currentCompanyId || '';
+
+    // Generate token with owner privileges
+    const token = jwt.sign(
+      {
+        id: user.id,
+        userId: user.id,
+        email: user.email,
+        role: 'owner',
+        roles: ['OWNER', 'ADMIN'],
+        ownerVerified: true,
+        tenantId: tenantRow.tenantId,
+        companyId,
+        currentTenantId: tenantRow.tenantId,
+        currentCompanyId: companyId,
       },
+      JWT_SECRET,
+      { expiresIn: validatedData.rememberMe ? '30d' : '7d' }
+    );
+
+    logger.info('Owner logged in', {
+      userId: user.id,
+      email: user.email,
     });
 
-    // Log password reset request
-    logger.info('Password reset requested', {
-      userId: userData.id,
-      tenantId: userData.tenantId,
-      email: userData.email,
+    res.json({
+      message: 'Owner login successful',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: 'owner',
+        currentCompanyId: companyId,
+        tenantId: tenantRow.tenantId,
+      },
+      token,
     });
-
-    res.json({ message: 'If an account with that email exists, a password reset link has been sent' });
 
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Invalid input', details: error.errors });
     }
 
-    logger.error('Forgot password error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    logger.error('Owner login error:', error);
+    res.status(500).json({ error: 'Login failed' });
   }
-}
+});
 
-// Reset password
-export async function resetPassword(req: Request, res: Response) {
+/**
+ * GET /api/auth/me
+ * Get current user profile (requires authentication middleware)
+ */
+router.get('/me', async (req: Request, res: Response) => {
+  const authReq = req as AuthenticatedRequest;
   try {
-    const { token, password } = resetPasswordSchema.parse(req.body);
-
-    // Find user with valid token
-    const user = await db
-      .select()
-      .from(users)
-      .where(
-        and(
-          eq(users.passwordResetToken, token),
-          gt(users.passwordResetExpires, new Date())
-        )
-      )
-      .limit(1);
-
-    if (user.length === 0) {
-      return res.status(400).json({ error: 'Invalid or expired reset token' });
-    }
-
-    const userData = user[0];
-
-    // Hash new password
-    const passwordHash = await bcrypt.hash(password, 12);
-
-    // Update user
-    await db
-      .update(users)
-      .set({
-        passwordHash,
-        passwordResetToken: null,
-        passwordResetExpires: null,
-      })
-      .where(eq(users.id, userData.id));
-
-    // Log password reset
-    logger.info('Password reset completed', {
-      userId: userData.id,
-      tenantId: userData.tenantId,
-      email: userData.email,
-    });
-
-    res.json({ message: 'Password reset successfully' });
-
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors });
-    }
-
-    logger.error('Reset password error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-}
-
-// Get current user profile
-export async function getProfile(req: AuthenticatedRequest, res: Response) {
-  try {
-    if (!req.user) {
+    if (!authReq.user) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const user = await db
+    const [user] = await db
       .select()
-      .from(users)
-      .where(eq(users.id, req.user.id))
+      .from(schema.users)
+      .where(eq(schema.users.id, authReq.user.id))
       .limit(1);
 
-    if (user.length === 0) {
+    if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const userData = user[0];
-
     res.json({
-      id: userData.id,
-      email: userData.email,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      role: userData.role,
-      emailVerified: userData.emailVerified,
-      lastLoginAt: userData.lastLoginAt,
-      createdAt: userData.createdAt,
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: authReq.user.role,
+      currentCompanyId: user.currentCompanyId,
     });
 
   } catch (error) {
     logger.error('Get profile error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-}
+});
 
-// Update user profile
-export async function updateProfile(req: AuthenticatedRequest, res: Response) {
+/**
+ * GET /api/auth/me/role
+ * Get user role and permissions
+ */
+router.get('/me/role', async (req: Request, res: Response) => {
+  const authReq = req as AuthenticatedRequest;
   try {
-    if (!req.user) {
+    if (!authReq.user) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const { firstName, lastName } = req.body;
+    const isOwner = isOwnerEmail(authReq.user.email);
+    const effectiveRole = isOwner ? 'owner' : authReq.user.role;
+    const roles = isOwner ? ['OWNER', 'ADMIN'] : [authReq.user.role?.toUpperCase()];
 
-    await db
-      .update(users)
-      .set({
-        firstName,
-        lastName,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, req.user.id));
-
-    res.json({ message: 'Profile updated successfully' });
-
-  } catch (error) {
-    logger.error('Update profile error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-}
-
-// Change password
-export async function changePassword(req: AuthenticatedRequest, res: Response) {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Not authenticated' });
-    }
-
-    const { currentPassword, newPassword } = req.body;
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({ error: 'Current password and new password are required' });
-    }
-
-    // Get current user
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, req.user.id))
-      .limit(1);
-
-    if (user.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const userData = user[0];
-
-    // Verify current password
-    const isValidPassword = await bcrypt.compare(currentPassword, userData.passwordHash);
-    if (!isValidPassword) {
-      return res.status(400).json({ error: 'Current password is incorrect' });
-    }
-
-    // Hash new password
-    const newPasswordHash = await bcrypt.hash(newPassword, 12);
-
-    // Update password
-    await db
-      .update(users)
-      .set({
-        passwordHash: newPasswordHash,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, req.user.id));
-
-    res.json({ message: 'Password changed successfully' });
-
-  } catch (error) {
-    logger.error('Change password error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-}
-
-// Logout (client-side should remove token)
-export async function logout(req: AuthenticatedRequest, res: Response) {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Not authenticated' });
-    }
-
-    // Log logout event
-    logger.info('User logged out', {
-      userId: req.user.id,
-      tenantId: req.user.tenantId,
-      email: req.user.email,
+    res.json({
+      userId: authReq.user.id,
+      email: authReq.user.email,
+      role: effectiveRole,
+      roles,
+      isOwner,
+      permissions: getPermissionsForRole(effectiveRole),
     });
+
+  } catch (error) {
+    logger.error('Get role error:', error);
+    res.status(500).json({ error: 'Failed to get role' });
+  }
+});
+
+/**
+ * POST /api/auth/logout
+ * Logout (client-side should remove token)
+ */
+router.post('/logout', async (req: Request, res: Response) => {
+  const authReq = req as AuthenticatedRequest;
+  try {
+    if (authReq.user) {
+      logger.info('User logged out', {
+        userId: authReq.user.id,
+        email: authReq.user.email,
+      });
+    }
 
     res.json({ message: 'Logged out successfully' });
 
@@ -582,42 +446,24 @@ export async function logout(req: AuthenticatedRequest, res: Response) {
     logger.error('Logout error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-}
+});
 
-// Check authentication status
-export async function checkAuth(req: AuthenticatedRequest, res: Response) {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Not authenticated' });
-    }
-
-    // Get fresh user data
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, req.user.id))
-      .limit(1);
-
-    if (user.length === 0) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-
-    const userData = user[0];
-
-    res.json({
-      authenticated: true,
-      user: {
-        id: userData.id,
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        role: userData.role,
-        emailVerified: userData.emailVerified,
-      },
-    });
-
-  } catch (error) {
-    logger.error('Check auth error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+function getPermissionsForRole(role: string): string[] {
+  const normalized = role.trim().toUpperCase();
+  switch (normalized) {
+    case 'OWNER':
+      return ['*'];
+    case 'ADMIN':
+      return ['dashboard:*', 'users:*', 'reports:*', 'billing:*', 'settings:*'];
+    case 'MANAGER':
+      return ['dashboard:read', 'dashboard:write', 'invoices:*', 'reports:read', 'team:*'];
+    case 'ACCOUNTANT':
+      return ['dashboard:read', 'invoices:read', 'reports:read', 'ledger:*'];
+    case 'CUSTOMER':
+      return ['dashboard:read', 'profile:*', 'invoices:read', 'billing:read'];
+    default:
+      return ['dashboard:read', 'profile:read'];
   }
 }
+
+export default router;
