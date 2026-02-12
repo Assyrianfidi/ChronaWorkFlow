@@ -4,7 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Bell, Search, HelpCircle, Menu } from "lucide-react";
 import ProfileMenu from "./ProfileMenu";
 import MobileDrawer from "./MobileDrawer";
-import LogoImg from "../../assets/AccubooksEnterprise_Logo16_.jpg";
+import LogoImg from "../../assets/chronaworkflow-logo.png";
 
 // existing UserMenu, NotificationItem, and NotificationCenter logic has been
 // replaced by a slimmer EnterpriseHeader shell that delegates profile/logout

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/ui/Button";
-import Logo from "../assets/AccubooksEnterprise_Logo16_.jpg";
+import Logo from "../assets/chronaworkflow-logo.png";
 import { InputWithIcon } from "../components/ui/InputWithIcon";
 import Label from "../components/ui/Label";
 import {
