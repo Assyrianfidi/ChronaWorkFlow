@@ -82,7 +82,20 @@ const RegisterPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await register(formData.fullName, formData.email, formData.password);
+      // Safe handling of fullName to prevent trim() error
+      const safeName = (formData.fullName || "").trim();
+      
+      if (!safeName) {
+        setError("Please enter your full name");
+        setIsLoading(false);
+        return;
+      }
+
+      await register({
+        name: safeName,
+        email: formData.email,
+        password: formData.password,
+      });
       
       // Redirect to dashboard after successful registration
       navigate("/dashboard");
@@ -113,7 +126,7 @@ const RegisterPage: React.FC = () => {
             Create Your Account
           </h1>
           <p className={designSystem.typography.small}>
-            Get started with AccuBooks today
+            Get started with ChronaWorkFlow today
           </p>
         </div>
 
@@ -368,7 +381,7 @@ const RegisterPage: React.FC = () => {
             </Link>
           </div>
           <p className="mt-4 text-xs text-gray-500">
-            © {new Date().getFullYear()} AccuBooks. All rights reserved.
+            © {new Date().getFullYear()} ChronaWorkFlow. Developed by SkyLabs Enterprise.
           </p>
         </footer>
       </div>

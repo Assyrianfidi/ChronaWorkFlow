@@ -11,7 +11,7 @@ export function useSessionPersistence() {
 
   useEffect(() => {
     const restoreSession = async () => {
-      const token = localStorage.getItem('accubooks_token');
+      const token = localStorage.getItem('chronaworkflow_token');
       
       if (!token) {
         return;
@@ -31,8 +31,8 @@ export function useSessionPersistence() {
       } catch (error) {
         // Token invalid or expired
         console.error('Session restoration failed:', error);
-        localStorage.removeItem('accubooks_token');
-        localStorage.removeItem('accubooks_user');
+        localStorage.removeItem('chronaworkflow_token');
+        localStorage.removeItem('chronaworkflow_user');
         auth.logout();
       }
     };

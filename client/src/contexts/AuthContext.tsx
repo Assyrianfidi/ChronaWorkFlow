@@ -4,10 +4,10 @@ import { authApi } from "@/api";
 import { useNavigate } from "react-router-dom";
 
 const STORAGE_KEYS = {
-  token: "accubooks_token",
-  user: "accubooks_user",
-  demo: "accubooks_demo",
-  companyId: "accubooks_company_id",
+  token: "chronaworkflow_token",
+  user: "chronaworkflow_user",
+  demo: "chronaworkflow_demo",
+  companyId: "chronaworkflow_company_id",
 } as const;
 
 const DEMO_COMPANY_ID = "demo-company";
@@ -42,7 +42,7 @@ function clearAuthStorage() {
   localStorage.removeItem("token");
   localStorage.removeItem("auth_token");
   localStorage.removeItem("auth_user");
-  localStorage.removeItem("accubooks_remember");
+  localStorage.removeItem("chronaworkflow_remember");
 }
 
 export type UserRole =
@@ -92,7 +92,7 @@ interface AuthState {
     name: string;
     email: string;
     password: string;
-    role: UserRole;
+    role?: UserRole;
   }) => Promise<void>;
   logout: () => void;
   updateUser: (user: Partial<User>) => void;
@@ -309,7 +309,7 @@ export const useAuth = create<AuthState>((set, get) => {
       if (currentUser) {
         const updatedUser = { ...currentUser, ...userData };
         set({ user: updatedUser });
-        localStorage.setItem("accubooks_user", JSON.stringify(updatedUser));
+        localStorage.setItem("chronaworkflow_user", JSON.stringify(updatedUser));
       }
     },
 

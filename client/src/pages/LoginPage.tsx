@@ -24,7 +24,7 @@ const LoginPage: React.FC = () => {
 
   // Load remembered email on mount
   useEffect(() => {
-    const rememberedEmail = localStorage.getItem("accubooks_remember");
+    const rememberedEmail = localStorage.getItem("chronaworkflow_remember");
     if (rememberedEmail) {
       setEmail(rememberedEmail);
       setRememberMe(true);
@@ -47,9 +47,9 @@ const LoginPage: React.FC = () => {
 
       // Store remember me preference
       if (rememberMe) {
-        localStorage.setItem("accubooks_remember", email);
+        localStorage.setItem("chronaworkflow_remember", email);
       } else {
-        localStorage.removeItem("accubooks_remember");
+        localStorage.removeItem("chronaworkflow_remember");
       }
 
       // Get user from auth state to determine redirect
@@ -84,10 +84,10 @@ const LoginPage: React.FC = () => {
             />
           </div>
           <h1 className={cn(designSystem.typography.h2, "mb-2")}>
-            Welcome to AccuBooks
+            Welcome to ChronaWorkFlow
           </h1>
           <p className={designSystem.typography.small}>
-            Sign in to manage your business finances
+            Sign in to manage your enterprise workflows
           </p>
         </div>
 
@@ -258,7 +258,7 @@ const LoginPage: React.FC = () => {
             </Link>
           </div>
           <p className="mt-4 text-xs text-gray-500">
-            © {new Date().getFullYear()} AccuBooks. All rights reserved.
+            © {new Date().getFullYear()} ChronaWorkFlow. Developed by SkyLabs Enterprise.
           </p>
         </footer>
       </div>

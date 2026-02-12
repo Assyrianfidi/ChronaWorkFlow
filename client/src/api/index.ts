@@ -25,7 +25,7 @@ const api: AxiosInstance = axios.create({
 // Request interceptor to add JWT token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accubooks_token");
+    const token = localStorage.getItem("chronaworkflow_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -51,14 +51,14 @@ api.interceptors.response.use(
             refreshToken,
           });
           const { accessToken } = response.data.data;
-          localStorage.setItem("accubooks_token", accessToken);
+          localStorage.setItem("chronaworkflow_token", accessToken);
 
           // Retry the original request with new token
           error.config.headers.Authorization = `Bearer ${accessToken}`;
           return api.request(error.config);
         } catch (refreshError) {
           // Refresh failed, clear tokens and redirect to login
-          localStorage.removeItem("accubooks_token");
+          localStorage.removeItem("chronaworkflow_token");
           window.location.href = "/login";
           return Promise.reject(refreshError);
         }
