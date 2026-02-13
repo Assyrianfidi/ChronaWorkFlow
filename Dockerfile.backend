@@ -14,8 +14,8 @@ COPY . .
 # Install dependencies with ignore-scripts to skip postinstall
 RUN npm install --legacy-peer-deps --ignore-scripts
 
-# Build simple backend (no database dependencies)
-RUN npm run build:simple
+# Copy JavaScript production server
+COPY server/production-server.js ./
 
 # Remove dev dependencies
 RUN npm prune --production
@@ -24,4 +24,4 @@ ENV NODE_ENV=production
 
 EXPOSE 10000
 
-CMD ["node", "dist/ultra-simple-server.js"]
+CMD ["node", "production-server.js"]
