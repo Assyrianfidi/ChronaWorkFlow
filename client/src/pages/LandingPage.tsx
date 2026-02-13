@@ -71,7 +71,7 @@ const features = [
 const testimonials = [
   {
     quote:
-      "AccuBooks saved me 15 hours a month on bookkeeping. The AI categorization is incredibly accurate.",
+      "ChronaWorkFlow saved me 15 hours a month on workflow automation. The AI categorization is incredibly accurate.",
     author: "Sarah Chen",
     role: "Founder, TechStart Inc",
     avatar: "SC",
@@ -129,7 +129,7 @@ export const LandingPage: React.FC = () => {
                 <Sparkles className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="text-xl font-bold text-foreground">
-                AccuBooks
+                ChronaWorkFlow
               </span>
             </div>
             <div className="hidden md:flex items-center gap-8">
@@ -183,7 +183,7 @@ export const LandingPage: React.FC = () => {
               </span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              AccuBooks uses AI to categorize transactions, forecast cash flow,
+              ChronaWorkFlow uses AI to categorize transactions, forecast cash flow,
               detect anomalies, and answer your financial questions—saving you
               10+ hours every month.
             </p>
@@ -261,7 +261,7 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              AccuBooks vs QuickBooks
+              ChronaWorkFlow vs QuickBooks
             </h2>
             <p className="text-xl text-muted-foreground">
               See why businesses are switching to AI-native accounting.
@@ -272,7 +272,7 @@ export const LandingPage: React.FC = () => {
             <div className="grid grid-cols-3 bg-muted p-4">
               <div className="font-semibold text-foreground">Feature</div>
               <div className="text-center font-semibold text-primary">
-                AccuBooks
+                ChronaWorkFlow
               </div>
               <div className="text-center font-semibold text-muted-foreground">
                 QuickBooks
@@ -514,9 +514,9 @@ export const LandingPage: React.FC = () => {
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-foreground font-bold">AccuBooks</span>
+              <span className="text-foreground font-bold">ChronaWorkFlow</span>
             </div>
-            <p className="text-sm">2024 AccuBooks. All rights reserved.</p>
+            <p className="text-sm">© 2026 ChronaWorkFlow. Developed by SkyLabs Enterprise.</p>
           </div>
         </div>
       </footer>

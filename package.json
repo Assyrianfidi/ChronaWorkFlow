@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Enterprise-grade workflow automation SaaS with comprehensive business management capabilities",
   "type": "module",
+  "main": "server/production-server.mjs",
   "license": "MIT",
   "scripts": {
     "postinstall": "cd client && npm install && npm rebuild rollup --force && cd .. && prisma generate",
@@ -276,7 +277,6 @@
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
-  "main": ".workspace_write_pkg.js",
   "directories": {
     "doc": "docs"
   },
