@@ -126,6 +126,7 @@ app.post('/api/auth/login', (req, res) => {
             permissions: ['*']
           },
           accessToken: mockToken,
+          refreshToken: mockToken,
           expiresIn: '7d'
         }
       });
@@ -145,6 +146,7 @@ app.post('/api/auth/login', (req, res) => {
           permissions: ['dashboard:read', 'profile:*', 'invoices:read', 'billing:read']
         },
         accessToken: mockToken,
+        refreshToken: mockToken,
         expiresIn: '7d'
       }
     });
@@ -179,6 +181,7 @@ app.post('/api/auth/register', (req, res) => {
           permissions: ['dashboard:read', 'profile:*', 'invoices:read', 'billing:read']
         },
         accessToken: mockToken,
+        refreshToken: mockToken,
         expiresIn: '7d'
       }
     });
@@ -230,10 +233,184 @@ app.get('/api/auth/me', (req, res) => {
   }
 });
 
+app.post('/api/auth/refresh', (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    
+    if (!refreshToken) {
+      return res.status(400).json({ error: 'Refresh token is required' });
+    }
+    
+    // Generate new tokens (mock implementation)
+    const decoded = Buffer.from(refreshToken, 'base64').toString('utf-8');
+    const [email] = decoded.split(':');
+    const newAccessToken = Buffer.from(`${email}:${Date.now()}`).toString('base64');
+    
+    res.json({
+      success: true,
+      data: {
+        accessToken: newAccessToken,
+        refreshToken: refreshToken,
+        expiresIn: '7d'
+      }
+    });
+    
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid refresh token' });
+  }
+});
+
 app.post('/api/auth/logout', (req, res) => {
+  try {
+    res.json({
+      success: true,
+      data: {
+        message: 'Logged out successfully'
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/auth/profile', (req, res) => {
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+  
+  try {
+    const token = authHeader.substring(7);
+    const decoded = Buffer.from(token, 'base64').toString('utf-8');
+    const [email] = decoded.split(':');
+    
+    if (email === (process.env.OWNER_EMAIL || 'ceo@chronaworkflow.com').toLowerCase()) {
+      return res.json({
+        success: true,
+        data: {
+          id: 'owner-1',
+          email: email,
+          name: 'SkyLabs Enterprise',
+          role: 'OWNER',
+          permissions: ['*'],
+          avatar: null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        id: 'customer-1',
+        email: email,
+        name: email.split('@')[0],
+        role: 'CUSTOMER',
+        permissions: ['dashboard:read', 'profile:*', 'invoices:read', 'billing:read'],
+        avatar: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    });
+    
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
+// Mock business data endpoints
+app.get('/api/owner/overview', (req, res) => {
   res.json({
     success: true,
-    message: 'Logged out successfully'
+    data: {
+      totalUsers: 150,
+      activeSubscriptions: 89,
+      monthlyRevenue: 12450,
+      totalRevenue: 89750,
+      growthRate: 12.5
+    }
+  });
+});
+
+app.get('/api/owner/plans', (req, res) => {
+  res.json({
+    success: true,
+    data: [
+      {
+        id: 'plan-1',
+        name: 'Starter',
+        price: 29,
+        features: ['Basic Dashboard', '10 Users', 'Email Support'],
+        active: true
+      },
+      {
+        id: 'plan-2',
+        name: 'Professional',
+        price: 99,
+        features: ['Advanced Dashboard', '50 Users', 'Priority Support', 'API Access'],
+        active: true
+      },
+      {
+        id: 'plan-3',
+        name: 'Enterprise',
+        price: 299,
+        features: ['Full Dashboard', 'Unlimited Users', '24/7 Support', 'Custom Features'],
+        active: true
+      }
+    ]
+  });
+});
+
+app.get('/api/owner/subscriptions', (req, res) => {
+  res.json({
+    success: true,
+    data: [
+      {
+        id: 'sub-1',
+        userId: 'user-1',
+        planId: 'plan-1',
+        status: 'active',
+        startDate: '2024-01-01',
+        endDate: '2024-12-31',
+        revenue: 348
+      },
+      {
+        id: 'sub-2',
+        userId: 'user-2',
+        planId: 'plan-2',
+        status: 'active',
+        startDate: '2024-02-01',
+        endDate: '2025-01-31',
+        revenue: 1188
+      }
+    ]
+  });
+});
+
+// Mock accounts endpoints
+app.get('/api/accounts', (req, res) => {
+  res.json({
+    success: true,
+    data: [
+      {
+        id: 'acc-1',
+        code: '100',
+        name: 'Cash',
+        type: 'asset',
+        balance: '50000.00',
+        isActive: true
+      },
+      {
+        id: 'acc-2',
+        code: '200',
+        name: 'Accounts Payable',
+        type: 'liability',
+        balance: '15000.00',
+        isActive: true
+      }
+    ]
   });
 });
 
