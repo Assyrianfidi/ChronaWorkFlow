@@ -14,8 +14,8 @@ COPY . .
 # Install dependencies with ignore-scripts to skip postinstall
 RUN npm install --legacy-peer-deps --ignore-scripts
 
-# Copy JavaScript production server
-COPY server/production-server.js ./
+# Copy ES Module production server
+COPY server/production-server.mjs ./
 
 # Remove dev dependencies
 RUN npm prune --production
@@ -24,4 +24,4 @@ ENV NODE_ENV=production
 
 EXPOSE 10000
 
-CMD ["node", "production-server.js"]
+CMD ["node", "production-server.mjs"]

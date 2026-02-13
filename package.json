@@ -1,7 +1,7 @@
 {
-  "name": "accubooks-enterprise",
+  "name": "chronaworkflow-enterprise",
   "version": "1.0.0",
-  "description": "Enterprise-grade accounting software with QuickBooks-like features including invoicing, payroll, inventory, and financial reporting",
+  "description": "Enterprise-grade workflow automation SaaS with comprehensive business management capabilities",
   "type": "module",
   "license": "MIT",
   "scripts": {
@@ -19,7 +19,7 @@
     "build:server": "cross-env NODE_ENV=production npx tsc --project tsconfig.server.json",
     "build:backend": "cross-env NODE_ENV=production npx tsc --project tsconfig.server.json",
     "build:simple": "cross-env NODE_ENV=production npx tsc server/ultra-simple-server.ts --outDir dist --target ES2020 --module ESNext --moduleResolution node --esModuleInterop --allowSyntheticDefaultImports",
-    "start": "cross-env NODE_ENV=production node dist/server/production-server.js",
+    "start": "cross-env NODE_ENV=production node server/production-server.mjs",
     "start:dev": "cross-env NODE_ENV=development nodemon --exec tsx server/index.ts",
     "start:worker": "cross-env NODE_ENV=production node dist/worker/index.js",
     "start:all": "concurrently \"npm run start:dev\" \"npm run start:worker\"",
