@@ -24,4 +24,4 @@ ENV NODE_ENV=production
 
 EXPOSE 10000
 
-CMD ["node", "dist/simple-production-server.js"]
+CMD ["node", "dist/ultra-simple-server.js"]

@@ -18,7 +18,7 @@
     "build:prod": "cross-env NODE_ENV=production vite build",
     "build:server": "cross-env NODE_ENV=production npx tsc --project tsconfig.server.json",
     "build:backend": "cross-env NODE_ENV=production npx tsc --project tsconfig.server.json",
-    "build:simple": "cross-env NODE_ENV=production npx tsc server/simple-production-server.ts --outDir dist --target ES2020 --module ESNext --moduleResolution node --esModuleInterop --allowSyntheticDefaultImports",
+    "build:simple": "cross-env NODE_ENV=production npx tsc server/ultra-simple-server.ts --outDir dist --target ES2020 --module ESNext --moduleResolution node --esModuleInterop --allowSyntheticDefaultImports",
     "start": "cross-env NODE_ENV=production node dist/server/production-server.js",
     "start:dev": "cross-env NODE_ENV=development nodemon --exec tsx server/index.ts",
     "start:worker": "cross-env NODE_ENV=production node dist/worker/index.js",
