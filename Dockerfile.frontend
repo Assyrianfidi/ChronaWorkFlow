@@ -8,14 +8,17 @@ WORKDIR /app
 # Copy package files
 COPY client/package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies (including dev for build)
+RUN npm ci --legacy-peer-deps --ignore-scripts
 
 # Copy source code
 COPY client/ ./
 
 # Build the application
 RUN npm run build
+
+# Remove dev dependencies after build
+RUN npm prune --production
 
 # Production stage
 FROM nginx:alpine
