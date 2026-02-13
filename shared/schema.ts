@@ -2451,11 +2451,11 @@ export const recurringInvoicesRelations = relations(recurringInvoices, ({ one })
 }));
 
 export const insertRecurringInvoiceSchema = createInsertSchema(recurringInvoices).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  occurrenceCount: true,
-  lastRunDate: true,
+  id: true as const,
+  createdAt: true as const,
+  updatedAt: true as const,
+  occurrenceCount: true as const,
+  lastRunDate: true as const,
 });
 
 export type RecurringInvoice = typeof recurringInvoices.$inferSelect;
@@ -2511,13 +2511,13 @@ export const paymentLinksRelations = relations(paymentLinks, ({ one }) => ({
 }));
 
 export const insertPaymentLinkSchema = createInsertSchema(paymentLinks).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  usageCount: true,
-  stripePaymentLinkId: true,
-  stripeCheckoutSessionId: true,
-  stripePaymentIntentId: true,
+  id: true as const,
+  createdAt: true as const,
+  updatedAt: true as const,
+  usageCount: true as const,
+  stripePaymentLinkId: true as const,
+  stripeCheckoutSessionId: true as const,
+  stripePaymentIntentId: true as const,
 });
 
 export type PaymentLink = typeof paymentLinks.$inferSelect;
@@ -2609,24 +2609,24 @@ export const billApprovalRequestsRelations = relations(billApprovalRequests, ({ 
 }));
 
 export const insertBillSchema = createInsertSchema(bills).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  amountPaid: true,
+  id: true as const,
+  createdAt: true as const,
+  updatedAt: true as const,
+  amountPaid: true as const,
 });
 
 export const insertBillApprovalWorkflowSchema = createInsertSchema(billApprovalWorkflows).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+  id: true as const,
+  createdAt: true as const,
+  updatedAt: true as const,
 });
 
 export const insertBillApprovalRequestSchema = createInsertSchema(billApprovalRequests).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  currentStep: true,
-  submissions: true,
+  id: true as const,
+  createdAt: true as const,
+  updatedAt: true as const,
+  currentStep: true as const,
+  submissions: true as const,
 });
 
 export type Bill = typeof bills.$inferSelect;
@@ -2677,10 +2677,10 @@ export const vendorTaxInfoRelations = relations(vendorTaxInfo, ({ one }) => ({
 }));
 
 export const insertVendorTaxInfoSchema = createInsertSchema(vendorTaxInfo).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  yearToDatePayments: true,
+  id: true as const,
+  createdAt: true as const,
+  updatedAt: true as const,
+  yearToDatePayments: true as const,
 });
 
 export type VendorTaxInfo = typeof vendorTaxInfo.$inferSelect;
