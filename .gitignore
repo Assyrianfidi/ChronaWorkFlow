@@ -196,6 +196,16 @@ terraform.rc
 generated/
 evidence-store/
 
+# Local overlay directories (not part of canonical tracked app)
+src/app/
+src/components/
+src/design/
+src/layout/
+src/state/
+src/theme/
+server/test/
+backend/src/utils/logger.js
+
 # Archive files
 archive/
 DoNotTouch/
