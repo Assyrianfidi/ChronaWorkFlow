@@ -352,12 +352,23 @@ const main = async () => {
 
     // 7) Audit logging verification: should have incremented at least once from AI, and may increment from webhook only if companyId present.
     // We at least assert audit_logs count did not decrease.
-    if (
-      report.dbCounts.before.audit_logs != null &&
-      report.dbCounts.afterAI.audit_logs != null &&
-      report.dbCounts.afterAI.audit_logs <= report.dbCounts.before.audit_logs
-    ) {
-      throw new Error('audit_logs did not increment after AI chat');
+    if (report.dbCounts.before.audit_logs != null && report.dbCounts.afterAI.audit_logs != null) {
+      if (report.dbCounts.afterAI.audit_logs <= report.dbCounts.before.audit_logs) {
+        const start = Date.now();
+        const timeoutMs = 5000;
+        while (Date.now() - start < timeoutMs) {
+          await new Promise((r) => setTimeout(r, 250));
+          const latest = await prisma.auditLog.count().catch(() => null);
+          if (latest != null && latest > report.dbCounts.before.audit_logs) {
+            report.dbCounts.afterAI.audit_logs = latest;
+            break;
+          }
+        }
+
+        if (report.dbCounts.afterAI.audit_logs <= report.dbCounts.before.audit_logs) {
+          throw new Error('audit_logs did not increment after AI chat');
+        }
+      }
     }
 
     report.checkpoints.audit_logs = {
