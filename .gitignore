@@ -119,7 +119,10 @@ analysis/
 *.ps1
 *.sh
 *.bat
-scripts/
+scripts/*
+!scripts/
+!scripts/phase1-smoke.mjs
+!scripts/verify-e2e.mjs
 
 # Test files
 tests/
@@ -180,6 +183,9 @@ nginx/
 grafana/
 monitoring/
 docker-entrypoint-initdb.d/
+
+# Local security helper scripts (keep off Git by default)
+security/scripts/
 
 # Terraform
 .terraform/
