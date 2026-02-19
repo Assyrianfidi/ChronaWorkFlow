@@ -18,7 +18,6 @@ import { logger } from '../utils/logger.js';
 import { getCurrentTenantContext } from '../middleware/prisma-tenant-isolation-v3.middleware.js';
 import { TenantRedisClient } from '../utils/redis-tenant-enforcer.js';
 import { emailService } from './email/email.service.js';
-import { twilioService } from './sms/twilio.service.js';
 import { pdfService } from './invoicing/pdf.service.js';
 import { stripeService } from './billing/stripe.service.js';
 import { AppError } from '../middleware/error.middleware.js';
@@ -346,12 +345,6 @@ export class DashboardService {
         process.env.SMTP_PASS
       );
 
-      const twilioConfigured = !!(
-        process.env.TWILIO_ACCOUNT_SID &&
-        process.env.TWILIO_AUTH_TOKEN &&
-        process.env.TWILIO_PHONE_NUMBER
-      );
-
       const stripeConfigured = !!process.env.STRIPE_SECRET_KEY;
 
       const status = {
@@ -362,15 +355,6 @@ export class DashboardService {
             sent: 0,
             delivered: 0,
             bounced: 0,
-            failed: 0,
-          },
-        },
-        twilio: {
-          configured: twilioConfigured,
-          status: twilioConfigured ? 'operational' : 'not_configured',
-          stats: {
-            sent: 0,
-            delivered: 0,
             failed: 0,
           },
         },
@@ -683,10 +667,9 @@ export class DashboardService {
     const ctx = this.validateTenantContext();
 
     try {
-      const result = await twilioService.sendSMS({
-        to,
-        message: 'AccuBooks: Test SMS from CEO Dashboard',
-      });
+      // SMS service removed - Twilio integration discontinued
+      logger.info('SMS service not configured - Twilio integration removed');
+      const result = { success: false, error: 'SMS service not available' };
 
       // ✅ Audit log
       await prisma.audit_logs.create({

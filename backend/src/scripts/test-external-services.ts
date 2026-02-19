@@ -1,13 +1,12 @@
 /**
  * Test Script for External Services Integration
- * Tests SendGrid email, Twilio SMS, Stripe payments, and PDF generation
+ * Tests SendGrid email, Stripe payments, and PDF generation
  * 
  * Usage: tsx src/scripts/test-external-services.ts
  */
 
 import dotenv from 'dotenv';
 import { emailService } from '../services/email/email.service.js';
-import { twilioService } from '../services/sms/twilio.service.js';
 import { pdfService } from '../services/invoicing/pdf.service.js';
 import { stripeService } from '../services/billing/stripe.service.js';
 import { logger } from '../utils/logger.js';
@@ -111,64 +110,9 @@ async function testEmailService(): Promise<void> {
 }
 
 async function testSMSService(): Promise<void> {
-  console.log('\n📱 Testing SMS Service (Twilio)...\n');
-
-  // Test 1: Send test SMS
-  const startTime = Date.now();
-  try {
-    const result = await twilioService.sendSMS({
-      to: '+1234567890', // Use test phone number
-      message: 'AccuBooks: This is a test SMS notification.',
-    });
-
-    if (result.success) {
-      results.push({
-        service: 'SMS',
-        test: 'Send test SMS',
-        status: 'PASS',
-        message: `SMS sent successfully. Message ID: ${result.messageId}`,
-        duration: Date.now() - startTime,
-      });
-    } else {
-      results.push({
-        service: 'SMS',
-        test: 'Send test SMS',
-        status: 'FAIL',
-        message: result.error || 'Unknown error',
-        duration: Date.now() - startTime,
-      });
-    }
-  } catch (error: any) {
-    results.push({
-      service: 'SMS',
-      test: 'Send test SMS',
-      status: 'FAIL',
-      message: (error as Error).message,
-      duration: Date.now() - startTime,
-    });
-  }
-
-  // Test 2: Send invoice notification SMS
-  const startTime2 = Date.now();
-  try {
-    const result = await twilioService.sendInvoiceNotification(
-      '+1234567890',
-      'INV-12345',
-      '$1,234.56'
-    );
-
-    if (result.success) {
-      results.push({
-        service: 'SMS',
-        test: 'Send invoice notification SMS',
-        status: 'PASS',
-        message: `Invoice notification sent. Message ID: ${result.messageId}`,
-        duration: Date.now() - startTime2,
-      });
-    } else {
-      results.push({
-        service: 'SMS',
-        test: 'Send invoice notification SMS',
+  console.log('\n📱 SMS Service (Twilio) - REMOVED\n');
+  console.log('ℹ️  SMS functionality has been removed from this application.');
+  console.log('✅ SMS Service tests skipped\n');
         status: 'FAIL',
         message: result.error || 'Unknown error',
         duration: Date.now() - startTime2,
@@ -365,7 +309,7 @@ function printResults(): void {
 async function main(): Promise<void> {
   try {
     console.log('🚀 AccuBooks External Services Integration Test\n');
-    console.log('Testing: Email (SendGrid), SMS (Twilio), PDF (Puppeteer), Payments (Stripe)\n');
+    console.log('Testing: Email (SendGrid), PDF (Puppeteer), Payments (Stripe)\n');
 
     await testEmailService();
     await testSMSService();
