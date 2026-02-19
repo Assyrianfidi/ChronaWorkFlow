@@ -113,20 +113,6 @@ async function testSMSService(): Promise<void> {
   console.log('\n📱 SMS Service (Twilio) - REMOVED\n');
   console.log('ℹ️  SMS functionality has been removed from this application.');
   console.log('✅ SMS Service tests skipped\n');
-        status: 'FAIL',
-        message: result.error || 'Unknown error',
-        duration: Date.now() - startTime2,
-      });
-    }
-  } catch (error: any) {
-    results.push({
-      service: 'SMS',
-      test: 'Send invoice notification SMS',
-      status: 'FAIL',
-      message: (error as Error).message,
-      duration: Date.now() - startTime2,
-    });
-  }
 }
 
 async function testPDFService(): Promise<void> {

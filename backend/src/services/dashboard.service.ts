@@ -677,16 +677,12 @@ export class DashboardService {
           action: 'DASHBOARD_TEST_SMS_SENT',
           userId: ctx.userId || 0,
           organizationId: parseInt(ctx.companyId || '0') || 0,
-          details: { to, success: result.success },
+          details: { to, success: result.success, error: result.error },
           timestamp: new Date(),
         },
       });
 
-      return {
-        success: result.success,
-        messageId: result.messageId,
-        message: result.success ? 'Test SMS sent successfully' : 'Failed to send test SMS',
-      };
+      return { success: result.success, error: result.error, message: result.success ? 'Test SMS sent successfully' : 'Failed to send test SMS' };
     } catch (error: any) {
       logger.error('Error sending test SMS', { error: (error as Error).message });
       throw error;
