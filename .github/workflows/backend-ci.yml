@@ -19,6 +19,23 @@ jobs:
     name: Zero Error Enforcement
     runs-on: ubuntu-latest
     
+    # PostgreSQL 15 service for Prisma connection
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        # Health check to ensure PostgreSQL is ready before tests run
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
     defaults:
       run:
         working-directory: ./backend
