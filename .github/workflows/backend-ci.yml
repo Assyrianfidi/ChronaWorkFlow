@@ -81,7 +81,7 @@ jobs:
       # STEP 6: TypeScript Check (No Emit)
       # ============================================
       - name: TypeScript Strict Check
-        run: npx tsc --noEmit
+        run: npx tsc --project tsconfig.build.json --noEmit
       
       # ============================================
       # STEP 7: Production Build
