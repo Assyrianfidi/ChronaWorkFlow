@@ -1,0 +1,179 @@
+name: Backend CI - Zero Tolerance Enforcement
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  enforce-zero-errors:
+    name: Zero Error Enforcement
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./backend
+    
+    steps:
+      # ============================================
+      # STEP 1: Checkout
+      # ============================================
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      # ============================================
+      # STEP 2: Setup Node 20
+      # ============================================
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      
+      # ============================================
+      # STEP 3: Install Dependencies
+      # ============================================
+      - name: Install Dependencies
+        run: npm ci
+      
+      # ============================================
+      # STEP 4: Generate Prisma Client
+      # ============================================
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+      
+      # ============================================
+      # STEP 5: Validate Prisma Schema
+      # ============================================
+      - name: Validate Prisma Schema
+        run: npx prisma validate
+      
+      # ============================================
+      # STEP 6: TypeScript Check (No Emit)
+      # ============================================
+      - name: TypeScript Strict Check
+        run: npx tsc --noEmit
+      
+      # ============================================
+      # STEP 7: Production Build
+      # ============================================
+      - name: Build Production Artifacts
+        run: npm run build
+      
+      # ============================================
+      # STEP 8: Verify Build Artifacts
+      # ============================================
+      - name: Verify dist/ Folder Generated
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "ERROR: dist/ folder not generated"
+            exit 1
+          fi
+          FILE_COUNT=$(find dist -type f | wc -l)
+          if [ "$FILE_COUNT" -lt 100 ]; then
+            echo "ERROR: dist/ folder contains only $FILE_COUNT files (expected 100+)"
+            exit 1
+          fi
+          echo "✅ Build artifacts verified: $FILE_COUNT files"
+      
+      # ============================================
+      # STEP 9: Detect @ts-ignore Violations
+      # ============================================
+      - name: Detect @ts-ignore Violations
+        run: |
+          VIOLATIONS=$(grep -r "@ts-ignore" src/ || true)
+          if [ -n "$VIOLATIONS" ]; then
+            echo "ERROR: @ts-ignore found in source code"
+            echo "$VIOLATIONS"
+            exit 1
+          fi
+          echo "✅ No @ts-ignore violations detected"
+      
+      # ============================================
+      # STEP 10: Verify Strict Mode Enabled
+      # ============================================
+      - name: Verify TypeScript Strict Mode
+        run: |
+          if ! grep -q '"strict": true' tsconfig.json; then
+            echo "ERROR: strict mode not enabled in tsconfig.json"
+            exit 1
+          fi
+          if ! grep -q '"noEmitOnError": true' tsconfig.json; then
+            echo "ERROR: noEmitOnError not enabled in tsconfig.json"
+            exit 1
+          fi
+          echo "✅ TypeScript strict mode verified"
+      
+      # ============================================
+      # STEP 11: Verify Tenant Isolation Middleware
+      # ============================================
+      - name: Verify Tenant Isolation Middleware
+        run: |
+          if [ ! -f "src/middleware/prisma-tenant-isolation-v3.middleware.ts" ]; then
+            echo "ERROR: Tenant isolation middleware missing"
+            exit 1
+          fi
+          if [ ! -f "src/middleware/database-tenant-context.middleware.ts" ]; then
+            echo "ERROR: Database tenant context middleware missing"
+            exit 1
+          fi
+          echo "✅ Tenant isolation middleware verified"
+      
+      # ============================================
+      # STEP 12: ESLint Check
+      # ============================================
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: false
+      
+      # ============================================
+      # STEP 13: Automated Smoke Tests
+      # ============================================
+      - name: Run Smoke Tests
+        run: npm run test:smoke
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+      
+      # ============================================
+      # SUCCESS NOTIFICATION
+      # ============================================
+      - name: CI Success
+        if: success()
+        run: |
+          echo "============================================"
+          echo "✅ BACKEND CI PASSED - ALL CHECKS GREEN"
+          echo "============================================"
+          echo "- TypeScript: 0 errors"
+          echo "- Prisma: VALID"
+          echo "- Build: SUCCESS"
+          echo "- @ts-ignore: NONE"
+          echo "- Strict Mode: ENABLED"
+          echo "- Middleware: PRESENT"
+          echo "- ESLint: PASS"
+          echo "- Smoke Tests: PASS"
+          echo "============================================"
+      
+      # ============================================
+      # FAILURE NOTIFICATION
+      # ============================================
+      - name: CI Failure
+        if: failure()
+        run: |
+          echo "============================================"
+          echo "❌ BACKEND CI FAILED"
+          echo "============================================"
+          echo "Fix all errors before merging to main"
+          exit 1

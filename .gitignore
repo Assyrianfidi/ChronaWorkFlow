@@ -147,7 +147,7 @@ jest.config.*
 .trunk/
 
 # CI/CD files
-.github/
+# .github - REMOVED to allow GitHub Actions workflows/
 .vscode/
 .husky/
 
