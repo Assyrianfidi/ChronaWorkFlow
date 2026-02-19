@@ -1,7 +1,7 @@
-import { PrismaClientSingleton } from '../lib/prisma';
-import { logger } from '../utils/logger';
-import { SystemPanicMonitor } from '../utils/errorHandler';
-import { CircuitBreakerRegistry } from '../utils/circuitBreaker';
+import { PrismaClientSingleton } from '../utils/prisma.js';
+import { logger } from '../utils/logger.js';
+import { SystemPanicMonitor } from '../utils/errorHandler.js';
+import { CircuitBreakerRegistry } from '../utils/circuitBreaker.js';
 import { performance } from 'perf_hooks';
 
 /**
@@ -191,7 +191,7 @@ class MonitoringService {
         await this.collectSystemMetrics();
         await this.cleanupOldAlerts();
         this.cleanupResponseTimes();
-      } catch (error) {
+      } catch (error: any) {
         logger.error('Error collecting metrics:', error);
       }
     }, 30000); // Every 30 seconds
@@ -280,7 +280,7 @@ class MonitoringService {
 
     const sorted = [...this.responseTimes].sort((a, b) => a - b);
     this.metrics.requests.avgResponseTime = 
-      sorted.reduce((sum, time) => sum + time, 0) / sorted.length;
+      sorted.reduce((sum: any, time: any) => sum + time, 0) / sorted.length;
     
     const p95Index = Math.floor(sorted.length * 0.95);
     const p99Index = Math.floor(sorted.length * 0.99);
@@ -292,7 +292,7 @@ class MonitoringService {
     this.metrics.endpoints.clear();
     for (const [endpoint, metric] of this.endpointMetrics.entries()) {
       if (metric.times.length > 0) {
-        const avgTime = metric.times.reduce((sum, time) => sum + time, 0) / metric.times.length;
+        const avgTime = metric.times.reduce((sum: any, time: any) => sum + time, 0) / metric.times.length;
         const errorRate = metric.errors / metric.times.length;
         
         this.metrics.endpoints.set(endpoint, {
@@ -439,7 +439,7 @@ class MonitoringService {
         health.issues.push('Database response time is slow');
         health.recommendations.push('Optimize database queries or check connection');
       }
-    } catch (error) {
+    } catch (error: any) {
       health.checks.database.status = 'unhealthy';
       health.checks.database.message = (error as Error).message;
       health.issues.push('Database connection failed');
@@ -539,7 +539,7 @@ class MonitoringService {
               timestamp: alert.timestamp,
             },
           });
-        } catch (error) {
+        } catch (error: any) {
           logger.error('Failed to store alert in database:', error);
         }
       })
@@ -653,7 +653,7 @@ class MonitoringService {
         this.metrics.database.poolConnections = poolStats.counters['prisma_pool_connections_active'] || 0;
         this.metrics.database.poolIdle = poolStats.counters['prisma_pool_connections_idle'] || 0;
       }
-    } catch (error) {
+    } catch (error: any) {
       // Pool stats not available, ignore
     }
   }
@@ -679,7 +679,7 @@ class MonitoringService {
               },
             },
           });
-        } catch (error) {
+        } catch (error: any) {
           logger.error('Failed to cleanup old alerts from database:', error);
         }
       })
@@ -833,4 +833,5 @@ class MonitoringService {
 
 // Export singleton
 export default MonitoringService;
-export { MonitoringService, SystemMetrics, Alert };
+export { MonitoringService };
+export type { SystemMetrics, Alert };

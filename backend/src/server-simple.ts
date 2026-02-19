@@ -4,7 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { authRoutes } from "./routes/auth.routes.simple.js";
 import { StatusCodes } from "http-status-codes";
-import adminFeaturesRouter from "./routes/admin.features.simple";
+import adminFeaturesRouter from "./routes/admin.features.simple.js";
 
 // Create Express app
 const app = express();
@@ -52,7 +52,7 @@ app.get("/api/invoices", async (req: Request, res: Response) => {
         customerName: "ABC Corporation",
         amount: 2500.0,
         status: "PAID",
-        dueDate: "2024-12-15",
+        dueAt: "2024-12-15",
         createdAt: "2024-12-01",
       },
       {
@@ -61,7 +61,7 @@ app.get("/api/invoices", async (req: Request, res: Response) => {
         customerName: "XYZ Industries",
         amount: 1800.5,
         status: "PENDING",
-        dueDate: "2024-12-20",
+        dueAt: "2024-12-20",
         createdAt: "2024-12-05",
       },
     ];
@@ -75,7 +75,7 @@ app.get("/api/invoices", async (req: Request, res: Response) => {
         total: mockInvoices.length,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch invoices",
@@ -117,7 +117,7 @@ app.get("/api/customers", async (req: Request, res: Response) => {
         total: mockCustomers.length,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch customers",
@@ -159,7 +159,7 @@ app.get("/api/transactions", async (req: Request, res: Response) => {
         total: mockTransactions.length,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch transactions",
@@ -182,7 +182,7 @@ app.get("/api/reports/summary", async (req: Request, res: Response) => {
       success: true,
       data: mockSummary,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch report summary",
@@ -215,7 +215,7 @@ app.get("/api/notifications", async (req: Request, res: Response) => {
       success: true,
       data: mockNotifications,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch notifications",
@@ -240,7 +240,7 @@ app.get("/api/users/profile", async (req: Request, res: Response) => {
       success: true,
       data: mockProfile,
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch user profile",
@@ -296,7 +296,7 @@ async function startServer() {
     });
 
     return server;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to start server:", error);
     process.exit(1);
   }

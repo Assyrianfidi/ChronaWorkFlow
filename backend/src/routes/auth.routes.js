@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { email },
     });
 
@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: {
         email,
         password: hashedPassword,
@@ -61,13 +61,13 @@ router.post('/register', async (req, res) => {
         },
       });
 
-      await prisma.user.update({
+      await prisma.users.update({
         where: { id: user.id },
         data: { currentCompanyId: company.id },
       });
     }
 
-    await prisma.auditLog.create({
+    await prisma.audit_logs.create({
       data: {
         userId: user.id,
         action: 'USER_REGISTERED',
@@ -80,7 +80,7 @@ router.post('/register', async (req, res) => {
     const accessToken = generateAccessToken(user.id, user.email, user.role);
     const refreshToken = generateRefreshToken(user.id);
 
-    await prisma.user_sessions.create({
+    await prisma.users.sessions.create({
       data: {
         userId: user.id,
         sessionToken: refreshToken,
@@ -125,7 +125,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
     });
 
@@ -174,12 +174,12 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: user.id },
       data: { lastLogin: new Date() },
     });
 
-    await prisma.auditLog.create({
+    await prisma.audit_logs.create({
       data: {
         userId: user.id,
         action: 'USER_LOGIN',
@@ -192,7 +192,7 @@ router.post('/login', async (req, res) => {
     const accessToken = generateAccessToken(user.id, user.email, user.role);
     const refreshToken = generateRefreshToken(user.id);
 
-    await prisma.user_sessions.create({
+    await prisma.users.sessions.create({
       data: {
         userId: user.id,
         sessionToken: refreshToken,
@@ -246,7 +246,7 @@ router.post('/refresh', async (req, res) => {
       });
     }
 
-    const session = await prisma.user_sessions.findFirst({
+    const session = await prisma.users.sessions.findFirst({
       where: {
         userId: decoded.userId,
         sessionToken: refreshToken,
@@ -261,7 +261,7 @@ router.post('/refresh', async (req, res) => {
       });
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: decoded.userId },
     });
 
@@ -295,13 +295,13 @@ router.post('/refresh', async (req, res) => {
 router.post('/logout', authenticate, async (req, res) => {
   try {
     // Delete ALL sessions for this user for security
-    await prisma.user_sessions.deleteMany({
+    await prisma.users.sessions.deleteMany({
       where: {
         userId: req.user.id,
       },
     });
 
-    await prisma.auditLog.create({
+    await prisma.audit_logs.create({
       data: {
         userId: req.user.id,
         action: 'USER_LOGOUT',
@@ -339,7 +339,7 @@ router.post('/forgot-password', async (req, res) => {
       });
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
     });
 
@@ -353,14 +353,14 @@ router.post('/forgot-password', async (req, res) => {
     const resetToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: user.id },
       data: {
         password: hashedToken,
       },
     });
 
-    await prisma.auditLog.create({
+    await prisma.audit_logs.create({
       data: {
         userId: user.id,
         action: 'PASSWORD_RESET_REQUESTED',
@@ -401,7 +401,7 @@ router.post('/reset-password', async (req, res) => {
 
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    const user = await prisma.user.findFirst({
+    const user = await prisma.users.findFirst({
       where: {
         password: hashedToken,
       },
@@ -416,18 +416,18 @@ router.post('/reset-password', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,
       },
     });
 
-    await prisma.user_sessions.deleteMany({
+    await prisma.users.sessions.deleteMany({
       where: { userId: user.id },
     });
 
-    await prisma.auditLog.create({
+    await prisma.audit_logs.create({
       data: {
         userId: user.id,
         action: 'PASSWORD_RESET_COMPLETED',
@@ -454,7 +454,7 @@ router.post('/reset-password', async (req, res) => {
 // GET /api/auth/me
 router.get('/me', authenticate, async (req, res) => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: req.user.id },
       select: {
         id: true,

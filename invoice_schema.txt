@@ -1,0 +1,16 @@
+   column_name   |          data_type          | is_nullable 
+-----------------+-----------------------------+-------------
+ id              | text                        | NO
+ companyId       | text                        | NO
+ billingStatusId | text                        | NO
+ invoiceNumber   | text                        | NO
+ amount          | double precision            | NO
+ currency        | text                        | NO
+ status          | USER-DEFINED                | NO
+ issuedAt        | timestamp without time zone | NO
+ dueAt           | timestamp without time zone | NO
+ paidAt          | timestamp without time zone | YES
+ createdAt       | timestamp without time zone | NO
+ updatedAt       | timestamp without time zone | NO
+(12 rows)
+

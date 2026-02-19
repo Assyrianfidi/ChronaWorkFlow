@@ -1,27 +1,30 @@
-FROM node:20-alpine
+FROM node:20-slim
 
-WORKDIR /app
+WORKDIR /app/backend
 
-# Install system dependencies
-RUN apk add --no-cache python3 make g++ curl
+# Install system dependencies (includes openssl)
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+     openssl ca-certificates python3 make g++ curl \
+  && rm -rf /var/lib/apt/lists/*
 
-# Copy package files
-COPY package.json package-lock.json* ./
+# Copy backend package files
+COPY backend/package.json backend/package-lock.json* ./
 
-# Copy source code BEFORE npm install to avoid postinstall script failure
-COPY . .
+# Copy backend source
+COPY backend .
 
-# Install dependencies with ignore-scripts to skip postinstall
-RUN npm install --legacy-peer-deps --ignore-scripts
+# Install dependencies (allow peer deps resolution)
+RUN npm install --legacy-peer-deps
+# Ensure stripe is present (runtime dependency for billing)
+RUN npm install stripe --legacy-peer-deps
 
-# Copy ES Module production server
-COPY server/production-server.mjs ./
+# Generate Prisma client for runtime enums and types
+RUN npx prisma generate --schema prisma/schema.prisma
 
-# Remove dev dependencies
-RUN npm prune --production
+ENV NODE_ENV=staging
 
-ENV NODE_ENV=production
+EXPOSE 4000
 
-EXPOSE 10000
-
-CMD ["node", "production-server.mjs"]
+# Run directly with tsx (TypeScript runtime) to avoid ESM .js extension build failures
+CMD ["npx", "tsx", "server.ts"]

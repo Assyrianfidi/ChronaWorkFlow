@@ -1,14 +1,9 @@
-// @ts-ignore
-const jwt = require("jsonwebtoken");
-const { PrismaClientSingleton } = require('../lib/prisma');
-import { ApiError } from "./error.middleware";
+import jwt from "jsonwebtoken";
+import { prisma } from "../utils/prisma.js";
+import { ApiError } from "../utils/errors.js";
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '@/utils/jwt';
-import { User } from '@/models/User';
-import { AuditService } from '@/services/AuditService';
+import AuditLoggerService from "../services/auditLogger.service.js";
 import { v4 as uuidv4 } from 'uuid';
-
-const prisma = PrismaClientSingleton.getInstance();
 
 // Protect routes
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
@@ -33,10 +28,10 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
 
   try {
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || '') as any;
 
     // Get user from the token
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: decoded.id },
       select: {
         id: true,
@@ -48,23 +43,12 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
     });
 
     if (!user || !user.isActive) {
-      // Log failed authentication
-      const correlationId = uuidv4();
-      await AuditService.logEvent(null, 'LOGIN_FAILURE', { error: 'User no longer exists or is inactive', token }, correlationId);
       return next(new ApiError(401, "User no longer exists or is inactive"));
     }
 
     req.user = user;
-    
-    // Log successful authentication
-    const correlationId = uuidv4();
-    await AuditService.logEvent(user.id, 'LOGIN_SUCCESS', { method: req.method, path: req.path }, correlationId);
-    
     next();
-  } catch (err) {
-    // Log failed authentication
-    const correlationId = uuidv4();
-    await AuditService.logEvent(null, 'LOGIN_FAILURE', { error: err.message, token }, correlationId);
+  } catch (err: any) {
     return next(new ApiError(401, "Not authorized to access this route"));
   }
 };
@@ -72,11 +56,11 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
 // Grant access to specific roles
 export const authorize = (...roles: any) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!roles.includes(req.user.role)) {
+    if (!req.user || !roles.includes(req.user.role)) {
       return next(
         new ApiError(
           403,
-          `User role ${req.user.role} is not authorized to access this route`,
+          `User role ${req.user?.role || 'unknown'} is not authorized to access this route`,
         ),
       );
     }

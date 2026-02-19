@@ -52,7 +52,7 @@ router.get('/', async (req, res) => {
     }
     
     const [transactions, total] = await Promise.all([
-      prisma.transaction.findMany({
+      prisma.transactions.findMany({
         where,
         skip,
         take,
@@ -66,7 +66,7 @@ router.get('/', async (req, res) => {
           },
         },
       }),
-      prisma.transaction.count({ where }),
+      prisma.transactions.count({ where }),
     ]);
     
     res.json({
@@ -92,7 +92,7 @@ router.get('/', async (req, res) => {
 // GET transaction by ID
 router.get('/:id', async (req, res) => {
   try {
-    const transaction = await prisma.transaction.findUnique({
+    const transaction = await prisma.transactions.findUnique({
       where: { id: req.params.id },
       include: {
         company: true,
@@ -126,7 +126,7 @@ router.post('/', validate(createTransactionSchema), async (req, res) => {
   try {
     const { amount, description, date, type, companyId, status, referenceNumber } = req.body;
     
-    const transaction = await prisma.transaction.create({
+    const transaction = await prisma.transactions.create({
       data: {
         amount,
         description,
@@ -166,7 +166,7 @@ router.put('/:id', validate(createTransactionSchema), async (req, res) => {
   try {
     const { amount, description, date, type, status, referenceNumber } = req.body;
     
-    const existingTransaction = await prisma.transaction.findUnique({
+    const existingTransaction = await prisma.transactions.findUnique({
       where: { id: req.params.id },
     });
     
@@ -185,7 +185,7 @@ router.put('/:id', validate(createTransactionSchema), async (req, res) => {
     if (status) updateData.status = status;
     if (referenceNumber) updateData.referenceNumber = referenceNumber;
     
-    const transaction = await prisma.transaction.update({
+    const transaction = await prisma.transactions.update({
       where: { id: req.params.id },
       data: updateData,
       include: {
@@ -216,7 +216,7 @@ router.put('/:id', validate(createTransactionSchema), async (req, res) => {
 // DELETE transaction
 router.delete('/:id', async (req, res) => {
   try {
-    const transaction = await prisma.transaction.findUnique({
+    const transaction = await prisma.transactions.findUnique({
       where: { id: req.params.id },
     });
     
@@ -227,7 +227,7 @@ router.delete('/:id', async (req, res) => {
       });
     }
     
-    await prisma.transaction.delete({
+    await prisma.transactions.delete({
       where: { id: req.params.id },
     });
     
@@ -263,18 +263,18 @@ router.get('/stats/overview', async (req, res) => {
       byType,
       byStatus,
     ] = await Promise.all([
-      prisma.transaction.count({ where }),
-      prisma.transaction.aggregate({
+      prisma.transactions.count({ where }),
+      prisma.transactions.aggregate({
         where,
         _sum: { amount: true },
       }),
-      prisma.transaction.groupBy({
+      prisma.transactions.groupBy({
         by: ['type'],
         where,
         _count: true,
         _sum: { amount: true },
       }),
-      prisma.transaction.groupBy({
+      prisma.transactions.groupBy({
         by: ['status'],
         where,
         _count: true,

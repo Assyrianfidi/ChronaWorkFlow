@@ -3,10 +3,10 @@
  * Manages Starter → Pro → Business → Enterprise tier logic with usage tracking and upgrade triggers
  */
 
-import { prisma } from '../lib/prisma';
-import { logger } from '../utils/logger';
-import { EventBus } from '../events/event-bus';
-import { CacheManager } from '../cache/cache-manager';
+import { prisma } from '../utils/prisma.js';
+import logger from '../utils/logger.js';
+import { EventBus } from '../events/event-bus.js';
+import { CacheManager } from '../cache/cache-manager.js';
 
 // Pricing tiers
 export type PricingTier = 'trial' | 'starter' | 'pro' | 'business' | 'enterprise';
@@ -802,6 +802,13 @@ export class PricingTierService {
       increasedLimits,
       priceDifference: config2.monthlyPrice - config1.monthlyPrice,
     };
+  }
+
+  /**
+   * Alias for checkUpgradeTriggers - expected by routes
+   */
+  async getUpgradeTriggers(userId: number, companyId: string): Promise<any> {
+    return this.checkUpgradeTriggers(userId, companyId);
   }
 }
 

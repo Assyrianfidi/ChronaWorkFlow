@@ -19,7 +19,7 @@ export class Serializer {
 
     // Handle arrays
     if (Array.isArray(data)) {
-      return data.map((item) => this.serialize(type, item, options));
+      return data.map((item: any) => this.serialize(type, item, options));
     }
 
     // Handle objects
@@ -83,7 +83,7 @@ export class Serializer {
     }
 
     if (Array.isArray(value)) {
-      return value.map((item) => this.serializeValue(item, options));
+      return value.map((item: any) => this.serializeValue(item, options));
     }
 
     if (typeof value === "object") {
@@ -134,7 +134,7 @@ export class Serializer {
 
     // Handle arrays
     if (Array.isArray(data)) {
-      return data.map((item) => this.deserialize(type, item));
+      return data.map((item: any) => this.deserialize(type, item));
     }
 
     // Handle objects
@@ -167,7 +167,7 @@ export class Serializer {
     }
 
     if (Array.isArray(value)) {
-      return value.map((item) => this.deserializeValue(item));
+      return value.map((item: any) => this.deserializeValue(item));
     }
 
     if (typeof value === "object") {
@@ -212,7 +212,7 @@ export class Serializer {
   toJSON(data: any, space?: number): string {
     try {
       return JSON.stringify(data, null, space);
-    } catch (error) {
+    } catch (error: any) {
       // Handle circular references
       const seen = new WeakSet();
       const jsonString = JSON.stringify(
@@ -239,7 +239,7 @@ export class Serializer {
   fromJSON(jsonString: string): any {
     try {
       return JSON.parse(jsonString);
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         `Invalid JSON: ${error instanceof Error ? error.message : "Unknown error"}`,
       );

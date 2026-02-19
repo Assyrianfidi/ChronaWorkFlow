@@ -1,0 +1,5 @@
+ current_user | session_user | is_superuser | bypasses_rls 
+--------------+--------------+--------------+--------------
+ postgres     | postgres     | t            | t
+(1 row)
+

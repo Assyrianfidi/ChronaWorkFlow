@@ -54,7 +54,7 @@ export const enforcePlanLimits = async (req, res, next) => {
     }
 
     if (req.path.includes('/users') && req.method === 'POST') {
-      const userCount = await prisma.companyMember.count({
+      const userCount = await prisma.company_members.count({
         where: { companyId: req.user.currentCompanyId },
       });
 
@@ -71,7 +71,7 @@ export const enforcePlanLimits = async (req, res, next) => {
     }
 
     if (req.path.includes('/companies') && req.method === 'POST') {
-      const companyCount = await prisma.companyMember.count({
+      const companyCount = await prisma.company_members.count({
         where: { userId: req.user.id },
         distinct: ['companyId'],
       });

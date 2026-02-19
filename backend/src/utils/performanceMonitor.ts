@@ -83,9 +83,9 @@ export class PerformanceMonitor {
     const metrics = this.metrics.get(name);
     if (!metrics || metrics.length === 0) return null;
 
-    const durations = metrics.map((m) => m.duration).sort((a, b) => a - b);
+    const durations = metrics.map((m: any) => m.duration).sort((a, b) => a - b);
     const count = durations.length;
-    const sum = durations.reduce((a, b) => a + b, 0);
+    const sum = durations.reduce((a: any, b: any) => a + b, 0);
 
     return {
       count,
@@ -167,7 +167,7 @@ export class PerformanceMonitor {
       }
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       endTimer();
       throw error;
     }
@@ -187,7 +187,7 @@ export class PerformanceMonitor {
       const result = await operationFn();
       endTimer();
       return result;
-    } catch (error) {
+    } catch (error: any) {
       endTimer();
       throw error;
     }
@@ -264,7 +264,7 @@ export class LoadTester {
     const totalTime = Math.max(1, Date.now() - startTime);
     const avgResponseTime =
       responseTimes.length > 0
-        ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
+        ? responseTimes.reduce((a: any, b: any) => a + b, 0) / responseTimes.length
         : 0;
     const minResponseTime =
       responseTimes.length > 0 ? Math.min(...responseTimes) : 0;
@@ -309,7 +309,7 @@ export class LoadTester {
 
       const duration = Date.now() - startTime;
       return { statusCode: response.status, duration };
-    } catch (error) {
+    } catch (error: any) {
       const duration = Date.now() - startTime;
       throw new Error(`Request failed after ${duration}ms: ${error}`);
     }
@@ -404,7 +404,7 @@ export class DatabaseMonitor {
         idleConnections: stats[0]?.idle || 0,
         waitingClients: stats[0]?.waiting || 0,
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.info({
         type: "ERROR",
         message: "Failed to get connection pool stats",
@@ -444,7 +444,7 @@ export class DatabaseMonitor {
       `;
 
       return slowQueries;
-    } catch (error) {
+    } catch (error: any) {
       logger.info({
         type: "ERROR",
         message: "Failed to get slow queries",

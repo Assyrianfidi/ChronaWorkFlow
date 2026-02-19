@@ -1,0 +1,103 @@
+              section              |           timestamp           |           database            
+-----------------------------------+-------------------------------+-------------------------------
+ === POST-ENFORCEMENT SNAPSHOT === | 2026-02-18 12:03:50.034603-08 | accubooks_prod_Chronaworkflow
+(1 row)
+
+         section         
+-------------------------
+ === TABLES WITH RLS ===
+(1 row)
+
+           tablename           | rls_enabled | force_rls | policy_count 
+-------------------------------+-------------+-----------+--------------
+ accounts                      | t           | t         |            1
+ agency_client_relationships   | t           | t         |            1
+ api_usage_records             | t           | t         |            1
+ audit_logs                    | t           | t         |            1
+ automation_proposals          | t           | t         |            1
+ automation_rules              | t           | t         |            1
+ billing_status                | t           | t         |            1
+ churn_retention_analytics     | t           | t         |            1
+ company_members               | t           | t         |            1
+ custom_reports                | t           | t         |            1
+ customer_health_scores        | t           | t         |            1
+ dashboard_metrics_cache       | t           | t         |            1
+ departments                   | t           | t         |            1
+ documents                     | t           | t         |            1
+ executive_alerts              | t           | t         |            1
+ executive_analytics_snapshots | t           | t         |            1
+ executive_kpi_snapshots       | t           | t         |            1
+ feature_adoption_metrics      | t           | t         |            1
+ feature_usage                 | t           | t         |            1
+ founder_control_states        | t           | t         |            1
+ invoice_risk_analytics        | t           | t         |            1
+ invoices                      | t           | t         |            1
+ organization_users            | t           | t         |            1
+ organizations                 | t           | t         |            1
+ payments                      | t           | t         |            1
+ predictive_metrics            | t           | t         |            1
+ reconciliation_reports        | t           | t         |            1
+ revenue_analytics             | t           | t         |            1
+ suspicious_activities         | t           | t         |            1
+ transactions                  | t           | t         |            1
+ trend_patterns                | t           | t         |            1
+ usage_frequency_metrics       | t           | t         |            1
+ user_activity_logs            | t           | t         |            1
+ user_sessions                 | t           | t         |            1
+ users                         | t           | t         |            1
+(35 rows)
+
+        section         
+------------------------
+ === POLICY DETAILS ===
+(1 row)
+
+ schemaname |           tablename           |       policyname        | permissive |  roles   | cmd |                                                                    qual                                                                    
+------------+-------------------------------+-------------------------+------------+----------+-----+--------------------------------------------------------------------------------------------------------------------------------------------
+ public     | accounts                      | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | agency_client_relationships   | tenant_isolation_policy | PERMISSIVE | {public} | ALL | (("agencyCompanyId" = current_setting('app.tenant_id'::text, true)) OR ("clientCompanyId" = current_setting('app.tenant_id'::text, true)))
+ public     | api_usage_records             | tenant_isolation_policy | PERMISSIVE | {public} | ALL | (("organizationId")::text = current_setting('app.tenant_id'::text, true))
+ public     | audit_logs                    | tenant_isolation_policy | PERMISSIVE | {public} | ALL | (("organizationId")::text = current_setting('app.tenant_id'::text, true))
+ public     | automation_proposals          | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("tenantId" = current_setting('app.tenant_id'::text, true))
+ public     | automation_rules              | tenant_isolation_policy | PERMISSIVE | {public} | ALL | (("organizationId")::text = current_setting('app.tenant_id'::text, true))
+ public     | billing_status                | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | churn_retention_analytics     | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | company_members               | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | custom_reports                | tenant_isolation_policy | PERMISSIVE | {public} | ALL | (("organizationId")::text = current_setting('app.tenant_id'::text, true))
+ public     | customer_health_scores        | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | dashboard_metrics_cache       | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | departments                   | tenant_isolation_policy | PERMISSIVE | {public} | ALL | (("organizationId")::text = current_setting('app.tenant_id'::text, true))
+ public     | documents                     | tenant_isolation_policy | PERMISSIVE | {public} | ALL | (("organizationId")::text = current_setting('app.tenant_id'::text, true))
+ public     | executive_alerts              | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | executive_analytics_snapshots | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | executive_kpi_snapshots       | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | feature_adoption_metrics      | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | feature_usage                 | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | founder_control_states        | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | invoice_risk_analytics        | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | invoices                      | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | organization_users            | tenant_isolation_policy | PERMISSIVE | {public} | ALL | (("organizationId")::text = current_setting('app.tenant_id'::text, true))
+ public     | organizations                 | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("tenantId" = current_setting('app.tenant_id'::text, true))
+ public     | payments                      | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | predictive_metrics            | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | reconciliation_reports        | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | revenue_analytics             | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | suspicious_activities         | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | transactions                  | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | trend_patterns                | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | usage_frequency_metrics       | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | user_activity_logs            | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | user_sessions                 | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("companyId" = current_setting('app.tenant_id'::text, true))
+ public     | users                         | tenant_isolation_policy | PERMISSIVE | {public} | ALL | ("currentCompanyId" = current_setting('app.tenant_id'::text, true))
+(35 rows)
+
+     section     
+-----------------
+ === SUMMARY ===
+(1 row)
+
+ total_tables | tables_with_rls | tables_with_force_rls | total_policies 
+--------------+-----------------+-----------------------+----------------
+           43 |              35 |                    35 |             35
+(1 row)
+

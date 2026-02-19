@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { securityHeaders } from "../securityHeaders";
+import { securityHeaders } from "../securityHeaders.js";
 
 type RateLimiterOptions = {
   windowMs: number;
@@ -60,7 +60,7 @@ function sanitizeValue(value: unknown): unknown {
   }
 
   if (Array.isArray(value)) {
-    return value.map((v) => sanitizeValue(v));
+    return value.map((v: any) => sanitizeValue(v));
   }
 
   if (value && typeof value === "object") {
@@ -108,7 +108,7 @@ function enforceCors(req: express.Request, res: express.Response, next: express.
 
   const allowed = (process.env.ALLOWED_ORIGINS || "")
     .split(",")
-    .map((s) => s.trim())
+    .map((s: any) => s.trim())
     .filter(Boolean);
 
   if (allowed.length === 0 || allowed.includes(String(origin))) {

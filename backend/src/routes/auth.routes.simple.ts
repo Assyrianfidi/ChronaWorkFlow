@@ -8,7 +8,7 @@ import {
   forgotPassword,
   resetPassword,
   verifyEmail,
-} from "../controllers/auth.controller.simple";
+} from "../controllers/auth.controller.simple.js";
 
 const router = express.Router();
 

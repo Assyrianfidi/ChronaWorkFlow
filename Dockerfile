@@ -37,7 +37,9 @@ RUN adduser --system --uid 1001 chronaworkflow
 COPY --from=builder --chown=chronaworkflow:nodejs /app/dist ./dist
 COPY --from=builder --chown=chronaworkflow:nodejs /app/server ./server
 COPY --from=builder --chown=chronaworkflow:nodejs /app/package*.json ./
-COPY --from=builder --chown=chronaworkflow:nodejs /app/.env* ./
+COPY --from=builder --chown=chronaworkflow:nodejs /app/backend/prisma ./backend/prisma
+
+# SECURITY: Do NOT copy .env files — secrets must be injected at runtime
 
 # Install production dependencies
 RUN npm ci --only=production && npm cache clean --force

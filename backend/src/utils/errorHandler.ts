@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Prisma } from "@prisma/client";
-import { config } from "../config/config";
+import { config } from "../config/config.js";
 
 /**
  * Standardized error response format

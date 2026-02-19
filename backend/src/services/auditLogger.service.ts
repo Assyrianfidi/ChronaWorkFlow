@@ -1,5 +1,4 @@
-// @ts-ignore
-import { prisma } from "../utils/prisma";
+import { prisma } from "../utils/prisma.js";
 
 // Create a singleton instance for production
 let prismaInstance: any = null;
@@ -70,7 +69,7 @@ class AuditLoggerService {
       ) {
         await this.triggerSecurityAlert(logEntry);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to log auth event:", error);
     }
   }
@@ -120,7 +119,7 @@ class AuditLoggerService {
           message: `Sensitive data deletion attempted: ${logEntry.resourceType}:${logEntry.resourceId}`,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to log data event:", error);
     }
   }
@@ -163,7 +162,7 @@ class AuditLoggerService {
         alertType: event.action,
         message: event.message || `Security event: ${event.action}`,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to log security event:", error);
     }
   }
@@ -201,7 +200,7 @@ class AuditLoggerService {
           message: `Critical system event: ${event.action}`,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to log system event:", error);
     }
   }
@@ -242,7 +241,7 @@ class AuditLoggerService {
 
       // In production, this would send notifications via email, Slack, etc.
       // await this.sendNotification(alertEntry);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to trigger security alert:", error);
     }
   }

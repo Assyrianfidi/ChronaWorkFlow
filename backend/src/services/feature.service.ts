@@ -1,5 +1,5 @@
 import { Prisma, Role } from "@prisma/client";
-import { prisma } from "../utils/prisma";
+import { prisma } from "../utils/prisma.js";
 
 export type FeatureKey = string;
 
@@ -23,24 +23,20 @@ export type FeatureResolution = {
 export class FeatureService {
   async listFeatures(): Promise<FeatureListResponse> {
     const [roleRows, userRows] = await Promise.all([
-      prisma.$queryRaw<
-        Array<{ role: Role; featureName: string; enabled: boolean }>
-      >(Prisma.sql`
+      prisma.$queryRaw(Prisma.sql`
         SELECT role, "featureName", enabled
         FROM role_features
-      `),
-      prisma.$queryRaw<Array<{ userId: number; featureName: string; enabled: boolean }>>(
-        Prisma.sql`
+      `) as Promise<Array<{ role: Role; featureName: string; enabled: boolean }>>,
+      prisma.$queryRaw(Prisma.sql`
           SELECT "userId", "featureName", enabled
           FROM user_features
-        `,
-      ),
+        `) as Promise<Array<{ userId: number; featureName: string; enabled: boolean }>>,
     ]);
 
     const keys = Array.from(
       new Set([
-        ...roleRows.map((r) => r.featureName),
-        ...userRows.map((u) => u.featureName),
+        ...roleRows.map((r: any) => r.featureName),
+        ...userRows.map((u: any) => u.featureName),
       ]),
     ).sort();
 
@@ -58,7 +54,7 @@ export class FeatureService {
       userOverridesByKey.set(row.featureName, curr);
     }
 
-    const features: FeatureListItem[] = keys.map((key) => ({
+    const features: FeatureListItem[] = keys.map((key: any) => ({
       key,
       globalEnabled: false,
       roleDefaults: roleDefaultsByKey.get(key) ?? {},
@@ -103,14 +99,14 @@ export class FeatureService {
     userId: number,
     companyId?: string,
   ): Promise<FeatureResolution> {
-    const userOverrideRows = await prisma.$queryRaw<Array<{ enabled: boolean }>>(
+    const userOverrideRows = await prisma.$queryRaw(
       Prisma.sql`
         SELECT enabled
         FROM user_features
         WHERE "userId" = ${userId} AND "featureName" = ${featureKey}
         LIMIT 1
       `,
-    );
+    ) as Array<{ enabled: boolean }>;
 
     const userOverride = userOverrideRows[0];
 
@@ -122,7 +118,7 @@ export class FeatureService {
       };
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: userId },
       select: { role: true, currentCompanyId: true },
     });
@@ -134,7 +130,7 @@ export class FeatureService {
     const effectiveCompanyId = companyId ?? user.currentCompanyId ?? undefined;
     void effectiveCompanyId;
 
-    const roleDefaultRows = await prisma.$queryRaw<Array<{ enabled: boolean }>>(
+    const roleDefaultRows = await prisma.$queryRaw(
       Prisma.sql`
         SELECT enabled
         FROM role_features

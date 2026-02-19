@@ -1,4 +1,3 @@
-// @ts-ignore
 import { Request, Response, NextFunction } from "express";
 import { ZodSchema, ZodError } from "zod";
 import { ApiError } from "../utils/errors.js";
@@ -30,9 +29,9 @@ export const validate = (schema: {
       }
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof ZodError) {
-        const errorMessages = error.issues.map((err) => ({
+        const errorMessages = error.issues.map((err: any) => ({
           field: err.path.join("."),
           message: err.message,
         }));

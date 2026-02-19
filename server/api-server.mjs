@@ -3,41 +3,17 @@
  * Serves all AI Operator endpoints on port 8080
  */
 
-import http from 'http';
-import url from 'url';
-import fs from 'fs';
-import path from 'path';
+const message = [
+  'ARCHIVED RUNTIME: server/api-server.mjs',
+  '------------------------------------------------------------',
+  'This demo/runtime has been disabled as part of non-destructive backend consolidation.',
+  'Canonical backend entrypoint is: node server/app.mjs',
+  'Canonical backend implementation is: backend/server.js',
+  '------------------------------------------------------------',
+].join('\n');
 
-// System State
-const systemState = {
-  status: 'ACTIVE',
-  subsystems: 15,
-  online: 15,
-  metrics: {
-    cpu: 35,
-    memory: 45,
-    latency: 42,
-    errorRate: 0.03,
-    throughput: 8500
-  },
-  lastHealthCheck: new Date(),
-  uptime: 0
-};
-
-// Helper functions
-const generateHash = () => {
-  return Array(64).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-};
-
-const jsonResponse = (res, data, statusCode = 200) => {
-  res.writeHead(statusCode, {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
-  });
-  res.end(JSON.stringify(data, null, 2));
-};
+console.error(message);
+process.exit(1);
 
 // Route handlers
 const routes = {

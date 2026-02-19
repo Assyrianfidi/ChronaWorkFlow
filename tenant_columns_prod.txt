@@ -1,0 +1,45 @@
+          table_name           |     column_name      | is_nullable | data_type 
+-------------------------------+----------------------+-------------+-----------
+ accounts                      | companyId            | NO          | text
+ agency_client_relationships   | agencyCompanyId      | NO          | text
+ agency_client_relationships   | clientCompanyId      | NO          | text
+ api_usage_records             | organizationId       | NO          | integer
+ audit_logs                    | organizationId       | NO          | integer
+ automation_proposals          | tenantId             | NO          | text
+ automation_rules              | organizationId       | NO          | integer
+ billing_status                | companyId            | NO          | text
+ churn_retention_analytics     | companyId            | NO          | text
+ company_members               | companyId            | NO          | text
+ custom_reports                | organizationId       | NO          | integer
+ customer_health_scores        | companyId            | NO          | text
+ dashboard_metrics_cache       | companyId            | NO          | text
+ departments                   | organizationId       | NO          | integer
+ documents                     | organizationId       | NO          | integer
+ executive_alerts              | companyId            | NO          | text
+ executive_analytics_snapshots | companyId            | NO          | text
+ executive_kpi_snapshots       | companyId            | NO          | text
+ feature_adoption_metrics      | companyId            | NO          | text
+ feature_usage                 | companyId            | NO          | text
+ founder_control_states        | companyId            | NO          | text
+ invoice_risk_analytics        | companyId            | NO          | text
+ invoices                      | companyId            | NO          | text
+ organization_users            | organizationId       | NO          | integer
+ organization_users            | organizationRole     | NO          | text
+ organizations                 | tenantId             | NO          | text
+ payments                      | companyId            | NO          | text
+ platform_metrics              | activeOrganizations  | NO          | integer
+ platform_metrics              | churnedOrganizations | NO          | integer
+ platform_metrics              | newOrganizations     | NO          | integer
+ platform_metrics              | totalOrganizations   | NO          | integer
+ predictive_metrics            | companyId            | NO          | text
+ reconciliation_reports        | companyId            | NO          | text
+ revenue_analytics             | companyId            | NO          | text
+ suspicious_activities         | companyId            | YES         | text
+ transactions                  | companyId            | NO          | text
+ trend_patterns                | companyId            | NO          | text
+ usage_frequency_metrics       | companyId            | NO          | text
+ user_activity_logs            | companyId            | NO          | text
+ user_sessions                 | companyId            | YES         | text
+ users                         | currentCompanyId     | YES         | text
+(41 rows)
+

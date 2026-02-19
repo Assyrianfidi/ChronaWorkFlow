@@ -1,0 +1,5 @@
+ active_connections | active_queries 
+--------------------+----------------
+                 17 |              0
+(1 row)
+

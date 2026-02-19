@@ -1,6 +1,5 @@
-// @ts-ignore
-const express = require("express");
-import { authenticate } from "../middleware/auth";
+import express from "express";
+import { authenticate } from "../middleware/auth.js";
 const transactionsRouter = require("../modules/transactions/transactions.routes");
 
 const router = express.Router();

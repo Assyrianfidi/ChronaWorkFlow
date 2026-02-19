@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { businessLogicService } from "../business-logic/business.logic.service";
+import { businessLogicService } from "../business-logic/business.logic.service.js";
 import { logger } from "../utils/logger.js";
 import { ApiError, ErrorCodes } from "../utils/errorHandler.js";
 import { Role } from "@prisma/client";
@@ -41,7 +41,7 @@ export const processTransaction = async (
 
     // Get request context for fraud detection
     const context = {
-      ipAddress: req.ip,
+      // ipAddress moved to metadata
       device: req.headers["user-agent"],
       location: req.headers["x-location"] as string,
       merchantCategory: metadata?.merchantCategory,
@@ -85,7 +85,7 @@ export const processTransaction = async (
         },
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Transaction processing failed", {
       event: "TRANSACTION_ERROR",
       userId: req.user?.id,
@@ -120,7 +120,7 @@ export const getAccountSummary = async (
       success: true,
       data: summary,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Account summary retrieval failed", {
       event: "ACCOUNT_SUMMARY_ERROR",
       userId: req.user?.id,
@@ -157,7 +157,7 @@ export const calculateLoanDetails = async (
       success: true,
       data: loanDetails,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Loan calculation failed", {
       event: "LOAN_CALCULATION_ERROR",
       userId: req.user?.id,
@@ -194,7 +194,7 @@ export const convertCurrency = async (
       success: true,
       data: conversion,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Currency conversion failed", {
       event: "CURRENCY_CONVERSION_ERROR",
       userId: req.user?.id,
@@ -234,7 +234,7 @@ export const getTransactionHistory = async (
       success: true,
       data: history,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Transaction history retrieval failed", {
       event: "TRANSACTION_HISTORY_ERROR",
       userId: req.user?.id,
@@ -257,7 +257,7 @@ export const healthCheck = async (
       success: true,
       data: health,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Business logic health check failed", {
       event: "BUSINESS_LOGIC_HEALTH_CHECK_ERROR",
       error: (error as Error).message,

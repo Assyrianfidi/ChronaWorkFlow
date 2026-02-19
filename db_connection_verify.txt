@@ -1,0 +1,5 @@
+       current_database        |                                 version                                 
+-------------------------------+-------------------------------------------------------------------------
+ accubooks_prod_Chronaworkflow | PostgreSQL 18.0 on x86_64-windows, compiled by msvc-19.44.35217, 64-bit
+(1 row)
+

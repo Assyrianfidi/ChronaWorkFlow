@@ -1,0 +1,27 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install system deps for native modules (bcrypt)
+RUN apk add --no-cache python3 make g++ curl
+
+# Copy package manifests
+COPY package.json package-lock.json* ./
+
+# Copy source
+COPY . .
+
+# Install dependencies (skip scripts to avoid postinstall side effects)
+RUN npm install --legacy-peer-deps --ignore-scripts
+
+# Prune dev deps
+RUN npm prune --production
+
+ENV NODE_ENV=production
+
+EXPOSE 5000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:5000/api/health || exit 1
+
+CMD ["node", "server/app.mjs"]

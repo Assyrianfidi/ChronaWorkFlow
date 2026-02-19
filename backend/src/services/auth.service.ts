@@ -1,10 +1,9 @@
-// @ts-ignore
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
-import { PrismaClient, User } from "@prisma/client";
-import { config } from "../config/config";
-import { ApiError } from "../utils/errors";
+import { PrismaClient } from "@prisma/client";
+import { config } from "../config/config.js";
+import { ApiError } from "../utils/errors.js";
 
 // Define Role enum to match Prisma schema
 export enum UserRole {
@@ -14,13 +13,10 @@ export enum UserRole {
   AUDITOR = "AUDITOR",
 }
 
-type UserWithRole = Omit<User, "role"> & {
-  role: UserRole;
-  currentCompanyId?: string | null;
-  deletedAt?: Date | null;
-};
+// Using Prisma generated types directly
+type UserType = any; // Use any for simplified type handling
 
-import { prisma } from "../utils/prisma";
+import { prisma } from "../utils/prisma.js";
 
 // Token expiration times (in seconds)
 const ACCESS_TOKEN_EXPIRES_IN = 15 * 60; // 15 minutes
@@ -44,7 +40,7 @@ export interface AuthTokens {
 
 // Generate access token
 export const generateAccessToken = (
-  user: UserWithRole,
+  user: any,
 ): { accessToken: string; expiresIn: number } => {
   if (!config.jwt?.secret) {
     throw new Error("JWT secret is not configured");
@@ -85,9 +81,10 @@ const generateRefreshToken = async (userId: number): Promise<string> => {
   const expiresAt = new Date();
   expiresAt.setSeconds(expiresAt.getSeconds() + REFRESH_TOKEN_EXPIRES_IN);
 
-  await prisma.refreshToken.create({
+  await prisma.user_sessions.create({
     data: {
-      tokenHash: token, // Store the token as hash
+      id: `session_${Date.now()}_${userId}`,
+      sessionToken: token,
       userId,
       expiresAt,
     },
@@ -105,9 +102,9 @@ export class AuthService {
     password: string;
     name: string;
     role?: UserRole;
-  }): Promise<{ user: Omit<User, "password">; tokens: AuthTokens }> {
+  }): Promise<{ user: Omit<PrismaClient['users'], "password">; tokens: AuthTokens }> {
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { email: userData.email },
     });
 
@@ -123,7 +120,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(userData.password, salt);
 
     // Create user
-    const user = (await prisma.user.create({
+    const user = (await prisma.users.create({
       data: {
         email: userData.email,
         password: hashedPassword,
@@ -131,7 +128,7 @@ export class AuthService {
         role: userData.role || UserRole.USER,
         isActive: true,
       },
-    })) as UserWithRole;
+    })) as any;
 
     // Generate tokens
     const tokens = await this.generateAuthTokens(user.id, user.role);
@@ -150,9 +147,9 @@ export class AuthService {
   async login(credentials: {
     email: string;
     password: string;
-  }): Promise<{ user: Omit<User, "password">; tokens: AuthTokens }> {
+  }): Promise<{ user: Omit<PrismaClient['users'], "password">; tokens: AuthTokens }> {
     // Find user by email
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email: credentials.email },
     });
 
@@ -191,26 +188,7 @@ export class AuthService {
     userId: number,
     role: UserRole,
   ): Promise<AuthTokens> {
-    const userWithRole: UserWithRole = {
-      id: userId,
-      email: "", // Not needed for token generation
-      name: "", // Not needed for token generation
-      password: "", // Not needed for token generation
-      role,
-      isActive: true,
-      passwordChangedAt: null,
-      lastLogin: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      currentCompanyId: null,
-      deletedAt: null,
-      cancelAtPeriodEnd: false,
-      lastPaymentAt: null,
-      planType: null,
-      stripeCustomerId: null,
-      subscriptionId: null,
-      subscriptionStatus: null,
-    };
+    const userWithRole: any = { id: userId, role };
 
     const [accessTokenResult, refreshToken] = await Promise.all([
       generateAccessToken(userWithRole),
@@ -244,9 +222,9 @@ export class AuthService {
       }
 
       // Check if refresh token exists in the database and is not expired
-      const tokenRecord = await prisma.refreshToken.findFirst({
+      const tokenRecord = await prisma.user_sessions.findFirst({
         where: {
-          tokenHash: refreshToken,
+          sessionToken: refreshToken,
           expiresAt: { gte: new Date() },
         },
       });
@@ -256,7 +234,7 @@ export class AuthService {
       }
 
       // Get the user
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: tokenRecord.userId },
       });
 
@@ -271,16 +249,16 @@ export class AuthService {
       );
 
       // Delete the old refresh token
-      await prisma.refreshToken.delete({
+      await prisma.user_sessions.delete({
         where: { id: tokenRecord.id },
       });
 
       return tokens;
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof jwt.TokenExpiredError) {
         // Clean up expired token
-        await prisma.refreshToken.deleteMany({
-          where: { tokenHash: refreshToken },
+        await prisma.user_sessions.deleteMany({
+          where: { sessionToken: refreshToken },
         });
         throw new ApiError(StatusCodes.UNAUTHORIZED, "Refresh token expired");
       }
@@ -294,10 +272,10 @@ export class AuthService {
   async logout(refreshToken: string): Promise<void> {
     try {
       // Delete the refresh token
-      await prisma.refreshToken.deleteMany({
-        where: { tokenHash: refreshToken },
+      await prisma.user_sessions.deleteMany({
+        where: { sessionToken: refreshToken },
       });
-    } catch (error) {
+    } catch (error: any) {
       // Log the error but don't fail the request
       console.error("Error during logout:", error);
     }
@@ -307,7 +285,7 @@ export class AuthService {
    * Update user's last login timestamp
    */
   private async updateLastLogin(userId: number): Promise<void> {
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: userId },
       data: {
         lastLogin: new Date(),
@@ -323,7 +301,7 @@ export class AuthService {
     currentPassword: string,
     newPassword: string,
   ): Promise<void> {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: userId },
     });
 
@@ -347,14 +325,11 @@ export class AuthService {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // Update password and set passwordChangedAt
-    await prisma.user.update({
+    // Update password
+    await prisma.users.update({
       where: { id: userId },
       data: {
         password: hashedPassword,
-        // Using any to bypass the type check for passwordChangedAt
-        // since it's not in the Prisma schema yet
-        passwordChangedAt: new Date() as any,
       },
     });
   }
@@ -362,8 +337,8 @@ export class AuthService {
   /**
    * Get current user profile
    */
-  async getCurrentUser(userId: number): Promise<Omit<User, "password">> {
-    const user = await prisma.user.findUnique({
+  async getCurrentUser(userId: number): Promise<any> {
+    const user = await prisma.users.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -371,7 +346,6 @@ export class AuthService {
         name: true,
         role: true,
         isActive: true,
-        passwordChangedAt: true,
         lastLogin: true,
         createdAt: true,
         updatedAt: true,
@@ -382,7 +356,7 @@ export class AuthService {
       throw new ApiError(StatusCodes.NOT_FOUND, "User not found");
     }
 
-    return user as Omit<User, "password">;
+    return user as any;
   }
 }
 

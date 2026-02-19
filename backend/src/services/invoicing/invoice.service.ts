@@ -1,6 +1,6 @@
 import { InvoiceStatus } from "@prisma/client";
-import { prisma } from "../../utils/prisma";
-import { generateInvoiceNumber } from "./utils/invoice-number.util";
+import { prisma } from "../../utils/prisma.js";
+import { generateInvoiceNumber } from "./utils/invoice-number.util.js";
 
 // Fixed self-reference
 
@@ -8,7 +8,7 @@ export interface CreateInvoiceData {
   companyId: string;
   clientId?: string;
   date?: Date;
-  dueDate: Date;
+  dueAt: Date;
   items: {
     accountId: string;
     description: string;
@@ -50,13 +50,13 @@ export class InvoiceService {
       const totalAmount = items.reduce((sum, item) => sum + item.totalAmount, 0);
 
       // Create invoice with lines
-      const invoice = await prisma.invoice.create({
+      const invoice = await prisma.invoices.create({
         data: {
           invoiceNumber,
           companyId: data.companyId,
           clientId: data.clientId ?? null,
           date: data.date || new Date(),
-          dueDate: data.dueDate,
+          dueAt: data.dueAt,
           status: InvoiceStatus.DRAFT,
           totalAmount,
           items: {
@@ -78,7 +78,7 @@ export class InvoiceService {
 
   async getInvoice(id: string) {
     try {
-      const invoice = await prisma.invoice.findUnique({
+      const invoice = await prisma.invoices.findUnique({
         where: { id },
         include: {
           client: true,
@@ -99,7 +99,7 @@ export class InvoiceService {
 
   async updateInvoice(id: string, data: UpdateInvoiceData) {
     try {
-      const existingInvoice = await prisma.invoice.findUnique({
+      const existingInvoice = await prisma.invoices.findUnique({
         where: { id },
         include: { items: true },
       });
@@ -128,12 +128,12 @@ export class InvoiceService {
         : existingInvoice.totalAmount.toNumber();
 
       // Update invoice
-      const updatedInvoice = await prisma.invoice.update({
+      const updatedInvoice = await prisma.invoices.update({
         where: { id },
         data: {
           clientId: data.clientId,
           date: data.date,
-          dueDate: data.dueDate,
+          dueAt: data.dueDate,
           status: data.status,
           totalAmount,
           items: items
@@ -179,7 +179,7 @@ export class InvoiceService {
       }
 
       const [invoices, total] = await Promise.all([
-        prisma.invoice.findMany({
+        prisma.invoices.findMany({
           where: whereClause,
           include: {
             client: true,
@@ -189,7 +189,7 @@ export class InvoiceService {
           skip,
           take: limit,
         }),
-        prisma.invoice.count({ where: whereClause }),
+        prisma.invoices.count({ where: whereClause }),
       ]);
 
       return {
@@ -216,10 +216,10 @@ export class InvoiceService {
         await this.createAccountingEntries(invoice);
 
         // Update invoice status
-        const updatedInvoice = await prisma.invoice.update({
+        const updatedInvoice = await prisma.invoices.update({
           where: { id },
           data: {
-            status: InvoiceStatus.SENT,
+            status: InvoiceStatus.OPEN,
           },
         });
 
@@ -246,7 +246,7 @@ export class InvoiceService {
             refType: "INVOICE",
             debitAccount: "1200", // Accounts Receivable
             creditAccount: "4000", // Revenue
-            amount: invoice.totalAmount?.toNumber ? invoice.totalAmount.toNumber() : Number(invoice.totalAmount),
+            amount: invoice.totalAmount?.toNumber ? invoice.totalAmount.toNumber() : Number(invoice.amount),
             description: `Invoice ${invoice.invoiceNumber}`,
           },
         ],

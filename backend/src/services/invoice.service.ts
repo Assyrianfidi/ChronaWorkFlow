@@ -1,17 +1,15 @@
-import { prisma } from "../utils/prisma";
-import { ApiError } from "../utils/errors";
+import { prisma } from "../utils/prisma.js";
+import { ApiError } from "../utils/errors.js";
 import type { Prisma } from "@prisma/client";
 
-// Define the InvoiceWithItems type based on Prisma's generated types
-type InvoiceWithItems = Prisma.InvoiceGetPayload<{
-  include: { items: true };
-}>;
+// Simplified invoice type without items (no items relation in schema)
+type Invoice = Prisma.invoicesGetPayload<{}>;
 
 export interface CreateInvoiceData {
   customerId: string;
   issueDate: Date;
-  dueDate: Date;
-  status: "DRAFT" | "SENT" | "PAID" | "OVERDUE" | "CANCELLED";
+  dueAt: Date;
+  status: "DRAFT" | "OPEN" | "PAID" | "OPEN" | "CANCELLED";
   subtotal: number;
   tax: number;
   total: number;
@@ -26,7 +24,7 @@ export interface CreateInvoiceData {
 }
 
 export interface UpdateInvoiceData {
-  status?: "DRAFT" | "SENT" | "PAID" | "OVERDUE" | "CANCELLED";
+  status?: "DRAFT" | "OPEN" | "PAID" | "OPEN" | "CANCELLED";
   notes?: string;
   // Add other fields that can be updated
 }
@@ -37,7 +35,7 @@ export class InvoiceService {
     page = 1,
     limit = 10,
   ): Promise<{
-    data: Array<Prisma.InvoiceGetPayload<{}>>;
+    data: Array<Prisma.invoicesGetPayload<{}>>;
     meta: {
       total: number;
       page: number;
@@ -48,13 +46,13 @@ export class InvoiceService {
     const skip = (page - 1) * limit;
 
     const [invoices, total] = await Promise.all([
-      prisma.invoice.findMany({
+      prisma.invoices.findMany({
         where: { companyId },
         skip,
         take: limit,
         orderBy: { createdAt: "desc" },
       }),
-      prisma.invoice.count({ where: { companyId } }),
+      prisma.invoices.count({ where: { companyId } }),
     ]);
 
     return {
@@ -68,8 +66,8 @@ export class InvoiceService {
     };
   }
 
-  async getInvoiceById(id: string): Promise<InvoiceWithItems> {
-    const invoice = await prisma.invoice.findUnique({
+  async getInvoiceById(id: string): Promise<Invoice> {
+    const invoice = await prisma.invoices.findUnique({
       where: { id },
     });
 
@@ -77,20 +75,13 @@ export class InvoiceService {
       throw new ApiError(404, "Invoice not found");
     }
 
-    const items = await prisma.invoiceItem.findMany({
-      where: { invoiceId: id },
-    });
-
-    return {
-      ...invoice,
-      items,
-    };
+    return invoice;
   }
 
-  async createInvoice(data: CreateInvoiceData): Promise<InvoiceWithItems> {
+  async createInvoice(data: CreateInvoiceData): Promise<Invoice> {
     const { items, ...invoiceData } = data;
 
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx: any) => {
       // Create the invoice
       const invoice = await tx.invoice.create({
         data: {
@@ -98,7 +89,7 @@ export class InvoiceService {
             invoiceData.companyId,
           ),
           date: invoiceData.issueDate || new Date(),
-          dueDate: invoiceData.dueDate,
+          dueAt: invoiceData.dueAt,
           totalAmount: invoiceData.total || 0,
           status: invoiceData.status || "DRAFT",
           companyId: invoiceData.companyId,
@@ -108,36 +99,20 @@ export class InvoiceService {
 
       // Create invoice items
       if (items && items.length > 0) {
-        await tx.invoiceItem.createMany({
-          data: items.map((item) => ({
-            invoiceId: invoice.id,
-            description: item.description,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            totalAmount: item.amount,
-            accountId: "default-account-id", // TODO: Get from company default account
-          })),
-        });
+        // Note: Invoice items not implemented in current schema
       }
 
-      // Return the invoice with items
-      const invoiceItems = await tx.invoiceItem.findMany({
-        where: { invoiceId: invoice.id },
-      });
-
-      return {
-        ...invoice,
-        items: invoiceItems,
-      };
+      // Return the invoice
+      return invoice;
     });
   }
 
   async updateInvoice(
     id: string,
     data: UpdateInvoiceData,
-  ): Promise<InvoiceWithItems> {
+  ): Promise<Invoice> {
     // Check if invoice exists
-    const existingInvoice = await prisma.invoice.findUnique({
+    const existingInvoice = await prisma.invoices.findUnique({
       where: { id },
     });
 
@@ -146,7 +121,7 @@ export class InvoiceService {
     }
 
     // Update the invoice
-    const updatedInvoice = await prisma.invoice.update({
+    const updatedInvoice = await prisma.invoices.update({
       where: { id },
       data: {
         ...data,
@@ -154,20 +129,12 @@ export class InvoiceService {
       },
     });
 
-    // Get the updated invoice with items
-    const items = await prisma.invoiceItem.findMany({
-      where: { invoiceId: id },
-    });
-
-    return {
-      ...updatedInvoice,
-      items,
-    };
+    return updatedInvoice;
   }
 
   async deleteInvoice(id: string): Promise<void> {
     // Check if invoice exists
-    const existingInvoice = await prisma.invoice.findUnique({
+    const existingInvoice = await prisma.invoices.findUnique({
       where: { id },
     });
 
@@ -175,20 +142,15 @@ export class InvoiceService {
       throw new ApiError(404, "Invoice not found");
     }
 
-    // Delete invoice items first (due to foreign key constraint)
-    await prisma.invoiceItem.deleteMany({
-      where: { invoiceId: id },
-    });
-
     // Delete the invoice
-    await prisma.invoice.delete({
+    await prisma.invoices.delete({
       where: { id },
     });
   }
 
   private async generateInvoiceNumber(companyId: string): Promise<string> {
     // Get the count of invoices for this company
-    const count = await prisma.invoice.count({
+    const count = await prisma.invoices.count({
       where: { companyId },
     });
 

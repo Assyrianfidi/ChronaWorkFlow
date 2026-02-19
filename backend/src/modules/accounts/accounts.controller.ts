@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { accountsService } from "./accounts.service";
-import { accountListQuerySchema } from "./accounts.model";
-import { ApiError } from "../../utils/errors";
+import { accountsService } from "./accounts.service.js";
+import { accountListQuerySchema } from "./accounts.model.js";
+import { ApiError } from "../../utils/errors.js";
 import { StatusCodes } from "http-status-codes";
 
 export const accountsController = {
@@ -11,7 +11,7 @@ export const accountsController = {
       const companyId = req.query.companyId as string;
       const accounts = await accountsService.list(companyId);
       res.status(StatusCodes.OK).json({ success: true, data: accounts });
-    } catch (error) {
+    } catch (error: any) {
       next(error);
     }
   },
@@ -20,7 +20,7 @@ export const accountsController = {
     try {
       const account = await accountsService.create(req.body);
       res.status(StatusCodes.CREATED).json({ success: true, data: account });
-    } catch (error) {
+    } catch (error: any) {
       next(error);
     }
   },
@@ -29,7 +29,7 @@ export const accountsController = {
     try {
       const updated = await accountsService.update(req.params.id, req.body);
       res.status(StatusCodes.OK).json({ success: true, data: updated });
-    } catch (error) {
+    } catch (error: any) {
       next(error);
     }
   },
@@ -39,7 +39,7 @@ export const accountsController = {
       const amount = Number(req.body.amount);
       const result = await accountsService.adjustBalance(req.params.id, amount);
       res.status(StatusCodes.OK).json({ success: true, data: result });
-    } catch (error) {
+    } catch (error: any) {
       next(error);
     }
   },

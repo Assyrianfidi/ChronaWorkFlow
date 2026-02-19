@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from "express";
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { prisma, PrismaClientSingleton } from '../utils/prisma.js';
 import { logger } from "../utils/logger.js";
 
 export interface ApiResponse<T = any> {
@@ -23,7 +23,7 @@ export interface RequestWithMetadata extends Request {
 }
 
 export class APIv3Controller {
-  private prisma: PrismaClient;
+  private prisma: any;
   private logger: typeof logger;
 
   constructor() {
@@ -59,7 +59,7 @@ export class APIv3Controller {
       };
 
       res.status(200).json(response);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Health check error:", error);
       const response: ApiResponse = {
         success: false,

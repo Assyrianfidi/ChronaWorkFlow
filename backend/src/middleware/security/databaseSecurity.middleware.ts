@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import DatabaseSecurityService from "../../services/databaseSecurity.service";
+import DatabaseSecurityService from "../../services/databaseSecurity.service.js";
 
 const SENSITIVE_FIELDS = new Set([
   "password",
@@ -85,7 +85,7 @@ function stripSensitive(obj: any, user: any): any {
   if (!obj || typeof obj !== "object") return obj;
 
   if (Array.isArray(obj)) {
-    return obj.map((v) => stripSensitive(v, user));
+    return obj.map((v: any) => stripSensitive(v, user));
   }
 
   const next: any = { ...obj };
@@ -108,7 +108,7 @@ export function filterSensitiveResponseData(
   res: Response,
   next: NextFunction,
 ) {
-  const originalJson = res.json.bind(res);
+  const originalJson = res.json;
 
   (res as any).json = (body: any) => {
     try {

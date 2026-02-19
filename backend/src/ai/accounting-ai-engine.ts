@@ -3,10 +3,10 @@
  * Advanced tax logic, automated categorization, anomaly detection
  */
 
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
-import { logger } from "../utils/logger";
-import { EventBus } from "../events/event-bus";
-import { CacheManager } from "../cache/cache-manager";
+import { prisma } from '../utils/prisma.js';
+import { logger } from "../utils/logger.js";
+import { EventBus } from "../events/event-bus.js";
+import { CacheManager } from "../cache/cache-manager.js";
 
 export interface TransactionData {
   id: string;
@@ -57,7 +57,7 @@ export interface FinancialInsight {
 }
 
 export class AccountingAIEngine {
-  private prisma: PrismaClient;
+  private prisma: typeof prisma;
   private logger: any;
   private eventBus: EventBus;
   private cache: CacheManager;
@@ -80,7 +80,7 @@ export class AccountingAIEngine {
       // Initialize anomaly detection models
       await this.loadAnomalyDetectionModel();
       this.logger.info("AI models initialized successfully");
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to initialize AI models:", error);
       throw error;
     }
@@ -132,7 +132,7 @@ export class AccountingAIEngine {
       });
 
       return validatedResult;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to categorize transaction:", error);
       throw error;
     }
@@ -188,7 +188,7 @@ export class AccountingAIEngine {
       await this.cacheTaxCalculation(transaction, result);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to calculate tax:", error);
       throw error;
     }
@@ -233,7 +233,7 @@ export class AccountingAIEngine {
       }
 
       // Return most significant anomaly
-      const primaryAnomaly = significantAnomalies.reduce((prev, current) =>
+      const primaryAnomaly = significantAnomalies.reduce((prev: any, current: any) =>
         current.confidence > prev.confidence ? current : prev,
       );
 
@@ -253,7 +253,7 @@ export class AccountingAIEngine {
       }
 
       return primaryAnomaly;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to detect anomalies:", error);
       throw error;
     }
@@ -293,7 +293,7 @@ export class AccountingAIEngine {
       await this.cacheInsights(accountId, timeframe, highConfidenceInsights);
 
       return highConfidenceInsights;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to generate insights:", error);
       throw error;
     }
@@ -321,9 +321,9 @@ export class AccountingAIEngine {
 
         // Process batch concurrently
         const batchResults = await Promise.allSettled([
-          ...batch.map((tx) => this.categorizeTransaction(tx)),
-          ...batch.map((tx) => this.calculateTax(tx, "US")), // Default jurisdiction
-          ...batch.map((tx) => this.detectAnomalies(tx)),
+          ...batch.map((tx: any) => this.categorizeTransaction(tx)),
+          ...batch.map((tx: any) => this.calculateTax(tx, "US")), // Default jurisdiction
+          ...batch.map((tx: any) => this.detectAnomalies(tx)),
         ]);
 
         // Extract successful results
@@ -366,7 +366,7 @@ export class AccountingAIEngine {
         `Batch processing completed: ${transactions.length} transactions`,
       );
       return results;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Batch processing failed:", error);
       throw error;
     }
@@ -399,7 +399,7 @@ export class AccountingAIEngine {
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, "")
       .split(/\s+/)
-      .filter((word) => word.length > 2);
+      .filter((word: any) => word.length > 2);
   }
 
   private async getHistoricalPatterns(accountId: string): Promise<any> {
@@ -411,7 +411,7 @@ export class AccountingAIEngine {
 
     // Get last 100 transactions for pattern analysis
     // TODO: Fix schema mismatch - Transaction model doesn't have accountId
-    // const transactions = await this.prisma.transaction.findMany({
+    // const transactions = await this.prisma.transactions.findMany({
     //   where: { accountId },
     //   orderBy: { date: 'desc' },
     //   take: 100
@@ -434,9 +434,9 @@ export class AccountingAIEngine {
   }
 
   private calculateAmountStats(transactions: any[]): any {
-    const amounts = transactions.map((t) => t.amount);
+    const amounts = transactions.map((t: any) => t.amount);
     return {
-      mean: amounts.reduce((a, b) => a + b, 0) / amounts.length,
+      mean: amounts.reduce((a: any, b: any) => a + b, 0) / amounts.length,
       median: this.median(amounts),
       std: this.standardDeviation(amounts),
       min: Math.min(...amounts),
@@ -445,24 +445,24 @@ export class AccountingAIEngine {
   }
 
   private calculateTimePatterns(transactions: any[]): any {
-    const hours = transactions.map((t) => t.date.getHours());
-    const days = transactions.map((t) => t.date.getDay());
+    const hours = transactions.map((t: any) => t.date.getHours());
+    const days = transactions.map((t: any) => t.date.getDay());
 
     return {
       mostCommonHour: this.mode(hours),
       mostCommonDay: this.mode(days),
-      weekdayRatio: days.filter((d) => d >= 1 && d <= 5).length / days.length,
+      weekdayRatio: days.filter((d: any) => d >= 1 && d <= 5).length / days.length,
     };
   }
 
   private calculateDescriptionPatterns(transactions: any[]): any {
-    const descriptions = transactions.map((t) => t.description.toLowerCase());
+    const descriptions = transactions.map((t: any) => t.description.toLowerCase());
     const commonWords = this.getCommonWords(descriptions);
 
     return {
       commonWords: commonWords.slice(0, 10),
       averageLength:
-        descriptions.reduce((a, b) => a + b.length, 0) / descriptions.length,
+        descriptions.reduce((a: any, b: any) => a + b.length, 0) / descriptions.length,
     };
   }
 
@@ -511,10 +511,10 @@ export class AccountingAIEngine {
   }
 
   private standardDeviation(values: number[]): number {
-    const mean = values.reduce((a, b) => a + b, 0) / values.length;
-    const squaredDiffs = values.map((value) => Math.pow(value - mean, 2));
+    const mean = values.reduce((a: any, b: any) => a + b, 0) / values.length;
+    const squaredDiffs = values.map((value: any) => Math.pow(value - mean, 2));
     const avgSquaredDiff =
-      squaredDiffs.reduce((a, b) => a + b, 0) / squaredDiffs.length;
+      squaredDiffs.reduce((a: any, b: any) => a + b, 0) / squaredDiffs.length;
     return Math.sqrt(avgSquaredDiff);
   }
 
@@ -740,7 +740,7 @@ export class AccountingAIEngine {
     startDate.setDate(startDate.getDate() - days);
 
     // TODO: Fix schema mismatch - Transaction model doesn't have accountId
-    // return await this.prisma.transaction.findMany({
+    // return await this.prisma.transactions.findMany({
     //   where: {
     //     accountId,
     //     date: {
@@ -769,7 +769,7 @@ export class AccountingAIEngine {
       };
     }
 
-    const amounts = history.map((h) => h.amount);
+    const amounts = history.map((h: any) => h.amount);
     const stats = this.calculateAmountStats(history);
     const zScore = Math.abs((transaction.amount - stats.mean) / stats.std);
 
@@ -886,7 +886,7 @@ export class AccountingAIEngine {
     startDate.setDate(startDate.getDate() - days);
 
     // TODO: Fix schema mismatch - Transaction model doesn't have accountId
-    // const transactions = await this.prisma.transaction.findMany({
+    // const transactions = await this.prisma.transactions.findMany({
     //   where: {
     //     accountId,
     //     date: { gte: startDate }
@@ -977,8 +977,8 @@ export class AccountingAIEngine {
     const firstHalf = sortedTransactions.slice(0, midPoint);
     const secondHalf = sortedTransactions.slice(midPoint);
 
-    const firstHalfTotal = firstHalf.reduce((sum, t) => sum + t.amount, 0);
-    const secondHalfTotal = secondHalf.reduce((sum, t) => sum + t.amount, 0);
+    const firstHalfTotal = firstHalf.reduce((sum: any, t: any) => sum + t.amount, 0);
+    const secondHalfTotal = secondHalf.reduce((sum: any, t: any) => sum + t.amount, 0);
 
     const change = ((secondHalfTotal - firstHalfTotal) / firstHalfTotal) * 100;
     const significant = Math.abs(change) > 10; // 10% threshold

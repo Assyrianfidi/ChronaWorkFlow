@@ -1,11 +1,10 @@
-// @ts-ignore
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { prisma } from "../utils/prisma";
-import { ApiError, ErrorCodes } from "../utils/errorHandler";
-import { ROLES } from "../constants/roles";
+import { prisma } from "../utils/prisma.js";
+import { ApiError, ErrorCodes } from "../utils/errorHandler.js";
+import { ROLES } from "../constants/roles.js";
 import { logger } from "../utils/logger.js";
-import { config } from "../config/config";
+import { config } from "../config/config.js";
 import { Role } from "@prisma/client";
 
 // List of public paths that don't require authentication
@@ -56,7 +55,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
       const decoded = jwt.verify(token, config.jwt.secret) as any;
 
       // Get user from database
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: decoded.id },
         select: {
           id: true,
@@ -101,7 +100,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
       }
       throw jwtError;
     }
-  } catch (error) {
+  } catch (error: any) {
     logger.error(`Auth middleware error for path ${req.path}:`, error);
     next(error);
   }
@@ -194,7 +193,7 @@ export const optionalAuth = async (
       const decoded = jwt.verify(token, config.jwt.secret) as any;
 
       // Get user from database
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { id: decoded.id },
         select: {
           id: true,
@@ -214,7 +213,7 @@ export const optionalAuth = async (
     }
 
     next();
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Optional auth middleware error:", error);
     next();
   }

@@ -77,7 +77,7 @@ export const login = async (req: Request, res: Response) => {
         expiresIn: 3600,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Simple Auth: Login error:", error);
     res.status(500).json({
       success: false,
@@ -113,7 +113,7 @@ export const register = async (req: Request, res: Response) => {
         expiresIn: 3600,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("❌ Simple Auth: Registration error:", error);
     res.status(500).json({
       success: false,
@@ -136,7 +136,7 @@ export const getMe = async (req: Request, res: Response) => {
       success: true,
       data: { user: mockUser },
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to get user info",
@@ -151,7 +151,7 @@ export const logout = async (req: Request, res: Response) => {
       success: true,
       message: "Logged out successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Logout failed",
@@ -169,7 +169,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
       message:
         "If an account with that email exists, a password reset link has been sent.",
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to process forgot password",
@@ -184,7 +184,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       success: true,
       message: "Password has been reset successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to reset password",
@@ -199,7 +199,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
       success: true,
       message: "Email has been verified successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       success: false,
       message: "Failed to verify email",

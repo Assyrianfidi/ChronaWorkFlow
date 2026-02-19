@@ -10,7 +10,7 @@ export const validateRequest = (schema: ZodSchema) =>
         params: req.params,
       });
       next();
-    } catch (err) {
+    } catch (err: any) {
       next(new Error('Validation failed'));
     }
 };

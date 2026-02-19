@@ -1,7 +1,5 @@
 import { z } from 'zod';
-// @ts-ignore
-
-import { logger } from '../utils/logger';
+import { logger } from '../utils/logger.js';
 
 import { cleanEnv, str, num } from 'envalid';
 

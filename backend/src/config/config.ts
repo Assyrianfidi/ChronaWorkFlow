@@ -11,7 +11,7 @@ const isProduction = env === "production";
 export const config = {
   env,
   isProduction,
-  port: parseInt(process.env.PORT || "3001", 10),
+  port: process.env.PORT || "3001",
   host: process.env.HOST || "0.0.0.0",
 
   // JWT configuration
@@ -20,7 +20,7 @@ export const config = {
     expiresIn: process.env.JWT_EXPIRES_IN || "1d",
     refreshSecret: process.env.JWT_REFRESH_SECRET || "default-refresh-secret",
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
-    cookieExpiresIn: parseInt(process.env.JWT_COOKIE_EXPIRES_IN || "7", 10),
+    cookieExpiresIn: process.env.JWT_COOKIE_EXPIRES_IN || "7",
   },
 
   // Database configuration

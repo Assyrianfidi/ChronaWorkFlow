@@ -201,7 +201,7 @@ export class Validator {
     }
 
     // If no errors, add to validated data
-    if (errors.filter((e) => e.field === fieldPath).length === 0) {
+    if (errors.filter((e: any) => e.field === fieldPath).length === 0) {
       validatedData[fieldName] = value;
     }
   }

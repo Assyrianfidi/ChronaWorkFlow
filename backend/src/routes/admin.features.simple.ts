@@ -115,13 +115,13 @@ const normalizeAssignments = (userId: string): Record<FeatureKey, boolean> => {
   return out;
 };
 
-router.get("/features", requireAdmin, (req, res) => {
+router.get("/features", requireAdmin, (req: any, res: any) => {
   res.json({
     success: true,
     data: {
       features: FEATURE_CATALOG,
       users: MOCK_USERS,
-      assignments: Object.fromEntries(MOCK_USERS.map((u) => [u.id, normalizeAssignments(u.id)])),
+      assignments: Object.fromEntries(MOCK_USERS.map((u: any) => [u.id, normalizeAssignments(u.id)])),
     },
   });
 });
@@ -138,12 +138,12 @@ router.patch(
     const { userId } = req.params;
     const { overrides } = req.body as { overrides: Record<string, boolean> };
 
-    const user = MOCK_USERS.find((u) => u.id === userId);
+    const user = MOCK_USERS.find((u: any) => u.id === userId);
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    const allowed = new Set(FEATURE_CATALOG.map((f) => f.name));
+    const allowed = new Set(FEATURE_CATALOG.map((f: any) => f.name));
     for (const key of Object.keys(overrides)) {
       if (!allowed.has(key as FeatureKey)) {
         return res.status(400).json({ success: false, message: `Invalid feature name: ${key}` });

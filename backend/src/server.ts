@@ -3,12 +3,15 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import { prisma } from "./utils/prisma";
+import { prisma } from "./utils/prisma.js";
 import { config } from "./config/config.js";
-import { authRoutes } from "./routes/auth.routes";
-import invoicingRoutes from "./routes/invoicing/index";
-import billingRoutes from "./routes/billing/billing.routes";
-import documentRoutes from "./routes/storage/document.routes";
+import { authRoutes } from "./routes/auth.routes.js";
+import invoicingRoutes from "./routes/invoicing/index.js";
+import billingRoutes from "./routes/billing/billing.routes.js";
+import documentRoutes from "./routes/storage/document.routes.js";
+import pricingRoutes from "./routes/pricing.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
+import { databaseTenantContextMiddleware } from "./middleware/database-tenant-context.middleware.js";
 import { StatusCodes } from "http-status-codes";
 import { CacheEngine } from "./utils/cacheEngine.js";
 import { PerformanceMonitor } from "./utils/performanceMonitor.js";
@@ -66,8 +69,15 @@ app.get("/api/metrics", async (req: Request, res: Response) => {
 
 // API Routes with rate limiting
 app.use("/api/auth", RateLimiter.perUserLimit("auth"), authRoutes);
+
+// CRITICAL: Apply database tenant context middleware after auth for RLS enforcement
+app.use(databaseTenantContextMiddleware);
+
+// Protected routes - tenant isolation enforced
 app.use("/api", invoicingRoutes);
 app.use("/api/billing", billingRoutes);
+app.use("/api/pricing", pricingRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/documents", documentRoutes);
 
 // 404 handler with logging
@@ -114,7 +124,7 @@ async function startServer() {
     });
 
     return server;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to initialize server:", error);
     process.exit(1);
   }

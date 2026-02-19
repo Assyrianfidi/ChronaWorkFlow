@@ -5,13 +5,13 @@
 
 import { Router, Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { auth } from '../middleware/auth';
-import { mlCategorizationEngine } from '../ai/ml-categorization-engine';
-import { aiCFOCopilot } from '../ai/ai-cfo-copilot';
-import { cashFlowForecastingEngine } from '../ai/cash-flow-forecasting';
-import { anomalyDetectionEngine } from '../ai/anomaly-detection-engine';
-import { pricingTierService } from '../services/pricing-tier.service';
-import { logger } from '../utils/logger';
+import { auth } from '../middleware/auth.js';
+import { mlCategorizationEngine } from '../ai/ml-categorization-engine.js';
+import { aiCFOCopilot } from '../ai/ai-cfo-copilot.js';
+import { cashFlowForecastingEngine } from '../ai/cash-flow-forecasting.js';
+import { anomalyDetectionEngine } from '../ai/anomaly-detection-engine.js';
+import { pricingTierService } from '../services/pricing-tier.service.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -53,7 +53,7 @@ router.post('/categorize', async (req: Request, res: Response, next: NextFunctio
       success: true,
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -90,7 +90,7 @@ router.post('/categorize/batch', async (req: Request, res: Response, next: NextF
         results: Object.fromEntries(results),
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -114,7 +114,7 @@ router.post('/categorize/feedback', async (req: Request, res: Response, next: Ne
       success: true,
       message: 'Feedback recorded',
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -131,7 +131,7 @@ router.get('/categorize/accuracy', async (req: Request, res: Response, next: Nex
       success: true,
       data: report,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -140,10 +140,10 @@ router.get('/categorize/accuracy', async (req: Request, res: Response, next: Nex
  * POST /api/ai/copilot/ask
  * Ask the AI CFO Copilot a question
  */
-router.post('/copilot/ask', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/copilot', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { query } = req.body;
-    const userId = (req as any).user?.id;
+    const userId: number = Number((req as any).user?.id);
     const companyId = (req as any).user?.currentCompanyId;
 
     if (!query) {
@@ -167,14 +167,14 @@ router.post('/copilot/ask', async (req: Request, res: Response, next: NextFuncti
 
     const response = await aiCFOCopilot.askQuestion(query, companyId, userId);
 
-    // Track usage
+    // Track usage (userId first, then featureName per service signature)
     await pricingTierService.trackFeatureUsage(userId, 'ai_copilot_queries');
 
     res.json({
       success: true,
       data: response,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -204,7 +204,7 @@ router.get('/copilot/quick-insights', async (req: Request, res: Response, next: 
       success: true,
       data: insights,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -238,7 +238,7 @@ router.get('/forecast', async (req: Request, res: Response, next: NextFunction) 
       success: true,
       data: forecast,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -272,7 +272,7 @@ router.get('/anomalies', async (req: Request, res: Response, next: NextFunction)
       success: true,
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -292,7 +292,7 @@ router.post('/anomalies/:id/resolve', async (req: Request, res: Response, next: 
       success: true,
       message: 'Anomaly resolved',
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -318,7 +318,7 @@ router.get('/usage', async (req: Request, res: Response, next: NextFunction) => 
         limits: tierConfig?.limits,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });

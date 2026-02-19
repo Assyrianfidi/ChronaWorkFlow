@@ -17,7 +17,7 @@ services:
     depends_on:
       - postgres
       - redis
-    command: sh -c "npm install && npx tsx server/index.ts"
+    command: sh -c "npm install && node server/app.mjs"
 
   postgres:
     image: postgres:15-alpine

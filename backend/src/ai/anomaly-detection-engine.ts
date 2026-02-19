@@ -3,10 +3,10 @@
  * Automatically identifies duplicate payments, missing entries, and mis-categorized transactions
  */
 
-import { prisma } from '../lib/prisma';
-import { logger } from '../utils/logger';
-import { CacheManager } from '../cache/cache-manager';
-import { EventBus } from '../events/event-bus';
+import { prisma } from '../utils/prisma.js';
+import { logger } from '../utils/logger.js';
+import { CacheManager } from '../cache/cache-manager.js';
+import { EventBus } from '../events/event-bus.js';
 
 // Anomaly types
 export type AnomalyType = 
@@ -108,7 +108,7 @@ export class AnomalyDetectionEngine {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - daysToScan);
 
-      const transactions = await prisma.transaction.findMany({
+      const transactions = await prisma.transactions.findMany({
         where: {
           companyId,
           date: { gte: startDate },
@@ -176,7 +176,7 @@ export class AnomalyDetectionEngine {
       });
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Anomaly detection failed', { error, companyId });
       throw error;
     }
@@ -188,7 +188,7 @@ export class AnomalyDetectionEngine {
 
     for (const tx of transactions) {
       // Create a key based on amount and similar description
-      const amount = Number(tx.totalAmount);
+      const amount = Number(tx.amount);
       const descKey = this.normalizeDescription(tx.description || '');
       const key = `${amount.toFixed(2)}:${descKey}`;
 
@@ -209,7 +209,7 @@ export class AnomalyDetectionEngine {
             );
 
             if (daysDiff <= this.config.duplicateThreshold && daysDiff > 0) {
-              const amount = Number(txs[i].totalAmount);
+              const amount = Number(txs[i].amount);
               
               anomalies.push({
                 id: `dup_${txs[i].id}_${txs[j].id}`,
@@ -256,21 +256,21 @@ export class AnomalyDetectionEngine {
       if (!groups.has(key)) {
         groups.set(key, []);
       }
-      groups.get(key)!.push(Number(tx.totalAmount));
+      groups.get(key)!.push(Number(tx.amount));
     }
 
     // Find outliers in each group
     for (const [description, amounts] of groups) {
       if (amounts.length >= this.config.minTransactionsForPattern) {
-        const mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
+        const mean = amounts.reduce((a: any, b: any) => a + b, 0) / amounts.length;
         const stdDev = Math.sqrt(
-          amounts.reduce((sum, a) => sum + Math.pow(a - mean, 2), 0) / amounts.length
+          amounts.reduce((sum: any, a: any) => sum + Math.pow(a - mean, 2), 0) / amounts.length
         );
 
         // Find transactions that are outliers
         for (const tx of transactions) {
           if (this.normalizeDescription(tx.description || '') === description) {
-            const amount = Number(tx.totalAmount);
+            const amount = Number(tx.amount);
             const zScore = stdDev > 0 ? Math.abs((amount - mean) / stdDev) : 0;
 
             if (zScore > 2.5) {
@@ -323,7 +323,7 @@ export class AnomalyDetectionEngine {
     for (const tx of transactions) {
       const description = (tx.description || '').toLowerCase();
       
-      for (const line of tx.lines || []) {
+      for (const line of tx.transaction_lines || []) {
         const accountType = line.account?.type;
         
         // Check if description suggests different category
@@ -371,7 +371,7 @@ export class AnomalyDetectionEngine {
     const anomalies: DetectedAnomaly[] = [];
 
     for (const tx of transactions) {
-      const amount = Number(tx.totalAmount);
+      const amount = Number(tx.amount);
       
       // Check for suspiciously round numbers above threshold
       if (amount >= this.config.roundNumberThreshold) {
@@ -416,7 +416,7 @@ export class AnomalyDetectionEngine {
     for (const tx of transactions) {
       const date = new Date(tx.date);
       const dayOfWeek = date.getDay();
-      const amount = Number(tx.totalAmount);
+      const amount = Number(tx.amount);
 
       // Flag large weekend transactions
       if ((dayOfWeek === 0 || dayOfWeek === 6) && amount > 500) {
@@ -467,12 +467,12 @@ export class AnomalyDetectionEngine {
     // Find potential splits (multiple small transactions that could be one)
     for (const [key, txs] of groups) {
       if (txs.length >= 3) {
-        const totalAmount = txs.reduce((sum, tx) => sum + Number(tx.totalAmount), 0);
+        const totalAmount = txs.reduce((sum: any, tx: any) => sum + Number(tx.amount), 0);
         const avgAmount = totalAmount / txs.length;
 
         // If all amounts are similar and relatively small
         const allSimilar = txs.every(tx => {
-          const amount = Number(tx.totalAmount);
+          const amount = Number(tx.amount);
           return Math.abs(amount - avgAmount) / avgAmount < 0.2;
         });
 
@@ -585,7 +585,7 @@ export class AnomalyDetectionEngine {
     const anomalies: DetectedAnomaly[] = [];
 
     // Get recent transactions for comparison
-    const recentTransactions = await prisma.transaction.findMany({
+    const recentTransactions = await prisma.transactions.findMany({
       where: {
         companyId,
         date: {

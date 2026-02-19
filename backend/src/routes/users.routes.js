@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
     }
     
     const [users, total] = await Promise.all([
-      prisma.user.findMany({
+      prisma.users.findMany({
         where,
         skip,
         take,
@@ -60,7 +60,7 @@ router.get('/', async (req, res) => {
           lastLogin: true,
         },
       }),
-      prisma.user.count({ where }),
+      prisma.users.count({ where }),
     ]);
     
     res.json({
@@ -86,7 +86,7 @@ router.get('/', async (req, res) => {
 // GET user by ID
 router.get('/:id', async (req, res) => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: parseInt(req.params.id) },
       select: {
         id: true,
@@ -141,7 +141,7 @@ router.post('/', validate(createUserSchema), async (req, res) => {
     const { email, name, password, role = 'USER' } = req.body;
     
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { email },
     });
     
@@ -157,7 +157,7 @@ router.post('/', validate(createUserSchema), async (req, res) => {
       ? await bcrypt.hash(password, 10)
       : await bcrypt.hash('defaultPassword123', 10); // Default password
     
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: {
         email,
         name,
@@ -196,7 +196,7 @@ router.put('/:id', validate(updateUserSchema), async (req, res) => {
     const { email, name, password, role, isActive } = req.body;
     
     // Check if user exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { id: parseInt(req.params.id) },
     });
     
@@ -209,7 +209,7 @@ router.put('/:id', validate(updateUserSchema), async (req, res) => {
     
     // Check if email is being changed and if it's already taken
     if (email && email !== existingUser.email) {
-      const emailTaken = await prisma.user.findUnique({
+      const emailTaken = await prisma.users.findUnique({
         where: { email },
       });
       
@@ -233,7 +233,7 @@ router.put('/:id', validate(updateUserSchema), async (req, res) => {
       updateData.password = await bcrypt.hash(password, 10);
     }
     
-    const user = await prisma.user.update({
+    const user = await prisma.users.update({
       where: { id: parseInt(req.params.id) },
       data: updateData,
       select: {
@@ -267,7 +267,7 @@ router.delete('/:id', async (req, res) => {
     const userId = parseInt(req.params.id);
     
     // Check if user exists
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: userId },
     });
     
@@ -279,7 +279,7 @@ router.delete('/:id', async (req, res) => {
     }
     
     // Soft delete by setting isActive to false
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: userId },
       data: { 
         isActive: false,
@@ -305,9 +305,9 @@ router.delete('/:id', async (req, res) => {
 router.get('/stats/overview', async (req, res) => {
   try {
     const [totalUsers, activeUsers, usersByRole] = await Promise.all([
-      prisma.user.count(),
-      prisma.user.count({ where: { isActive: true } }),
-      prisma.user.groupBy({
+      prisma.users.count(),
+      prisma.users.count({ where: { isActive: true } }),
+      prisma.users.groupBy({
         by: ['role'],
         _count: true,
       }),

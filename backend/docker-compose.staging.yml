@@ -1,0 +1,151 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Staging
+  postgres-staging:
+    image: postgres:15-alpine
+    container_name: accubooks-postgres-staging
+    environment:
+      POSTGRES_DB: accubooks_staging
+      POSTGRES_USER: accubooks_staging_user
+      POSTGRES_PASSWORD: ${STAGING_DB_PASSWORD:-staging_password_change_me}
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-staging-data:/var/lib/postgresql/data
+      - ./prisma/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U accubooks_staging_user -d accubooks_staging"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - accubooks-staging
+
+  # Redis for Rate Limiting (Staging)
+  redis-staging:
+    image: redis:7-alpine
+    container_name: accubooks-redis-staging
+    ports:
+      - "6380:6379"
+    command: redis-server --requirepass ${STAGING_REDIS_PASSWORD:-staging_redis_password}
+    volumes:
+      - redis-staging-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - accubooks-staging
+
+  # AccuBooks Backend (Staging)
+  backend-staging:
+    build:
+      context: ..
+      dockerfile: Dockerfile.backend
+      args:
+        NODE_ENV: staging
+    container_name: accubooks-backend-staging
+    environment:
+      NODE_ENV: staging
+      PORT: 4000
+      DATABASE_URL: postgresql://accubooks_staging_user:${STAGING_DB_PASSWORD:-staging_password_change_me}@postgres-staging:5432/accubooks_staging?schema=public
+      REDIS_URL: redis://:${STAGING_REDIS_PASSWORD:-staging_redis_password}@redis-staging:6379
+      
+      # JWT Secrets (Generate new ones for staging)
+      JWT_SECRET: ${STAGING_JWT_SECRET:-staging_jwt_secret_change_me_min_32_chars}
+      JWT_REFRESH_SECRET: ${STAGING_JWT_REFRESH_SECRET:-staging_jwt_refresh_secret_change_me_min_32_chars}
+      
+      # Stripe TEST MODE Keys (Safe for testing)
+      STRIPE_SECRET_KEY: ${STAGING_STRIPE_SECRET_KEY:-sk_test_your_stripe_test_key_here}
+      STRIPE_WEBHOOK_SECRET: ${STAGING_STRIPE_WEBHOOK_SECRET:-whsec_your_webhook_test_secret}
+      STRIPE_PUBLISHABLE_KEY: ${STAGING_STRIPE_PUBLISHABLE_KEY:-pk_test_your_publishable_test_key}
+      
+      # Email Service (Use test service like Mailtrap)
+      EMAIL_SERVICE: ${STAGING_EMAIL_SERVICE:-mailtrap}
+      EMAIL_HOST: ${STAGING_EMAIL_HOST:-smtp.mailtrap.io}
+      EMAIL_PORT: ${STAGING_EMAIL_PORT:-2525}
+      EMAIL_USER: ${STAGING_EMAIL_USER:-your_mailtrap_user}
+      EMAIL_PASSWORD: ${STAGING_EMAIL_PASSWORD:-your_mailtrap_password}
+      EMAIL_FROM: ${STAGING_EMAIL_FROM:-noreply@staging.accubooks.com}
+      
+      # Frontend URL
+      FRONTEND_URL: ${STAGING_FRONTEND_URL:-http://localhost:3000}
+      
+      # CORS
+      CORS_ORIGIN: ${STAGING_CORS_ORIGIN:-http://localhost:3000}
+      
+      # Logging
+      LOG_LEVEL: debug
+      
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres-staging:
+        condition: service_healthy
+      redis-staging:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - accubooks-staging
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Prometheus for Metrics (Staging)
+  prometheus-staging:
+    image: prom/prometheus:latest
+    container_name: accubooks-prometheus-staging
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus-staging.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-staging-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - accubooks-staging
+    restart: unless-stopped
+
+  # Grafana for Visualization (Staging)
+  grafana-staging:
+    image: grafana/grafana:latest
+    container_name: accubooks-grafana-staging
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${STAGING_GRAFANA_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+    volumes:
+      - grafana-staging-data:/var/lib/grafana
+      - ./monitoring/grafana-dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+    depends_on:
+      - prometheus-staging
+    networks:
+      - accubooks-staging
+    restart: unless-stopped
+
+volumes:
+  postgres-staging-data:
+    driver: local
+  redis-staging-data:
+    driver: local
+  prometheus-staging-data:
+    driver: local
+  grafana-staging-data:
+    driver: local
+
+networks:
+  accubooks-staging:
+    driver: bridge

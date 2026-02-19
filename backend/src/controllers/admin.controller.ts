@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { Role } from "@prisma/client";
 import { logger } from "../utils/logger.js";
 import { ApiError, ErrorCodes } from "../utils/errorHandler.js";
-import { prisma } from "../utils/prisma";
+import { prisma } from '../utils/prisma.js';
 import bcrypt from "bcryptjs";
 
 // Middleware to check if user is admin/owner
@@ -23,12 +23,14 @@ export const getKPIs = async (req: Request, res: Response, next: NextFunction) =
       throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
     }
 
-    // Calculate MRR and ARR from active users with subscriptions
-    const activeSubscribedUsers = await prisma.user.findMany({
+    // Calculate MRR and ARR from active companies with billing_status
+    const activeBillingStatuses = await prisma.billing_status.findMany({
       where: {
-        isActive: true,
-        subscriptionStatus: { in: ['active', 'trialing'] },
+        billingStatus: { in: ['ACTIVE', 'TRIAL'] },
         planType: { not: null }
+      },
+      include: {
+        companies: true
       }
     });
 
@@ -39,15 +41,15 @@ export const getKPIs = async (req: Request, res: Response, next: NextFunction) =
       'enterprise': 299,
     };
 
-    const mrr = activeSubscribedUsers.reduce((sum, user) => {
-      const planType = user.planType?.toLowerCase() || '';
+    const mrr = activeBillingStatuses.reduce((sum: number, billing: any) => {
+      const planType = billing.planType?.toLowerCase() || '';
       return sum + (planPrices[planType] || 0);
     }, 0);
 
     const arr = mrr * 12;
 
     // Get active users count
-    const activeUsers = await prisma.user.count({
+    const activeUsers = await prisma.users.count({
       where: { isActive: true }
     });
 
@@ -55,17 +57,17 @@ export const getKPIs = async (req: Request, res: Response, next: NextFunction) =
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    const canceledUsers = await prisma.user.count({
+    const canceledBillingStatuses = await prisma.billing_status.count({
       where: {
-        subscriptionStatus: 'canceled',
+        billingStatus: 'CANCELLED',
         updatedAt: { gte: thirtyDaysAgo }
       }
     });
 
-    const totalSubscribed = await prisma.user.count({
-      where: { subscriptionStatus: { not: null } }
+    const totalSubscribed = await prisma.billing_status.count({
+      where: { planType: { not: null } }
     });
-    const churnRate = totalSubscribed > 0 ? (canceledUsers / totalSubscribed) * 100 : 0;
+    const churnRate = totalSubscribed > 0 ? (canceledBillingStatuses / totalSubscribed) * 100 : 0;
 
     // Calculate ARPU
     const arpu = activeUsers > 0 ? mrr / activeUsers : 0;
@@ -87,7 +89,7 @@ export const getKPIs = async (req: Request, res: Response, next: NextFunction) =
       arpu: Math.round(arpu * 100) / 100,
       ltv: Math.round(ltv * 100) / 100,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to retrieve KPIs", {
       event: "KPIS_RETRIEVAL_ERROR",
       userId: req.user?.id,
@@ -127,12 +129,9 @@ export const getRevenueAnalytics = async (req: Request, res: Response, next: Nex
     }
 
     // Get subscriptions created in range
-    const subscriptions = await prisma.subscription.findMany({
+    const subscriptions = await prisma.subscriptions.findMany({
       where: {
         createdAt: { gte: startDate }
-      },
-      include: {
-        plan: true
       },
       orderBy: {
         createdAt: 'asc'
@@ -142,40 +141,34 @@ export const getRevenueAnalytics = async (req: Request, res: Response, next: Nex
     // Generate timeline data
     const timeline: any[] = [];
     const daysDiff = Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const planPrices: Record<string, number> = { starter: 29, pro: 79, business: 199, enterprise: 499 };
     
     for (let i = 0; i < daysDiff; i++) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      const daySubs = subscriptions.filter(sub => {
-        const subDate = new Date(sub.createdAt).toISOString().split('T')[0];
-        return subDate === dateStr;
-      });
-
+      const dateStr = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const daySubs = subscriptions.filter((s: any) => s.createdAt.toISOString().split('T')[0] === dateStr);
       timeline.push({
         date: dateStr,
-        revenue: daySubs.reduce((sum, sub) => sum + (sub.plan?.price || 0), 0),
-        subscriptions: daySubs.filter(s => s.status === 'active' || s.status === 'trialing').length,
-        upgrades: daySubs.filter(s => s.status === 'active').length,
+        revenue: daySubs.reduce((sum: number, sub: any) => sum + (planPrices[sub.tier] || 0), 0),
+        subscriptions: daySubs.filter((s: any) => s.status === 'active' || s.status === 'trialing').length,
+        upgrades: daySubs.filter((s: any) => s.status === 'active').length,
       });
     }
 
     // Get plan breakdown
-    const plans = await prisma.subscriptionPlan.findMany();
-    const planBreakdown = await Promise.all(plans.map(async (plan) => {
-      const customers = await prisma.subscription.count({
+    const tiers = ['starter', 'pro', 'business', 'enterprise'];
+    const planBreakdown = await Promise.all(tiers.map(async (tier) => {
+      const customers = await prisma.subscriptions.count({
         where: {
-          planId: plan.id,
+          tier,
           status: { in: ['active', 'trialing'] }
         }
       });
 
-      const revenue = customers * (plan.price || 0);
-      const totalRevenue = timeline.reduce((sum, t) => sum + t.revenue, 0);
+      const revenue = customers * (planPrices[tier] || 0);
+      const totalRevenue = timeline.reduce((sum: any, t: any) => sum + t.revenue, 0);
 
       return {
-        plan: plan.name,
+        plan: tier,
         revenue,
         customers,
         percentage: totalRevenue > 0 ? (revenue / totalRevenue) * 100 : 0,
@@ -192,7 +185,7 @@ export const getRevenueAnalytics = async (req: Request, res: Response, next: Nex
       timeline,
       planBreakdown,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to retrieve revenue analytics", {
       event: "REVENUE_ANALYTICS_ERROR",
       userId: req.user?.id,
@@ -219,7 +212,7 @@ export const getAdminUsers = async (req: Request, res: Response, next: NextFunct
       where.isActive = status === 'active';
     }
 
-    const users = await prisma.user.findMany({
+    const users = await prisma.users.findMany({
       where,
       select: {
         id: true,
@@ -236,12 +229,17 @@ export const getAdminUsers = async (req: Request, res: Response, next: NextFunct
       }
     });
 
-    // Enrich with subscription info
-    const enrichedUsers = await Promise.all(users.map(async (user) => {
-      const subscription = await prisma.subscription.findFirst({
+    // Enrich with organization subscription info
+    const enrichedUsers = await Promise.all(users.map(async (user: any) => {
+      const orgUser = await prisma.organization_users.findFirst({
         where: { userId: user.id },
-        include: { plan: true },
-        orderBy: { createdAt: 'desc' }
+        include: {
+          organizations: {
+            include: {
+              subscriptions: true
+            }
+          }
+        }
       });
 
       return {
@@ -250,8 +248,8 @@ export const getAdminUsers = async (req: Request, res: Response, next: NextFunct
         email: user.email,
         role: user.role,
         status: user.isActive ? 'active' : 'inactive',
-        company: 'N/A', // TODO: Add company relation
-        subscription: subscription?.plan?.name || 'Free',
+        company: (orgUser?.organizations as any)?.name || 'N/A',
+        subscription: (orgUser?.organizations as any)?.subscriptions?.tier || 'Free',
         lastActive: user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never',
         createdAt: new Date(user.createdAt).toISOString(),
       };
@@ -265,7 +263,7 @@ export const getAdminUsers = async (req: Request, res: Response, next: NextFunct
     });
 
     res.status(200).json(enrichedUsers);
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to retrieve admin users", {
       event: "ADMIN_USERS_ERROR",
       userId: req.user?.id,
@@ -289,7 +287,7 @@ export const performUserAction = async (req: Request, res: Response, next: NextF
       throw new ApiError("Invalid user ID", 400, ErrorCodes.VALIDATION_ERROR);
     }
 
-    const targetUser = await prisma.user.findUnique({
+    const targetUser = await prisma.users.findUnique({
       where: { id: userId }
     });
 
@@ -305,7 +303,7 @@ export const performUserAction = async (req: Request, res: Response, next: NextF
         const tempPassword = Math.random().toString(36).slice(-8);
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
         
-        await prisma.user.update({
+        await prisma.users.update({
           where: { id: userId },
           data: { password: hashedPassword }
         });
@@ -321,7 +319,7 @@ export const performUserAction = async (req: Request, res: Response, next: NextF
         break;
 
       case 'suspend':
-        await prisma.user.update({
+        await prisma.users.update({
           where: { id: userId },
           data: { isActive: false }
         });
@@ -337,7 +335,7 @@ export const performUserAction = async (req: Request, res: Response, next: NextF
         break;
 
       case 'activate':
-        await prisma.user.update({
+        await prisma.users.update({
           where: { id: userId },
           data: { isActive: true }
         });
@@ -358,7 +356,7 @@ export const performUserAction = async (req: Request, res: Response, next: NextF
           throw new ApiError("Cannot delete your own account", 400, ErrorCodes.VALIDATION_ERROR);
         }
 
-        await prisma.user.delete({
+        await prisma.users.delete({
           where: { id: userId }
         });
 
@@ -378,7 +376,7 @@ export const performUserAction = async (req: Request, res: Response, next: NextF
     }
 
     res.status(200).json(result);
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to perform user action", {
       event: "ADMIN_USER_ACTION_ERROR",
       userId: req.user?.id,
@@ -428,7 +426,7 @@ export const getAuditLogs = async (req: Request, res: Response, next: NextFuncti
         action: 'login',
         resource: 'auth',
         details: 'Successful login',
-        ipAddress: req.ip || '127.0.0.1',
+        // ipAddress moved to metadata
         status: 'success' as const,
       }
     ];
@@ -440,7 +438,7 @@ export const getAuditLogs = async (req: Request, res: Response, next: NextFuncti
     });
 
     res.status(200).json(logs);
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to retrieve audit logs", {
       event: "AUDIT_LOGS_ERROR",
       userId: req.user?.id,
@@ -483,7 +481,7 @@ export const performEmergencyAction = async (req: Request, res: Response, next: 
 
       case 'pause-billing':
         // Pause all billing operations
-        logger.critical("BILLING PAUSED BY OWNER", {
+        logger.error("BILLING PAUSED BY OWNER", {
           event: "BILLING_PAUSED",
           userId: req.user.id,
           ip: req.ip,
@@ -493,7 +491,7 @@ export const performEmergencyAction = async (req: Request, res: Response, next: 
 
       case 'force-logout-all':
         // Force logout all users (would invalidate all sessions)
-        logger.critical("FORCE LOGOUT ALL USERS", {
+        logger.error("FORCE LOGOUT ALL USERS", {
           event: "FORCE_LOGOUT_ALL",
           userId: req.user.id,
           ip: req.ip,
@@ -503,7 +501,7 @@ export const performEmergencyAction = async (req: Request, res: Response, next: 
 
       case 'backup-database':
         // Trigger emergency backup
-        logger.critical("EMERGENCY BACKUP TRIGGERED", {
+        logger.error("EMERGENCY BACKUP TRIGGERED", {
           event: "EMERGENCY_BACKUP",
           userId: req.user.id,
           ip: req.ip,
@@ -513,7 +511,7 @@ export const performEmergencyAction = async (req: Request, res: Response, next: 
 
       case 'rollback-deployment':
         // Rollback to previous deployment
-        logger.critical("DEPLOYMENT ROLLBACK TRIGGERED", {
+        logger.error("DEPLOYMENT ROLLBACK TRIGGERED", {
           event: "DEPLOYMENT_ROLLBACK",
           userId: req.user.id,
           ip: req.ip,
@@ -523,7 +521,7 @@ export const performEmergencyAction = async (req: Request, res: Response, next: 
 
       case 'kill-feature':
         // Disable specific feature
-        logger.critical("FEATURE KILL SWITCH ACTIVATED", {
+        logger.error("FEATURE KILL SWITCH ACTIVATED", {
           event: "FEATURE_KILLED",
           userId: req.user.id,
           ip: req.ip,
@@ -536,7 +534,7 @@ export const performEmergencyAction = async (req: Request, res: Response, next: 
     }
 
     res.status(200).json(result);
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to perform emergency action", {
       event: "EMERGENCY_ACTION_ERROR",
       userId: req.user?.id,
@@ -554,7 +552,7 @@ export const getSystemStatus = async (req: Request, res: Response, next: NextFun
       throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
     }
 
-    const activeUsers = await prisma.user.count({
+    const activeUsers = await prisma.users.count({
       where: { isActive: true }
     });
 
@@ -564,7 +562,7 @@ export const getSystemStatus = async (req: Request, res: Response, next: NextFun
       activeUsers,
       lastBackup: '2 hours ago', // TODO: Get from actual backup system
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to retrieve system status", {
       event: "SYSTEM_STATUS_ERROR",
       userId: req.user?.id,

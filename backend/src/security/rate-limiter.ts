@@ -122,7 +122,7 @@ export class RateLimiter {
   getStats(): { totalBuckets: number; activeBuckets: number } {
     const now = Date.now();
     const activeBuckets = Array.from(this.buckets.values()).filter(
-      (bucket) => bucket.resetTime > now,
+      (bucket: any) => bucket.resetTime > now,
     ).length;
 
     return {

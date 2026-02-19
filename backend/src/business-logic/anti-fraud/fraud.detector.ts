@@ -1,6 +1,6 @@
 import { ApiError, ErrorCodes } from "../../utils/errorHandler.js";
 import { logger } from "../../utils/logger.js";
-import { LoggingBridge } from "../../utils/loggingBridge";
+import { LoggingBridge } from "../../utils/loggingBridge.js";
 
 /**
  * Anti-fraud detection system
@@ -74,7 +74,7 @@ export class FraudDetector {
         enabled: true,
         severity: "high",
         action: "flag",
-        checkFunction: this.checkLargeAmount.bind(this),
+        checkFunction: this.checkLargeAmount,
       },
 
       // Rule 2: Rapid successive transactions
@@ -85,7 +85,7 @@ export class FraudDetector {
         enabled: true,
         severity: "medium",
         action: "monitor",
-        checkFunction: this.checkRapidTransactions.bind(this),
+        checkFunction: this.checkRapidTransactions,
       },
 
       // Rule 3: Unusual location
@@ -96,7 +96,7 @@ export class FraudDetector {
         enabled: true,
         severity: "medium",
         action: "flag",
-        checkFunction: this.checkUnusualLocation.bind(this),
+        checkFunction: this.checkUnusualLocation,
       },
 
       // Rule 4: Unusual device
@@ -107,7 +107,7 @@ export class FraudDetector {
         enabled: true,
         severity: "medium",
         action: "flag",
-        checkFunction: this.checkUnusualDevice.bind(this),
+        checkFunction: this.checkUnusualDevice,
       },
 
       // Rule 5: Round number amount (potential money laundering)
@@ -119,7 +119,7 @@ export class FraudDetector {
         enabled: true,
         severity: "low",
         action: "monitor",
-        checkFunction: this.checkRoundAmount.bind(this),
+        checkFunction: this.checkRoundAmount,
       },
 
       // Rule 6: High velocity transactions
@@ -130,7 +130,7 @@ export class FraudDetector {
         enabled: true,
         severity: "high",
         action: "block",
-        checkFunction: this.checkHighVelocity.bind(this),
+        checkFunction: this.checkHighVelocity,
       },
 
       // Rule 7: New account high value
@@ -141,7 +141,7 @@ export class FraudDetector {
         enabled: true,
         severity: "critical",
         action: "block",
-        checkFunction: this.checkNewAccountHighValue.bind(this),
+        checkFunction: this.checkNewAccountHighValue,
       },
 
       // Rule 8: Suspicious merchant category
@@ -152,7 +152,7 @@ export class FraudDetector {
         enabled: true,
         severity: "medium",
         action: "flag",
-        checkFunction: this.checkSuspiciousMerchant.bind(this),
+        checkFunction: this.checkSuspiciousMerchant,
       },
 
       // Rule 9: Multiple failed transactions
@@ -163,7 +163,7 @@ export class FraudDetector {
         enabled: true,
         severity: "high",
         action: "block",
-        checkFunction: this.checkMultipleFailed.bind(this),
+        checkFunction: this.checkMultipleFailed,
       },
 
       // Rule 10: Account takeover pattern
@@ -174,7 +174,7 @@ export class FraudDetector {
         enabled: true,
         severity: "critical",
         action: "block",
-        checkFunction: this.checkAccountTakeover.bind(this),
+        checkFunction: this.checkAccountTakeover,
       },
     ];
   }
@@ -221,7 +221,7 @@ export class FraudDetector {
             highestSeverity = alert.severity;
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Error in fraud rule ${rule.id}:`, error);
       }
     }
@@ -230,7 +230,7 @@ export class FraudDetector {
     const riskScore = this.calculateRiskScore(alerts, userProfile);
 
     // Determine if transaction should be blocked
-    const blocked = alerts.some((alert) => alert.action === "block");
+    const blocked = alerts.some((alert: any) => alert.action === "block");
 
     // Log fraud analysis
     logger.warn("Suspicious activity detected", {
@@ -256,12 +256,12 @@ export class FraudDetector {
     patterns: TransactionPattern[],
     current: TransactionPattern,
   ): FraudAlert | null {
-    const userPatterns = patterns.filter((p) => p.userId === current.userId);
+    const userPatterns = patterns.filter((p: any) => p.userId === current.userId);
 
     if (userPatterns.length < 5) return null; // Not enough history
 
     const avgAmount =
-      userPatterns.reduce((sum, p) => sum + p.amount, 0) / userPatterns.length;
+      userPatterns.reduce((sum: any, p: any) => sum + p.amount, 0) / userPatterns.length;
     const threshold = avgAmount * 5; // 5x average
 
     if (current.amount > threshold) {
@@ -291,7 +291,7 @@ export class FraudDetector {
     current: TransactionPattern,
   ): FraudAlert | null {
     const userPatterns = patterns.filter(
-      (p) => p.userId === current.userId && p.accountId === current.accountId,
+      (p: any) => p.userId === current.userId && p.accountId === current.accountId,
     );
 
     // Check for transactions in last 5 minutes
@@ -299,7 +299,7 @@ export class FraudDetector {
       current.timestamp.getTime() - 5 * 60 * 1000,
     );
     const recentTransactions = userPatterns.filter(
-      (p) => p.timestamp > fiveMinutesAgo,
+      (p: any) => p.timestamp > fiveMinutesAgo,
     );
 
     if (recentTransactions.length >= 3) {
@@ -330,9 +330,9 @@ export class FraudDetector {
     if (!current.location) return null;
 
     const userPatterns = patterns.filter(
-      (p) => p.userId === current.userId && p.location,
+      (p: any) => p.userId === current.userId && p.location,
     );
-    const locations = [...new Set(userPatterns.map((p) => p.location!))];
+    const locations = [...new Set(userPatterns.map((p: any) => p.location!))];
 
     if (locations.length > 0 && !locations.includes(current.location)) {
       return {
@@ -362,9 +362,9 @@ export class FraudDetector {
     if (!current.device) return null;
 
     const userPatterns = patterns.filter(
-      (p) => p.userId === current.userId && p.device,
+      (p: any) => p.userId === current.userId && p.device,
     );
-    const devices = [...new Set(userPatterns.map((p) => p.device!))];
+    const devices = [...new Set(userPatterns.map((p: any) => p.device!))];
 
     if (devices.length > 0 && !devices.includes(current.device)) {
       return {
@@ -422,8 +422,7 @@ export class FraudDetector {
     current: TransactionPattern,
   ): FraudAlert | null {
     const userPatterns = patterns.filter(
-      (p) =>
-        p.userId === current.userId &&
+      (p: any) => p.userId === current.userId &&
         p.timestamp >
           new Date(current.timestamp.getTime() - 24 * 60 * 60 * 1000), // Last 24 hours
     );
@@ -454,7 +453,7 @@ export class FraudDetector {
     patterns: TransactionPattern[],
     current: TransactionPattern,
   ): FraudAlert | null {
-    const userPatterns = patterns.filter((p) => p.userId === current.userId);
+    const userPatterns = patterns.filter((p: any) => p.userId === current.userId);
 
     if (userPatterns.length === 0 && current.amount > 5000) {
       return {
@@ -528,12 +527,12 @@ export class FraudDetector {
 
     // Check for multiple risk factors
     if (current.location && current.device) {
-      const userPatterns = patterns.filter((p) => p.userId === current.userId);
+      const userPatterns = patterns.filter((p: any) => p.userId === current.userId);
       const locations = [
-        ...new Set(userPatterns.map((p) => p.location).filter(Boolean)),
+        ...new Set(userPatterns.map((p: any) => p.location).filter(Boolean)),
       ];
       const devices = [
-        ...new Set(userPatterns.map((p) => p.device).filter(Boolean)),
+        ...new Set(userPatterns.map((p: any) => p.device).filter(Boolean)),
       ];
 
       if (!locations.includes(current.location!)) suspiciousIndicators++;
@@ -557,10 +556,10 @@ export class FraudDetector {
           factors: {
             unusualLocation:
               current.location &&
-              !patterns.some((p) => p.location === current.location),
+              !patterns.some((p: any) => p.location === current.location),
             unusualDevice:
               current.device &&
-              !patterns.some((p) => p.device === current.device),
+              !patterns.some((p: any) => p.device === current.device),
             highAmount: current.amount > 10000,
           },
         },
@@ -582,21 +581,21 @@ export class FraudDetector {
       return this.userProfiles.get(userId)!;
     }
 
-    const userPatterns = patterns.filter((p) => p.userId === userId);
+    const userPatterns = patterns.filter((p: any) => p.userId === userId);
     const avgAmount =
       userPatterns.length > 0
-        ? userPatterns.reduce((sum, p) => sum + p.amount, 0) /
+        ? userPatterns.reduce((sum: any, p: any) => sum + p.amount, 0) /
           userPatterns.length
         : 0;
 
     const locations = [
-      ...new Set(userPatterns.map((p) => p.location).filter(Boolean)),
+      ...new Set(userPatterns.map((p: any) => p.location).filter(Boolean)),
     ];
     const devices = [
-      ...new Set(userPatterns.map((p) => p.device).filter(Boolean)),
+      ...new Set(userPatterns.map((p: any) => p.device).filter(Boolean)),
     ];
     const merchants = [
-      ...new Set(userPatterns.map((p) => p.merchantCategory).filter(Boolean)),
+      ...new Set(userPatterns.map((p: any) => p.merchantCategory).filter(Boolean)),
     ];
 
     const profile: UserProfile = {
@@ -610,7 +609,7 @@ export class FraudDetector {
       accountAge:
         userPatterns.length > 0
           ? (Date.now() -
-              Math.min(...userPatterns.map((p) => p.timestamp.getTime()))) /
+              Math.min(...userPatterns.map((p: any) => p.timestamp.getTime()))) /
             (1000 * 60 * 60 * 24)
           : 0,
       riskScore: 0.5, // Default medium risk
@@ -628,7 +627,7 @@ export class FraudDetector {
 
     const severityWeights = { low: 0.2, medium: 0.5, high: 0.8, critical: 1.0 };
     const maxSeverity = Math.max(
-      ...alerts.map((a) => severityWeights[a.severity]),
+      ...alerts.map((a: any) => severityWeights[a.severity as keyof typeof severityWeights]),
     );
 
     return Math.min(1, profile.riskScore + maxSeverity * 0.5);
@@ -647,17 +646,17 @@ export class FraudDetector {
   }
 
   static enableRule(ruleId: string): void {
-    const rule = this.rules.find((r) => r.id === ruleId);
+    const rule = this.rules.find((r: any) => r.id === ruleId);
     if (rule) rule.enabled = true;
   }
 
   static disableRule(ruleId: string): void {
-    const rule = this.rules.find((r) => r.id === ruleId);
+    const rule = this.rules.find((r: any) => r.id === ruleId);
     if (rule) rule.enabled = false;
   }
 
   static getActiveRules(): FraudRule[] {
-    return this.rules.filter((r) => r.enabled);
+    return this.rules.filter((r: any) => r.enabled);
   }
 }
 
@@ -717,7 +716,7 @@ export class FraudMonitoringService {
 
   static getAlertsForUser(userId: string, limit: number = 50): FraudAlert[] {
     return this.alerts
-      .filter((a) => a.userId === userId)
+      .filter((a: any) => a.userId === userId)
       .sort((a, b) => b.detectedAt.getTime() - a.detectedAt.getTime())
       .slice(0, limit);
   }
@@ -727,7 +726,7 @@ export class FraudMonitoringService {
     limit: number = 100,
   ): FraudAlert[] {
     return this.alerts
-      .filter((a) => a.severity === severity)
+      .filter((a: any) => a.severity === severity)
       .sort((a, b) => b.detectedAt.getTime() - a.detectedAt.getTime())
       .slice(0, limit);
   }

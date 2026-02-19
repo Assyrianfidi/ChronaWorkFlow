@@ -1,5 +1,7 @@
-import { InvoiceStatus, PaymentMethod, Prisma } from "@prisma/client";
-import { prisma } from "../../utils/prisma";
+import { InvoiceStatus, Prisma } from "@prisma/client";
+import { prisma } from "../../utils/prisma.js";
+
+export type PaymentMethod = 'CREDIT_CARD' | 'DEBIT_CARD' | 'BANK_TRANSFER' | 'CASH' | 'CHECK' | 'OTHER';
 
 export interface CreatePaymentData {
   invoiceId: string;
@@ -60,7 +62,7 @@ export class PaymentService {
         updatedStatus = InvoiceStatus.PAID;
         await this.createPaymentAccountingEntries(invoice, data.amount);
       } else if (newTotalPaid > 0 && invoice.status === InvoiceStatus.DRAFT) {
-        updatedStatus = InvoiceStatus.SENT;
+        updatedStatus = InvoiceStatus.OPEN;
       }
 
       // Update invoice status
@@ -156,7 +158,7 @@ export class PaymentService {
       if (totalPaid >= invoiceTotal) {
         newStatus = InvoiceStatus.PAID;
       } else if (totalPaid > 0 && invoice.status === InvoiceStatus.DRAFT) {
-        newStatus = InvoiceStatus.SENT;
+        newStatus = InvoiceStatus.OPEN;
       } else if (totalPaid === 0) {
         newStatus = InvoiceStatus.DRAFT;
       }
@@ -210,7 +212,7 @@ export class PaymentService {
       if (totalPaid >= invoiceTotal) {
         newStatus = InvoiceStatus.PAID;
       } else if (totalPaid > 0) {
-        newStatus = InvoiceStatus.SENT;
+        newStatus = InvoiceStatus.OPEN;
       }
 
       // Update invoice status
@@ -274,7 +276,7 @@ export class PaymentService {
         orderBy: { paidAt: "desc" },
       });
 
-      const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+      const totalPaid = payments.reduce((sum: number, p: any) => sum + p.amount, 0);
       const invoiceTotal = invoice.totalAmount.toNumber();
       const remainingBalance = invoiceTotal - totalPaid;
 

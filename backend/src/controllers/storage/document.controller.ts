@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { body, param, query, validationResult } from "express-validator";
-import { documentService } from "../../services/storage/document.service";
+import { DocumentService } from "../../services/storage/document.service.js";
 import { logger } from "../../utils/logger.js";
 import { Role } from "@prisma/client";
 
-// Extend Request interface to include file
-interface AuthenticatedRequest extends Request {
-  user: {
+// Custom request type for authenticated routes
+type AuthenticatedRequest = Request & {
+  user?: {
     id: number;
     email: string;
     role: Role;
@@ -18,7 +18,7 @@ interface AuthenticatedRequest extends Request {
     mimetype: string;
     size: number;
   };
-}
+};
 
 export class DocumentController {
   // Upload document
@@ -41,16 +41,20 @@ export class DocumentController {
       }
 
       const { category, description } = req.body;
-      const userId = req.user.id;
+      const userId = req.user?.id || 0;
+      const companyId = (req as any).user?.currentCompanyId || '';
 
-      const result = await documentService.uploadDocument(req.file.buffer, {
-        userId: userId.toString(),
-        fileName: req.file.originalname,
-        mimeType: req.file.mimetype,
-        size: req.file.size,
-        category: category || "other",
-        description,
-      });
+      const result = await DocumentService.uploadDocument(
+        req.file.buffer,
+        {
+          fileName: req.file.originalname,
+          mimeType: req.file.mimetype,
+          category: category || "other",
+          description,
+        },
+        userId.toString(),
+        companyId
+      );
 
       res.json({
         success: true,
@@ -79,10 +83,11 @@ export class DocumentController {
       }
 
       const { documentId } = req.params;
-      const userId = req.user.id;
+      const userId = req.user?.id || 0;
 
-      const { file, mimeType, fileName } =
-        await documentService.downloadDocument(documentId, userId.toString());
+      const file = await DocumentService.downloadDocument(documentId, userId.toString());
+      const mimeType = file.mimeType;
+      const fileName = file.fileName;
 
       res.set({
         "Content-Type": mimeType,
@@ -115,13 +120,13 @@ export class DocumentController {
       }
 
       const { category, page = "1", limit = "20" } = req.query;
-      const userId = (req as any).user.id;
+      const userId = (req as any).user?.id || 0;
 
-      const result = await documentService.listDocuments(
+      const result = await DocumentService.listDocuments(
         userId.toString(),
-        category as string,
+        category as string || '',
         parseInt(page as string),
-        parseInt(limit as string),
+        parseInt(limit as string)
       );
 
       res.json({
@@ -152,7 +157,7 @@ export class DocumentController {
       const { documentId } = req.params;
       const userId = (req as any).user.id;
 
-      await documentService.deleteDocument(documentId, userId.toString());
+      await DocumentService.deleteDocument(documentId, userId.toString());
 
       res.json({
         success: true,
@@ -184,7 +189,7 @@ export class DocumentController {
       const { fileName, description, category } = req.body;
       const userId = (req as any).user.id;
 
-      await documentService.updateDocument(documentId, userId.toString(), {
+      await DocumentService.updateDocument(documentId, userId.toString(), {
         fileName,
         description,
         category,
@@ -209,7 +214,7 @@ export class DocumentController {
     try {
       const userId = (req as any).user.id;
 
-      const stats = await documentService.getDocumentStats(userId.toString());
+      const stats = await DocumentService.getDocumentStats(userId.toString());
 
       res.json({
         success: true,

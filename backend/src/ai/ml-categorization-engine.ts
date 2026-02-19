@@ -3,10 +3,10 @@
  * Production-ready machine learning categorization with 95% accuracy target
  */
 
-import { prisma } from '../lib/prisma';
-import { logger } from '../utils/logger';
-import { EventBus } from '../events/event-bus';
-import { CacheManager } from '../cache/cache-manager';
+import { prisma } from '../utils/prisma.js';
+import { logger } from '../utils/logger.js';
+import { EventBus } from '../events/event-bus.js';
+import { CacheManager } from '../cache/cache-manager.js';
 
 // Transaction categories for accounting
 export const TRANSACTION_CATEGORIES = {
@@ -325,7 +325,7 @@ class NaiveBayesClassifier {
 
     // Calculate likelihoods with Laplace smoothing
     for (const [category, wordMap] of categoryWordCounts) {
-      const totalWords = Array.from(wordMap.values()).reduce((a, b) => a + b, 0);
+      const totalWords = Array.from(wordMap.values()).reduce((a: any, b: any) => a + b, 0);
       const smoothedLikelihoods = new Map<string, number>();
       
       for (const word of vocabulary) {
@@ -339,7 +339,7 @@ class NaiveBayesClassifier {
 
     // Amount range likelihoods
     for (const [category, amountMap] of categoryAmountCounts) {
-      const totalAmounts = Array.from(amountMap.values()).reduce((a, b) => a + b, 0);
+      const totalAmounts = Array.from(amountMap.values()).reduce((a: any, b: any) => a + b, 0);
       const smoothedLikelihoods = new Map<string, number>();
       
       const amountRanges = ['micro', 'small', 'medium', 'large', 'xlarge'];
@@ -391,7 +391,7 @@ class NaiveBayesClassifier {
     }
 
     // Normalize probabilities
-    const totalProbability = results.reduce((sum, r) => sum + r.probability, 0);
+    const totalProbability = results.reduce((sum: any, r: any) => sum + r.probability, 0);
     for (const result of results) {
       result.probability = result.probability / totalProbability;
     }
@@ -644,7 +644,7 @@ export class MLCategorizationEngine {
       });
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Categorization failed', { error, description, amount });
       
       return {

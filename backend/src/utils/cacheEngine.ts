@@ -1,11 +1,12 @@
-import Redis from "ioredis";
+import Redis from 'ioredis';
 import { logger } from "./logger.js";
 
 /**
  * Redis caching engine with intelligent invalidation
  */
 export class CacheEngine {
-  private static redis: Redis;
+  private static instance: CacheEngine;
+  private static redis: any = null;
   private static isConnected = false;
 
   /**
@@ -13,7 +14,7 @@ export class CacheEngine {
    */
   static async initialize() {
     try {
-      this.redis = new Redis({
+      this.redis = new (Redis as any)({
         host: process.env.REDIS_HOST || "localhost",
         port: parseInt(process.env.REDIS_PORT || "6379"),
         password: process.env.REDIS_PASSWORD,
@@ -40,7 +41,7 @@ export class CacheEngine {
       });
 
       await this.redis.connect();
-    } catch (error) {
+    } catch (error: any) {
       logger.info({
         type: "ERROR",
         message: "Failed to initialize Redis",
@@ -62,7 +63,7 @@ export class CacheEngine {
     try {
       const value = await this.redis.get(key);
       return value ? JSON.parse(value) : null;
-    } catch (error) {
+    } catch (error: any) {
       logger.info({
         type: "ERROR",
         message: "Cache get failed",
@@ -83,7 +84,7 @@ export class CacheEngine {
 
     try {
       await this.redis.setex(key, ttl, JSON.stringify(value));
-    } catch (error) {
+    } catch (error: any) {
       logger.info({
         type: "ERROR",
         message: "Cache set failed",
@@ -104,7 +105,7 @@ export class CacheEngine {
 
     try {
       await this.redis.del(key);
-    } catch (error) {
+    } catch (error: any) {
       logger.info({
         type: "ERROR",
         message: "Cache delete failed",
@@ -132,7 +133,7 @@ export class CacheEngine {
           details: { pattern, deletedCount: keys.length },
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.info({
         type: "ERROR",
         message: "Cache pattern delete failed",
@@ -152,7 +153,7 @@ export class CacheEngine {
 
     try {
       return await this.redis.incr(key);
-    } catch (error) {
+    } catch (error: any) {
       logger.info({
         type: "ERROR",
         message: "Cache increment failed",
@@ -174,7 +175,7 @@ export class CacheEngine {
     try {
       const result = await this.redis.exists(key);
       return result === 1;
-    } catch (error) {
+    } catch (error: any) {
       logger.info({
         type: "ERROR",
         message: "Cache exists check failed",

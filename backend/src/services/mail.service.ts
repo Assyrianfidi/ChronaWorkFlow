@@ -8,18 +8,14 @@ export class MailService {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || "587", 10),
-      secure: process.env.SMTP_SECURE === "true",
+      host: process.env.SMTP_HOST as string,
+      port: parseInt(process.env.SMTP_PORT || '587', 10),
+      secure: process.env.SMTP_SECURE === 'true',
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: process.env.SMTP_USER as string,
+        pass: process.env.SMTP_PASS as string,
       },
-      // Nodemailer v7 requires additional options for modern SMTP servers
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
+    } as any);
   }
 
   private compileTemplate(

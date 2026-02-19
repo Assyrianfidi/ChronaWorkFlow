@@ -13,12 +13,12 @@ app.use(
 app.use(express.json());
 
 // Health check
-app.get("/api/health", (req, res) => {
+app.get("/api/health", (req: any, res: any) => {
   res.json({ status: "healthy", timestamp: new Date().toISOString() });
 });
 
 // Simple auth login
-app.post("/api/auth/login", (req, res) => {
+app.post("/api/auth/login", (req: any, res: any) => {
   const { email, password } = req.body;
   console.log("Login attempt:", email);
 

@@ -1,0 +1,46 @@
+           tablename           | rls_enabled | force_rls | policy_count 
+-------------------------------+-------------+-----------+--------------
+ accounts                      | f           | f         |            0
+ agency_client_relationships   | f           | f         |            0
+ ai_insights                   | f           | f         |            0
+ api_usage_records             | f           | f         |            0
+ audit_logs                    | f           | f         |            0
+ automation_proposals          | f           | f         |            0
+ automation_rules              | f           | f         |            0
+ billing_status                | f           | f         |            0
+ churn_retention_analytics     | f           | f         |            0
+ companies                     | f           | f         |            0
+ company_members               | f           | f         |            0
+ custom_reports                | f           | f         |            0
+ customer_health_scores        | f           | f         |            0
+ dashboard_metrics_cache       | f           | f         |            0
+ departments                   | f           | f         |            0
+ documents                     | f           | f         |            0
+ executive_alerts              | f           | f         |            0
+ executive_analytics_snapshots | f           | f         |            0
+ executive_kpi_snapshots       | f           | f         |            0
+ feature_adoption_metrics      | f           | f         |            0
+ feature_usage                 | f           | f         |            0
+ founder_audit_logs            | f           | f         |            0
+ founder_control_actions       | f           | f         |            0
+ founder_control_states        | f           | f         |            0
+ invoice_risk_analytics        | f           | f         |            0
+ invoices                      | f           | f         |            0
+ organization_users            | f           | f         |            0
+ organizations                 | f           | f         |            0
+ payments                      | f           | f         |            0
+ platform_metrics              | f           | f         |            0
+ predictive_metrics            | f           | f         |            0
+ reconciliation_reports        | f           | f         |            0
+ revenue_analytics             | f           | f         |            0
+ subscriptions                 | f           | f         |            0
+ suspicious_activities         | f           | f         |            0
+ transaction_lines             | f           | f         |            0
+ transactions                  | f           | f         |            0
+ trend_patterns                | f           | f         |            0
+ usage_frequency_metrics       | f           | f         |            0
+ user_activity_logs            | f           | f         |            0
+ user_sessions                 | f           | f         |            0
+ users                         | f           | f         |            0
+(42 rows)
+

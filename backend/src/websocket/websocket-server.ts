@@ -154,7 +154,7 @@ export class WebSocketServer extends EventEmitter {
         client.lastActivity = Date.now();
         return true;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to send message to client ${clientId}:`, error);
       this.disconnect(clientId, "Send error");
     }
@@ -374,7 +374,7 @@ export class WebSocketServer extends EventEmitter {
         try {
           const message = JSON.parse(data.toString());
           this.handleMessage(client, message);
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Invalid message from client ${client.id}:`, error);
         }
       });

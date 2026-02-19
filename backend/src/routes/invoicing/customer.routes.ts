@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 import { body, param, query, validationResult } from "express-validator";
-import { prisma } from "../../utils/prisma";
-import { auth, authorizeRoles } from "../../middleware/auth";
-import { ROLES } from "../../constants/roles";
+import { prisma } from "../../utils/prisma.js";
+import { auth, authorizeRoles } from "../../middleware/auth.js";
+import { ROLES } from "../../constants/roles.js";
 
 const router = Router();
 
@@ -27,13 +27,13 @@ router.get("/", async (req: Request, res: Response) => {
     }
 
     const [customers, total] = await Promise.all([
-      prisma.customer.findMany({
+      prisma.customers.findMany({
         where,
         skip,
         take: Number(limit),
         orderBy: { createdAt: "desc" },
       }),
-      prisma.customer.count({ where }),
+      prisma.customers.count({ where }),
     ]);
 
     res.json({
@@ -48,7 +48,7 @@ router.get("/", async (req: Request, res: Response) => {
         },
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error listing customers:", error);
     res.status(500).json({
       success: false,
@@ -62,7 +62,7 @@ router.get("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const customer = await prisma.customer.findUnique({
+    const customer = await prisma.customers.findUnique({
       where: { id },
     });
 
@@ -77,7 +77,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       success: true,
       data: customer,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error getting customer:", error);
     res.status(500).json({
       success: false,
@@ -111,7 +111,7 @@ router.post(
         });
       }
 
-      const customer = await prisma.customer.create({
+      const customer = await prisma.customers.create({
         data: req.body,
       });
 
@@ -120,7 +120,7 @@ router.post(
         message: "Customer created successfully",
         data: customer,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating customer:", error);
       if (
         error instanceof Error &&
@@ -166,7 +166,7 @@ router.put(
 
       const { id } = req.params;
 
-      const customer = await prisma.customer.update({
+      const customer = await prisma.customers.update({
         where: { id },
         data: req.body,
       });
@@ -176,7 +176,7 @@ router.put(
         message: "Customer updated successfully",
         data: customer,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating customer:", error);
       if (
         error instanceof Error &&
@@ -204,7 +204,7 @@ router.delete(
       const { id } = req.params;
 
       // Check if customer has invoices
-      const invoiceCount = await prisma.invoice.count({
+      const invoiceCount = await prisma.invoices.count({
         where: { clientId: id },
       });
 
@@ -215,7 +215,7 @@ router.delete(
         });
       }
 
-      await prisma.customer.delete({
+      await prisma.customers.delete({
         where: { id },
       });
 
@@ -223,7 +223,7 @@ router.delete(
         success: true,
         message: "Customer deleted successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting customer:", error);
       if (
         error instanceof Error &&

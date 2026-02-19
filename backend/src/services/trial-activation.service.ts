@@ -3,10 +3,10 @@
  * 14-day trial system with activation milestones and drop-off monitoring
  */
 
-import { prisma } from '../lib/prisma';
-import { logger } from '../utils/logger';
-import { EventBus } from '../events/event-bus';
-import { CacheManager } from '../cache/cache-manager';
+import { prisma } from '../utils/prisma.js';
+import logger from '../utils/logger.js';
+import { EventBus } from '../events/event-bus.js';
+import { CacheManager } from '../cache/cache-manager.js';
 
 // Trial status
 export type TrialStatus = 'active' | 'expired' | 'converted' | 'cancelled';
@@ -443,14 +443,14 @@ export class TrialActivationService {
       orderBy: { timestamp: 'asc' },
     });
 
-    return activities.map(a => {
+    return activities.map((a: any) => {
       const metadata = a.metadata as any;
       return {
         type: metadata?.milestoneType as MilestoneType,
         completedAt: a.timestamp,
         points: metadata?.points || 0,
       };
-    }).filter(m => m.type);
+    }).filter((m: any) => m.type);
   }
 
   /**
@@ -651,7 +651,7 @@ export class TrialActivationService {
       },
     });
 
-    const activeTrials = trialUsers.filter(u => u.subscriptionStatus === 'trialing').length;
+    const activeTrials = trialUsers.filter((u: any) => u.subscriptionStatus === 'trialing').length;
     
     const convertedUsers = await prisma.user.count({
       where: {
@@ -688,6 +688,13 @@ export class TrialActivationService {
       milestoneCompletionRates: milestoneCompletionRates as Record<MilestoneType, number>,
       dropOffRate: 0.15, // Would be calculated from actual data
     };
+  }
+
+  /**
+   * Alias for startTrial - expected by routes
+   */
+  async activateTrial(userId: number, companyId: string, tier: string = 'pro'): Promise<UserTrialState> {
+    return this.startTrial(userId, companyId);
   }
 }
 

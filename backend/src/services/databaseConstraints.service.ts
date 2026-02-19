@@ -1,5 +1,4 @@
-// @ts-ignore
-import { prisma } from "../utils/prisma";
+import { prisma } from "../utils/prisma.js";
 
 // Create a singleton instance for production
 let prismaInstance: any = null;
@@ -49,7 +48,7 @@ class DatabaseConstraintsService {
               // Fixed dynamic property access
 // whereClause.id = { not: excludeId };
             }
-            const existing = await prisma.user.findFirst({
+            const existing = await prisma.users.findFirst({
               where: whereClause,
             });
             if (existing) {
@@ -70,7 +69,7 @@ class DatabaseConstraintsService {
               // Fixed dynamic property access
 // whereClause.id = { not: excludeId };
             }
-            const existing = await prisma.account.findFirst({
+            const existing = await prisma.accounts.findFirst({
               where: whereClause,
             });
             if (existing) {
@@ -136,7 +135,7 @@ class DatabaseConstraintsService {
               // Fixed dynamic property access
 // whereClause.id = { not: excludeId };
             }
-            const existing = await prisma.companyMember.findFirst({
+            const existing = await prisma.company_members.findFirst({
               where: whereClause,
             });
             if (existing) {
@@ -157,7 +156,7 @@ class DatabaseConstraintsService {
               // Fixed dynamic property access
 // whereClause.id = { not: excludeId };
             }
-            const existing = await prisma.reconciliationReport.findFirst({
+            const existing = await prisma.reconciliation_reports.findFirst({
               where: whereClause,
             });
             if (existing) {
@@ -166,7 +165,7 @@ class DatabaseConstraintsService {
           }
           break;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error validating unique constraints:", error);
       errors.push("Database validation error");
     }
@@ -192,7 +191,7 @@ class DatabaseConstraintsService {
       switch (model) {
         case "Account":
           if (data.parentId) {
-            const parent = await prisma.account.findUnique({
+            const parent = await prisma.accounts.findUnique({
               where: { id: data.parentId },
               select: { id: true, companyId: true },
             });
@@ -224,7 +223,7 @@ class DatabaseConstraintsService {
             }
           }
           if (data.createdById) {
-            const user = await prisma.user.findUnique({
+            const user = await prisma.users.findUnique({
               where: { id: data.createdById },
               select: { id: true },
             });
@@ -245,7 +244,7 @@ class DatabaseConstraintsService {
             }
           }
           if (data.createdById) {
-            const user = await prisma.user.findUnique({
+            const user = await prisma.users.findUnique({
               where: { id: data.createdById },
               select: { id: true },
             });
@@ -257,7 +256,7 @@ class DatabaseConstraintsService {
 
         case "CompanyMember":
           if (data.companyId) {
-            const company = await prisma.company.findUnique({
+            const company = await prisma.companies.findUnique({
               where: { id: data.companyId },
               select: { id: true },
             });
@@ -266,7 +265,7 @@ class DatabaseConstraintsService {
             }
           }
           if (data.userId) {
-            const user = await prisma.user.findUnique({
+            const user = await prisma.users.findUnique({
               where: { id: data.userId },
               select: { id: true },
             });
@@ -278,7 +277,7 @@ class DatabaseConstraintsService {
 
         case "RefreshToken":
           if (data.userId) {
-            const user = await prisma.user.findUnique({
+            const user = await prisma.users.findUnique({
               where: { id: data.userId },
               select: { id: true },
             });
@@ -288,7 +287,7 @@ class DatabaseConstraintsService {
           }
           break;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error validating foreign key constraints:", error);
       errors.push("Database validation error");
     }
@@ -326,7 +325,7 @@ class DatabaseConstraintsService {
 
           // Validate account type hierarchy rules
           if (data.parentId && data.type) {
-            const parent = await prisma.account.findUnique({
+            const parent = await prisma.accounts.findUnique({
               where: { id: data.parentId },
               select: { type: true },
             });
@@ -419,7 +418,7 @@ class DatabaseConstraintsService {
         switch (model) {
           case "User":
             // Check if user has dependent records
-            const userDependents = await prisma.refreshToken.count({
+            const userDependents = await prisma.refresh_tokens.count({
               where: { userId: parseInt(data.id) },
             });
             if (userDependents > 0) {
@@ -429,7 +428,7 @@ class DatabaseConstraintsService {
 
           case "Account":
             // Check if account has transactions
-            const accountTransactions = await prisma.transaction.count({
+            const accountTransactions = await prisma.transactions.count({
               where: {
                 OR: [{ debitAccountId: data.id }, { creditAccountId: data.id }],
               },
@@ -439,7 +438,7 @@ class DatabaseConstraintsService {
             }
 
             // Check if account has child accounts
-            const childAccounts = await prisma.account.count({
+            const childAccounts = await prisma.accounts.count({
               where: { parentId: data.id },
             });
             if (childAccounts > 0) {
@@ -448,7 +447,7 @@ class DatabaseConstraintsService {
             break;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error validating business rules:", error);
       errors.push("Business rule validation error");
     }

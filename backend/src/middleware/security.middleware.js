@@ -124,7 +124,7 @@ export const detectSuspiciousActivity = async (req, res, next) => {
   try {
     if (!req.user) return next();
 
-    const recentActivities = await prisma.auditLog.count({
+    const recentActivities = await prisma.audit_logs.count({
       where: {
         userId: req.user.id,
         createdAt: {

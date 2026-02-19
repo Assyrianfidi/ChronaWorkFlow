@@ -3,10 +3,10 @@
  * Real-time 30-day predictive insights using actual transaction data
  */
 
-import { prisma } from '../lib/prisma';
-import { logger } from '../utils/logger';
-import { CacheManager } from '../cache/cache-manager';
-import { EventBus } from '../events/event-bus';
+import { prisma } from '../utils/prisma.js';
+import { logger } from '../utils/logger.js';
+import { CacheManager } from '../cache/cache-manager.js';
+import { EventBus } from '../events/event-bus.js';
 
 // Forecast period types
 export type ForecastPeriod = 'daily' | 'weekly' | 'monthly';
@@ -206,14 +206,14 @@ export class CashFlowForecastingEngine {
       });
 
       return forecast;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to generate cash flow forecast', { error, companyId });
       throw error;
     }
   }
 
   private async getCurrentCashPosition(companyId: string): Promise<number> {
-    const accounts = await prisma.account.findMany({
+    const accounts = await prisma.accounts.findMany({
       where: {
         companyId,
         isActive: true,
@@ -226,21 +226,21 @@ export class CashFlowForecastingEngine {
     });
 
     // Sum cash and bank accounts
-    const cashAccounts = accounts.filter(a => 
+    const cashAccounts = accounts.filter((a: any) => 
       a.name.toLowerCase().includes('cash') || 
       a.name.toLowerCase().includes('bank') ||
       a.name.toLowerCase().includes('checking') ||
       a.name.toLowerCase().includes('savings')
     );
 
-    return cashAccounts.reduce((sum, a) => sum + Number(a.balance), 0);
+    return cashAccounts.reduce((sum: number, a: { name: string; balance: string }) => sum + Number(a.balance), 0);
   }
 
-  private async getHistoricalTransactions(companyId: string, days: number): Promise<any[]> {
+  private async getHistoricalTransactions(companyId: string, days: number): Promise<{ id: string; date: Date; description: string; type: string; inflow: number; outflow: number; netAmount: number }[]> {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    const transactions = await prisma.transaction.findMany({
+    const transactions = await prisma.transactions.findMany({
       where: {
         companyId,
         date: {
@@ -259,11 +259,11 @@ export class CashFlowForecastingEngine {
       },
     });
 
-    return transactions.map(tx => {
+    return transactions.map((tx: any) => {
       let inflow = 0;
       let outflow = 0;
 
-      for (const line of tx.lines) {
+      for (const line of tx.transaction_lines) {
         if (line.account?.type === 'ASSET') {
           inflow += Number(line.debit);
           outflow += Number(line.credit);
@@ -290,8 +290,8 @@ export class CashFlowForecastingEngine {
       const dayTransactions = transactions.filter(t => new Date(t.date).getDay() === dow);
       
       if (dayTransactions.length > 0) {
-        const avgInflow = dayTransactions.reduce((sum, t) => sum + t.inflow, 0) / dayTransactions.length;
-        const avgOutflow = dayTransactions.reduce((sum, t) => sum + t.outflow, 0) / dayTransactions.length;
+        const avgInflow = dayTransactions.reduce((sum: any, t: any) => sum + t.inflow, 0) / dayTransactions.length;
+        const avgOutflow = dayTransactions.reduce((sum: any, t: any) => sum + t.outflow, 0) / dayTransactions.length;
         
         patterns.set(`dow_${dow}`, {
           dayOfWeek: dow,
@@ -309,8 +309,8 @@ export class CashFlowForecastingEngine {
       const dayTransactions = transactions.filter(t => new Date(t.date).getDate() === dom);
       
       if (dayTransactions.length >= 2) { // At least 2 occurrences
-        const avgInflow = dayTransactions.reduce((sum, t) => sum + t.inflow, 0) / dayTransactions.length;
-        const avgOutflow = dayTransactions.reduce((sum, t) => sum + t.outflow, 0) / dayTransactions.length;
+        const avgInflow = dayTransactions.reduce((sum: any, t: any) => sum + t.inflow, 0) / dayTransactions.length;
+        const avgOutflow = dayTransactions.reduce((sum: any, t: any) => sum + t.outflow, 0) / dayTransactions.length;
         
         patterns.set(`dom_${dom}`, {
           dayOfWeek: -1,
@@ -346,7 +346,7 @@ export class CashFlowForecastingEngine {
         const frequency = this.detectFrequency(intervals);
         
         if (frequency) {
-          const avgAmount = txs.reduce((sum, t) => sum + Math.abs(t.netAmount), 0) / txs.length;
+          const avgAmount = txs.reduce((sum: any, t: any) => sum + Math.abs(t.netAmount), 0) / txs.length;
           const isOutflow = txs[0].outflow > txs[0].inflow;
           const lastDate = new Date(Math.max(...txs.map(t => new Date(t.date).getTime())));
           
@@ -366,23 +366,23 @@ export class CashFlowForecastingEngine {
   }
 
   private async getPendingInflows(companyId: string): Promise<Array<{ date: Date; amount: number; description: string }>> {
-    const invoices = await prisma.invoice.findMany({
+    const invoices = await prisma.invoices.findMany({
       where: {
         companyId,
         status: {
-          in: ['SENT', 'OVERDUE'],
+          in: ['OPEN', 'OVERDUE'],
         },
       },
       select: {
-        dueDate: true,
+        dueAt: true,
         totalAmount: true,
         invoiceNumber: true,
       },
     });
 
-    return invoices.map(inv => ({
-      date: inv.dueDate,
-      amount: Number(inv.totalAmount),
+    return invoices.map((inv: any) => ({
+      date: inv.dueAt,
+      amount: Number(inv.amount),
       description: `Invoice ${inv.invoiceNumber}`,
     }));
   }
@@ -493,11 +493,11 @@ export class CashFlowForecastingEngine {
       weekly.push({
         weekStartDate: weekDays[0].date,
         weekEndDate: weekDays[weekDays.length - 1].date,
-        projectedInflow: weekDays.reduce((sum, d) => sum + d.projectedInflow, 0),
-        projectedOutflow: weekDays.reduce((sum, d) => sum + d.projectedOutflow, 0),
-        netCashFlow: weekDays.reduce((sum, d) => sum + d.netCashFlow, 0),
+        projectedInflow: weekDays.reduce((sum: any, d: any) => sum + d.projectedInflow, 0),
+        projectedOutflow: weekDays.reduce((sum: any, d: any) => sum + d.projectedOutflow, 0),
+        netCashFlow: weekDays.reduce((sum: any, d: any) => sum + d.netCashFlow, 0),
         runningBalance: weekDays[weekDays.length - 1].runningBalance,
-        confidence: weekDays.reduce((sum, d) => sum + d.confidence, 0) / weekDays.length,
+        confidence: weekDays.reduce((sum: any, d: any) => sum + d.confidence, 0) / weekDays.length,
       });
     }
 
@@ -520,11 +520,11 @@ export class CashFlowForecastingEngine {
       return {
         month,
         year,
-        projectedInflow: days.reduce((sum, d) => sum + d.projectedInflow, 0),
-        projectedOutflow: days.reduce((sum, d) => sum + d.projectedOutflow, 0),
-        netCashFlow: days.reduce((sum, d) => sum + d.netCashFlow, 0),
+        projectedInflow: days.reduce((sum: any, d: any) => sum + d.projectedInflow, 0),
+        projectedOutflow: days.reduce((sum: any, d: any) => sum + d.projectedOutflow, 0),
+        netCashFlow: days.reduce((sum: any, d: any) => sum + d.netCashFlow, 0),
         runningBalance: days[days.length - 1].runningBalance,
-        confidence: days.reduce((sum, d) => sum + d.confidence, 0) / days.length,
+        confidence: days.reduce((sum: any, d: any) => sum + d.confidence, 0) / days.length,
       };
     });
   }
@@ -535,7 +535,7 @@ export class CashFlowForecastingEngine {
     const minBalance = Math.min(...forecasts.map(f => f.runningBalance));
     
     // Calculate runway
-    const avgDailyBurn = forecasts.reduce((sum, f) => sum + f.projectedOutflow, 0) / forecasts.length;
+    const avgDailyBurn = forecasts.reduce((sum: any, f: any) => sum + f.projectedOutflow, 0) / forecasts.length;
     const cashRunwayDays = avgDailyBurn > 0 ? Math.floor(currentCash / avgDailyBurn) : 999;
 
     // Calculate shortfall probability
@@ -670,8 +670,8 @@ export class CashFlowForecastingEngine {
   // Helper methods
   private calculateVariance(values: number[]): number {
     if (values.length === 0) return 0;
-    const mean = values.reduce((a, b) => a + b, 0) / values.length;
-    return Math.sqrt(values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length);
+    const mean = values.reduce((a: any, b: any) => a + b, 0) / values.length;
+    return Math.sqrt(values.reduce((sum: any, v: any) => sum + Math.pow(v - mean, 2), 0) / values.length);
   }
 
   private normalizeDescription(description: string): string {
@@ -700,7 +700,7 @@ export class CashFlowForecastingEngine {
   private detectFrequency(intervals: number[]): RecurringTransaction['frequency'] | null {
     if (intervals.length === 0) return null;
     
-    const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+    const avgInterval = intervals.reduce((a: any, b: any) => a + b, 0) / intervals.length;
     const variance = this.calculateVariance(intervals);
     
     // Only detect if variance is low (consistent intervals)
@@ -747,7 +747,7 @@ export class CashFlowForecastingEngine {
                             frequency === 'biweekly' ? 14 :
                             frequency === 'monthly' ? 30 : 90;
     
-    const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+    const avgInterval = intervals.reduce((a: any, b: any) => a + b, 0) / intervals.length;
     const deviation = Math.abs(avgInterval - expectedInterval) / expectedInterval;
     
     return Math.max(0, 1 - deviation);

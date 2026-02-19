@@ -3,7 +3,7 @@ import { Role } from "@prisma/client";
 import { logger } from "../utils/logger.js";
 import { ApiError, ErrorCodes } from "../utils/errorHandler.js";
 import bcrypt from "bcryptjs";
-import { prisma } from "../utils/prisma";
+import { prisma } from "../utils/prisma.js";
 
 export const getAllUsers = async (
   req: Request,
@@ -20,7 +20,7 @@ export const getAllUsers = async (
       throw new ApiError("Access denied", 403, ErrorCodes.FORBIDDEN);
     }
 
-    const users = await prisma.user.findMany({
+    const users = await prisma.users.findMany({
       select: {
         id: true,
         name: true,
@@ -45,7 +45,7 @@ export const getAllUsers = async (
         users,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to retrieve all users", {
       event: "ALL_USERS_RETRIEVAL_ERROR",
       userId: req.user?.id,
@@ -77,7 +77,7 @@ export const getUser = async (
       throw new ApiError("Access denied", 403, ErrorCodes.FORBIDDEN);
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -108,7 +108,7 @@ export const getUser = async (
         user,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to retrieve user", {
       event: "USER_RETRIEVAL_ERROR",
       userId: req.user?.id,
@@ -146,7 +146,7 @@ export const createUser = async (
     }
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { email },
     });
 
@@ -158,7 +158,7 @@ export const createUser = async (
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: {
         name,
         email,
@@ -190,7 +190,7 @@ export const createUser = async (
         user,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to create user", {
       event: "USER_CREATION_ERROR",
       userId: req.user?.id,
@@ -224,7 +224,7 @@ export const updateUser = async (
     }
 
     // Check if user exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { id: userId },
     });
 
@@ -245,7 +245,7 @@ export const updateUser = async (
       if (name !== undefined) updateData.name = name;
       if (email !== undefined) {
         // Check if email is already taken by another user
-        const emailExists = await prisma.user.findUnique({
+        const emailExists = await prisma.users.findUnique({
           where: { email },
         });
         if (emailExists && emailExists.id !== userId) {
@@ -255,7 +255,7 @@ export const updateUser = async (
       }
     }
 
-    const user = await prisma.user.update({
+    const user = await prisma.users.update({
       where: { id: userId },
       data: updateData,
       select: {
@@ -282,7 +282,7 @@ export const updateUser = async (
         user,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to update user", {
       event: "USER_UPDATE_ERROR",
       userId: req.user?.id,
@@ -325,7 +325,7 @@ export const deleteUser = async (
     }
 
     // Check if user exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { id: userId },
     });
 
@@ -333,7 +333,7 @@ export const deleteUser = async (
       throw new ApiError("User not found", 404, ErrorCodes.NOT_FOUND);
     }
 
-    await prisma.user.delete({
+    await prisma.users.delete({
       where: { id: userId },
     });
 
@@ -345,7 +345,7 @@ export const deleteUser = async (
     });
 
     res.status(204).send();
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to delete user", {
       event: "USER_DELETION_ERROR",
       userId: req.user?.id,
@@ -372,7 +372,7 @@ export const updateMe = async (
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) {
       // Check if email is already taken by another user
-      const emailExists = await prisma.user.findUnique({
+      const emailExists = await prisma.users.findUnique({
         where: { email },
       });
       if (emailExists && emailExists.id !== req.user.id) {
@@ -381,7 +381,7 @@ export const updateMe = async (
       updateData.email = email;
     }
 
-    const user = await prisma.user.update({
+    const user = await prisma.users.update({
       where: { id: req.user.id },
       data: updateData,
       select: {
@@ -407,7 +407,7 @@ export const updateMe = async (
         user,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to update user profile", {
       event: "USER_PROFILE_UPDATE_ERROR",
       userId: req.user?.id,
@@ -427,7 +427,7 @@ export const deleteMe = async (
       throw new ApiError("Not authenticated", 401, ErrorCodes.UNAUTHORIZED);
     }
 
-    await prisma.user.delete({
+    await prisma.users.delete({
       where: { id: req.user.id },
     });
 
@@ -437,7 +437,7 @@ export const deleteMe = async (
     });
 
     res.status(204).send();
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Failed to delete user profile", {
       event: "USER_SELF_DELETION_ERROR",
       userId: req.user?.id,

@@ -4,10 +4,10 @@
  * Target: 15-minute migration with AI-powered categorization
  */
 
-import { prisma } from '../lib/prisma';
-import { logger } from '../utils/logger';
-import { mlCategorizationEngine } from '../ai/ml-categorization-engine';
-import { EventBus } from '../events/event-bus';
+import { prisma } from '../utils/prisma.js';
+import { logger } from '../utils/logger.js';
+import { mlCategorizationEngine } from '../ai/ml-categorization-engine.js';
+import { EventBus } from '../events/event-bus.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -159,7 +159,7 @@ export class QuickBooksMigrationService {
         throw new Error('No accounts found in QBO file');
       }
 
-      const totalTransactions = accounts.reduce((sum, a) => sum + a.transactions.length, 0);
+      const totalTransactions = accounts.reduce((sum: any, a: any) => sum + a.transactions.length, 0);
       
       this.updateStatus(migrationId, {
         migrationId,
@@ -266,7 +266,7 @@ export class QuickBooksMigrationService {
       this.eventBus.emit('migration.completed', result);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('QBO migration failed', { error, migrationId, companyId });
       
       this.updateStatus(migrationId, {
@@ -415,7 +415,7 @@ export class QuickBooksMigrationService {
       this.eventBus.emit('migration.completed', result);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('IIF migration failed', { error, migrationId, companyId });
       
       this.updateStatus(migrationId, {
@@ -474,7 +474,7 @@ export class QuickBooksMigrationService {
 
     logger.info('QBO file parsed', {
       accountsFound: accounts.length,
-      totalTransactions: accounts.reduce((sum, a) => sum + a.transactions.length, 0),
+      totalTransactions: accounts.reduce((sum: any, a: any) => sum + a.transactions.length, 0),
     });
 
     return accounts;
@@ -588,7 +588,7 @@ export class QuickBooksMigrationService {
       try {
         const accountType = this.mapQBOAccountType(qboAccount.accountType);
         
-        const account = await prisma.account.create({
+        const account = await prisma.accounts.create({
           data: {
             companyId,
             code: qboAccount.accountId.substring(0, 20),
@@ -601,7 +601,7 @@ export class QuickBooksMigrationService {
         });
 
         accountMap.set(qboAccount.accountId, account.id);
-      } catch (error) {
+      } catch (error: any) {
         errors.push({
           type: 'account_import',
           message: `Failed to import account ${qboAccount.accountId}: ${error}`,
@@ -630,7 +630,7 @@ export class QuickBooksMigrationService {
         const amount = Math.abs(qboTx.amount);
 
         // Create transaction
-        const transaction = await prisma.transaction.create({
+        const transaction = await prisma.transactions.create({
           data: {
             companyId,
             transactionNumber: `QBO_${qboTx.fitId}`,
@@ -638,7 +638,7 @@ export class QuickBooksMigrationService {
             type: this.mapQBOTransactionType(qboTx.type),
             totalAmount: amount,
             description: qboTx.memo || qboTx.name || 'Imported from QuickBooks',
-            lines: {
+            transaction_transaction_lines: {
               create: [
                 {
                   accountId,
@@ -652,7 +652,7 @@ export class QuickBooksMigrationService {
         });
 
         imported++;
-      } catch (error) {
+      } catch (error: any) {
         errors.push({
           type: 'transaction_import',
           message: `Failed to import transaction ${qboTx.fitId}: ${error}`,
@@ -678,7 +678,7 @@ export class QuickBooksMigrationService {
       try {
         const accountType = this.mapIIFAccountType(iifAccount.type);
         
-        const account = await prisma.account.create({
+        const account = await prisma.accounts.create({
           data: {
             companyId,
             code: this.generateAccountCode(iifAccount.name),
@@ -691,7 +691,7 @@ export class QuickBooksMigrationService {
         });
 
         accountMap.set(iifAccount.name, account.id);
-      } catch (error) {
+      } catch (error: any) {
         errors.push({
           type: 'account_import',
           message: `Failed to import account ${iifAccount.name}: ${error}`,
@@ -728,7 +728,7 @@ export class QuickBooksMigrationService {
     for (const [docNum, txGroup] of grouped) {
       try {
         const firstTx = txGroup[0];
-        const totalAmount = txGroup.reduce((sum, tx) => sum + Math.abs(tx.amount), 0) / 2; // Divide by 2 for double-entry
+        const totalAmount = txGroup.reduce((sum: any, tx: any) => sum + Math.abs(tx.amount), 0) / 2; // Divide by 2 for double-entry
 
         // Create transaction with lines
         const lines = txGroup.map(tx => {
@@ -745,7 +745,7 @@ export class QuickBooksMigrationService {
           };
         });
 
-        await prisma.transaction.create({
+        await prisma.transactions.create({
           data: {
             companyId,
             transactionNumber: `IIF_${docNum}_${Date.now()}`,
@@ -753,14 +753,14 @@ export class QuickBooksMigrationService {
             type: this.mapIIFTransactionType(firstTx.transType),
             totalAmount,
             description: firstTx.memo || firstTx.name || 'Imported from QuickBooks',
-            lines: {
+            transaction_transaction_lines: {
               create: lines,
             },
           },
         });
 
         imported++;
-      } catch (error) {
+      } catch (error: any) {
         errors.push({
           type: 'transaction_import',
           message: `Failed to import transaction ${docNum}: ${error}`,
@@ -784,7 +784,7 @@ export class QuickBooksMigrationService {
 
     for (const customer of customers) {
       try {
-        await prisma.client.create({
+        await prisma.customers.create({
           data: {
             companyId,
             name: customer.name,
@@ -795,7 +795,7 @@ export class QuickBooksMigrationService {
         });
 
         imported++;
-      } catch (error) {
+      } catch (error: any) {
         errors.push({
           type: 'customer_import',
           message: `Failed to import customer ${customer.name}: ${error}`,
@@ -813,10 +813,10 @@ export class QuickBooksMigrationService {
   private async runAICategorization(companyId: string): Promise<{ categorized: number; accuracy: number }> {
     try {
       // Get uncategorized transactions
-      const transactions = await prisma.transaction.findMany({
+      const transactions = await prisma.transactions.findMany({
         where: { companyId },
         include: {
-          lines: {
+          transaction_transaction_lines: {
             include: {
               account: true,
             },
@@ -829,8 +829,8 @@ export class QuickBooksMigrationService {
       let highConfidence = 0;
 
       for (const tx of transactions) {
-        const amount = Number(tx.totalAmount);
-        const isDebit = tx.lines.some(l => Number(l.debit) > 0);
+        const amount = Number(tx.amount);
+        const isDebit = tx.transaction_lines.some((l: any) => Number(l.debit) > 0);
 
         const result = await mlCategorizationEngine.categorizeTransaction(
           tx.description || '',
@@ -851,7 +851,7 @@ export class QuickBooksMigrationService {
       const accuracy = categorized > 0 ? highConfidence / categorized : 0.95;
 
       return { categorized, accuracy };
-    } catch (error) {
+    } catch (error: any) {
       logger.error('AI categorization failed', { error, companyId });
       return { categorized: 0, accuracy: 0 };
     }

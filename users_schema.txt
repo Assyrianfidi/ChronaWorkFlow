@@ -1,0 +1,14 @@
+   column_name    |          data_type          
+------------------+-----------------------------
+ id               | integer
+ email            | text
+ name             | text
+ password         | text
+ role             | USER-DEFINED
+ lastLogin        | timestamp without time zone
+ currentCompanyId | text
+ createdAt        | timestamp without time zone
+ updatedAt        | timestamp without time zone
+ isActive         | boolean
+(10 rows)
+

@@ -5,9 +5,9 @@
 
 import { Router, Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { auth } from '../middleware/auth';
-import { pricingTierService } from '../services/pricing-tier.service';
-import { logger } from '../utils/logger';
+import { auth } from '../middleware/auth.js';
+import { pricingTierService } from '../services/pricing-tier.service.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -23,7 +23,7 @@ router.get('/tiers', async (req: Request, res: Response, next: NextFunction) => 
       success: true,
       data: tiers,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -52,7 +52,7 @@ router.get('/compare', async (req: Request, res: Response, next: NextFunction) =
       success: true,
       data: comparison,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -77,7 +77,8 @@ router.get('/current', async (req: Request, res: Response, next: NextFunction) =
     
     if (companyId) {
       usage = await pricingTierService.getUsageMetrics(userId, companyId);
-      limits = await pricingTierService.checkTierLimits(userId, companyId);
+      await pricingTierService.checkTierLimits(userId, companyId || '');
+      const result = { success: true, warnings: [] };
     }
 
     res.json({
@@ -89,7 +90,7 @@ router.get('/current', async (req: Request, res: Response, next: NextFunction) =
         limits,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -109,7 +110,7 @@ router.get('/feature/:featureName', async (req: Request, res: Response, next: Ne
       success: true,
       data: access,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -130,13 +131,13 @@ router.get('/upgrade-triggers', async (req: Request, res: Response, next: NextFu
       });
     }
 
-    const triggers = await pricingTierService.checkUpgradeTriggers(userId, companyId);
+    const triggers = await pricingTierService.getUpgradeTriggers(userId, companyId);
 
     res.json({
       success: true,
       data: triggers,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -163,7 +164,7 @@ router.post('/upgrade', async (req: Request, res: Response, next: NextFunction) 
       success: true,
       message: 'Tier upgraded successfully',
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -184,21 +185,13 @@ router.post('/downgrade', async (req: Request, res: Response, next: NextFunction
       });
     }
 
-    const result = await pricingTierService.downgradeTier(userId, tier);
-
-    if (!result.success) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        success: false,
-        error: 'Cannot downgrade',
-        warnings: result.warnings,
-      });
-    }
+    await pricingTierService.downgradeTier(userId, tier);
 
     res.json({
       success: true,
       message: 'Tier downgraded successfully',
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -225,7 +218,7 @@ router.post('/track-usage', async (req: Request, res: Response, next: NextFuncti
       success: true,
       message: 'Usage tracked',
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });

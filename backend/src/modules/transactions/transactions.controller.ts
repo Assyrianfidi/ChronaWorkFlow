@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { transactionsService } from "./transactions.service";
-import { transactionListSchema } from "./transactions.model";
+import { transactionsService } from "./transactions.service.js";
+import { transactionListSchema } from "./transactions.model.js";
 import { StatusCodes } from "http-status-codes";
 
 export const transactionsController = {
@@ -12,7 +12,7 @@ export const transactionsController = {
         parsed.limit,
       );
       res.status(StatusCodes.OK).json({ success: true, data });
-    } catch (error) {
+    } catch (error: any) {
       next(error);
     }
   },
@@ -25,7 +25,7 @@ export const transactionsController = {
       res
         .status(StatusCodes.CREATED)
         .json({ success: true, data: transaction });
-    } catch (error) {
+    } catch (error: any) {
       next(error);
     }
   },

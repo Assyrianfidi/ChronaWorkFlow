@@ -17,8 +17,8 @@ async function main() {
 
   try {
     // Clear existing data
-    await prisma.reconciliationReport.deleteMany({});
-    await prisma.user.deleteMany({});
+    await prisma.reconciliation_reports.deleteMany({});
+    await prisma.users.deleteMany({});
 
     // Create demo users with proper roles
     const demoUsers = [
@@ -59,7 +59,7 @@ async function main() {
       },
     ];
 
-    const createdUsers = await prisma.user.createMany({
+    const createdUsers = await prisma.users.createMany({
       data: demoUsers,
     });
 
@@ -72,7 +72,7 @@ async function main() {
     console.log("   inventory@accubooks.com / inventory123");
 
     // Get the admin user for reports
-    const admin = await prisma.user.findUnique({
+    const admin = await prisma.users.findUnique({
       where: { email: "admin@accubooks.com" },
     });
 
@@ -90,7 +90,7 @@ async function main() {
       },
     ];
 
-    await prisma.reconciliationReport.createMany({
+    await prisma.reconciliation_reports.createMany({
       data: reports,
     });
 

@@ -3,7 +3,7 @@
  * Sub-20ms API response optimization with advanced caching, query optimization, and performance monitoring
  */
 
-import { prisma } from "../utils/prisma";
+import { prisma } from "../utils/prisma.js";
 import { logger } from "../utils/logger.js";
 import { EventBus } from "../events/event-bus.js";
 import { CacheManager } from "../cache/cache-manager.js";
@@ -125,7 +125,7 @@ export interface PerformanceReport {
 }
 
 export class BackendPerformanceEngine {
-  private prisma: PrismaClient;
+  private prisma: any;
   private logger: typeof logger;
   private eventBus: EventBus;
   private cache: CacheManager;
@@ -286,7 +286,7 @@ export class BackendPerformanceEngine {
       await this.setupQueryOptimization();
 
       this.logger.info("Database optimizations configured");
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to setup database optimizations:", error);
     }
   }
@@ -309,7 +309,7 @@ export class BackendPerformanceEngine {
       try {
         await this.prisma.$executeRaw`${indexSql}`;
         this.logger.debug(`Created index: ${indexSql}`);
-      } catch (error) {
+      } catch (error: any) {
         this.logger.warn(`Failed to create index: ${indexSql}`, error);
       }
     }
@@ -536,7 +536,7 @@ export class BackendPerformanceEngine {
       //     ipAddress: m.ipAddress
       //   }))
       // });
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to store performance metrics:", error);
     }
 
@@ -564,11 +564,11 @@ export class BackendPerformanceEngine {
     // for (const [key, group] of Object.entries(grouped)) {
     //   const [endpoint, method] = key.split(':');
     //
-    //   const avgDuration = group.reduce((sum, m) => sum + m.duration, 0) / group.length;
-    //   const avgMemory = group.reduce((sum, m) => sum + m.memoryUsage, 0) / group.length;
-    //   const avgQueries = group.reduce((sum, m) => sum + m.dbQueries, 0) / group.length;
-    //   const totalCacheHits = group.reduce((sum, m) => sum + m.cacheHits, 0);
-    //   const totalCacheMisses = group.reduce((sum, m) => sum + m.cacheMisses, 0);
+    //   const avgDuration = group.reduce((sum: any, m: any) => sum + m.duration, 0) / group.length;
+    //   const avgMemory = group.reduce((sum: any, m: any) => sum + m.memoryUsage, 0) / group.length;
+    //   const avgQueries = group.reduce((sum: any, m: any) => sum + m.dbQueries, 0) / group.length;
+    //   const totalCacheHits = group.reduce((sum: any, m: any) => sum + m.cacheHits, 0);
+    //   const totalCacheMisses = group.reduce((sum: any, m: any) => sum + m.cacheMisses, 0);
     //   const cacheHitRate = totalCacheHits + totalCacheMisses > 0
     //     ? (totalCacheHits / (totalCacheHits + totalCacheMisses)) * 100
     //     : 0;
@@ -620,7 +620,7 @@ export class BackendPerformanceEngine {
       for (const query of slowQueries as any[]) {
         await this.optimizeQuery(query);
       }
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to analyze slow queries:", error);
     }
   }
@@ -750,7 +750,7 @@ export class BackendPerformanceEngine {
       if (now.getHours() === 0 && now.getMinutes() < 5) {
         await this.generateReport("day");
       }
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to generate periodic reports:", error);
     }
   }
@@ -777,7 +777,7 @@ export class BackendPerformanceEngine {
 
     // Use mock data for now
     const metrics = this.metrics.filter(
-      (m) => m.timestamp >= startTime && m.timestamp <= endTime,
+      (m: any) => m.timestamp >= startTime && m.timestamp <= endTime,
     );
 
     // Calculate summary statistics
@@ -794,7 +794,7 @@ export class BackendPerformanceEngine {
 
     // Get recent alerts
     const alerts = this.performanceAlerts.filter(
-      (a) => a.triggeredAt >= startTime && a.triggeredAt <= endTime,
+      (a: any) => a.triggeredAt >= startTime && a.triggeredAt <= endTime,
     );
 
     // Generate recommendations
@@ -882,16 +882,16 @@ export class BackendPerformanceEngine {
       };
     }
 
-    const durations = metrics.map((m) => m.duration).sort((a, b) => a - b);
+    const durations = metrics.map((m: any) => m.duration).sort((a, b) => a - b);
     const totalRequests = metrics.length;
     const averageResponseTime =
-      durations.reduce((sum, d) => sum + d, 0) / totalRequests;
+      durations.reduce((sum: any, d: any) => sum + d, 0) / totalRequests;
     const p95ResponseTime = durations[Math.floor(totalRequests * 0.95)];
     const p99ResponseTime = durations[Math.floor(totalRequests * 0.99)];
-    const errorCount = metrics.filter((m) => m.statusCode >= 400).length;
+    const errorCount = metrics.filter((m: any) => m.statusCode >= 400).length;
     const errorRate = (errorCount / totalRequests) * 100;
 
-    const totalCacheHits = metrics.reduce((sum, m) => sum + m.cacheHits, 0);
+    const totalCacheHits = metrics.reduce((sum: any, m: any) => sum + m.cacheHits, 0);
     const totalCacheRequests = metrics.reduce(
       (sum, m) => sum + m.cacheHits + m.cacheMisses,
       0,
@@ -942,7 +942,7 @@ export class BackendPerformanceEngine {
       requestCount: number;
     }> = [];
     const endpointGroups = this.metrics
-      .filter((m) => m.timestamp >= startTime && m.timestamp <= endTime)
+      .filter((m: any) => m.timestamp >= startTime && m.timestamp <= endTime)
       .reduce(
         (acc, m) => {
           const key = m.endpoint;
@@ -1013,7 +1013,7 @@ export class BackendPerformanceEngine {
           total: pool[0]?.total || 0,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to get database metrics:", error);
       return {
         averageQueryTime: 0,
@@ -1064,13 +1064,13 @@ export class BackendPerformanceEngine {
       );
     }
 
-    if (alerts.some((a) => a.type === "slow_query")) {
+    if (alerts.some((a: any) => a.type === "slow_query")) {
       recommendations.push(
         "Slow queries detected. Review database indexes and query optimization.",
       );
     }
 
-    if (alerts.some((a) => a.type === "memory_leak")) {
+    if (alerts.some((a: any) => a.type === "memory_leak")) {
       recommendations.push(
         "Memory usage is high. Monitor for memory leaks and optimize memory usage.",
       );
@@ -1088,7 +1088,7 @@ export class BackendPerformanceEngine {
     let alerts = this.performanceAlerts;
 
     if (status) {
-      alerts = alerts.filter((a) => a.status === status);
+      alerts = alerts.filter((a: any) => a.status === status);
     }
 
     return alerts.sort(
@@ -1100,7 +1100,7 @@ export class BackendPerformanceEngine {
    * Acknowledge alert
    */
   async acknowledgeAlert(alertId: string, userId: string): Promise<void> {
-    const alert = this.performanceAlerts.find((a) => a.id === alertId);
+    const alert = this.performanceAlerts.find((a: any) => a.id === alertId);
     if (!alert) {
       throw new Error("Alert not found");
     }
@@ -1128,7 +1128,7 @@ export class BackendPerformanceEngine {
     resolution: string,
     userId: string,
   ): Promise<void> {
-    const alert = this.performanceAlerts.find((a) => a.id === alertId);
+    const alert = this.performanceAlerts.find((a: any) => a.id === alertId);
     if (!alert) {
       throw new Error("Alert not found");
     }
@@ -1164,13 +1164,13 @@ export class BackendPerformanceEngine {
     const oneMinuteAgo = now - 60000;
 
     const recentMetrics = this.metrics.filter(
-      (m) => m.timestamp.getTime() >= oneMinuteAgo,
+      (m: any) => m.timestamp.getTime() >= oneMinuteAgo,
     );
 
     const currentRPS = recentMetrics.length / 60;
     const averageResponseTime =
       recentMetrics.length > 0
-        ? recentMetrics.reduce((sum, m) => sum + m.duration, 0) /
+        ? recentMetrics.reduce((sum: any, m: any) => sum + m.duration, 0) /
           recentMetrics.length
         : 0;
 
@@ -1202,7 +1202,7 @@ export class BackendPerformanceEngine {
       `;
 
       return (result as any[])[0]?.count || 0;
-    } catch (error) {
+    } catch (error: any) {
       return 0;
     }
   }

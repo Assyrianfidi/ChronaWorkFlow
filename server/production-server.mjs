@@ -4,91 +4,17 @@
  * Compatible with package.json "type": "module"
  */
 
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import bcrypt from 'bcrypt';
-import { config } from 'dotenv';
+const message = [
+  'ARCHIVED RUNTIME: server/production-server.mjs',
+  '------------------------------------------------------------',
+  'This runtime has been disabled as part of non-destructive backend consolidation.',
+  'Canonical backend entrypoint is: node server/app.mjs',
+  'Canonical backend implementation is: backend/server.js',
+  '------------------------------------------------------------',
+].join('\n');
 
-// Load environment variables
-config();
-
-// Environment configuration
-const PORT = parseInt(process.env.PORT || '10000', 10);
-const NODE_ENV = process.env.NODE_ENV || 'production';
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://chronaworkflow-frontend.onrender.com';
-
-// Validate required environment variables
-if (!JWT_SECRET) {
-  console.error('❌ JWT_SECRET or SESSION_SECRET must be set');
-  process.exit(1);
-}
-
-// Allowed origins for CORS
-const allowedOrigins = [
-  FRONTEND_URL,
-  'https://chronaworkflow-frontend.onrender.com',
-  'http://localhost:5173',
-  'http://localhost:3000',
-];
-
-// Create Express app
-const app = express();
-
-// Security middleware
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: { error: 'Too many requests from this IP' }
-});
-app.use(limiter);
-
-// CORS configuration
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-// Body parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: false, limit: '10mb' }));
-
-// Request logging
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  next();
-});
-
-// Health check
-app.get('/', (req, res) => {
-  res.json({
-    status: 'ok',
-    message: 'ChronaWorkFlow API is running',
-    version: '1.0.0',
-    environment: NODE_ENV,
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: NODE_ENV,
-    jwt_secret: JWT_SECRET ? 'configured' : 'not configured',
-  });
-});
+console.error(message);
+process.exit(1);
 
 // Authentication endpoints - COMPLETELY ISOLATED
 app.post('/api/auth/login', (req, res) => {

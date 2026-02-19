@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 import { body, param, query, validationResult } from "express-validator";
-import { prisma } from "../../utils/prisma";
-import { auth, authorizeRoles } from "../../middleware/auth";
-import { ROLES } from "../../constants/roles";
+import { prisma } from "../../utils/prisma.js";
+import { auth, authorizeRoles } from "../../middleware/auth.js";
+import { ROLES } from "../../constants/roles.js";
 
 const router = Router();
 
@@ -26,13 +26,13 @@ router.get("/", async (req: Request, res: Response) => {
     }
 
     const [products, total] = await Promise.all([
-      prisma.product.findMany({
+      prisma.products.findMany({
         where,
         skip,
         take: Number(limit),
         orderBy: { createdAt: "desc" },
       }),
-      prisma.product.count({ where }),
+      prisma.products.count({ where }),
     ]);
 
     res.json({
@@ -47,7 +47,7 @@ router.get("/", async (req: Request, res: Response) => {
         },
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error listing products:", error);
     res.status(500).json({
       success: false,
@@ -61,7 +61,7 @@ router.get("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const product = await prisma.product.findUnique({
+    const product = await prisma.products.findUnique({
       where: { id },
     });
 
@@ -76,7 +76,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       success: true,
       data: product,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error getting product:", error);
     res.status(500).json({
       success: false,
@@ -109,7 +109,7 @@ router.post(
         });
       }
 
-      const product = await prisma.product.create({
+      const product = await prisma.products.create({
         data: req.body,
       });
 
@@ -118,7 +118,7 @@ router.post(
         message: "Product created successfully",
         data: product,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating product:", error);
       if (
         error instanceof Error &&
@@ -164,7 +164,7 @@ router.put(
 
       const { id } = req.params;
 
-      const product = await prisma.product.update({
+      const product = await prisma.products.update({
         where: { id },
         data: req.body,
       });
@@ -174,7 +174,7 @@ router.put(
         message: "Product updated successfully",
         data: product,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating product:", error);
       if (
         error instanceof Error &&
@@ -204,7 +204,7 @@ router.delete(
       // Check if product is used in invoices
       void id;
 
-      await prisma.product.delete({
+      await prisma.products.delete({
         where: { id },
       });
 
@@ -212,7 +212,7 @@ router.delete(
         success: true,
         message: "Product deleted successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting product:", error);
       if (
         error instanceof Error &&

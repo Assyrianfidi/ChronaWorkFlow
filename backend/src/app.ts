@@ -2,11 +2,11 @@ import express, { type Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
-// @ts-ignore
+// @ts-expect-error - No type definitions available
 import hpp from "hpp";
 import rateLimit from "express-rate-limit";
 import cookieParser from "cookie-parser";
-// @ts-ignore
+// @ts-expect-error - No type definitions available
 import compression from "compression";
 import { createRequire } from "module";
 import { config } from "./config/config.js";
@@ -150,7 +150,7 @@ setInterval(() => {
 }, 10000);
 
 // Primary health endpoint - supports GET and HEAD
-app.use("/api/health", (req, res) => {
+app.use("/api/health", (req: any, res: any) => {
   if (req.method === "HEAD") {
     return res.status(200).end();
   }
@@ -158,7 +158,7 @@ app.use("/api/health", (req, res) => {
 });
 
 // Readiness probe (for load balancers)
-app.use("/api/health/ready", (req, res) => {
+app.use("/api/health/ready", (req: any, res: any) => {
   if (req.method === "HEAD") {
     return res.status(200).end();
   }
@@ -166,7 +166,7 @@ app.use("/api/health/ready", (req, res) => {
 });
 
 // Liveness probe (for orchestration)
-app.use("/api/health/alive", (req, res) => {
+app.use("/api/health/alive", (req: any, res: any) => {
   if (req.method === "HEAD") {
     return res.status(200).end();
   }

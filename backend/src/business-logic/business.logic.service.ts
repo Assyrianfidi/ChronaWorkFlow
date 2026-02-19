@@ -1,19 +1,19 @@
 import type { PrismaClient } from "@prisma/client";
-import { prisma } from '../lib/prisma';
+import { prisma } from '../utils/prisma.js';
 import {
   DomainValidator,
   ValidationRules,
-} from "./validators/domain.validator";
-import { FinancialCalculator } from "./calculations/financial.calculator";
-import { BookkeepingRules } from "./rules/bookkeeping.rules";
+} from "./validators/domain.validator.js";
+import { FinancialCalculator } from "./calculations/financial.calculator.js";
+import { BookkeepingRules } from "./rules/bookkeeping.rules.js";
 import {
   FraudDetector,
   FraudMonitoringService,
   TransactionPattern,
-} from "./anti-fraud/fraud.detector";
-import { logger } from "../utils/logger";
-import { ApiError, ErrorCodes } from "../utils/errorHandler";
-import { CircuitBreakerRegistry } from "../utils/circuitBreaker";
+} from "./anti-fraud/fraud.detector.js";
+import { logger } from "../utils/logger.js";
+import { ApiError, ErrorCodes } from "../utils/errorHandler.js";
+import { CircuitBreakerRegistry } from "../utils/circuitBreaker.js";
 
 /**
  * Business Logic Service
@@ -50,7 +50,7 @@ export interface AccountSummary {
 }
 
 export class BusinessLogicService {
-  private prisma: PrismaClient;
+  private prisma: any;
   private circuitBreaker: any;
   private fraudDetector: FraudDetector;
 
@@ -91,7 +91,7 @@ export class BusinessLogicService {
 
       // Step 2: Get account information
       const accounts = await this.circuitBreaker.execute(async () => {
-        return this.prisma.account.findMany({
+        return this.prisma.accounts.findMany({
           where: {
             id: { in: [request.fromAccountId, request.toAccountId] },
             // TODO: Add userId to Account model
@@ -228,7 +228,7 @@ export class BusinessLogicService {
         warnings: [],
         fraudAlerts: [],
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.warn("Transaction failed", {
         event: "TRANSACTION_FAILED",
         userId,
@@ -257,7 +257,7 @@ export class BusinessLogicService {
   ): Promise<AccountSummary> {
     try {
       const account = await this.circuitBreaker.execute(async () => {
-        return this.prisma.account.findFirst({
+        return this.prisma.accounts.findFirst({
           where: { id: accountId }, // TODO: Add userId to Account model
         });
       });
@@ -269,7 +269,7 @@ export class BusinessLogicService {
       // Get pending transactions
       const pendingTransactions = await this.circuitBreaker.execute(
         async () => {
-          return this.prisma.transaction.count({
+          return this.prisma.transactions.count({
             where: {
               companyId: accountId,
               // TODO: Add status field to Transaction model
@@ -296,7 +296,7 @@ export class BusinessLogicService {
         currency: account.currency,
         lastActivity: account.updatedAt,
       };
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof ApiError) {
         throw error;
       }
@@ -354,7 +354,7 @@ export class BusinessLogicService {
         totalPayment: monthlyPayment * months,
         totalInterest: monthlyPayment * months - principal,
       };
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof ApiError) {
         throw error;
       }
@@ -399,7 +399,7 @@ export class BusinessLogicService {
         exchangeRate,
         timestamp: new Date(),
       };
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof ApiError) {
         throw error;
       }
@@ -423,7 +423,7 @@ export class BusinessLogicService {
   ): Promise<any> {
     try {
       const transactions = await this.circuitBreaker.execute(async () => {
-        return this.prisma.transaction.findMany({
+        return this.prisma.transactions.findMany({
           where: {
             companyId: accountId, // TODO: Fix Transaction model
           },
@@ -446,7 +446,7 @@ export class BusinessLogicService {
         ...transaction,
         fraudIndicators: [],
       }));
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof ApiError) {
         throw error;
       }
@@ -543,7 +543,7 @@ export class BusinessLogicService {
   ): Promise<TransactionPattern[]> {
     // Get historical transactions for fraud analysis
     const transactions = await this.circuitBreaker.execute(async () => {
-      return this.prisma.transaction.findMany({
+      return this.prisma.transactions.findMany({
         where: {
           companyId: accountId, // TODO: Fix Transaction model
           createdAt: {
@@ -595,7 +595,7 @@ export class BusinessLogicService {
     try {
       await this.prisma.$queryRaw`SELECT 1`;
       dbHealthy = true;
-    } catch (error) {
+    } catch (error: any) {
       dbHealthy = false;
     }
 

@@ -5,9 +5,9 @@
 
 import { Router, Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { auth } from '../middleware/auth';
-import { trialActivationService } from '../services/trial-activation.service';
-import { logger } from '../utils/logger';
+import { auth } from '../middleware/auth.js';
+import { trialActivationService } from '../services/trial-activation.service.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -36,7 +36,7 @@ router.get('/state', async (req: Request, res: Response, next: NextFunction) => 
       success: true,
       data: trialState,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -57,13 +57,13 @@ router.post('/start', async (req: Request, res: Response, next: NextFunction) =>
       });
     }
 
-    const trialState = await trialActivationService.startTrial(userId, companyId);
+    const converted = await trialActivationService.activateTrial(userId, companyId, 'pro');
 
     res.json({
       success: true,
-      data: trialState,
+      data: converted,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -83,7 +83,7 @@ router.post('/milestone/:type', async (req: Request, res: Response, next: NextFu
       success: true,
       message: 'Milestone completed',
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -110,7 +110,7 @@ router.post('/convert', async (req: Request, res: Response, next: NextFunction) 
       success: true,
       message: 'Trial converted successfully',
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
@@ -136,7 +136,7 @@ router.get('/analytics', async (req: Request, res: Response, next: NextFunction)
       success: true,
       data: analytics,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });

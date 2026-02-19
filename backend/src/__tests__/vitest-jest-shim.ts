@@ -12,8 +12,8 @@ type MockFactory = () => any;
 const jestRef: typeof jest = (globalThis as any).jest ?? jest;
 
 export const vi = {
-  fn: jestRef.fn.bind(jestRef),
-  spyOn: jestRef.spyOn.bind(jestRef),
+  fn: jestRef.fn,
+  spyOn: jestRef.spyOn,
   mock: (moduleName: string, factory?: MockFactory) => {
     if (factory) {
       jestRef.mock(moduleName, factory);
@@ -22,7 +22,7 @@ export const vi = {
     jestRef.mock(moduleName);
   },
   hoisted: <T>(factory: () => T): T => factory(),
-  clearAllMocks: jestRef.clearAllMocks.bind(jestRef),
-  resetAllMocks: jestRef.resetAllMocks.bind(jestRef),
-  restoreAllMocks: jestRef.restoreAllMocks.bind(jestRef),
+  clearAllMocks: jestRef.clearAllMocks,
+  resetAllMocks: jestRef.resetAllMocks,
+  restoreAllMocks: jestRef.restoreAllMocks,
 };

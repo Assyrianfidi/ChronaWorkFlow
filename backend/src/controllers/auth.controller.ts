@@ -1,20 +1,20 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
+import { Role } from "@prisma/client";
 import {
   authService,
   AuthTokens,
   generateAccessToken,
-} from "../services/auth.service";
-import { RefreshTokenService } from "../services/refreshToken.service";
-import { ApiError, ErrorCodes } from "../utils/errorHandler";
-import { config } from "../config/config";
-import { logger } from "../utils/logger";
-import AuditLoggerService from "../services/auditLogger.service";
-import { User, Role } from "@prisma/client";
+} from "../services/auth.service.js";
+import { RefreshTokenService } from "../services/refreshToken.service.js";
+import { ApiError, ErrorCodes } from "../utils/errorHandler.js";
+import { config } from "../config/config.js";
+import { logger } from "../utils/logger.js";
+import AuditLoggerService from "../services/auditLogger.service.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { prisma } from "../utils/prisma";
+import { prisma } from "../utils/prisma.js";
 
 // Zod schemas for request validation
 const loginSchema = z.object({
@@ -67,7 +67,7 @@ export const login = async (
     const { email, password } = loginSchema.parse(req.body);
 
     // Authenticate user
-    const { user, tokens } = await authService.login({ email, password });
+    const { user, tokens } = await authService.login({ email, password }) as any;
 
     // Create refresh token using RefreshTokenService
     const refreshToken = await RefreshTokenService.createRefreshToken(user.id);
@@ -104,7 +104,7 @@ export const login = async (
         expiresIn: tokens.expiresIn,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return next(
         new ApiError(
@@ -158,11 +158,11 @@ export const register = async (
 
     // Create new user
     const { user, tokens } = await authService.register({
-      name,
       email,
       password,
-      role: role as any,
-    });
+      name,
+      role: Role.USER as any,
+    }) as any;
 
     // Create refresh token using RefreshTokenService
     const refreshToken = await RefreshTokenService.createRefreshToken(user.id);
@@ -199,7 +199,7 @@ export const register = async (
         expiresIn: tokens.expiresIn,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return next(
         new ApiError(
@@ -288,7 +288,7 @@ export const refreshToken = async (
         expiresIn: tokens.expiresIn,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     // Clear invalid refresh token cookie
     res.clearCookie("refreshToken", {
       httpOnly: true,
@@ -359,7 +359,7 @@ export const changePassword = async (
     });
 
     res.status(StatusCodes.NO_CONTENT).send();
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return next(
         new ApiError(
@@ -415,7 +415,7 @@ export const getCurrentUser = async (
       success: true,
       data: { user },
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 };
@@ -445,7 +445,7 @@ export const getMe = async (
         user: req.user,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 };
@@ -489,7 +489,7 @@ export const logout = async (
     logger.info(`User logged out from IP: ${req.ip}`);
 
     res.status(StatusCodes.NO_CONTENT).send();
-  } catch (error) {
+  } catch (error: any) {
     logger.error(
       `Logout failed for user ID: ${req.user?.id} from IP: ${req.ip}`,
     );
@@ -525,7 +525,7 @@ export const logoutAll = async (
     );
 
     res.status(StatusCodes.NO_CONTENT).send();
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 };
@@ -544,7 +544,7 @@ export const forgotPassword = async (
     const { email } = req.body;
 
     // Find user by email
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email: email.toLowerCase() },
     });
 
@@ -571,7 +571,7 @@ export const forgotPassword = async (
       // For demo only - remove in production
       ...(process.env.NODE_ENV === "development" && { resetToken }),
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Forgot password error:", error);
     next(error);
   }
@@ -603,7 +603,7 @@ export const resetPassword = async (
     }
 
     // Find user by email
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email: email.toLowerCase() },
     });
 
@@ -619,11 +619,11 @@ export const resetPassword = async (
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Update password
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,
-        passwordChangedAt: new Date(),
+        // passwordChangedAt removed - field does not exist
       },
     });
 
@@ -636,7 +636,7 @@ export const resetPassword = async (
       success: true,
       message: "Password has been reset successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Reset password error:", error);
     next(error);
   }
@@ -662,7 +662,7 @@ export const verifyEmail = async (
       success: true,
       message: "Email has been verified successfully",
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("Email verification error:", error);
     next(error);
   }

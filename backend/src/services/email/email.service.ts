@@ -1,8 +1,8 @@
 import nodemailer from "nodemailer";
 import fs from "fs/promises";
 import path from "path";
-import { prisma } from "../../utils/prisma";
-import { pdfService } from "../invoicing/pdf.service";
+import { prisma } from "../../utils/prisma.js";
+import { pdfService } from "../invoicing/pdf.service.js";
 
 // Fixed self-reference
 
@@ -80,7 +80,7 @@ export class EmailService {
 
       console.log("✅ Email sent successfully:", info.messageId);
       return { success: true, messageId: info.messageId };
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Error sending email:", error);
 
       // Save failed email to outbox
@@ -103,7 +103,7 @@ export class EmailService {
   ): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
       // Get invoice details
-      const invoice = await prisma.invoice.findUnique({
+      const invoice = await prisma.invoices.findUnique({
         where: { id: invoiceId },
         include: {
           client: true,
@@ -139,7 +139,7 @@ export class EmailService {
       });
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Error sending invoice email:", error);
       return {
         success: false,
@@ -253,11 +253,11 @@ export class EmailService {
             </div>
             <div class="detail-row">
                 <span>Due Date:</span>
-                <span>${formatDate(invoice.dueDate)}</span>
+                <span>${formatDate(invoice.dueAt)}</span>
             </div>
             <div class="detail-row">
                 <span>Total Amount:</span>
-                <span>${formatCurrency(invoice.totalAmount?.toNumber ? invoice.totalAmount.toNumber() : Number(invoice.totalAmount))}</span>
+                <span>${formatCurrency(invoice.amount?.toNumber ? invoice.amount.toNumber() : Number(invoice.amount))}</span>
             </div>
         </div>
 
@@ -291,7 +291,7 @@ export class EmailService {
 
       await fs.writeFile(filepath, JSON.stringify(emailData, null, 2));
       console.log(`📧 Email saved to outbox: ${filename}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving email to outbox:", error);
     }
   }
@@ -315,7 +315,7 @@ export class EmailService {
       return emails.sort(
         (a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime(),
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error reading email outbox:", error);
       return [];
     }
@@ -344,7 +344,7 @@ export class EmailService {
           },
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         details: {

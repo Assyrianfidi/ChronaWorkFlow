@@ -1,8 +1,8 @@
 import express from "express";
-import { FeatureService } from "../services/feature.service";
-import { auth, authorizeRoles } from "../middleware/auth";
-import { ROLES } from "../constants/roles";
-import { prisma } from "../utils/prisma";
+import { FeatureService } from "../services/feature.service.js";
+import { auth, authorizeRoles } from "../middleware/auth.js";
+import { ROLES } from "../constants/roles.js";
+import { prisma } from "../utils/prisma.js";
 import { Role } from "@prisma/client";
 
 const router = express.Router();
@@ -10,7 +10,7 @@ const featureService = new FeatureService();
 
 router.use(auth);
 
-router.get("/resolve", async (req, res, next) => {
+router.get("/resolve", async (req: any, res: any, next: any) => {
   try {
     if (!req.user) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -19,7 +19,7 @@ router.get("/resolve", async (req, res, next) => {
     const keysParam = String(req.query.keys ?? "");
     const keys = keysParam
       .split(",")
-      .map((k) => k.trim())
+      .map((k: any) => k.trim())
       .filter(Boolean);
 
     const result: Record<string, boolean> = {};
@@ -33,25 +33,25 @@ router.get("/resolve", async (req, res, next) => {
     }
 
     res.status(200).json({ success: true, data: { features: result } });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
 
 router.use(authorizeRoles(ROLES.ADMIN));
 
-router.get("/", async (req, res, next) => {
+router.get("/", async (req: any, res: any, next: any) => {
   try {
     const data = await featureService.listFeatures();
     res.status(200).json({ success: true, data });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
 
-router.get("/users", async (req, res, next) => {
+router.get("/users", async (req: any, res: any, next: any) => {
   try {
-    const users = await prisma.user.findMany({
+    const users = await prisma.users.findMany({
       select: {
         id: true,
         name: true,
@@ -62,12 +62,12 @@ router.get("/users", async (req, res, next) => {
     });
 
     res.status(200).json({ success: true, data: { users } });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
 
-router.put("/:key/assign/role/:role", async (req, res, next) => {
+router.put("/:key/assign/role/:role", async (req: any, res: any, next: any) => {
   try {
     const featureKey = req.params.key;
     const role = req.params.role as Role;
@@ -79,15 +79,15 @@ router.put("/:key/assign/role/:role", async (req, res, next) => {
       success: true,
       data: { role, featureKey, enabled },
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
 
-router.put("/:key/assign/user/:userId", async (req, res, next) => {
+router.put("/:key/assign/user/:userId", async (req: any, res: any, next: any) => {
   try {
     const featureKey = req.params.key;
-    const userId = parseInt(req.params.userId, 10);
+    const userId = req.params.userId;
 
     const enabled = Boolean(req.body?.enabled);
 
@@ -97,24 +97,24 @@ router.put("/:key/assign/user/:userId", async (req, res, next) => {
       success: true,
       data: { userId, featureKey, enabled },
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });
 
-router.put("/:key/assign/company/:companyId", async (req, res, next) => {
+router.put("/:key/assign/company/:companyId", async (req: any, res: any, next: any) => {
   try {
     const featureKey = req.params.key;
     const companyId = req.params.companyId;
     const enabled = Boolean(req.body?.enabled);
 
-    const members = await prisma.companyMember.findMany({
+    const members = await prisma.company_members.findMany({
       where: { companyId },
       select: { userId: true },
     });
 
     await Promise.all(
-      members.map((m) => featureService.setUserFeature(m.userId, featureKey, enabled)),
+      members.map((m: any) => featureService.setUserFeature(m.userId, featureKey, enabled)),
     );
 
     res.status(200).json({
@@ -126,7 +126,7 @@ router.put("/:key/assign/company/:companyId", async (req, res, next) => {
         userCount: members.length,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });

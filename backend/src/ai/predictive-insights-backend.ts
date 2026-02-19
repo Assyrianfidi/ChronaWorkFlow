@@ -3,10 +3,10 @@
  * Advanced ML-powered financial predictions and insights
  */
 
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
-import { logger } from "../utils/logger";
-import { EventBus } from "../events/event-bus";
-import { CacheManager } from "../cache/cache-manager";
+import { prisma, PrismaClientSingleton } from '../utils/prisma.js';
+import { logger } from "../utils/logger.js";
+import { EventBus } from "../events/event-bus.js";
+import { CacheManager } from "../cache/cache-manager.js";
 
 export interface FinancialPrediction {
   id: string;
@@ -89,7 +89,7 @@ export interface PerformanceBenchmark {
 }
 
 export class PredictiveFinancialInsightEngine {
-  private prisma: PrismaClient;
+  private prisma: any; // PrismaClient
   private logger: any;
   private eventBus: EventBus;
   private cache: CacheManager;
@@ -144,7 +144,7 @@ export class PredictiveFinancialInsightEngine {
       });
 
       this.logger.info("ML models initialized successfully");
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to initialize ML models:", error);
       throw error;
     }
@@ -226,7 +226,7 @@ export class PredictiveFinancialInsightEngine {
       );
 
       return predictions;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to generate predictions:", error);
       throw error;
     }
@@ -264,7 +264,7 @@ export class PredictiveFinancialInsightEngine {
         generatedAt: new Date(),
         validUntil: this.getValidUntil(timeframe),
       };
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to predict revenue:", error);
       return null;
     }
@@ -301,7 +301,7 @@ export class PredictiveFinancialInsightEngine {
         generatedAt: new Date(),
         validUntil: this.getValidUntil(timeframe),
       };
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to predict expenses:", error);
       return null;
     }
@@ -340,7 +340,7 @@ export class PredictiveFinancialInsightEngine {
         generatedAt: new Date(),
         validUntil: this.getValidUntil(timeframe),
       };
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to predict cash flow:", error);
       return null;
     }
@@ -394,7 +394,7 @@ export class PredictiveFinancialInsightEngine {
         generatedAt: new Date(),
         validUntil: this.getValidUntil(timeframe),
       };
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to predict profit:", error);
       return null;
     }
@@ -415,7 +415,7 @@ export class PredictiveFinancialInsightEngine {
       if (historicalGrowth.length < 3) return null;
 
       const averageGrowth =
-        historicalGrowth.reduce((sum, rate) => sum + rate, 0) /
+        historicalGrowth.reduce((sum: any, rate: any) => sum + rate, 0) /
         historicalGrowth.length;
       const trend = this.calculateGrowthTrend(historicalGrowth);
 
@@ -440,7 +440,7 @@ export class PredictiveFinancialInsightEngine {
         generatedAt: new Date(),
         validUntil: this.getValidUntil(timeframe),
       };
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to predict growth:", error);
       return null;
     }
@@ -492,7 +492,7 @@ export class PredictiveFinancialInsightEngine {
       );
 
       return insights;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error("Failed to generate insights:", error);
       throw error;
     }
@@ -771,7 +771,7 @@ export class PredictiveFinancialInsightEngine {
 
         const analysis = await this.analyzeTrend(historicalData, metric);
         analyses.push(analysis);
-      } catch (error) {
+      } catch (error: any) {
         this.logger.error(`Failed to analyze trend for ${metric}:`, error);
       }
     }
@@ -902,7 +902,7 @@ export class PredictiveFinancialInsightEngine {
       try {
         const benchmark = await this.generateBenchmark(accountId, metric);
         benchmarks.push(benchmark);
-      } catch (error) {
+      } catch (error: any) {
         this.logger.error(`Failed to generate benchmark for ${metric}:`, error);
       }
     }
@@ -993,7 +993,7 @@ export class PredictiveFinancialInsightEngine {
   private calculateLinearTrend(data: number[]): number {
     const n = data.length;
     const sumX = (n * (n - 1)) / 2;
-    const sumY = data.reduce((sum, val) => sum + val, 0);
+    const sumY = data.reduce((sum: any, val: any) => sum + val, 0);
     const sumXY = data.reduce((sum, val, index) => sum + val * index, 0);
     const sumX2 = (n * (n - 1) * (2 * n - 1)) / 6;
 
@@ -1098,9 +1098,9 @@ export class PredictiveFinancialInsightEngine {
   }
 
   private calculateVolatility(data: number[]): number {
-    const mean = data.reduce((sum, val) => sum + val, 0) / data.length;
+    const mean = data.reduce((sum: any, val: any) => sum + val, 0) / data.length;
     const variance =
-      data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / data.length;
+      data.reduce((sum: any, val: any) => sum + Math.pow(val - mean, 2), 0) / data.length;
     return Math.sqrt(variance) / mean;
   }
 
@@ -1273,7 +1273,7 @@ export class PredictiveFinancialInsightEngine {
   }
 
   private calculateRiskScore(factors: any[]): number {
-    return factors.reduce((score, factor) => {
+    return factors.reduce((score: any, factor: any) => {
       const factorScore =
         Math.max(0, (factor.current - factor.threshold) / factor.threshold) *
         100;

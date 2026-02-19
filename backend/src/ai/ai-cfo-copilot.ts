@@ -4,9 +4,9 @@
  */
 
 import OpenAI from 'openai';
-import { prisma } from '../lib/prisma';
-import { logger } from '../utils/logger';
-import { CacheManager } from '../cache/cache-manager';
+import { prisma } from '../utils/prisma.js';
+import { logger } from '../utils/logger.js';
+import { CacheManager } from '../cache/cache-manager.js';
 import { Decimal } from '@prisma/client/runtime/library';
 
 // Query types the AI CFO can handle
@@ -72,7 +72,7 @@ interface FinancialContext {
 
 export class AICFOCopilot {
   private static instance: AICFOCopilot;
-  private openai: OpenAI;
+  private openai: OpenAI | null = null;
   private cache: CacheManager;
   private isConfigured: boolean = false;
 
@@ -101,7 +101,7 @@ export class AICFOCopilot {
       this.openai = new OpenAI({ apiKey });
       this.isConfigured = true;
       logger.info('AI CFO Copilot initialized with OpenAI');
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to initialize OpenAI', { error });
       this.isConfigured = false;
     }
@@ -146,7 +146,7 @@ export class AICFOCopilot {
       await this.logQuery(query, queryType, companyId, userId, response);
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       logger.error('AI CFO Copilot query failed', { error, query, companyId });
       
       return {
@@ -227,13 +227,13 @@ export class AICFOCopilot {
     const previousPeriodEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
     // Get company info
-    const company = await prisma.company.findUnique({
+    const company = await prisma.companies.findUnique({
       where: { id: companyId },
       select: { name: true },
     });
 
     // Get current period transactions
-    const currentTransactions = await prisma.transaction.findMany({
+    const currentTransactions = await prisma.transactions.findMany({
       where: {
         companyId,
         date: {
@@ -251,7 +251,7 @@ export class AICFOCopilot {
     });
 
     // Get previous period transactions
-    const previousTransactions = await prisma.transaction.findMany({
+    const previousTransactions = await prisma.transactions.findMany({
       where: {
         companyId,
         date: {
@@ -273,25 +273,25 @@ export class AICFOCopilot {
     const previousFinancials = this.calculateFinancials(previousTransactions);
 
     // Get accounts for cash position
-    const accounts = await prisma.account.findMany({
+    const accounts = await prisma.accounts.findMany({
       where: { companyId, isActive: true },
       select: { type: true, balance: true, name: true },
     });
 
-    const cashAccounts = accounts.filter(a => a.type === 'ASSET' && 
+    const cashAccounts = accounts.filter((a: { type: string; name: string }) => a.type === 'ASSET' && 
       (a.name.toLowerCase().includes('cash') || a.name.toLowerCase().includes('bank')));
-    const cashPosition = cashAccounts.reduce((sum, a) => sum + Number(a.balance), 0);
+    const cashPosition = cashAccounts.reduce((sum: number, a: { balance: string }) => sum + Number(a.balance), 0);
 
-    const arAccounts = accounts.filter(a => a.type === 'ASSET' && 
+    const arAccounts = accounts.filter((a: { type: string; name: string }) => a.type === 'ASSET' && 
       a.name.toLowerCase().includes('receivable'));
-    const accountsReceivable = arAccounts.reduce((sum, a) => sum + Number(a.balance), 0);
+    const accountsReceivable = arAccounts.reduce((sum: number, a: { balance: string }) => sum + Number(a.balance), 0);
 
-    const apAccounts = accounts.filter(a => a.type === 'LIABILITY' && 
+    const apAccounts = accounts.filter((a: { type: string; name: string }) => a.type === 'LIABILITY' && 
       a.name.toLowerCase().includes('payable'));
-    const accountsPayable = apAccounts.reduce((sum, a) => sum + Number(a.balance), 0);
+    const accountsPayable = apAccounts.reduce((sum: number, a: { balance: string }) => sum + Number(a.balance), 0);
 
     // Get recent transactions
-    const recentTransactions = await prisma.transaction.findMany({
+    const recentTransactions = await prisma.transactions.findMany({
       where: { companyId },
       orderBy: { date: 'desc' },
       take: 10,
@@ -321,9 +321,9 @@ export class AICFOCopilot {
       cashPosition,
       accountsReceivable,
       accountsPayable,
-      recentTransactions: recentTransactions.map(t => ({
+      recentTransactions: recentTransactions.map((t: any) => ({
         description: t.description || '',
-        amount: Number(t.totalAmount),
+        amount: Number(t.amount),
         date: t.date,
         type: t.type,
       })),
@@ -336,7 +336,7 @@ export class AICFOCopilot {
     let expenses = 0;
 
     for (const tx of transactions) {
-      for (const line of tx.lines || []) {
+      for (const line of tx.transaction_lines || []) {
         if (line.account?.type === 'REVENUE') {
           revenue += Number(line.credit) - Number(line.debit);
         } else if (line.account?.type === 'EXPENSE') {
@@ -357,7 +357,7 @@ export class AICFOCopilot {
     const previousByCategory = new Map<string, number>();
 
     for (const tx of current) {
-      for (const line of tx.lines || []) {
+      for (const line of tx.transaction_lines || []) {
         if (line.account?.type === 'EXPENSE') {
           const category = line.account.name;
           const amount = Number(line.debit) - Number(line.credit);
@@ -367,7 +367,7 @@ export class AICFOCopilot {
     }
 
     for (const tx of previous) {
-      for (const line of tx.lines || []) {
+      for (const line of tx.transaction_lines || []) {
         if (line.account?.type === 'EXPENSE') {
           const category = line.account.name;
           const amount = Number(line.debit) - Number(line.credit);
@@ -393,7 +393,7 @@ export class AICFOCopilot {
     const previousBySource = new Map<string, number>();
 
     for (const tx of current) {
-      for (const line of tx.lines || []) {
+      for (const line of tx.transaction_lines || []) {
         if (line.account?.type === 'REVENUE') {
           const source = line.account.name;
           const amount = Number(line.credit) - Number(line.debit);
@@ -403,7 +403,7 @@ export class AICFOCopilot {
     }
 
     for (const tx of previous) {
-      for (const line of tx.lines || []) {
+      for (const line of tx.transaction_lines || []) {
         if (line.account?.type === 'REVENUE') {
           const source = line.account.name;
           const amount = Number(line.credit) - Number(line.debit);
@@ -426,7 +426,7 @@ export class AICFOCopilot {
 
   private async detectAnomalies(companyId: string): Promise<Array<{ description: string; amount: number; severity: string }>> {
     // Get recent transactions and detect anomalies
-    const transactions = await prisma.transaction.findMany({
+    const transactions = await prisma.transactions.findMany({
       where: { companyId },
       orderBy: { date: 'desc' },
       take: 100,
@@ -437,14 +437,14 @@ export class AICFOCopilot {
       },
     });
 
-    const amounts = transactions.map(t => Number(t.totalAmount));
-    const mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
-    const stdDev = Math.sqrt(amounts.reduce((sum, a) => sum + Math.pow(a - mean, 2), 0) / amounts.length);
+    const amounts = transactions.map((t: any) => Number(t.amount));
+    const mean = amounts.reduce((a: any, b: any) => a + b, 0) / amounts.length;
+    const stdDev = Math.sqrt(amounts.reduce((sum: any, a: any) => sum + Math.pow(a - mean, 2), 0) / amounts.length);
 
     const anomalies: Array<{ description: string; amount: number; severity: string }> = [];
 
     for (const tx of transactions) {
-      const amount = Number(tx.totalAmount);
+      const amount = Number(tx.amount);
       const zScore = Math.abs((amount - mean) / stdDev);
       
       if (zScore > 3) {
@@ -468,6 +468,9 @@ export class AICFOCopilot {
     const userPrompt = this.buildUserPrompt(query, queryType, context);
 
     try {
+      if (!this.openai) {
+        throw new Error('OpenAI client not initialized');
+      }
       const completion = await this.openai.chat.completions.create({
         model: 'gpt-4-turbo-preview',
         messages: [
@@ -493,7 +496,7 @@ export class AICFOCopilot {
         processingTime: 0,
         sources: ['Transaction data', 'Account balances', 'Historical trends'],
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error('OpenAI API call failed', { error });
       return this.generateFallbackResponse(query, queryType, context);
     }

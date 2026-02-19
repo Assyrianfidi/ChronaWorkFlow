@@ -1,0 +1,23 @@
+ current_user  | bypasses_rls 
+---------------+--------------
+ accubooks_app | f
+(1 row)
+
+RESET
+ no_context 
+------------
+          0
+(1 row)
+
+SET
+ tenant_a_only 
+---------------
+             5
+(1 row)
+
+SET
+ tenant_b_only 
+---------------
+             5
+(1 row)
+

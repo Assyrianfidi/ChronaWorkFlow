@@ -1,0 +1,45 @@
+          table_name           |     column_name      | data_type 
+-------------------------------+----------------------+-----------
+ accounts                      | companyId            | text
+ agency_client_relationships   | agencyCompanyId      | text
+ agency_client_relationships   | clientCompanyId      | text
+ api_usage_records             | organizationId       | integer
+ audit_logs                    | organizationId       | integer
+ automation_proposals          | tenantId             | text
+ automation_rules              | organizationId       | integer
+ billing_status                | companyId            | text
+ churn_retention_analytics     | companyId            | text
+ company_members               | companyId            | text
+ custom_reports                | organizationId       | integer
+ customer_health_scores        | companyId            | text
+ dashboard_metrics_cache       | companyId            | text
+ departments                   | organizationId       | integer
+ documents                     | organizationId       | integer
+ executive_alerts              | companyId            | text
+ executive_analytics_snapshots | companyId            | text
+ executive_kpi_snapshots       | companyId            | text
+ feature_adoption_metrics      | companyId            | text
+ feature_usage                 | companyId            | text
+ founder_control_states        | companyId            | text
+ invoice_risk_analytics        | companyId            | text
+ invoices                      | companyId            | text
+ organization_users            | organizationId       | integer
+ organization_users            | organizationRole     | text
+ organizations                 | tenantId             | text
+ payments                      | companyId            | text
+ platform_metrics              | activeOrganizations  | integer
+ platform_metrics              | churnedOrganizations | integer
+ platform_metrics              | newOrganizations     | integer
+ platform_metrics              | totalOrganizations   | integer
+ predictive_metrics            | companyId            | text
+ reconciliation_reports        | companyId            | text
+ revenue_analytics             | companyId            | text
+ suspicious_activities         | companyId            | text
+ transactions                  | companyId            | text
+ trend_patterns                | companyId            | text
+ usage_frequency_metrics       | companyId            | text
+ user_activity_logs            | companyId            | text
+ user_sessions                 | companyId            | text
+ users                         | currentCompanyId     | text
+(41 rows)
+

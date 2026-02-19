@@ -59,7 +59,7 @@ export const authenticate = async (req, res, next) => {
       });
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: decoded.userId },
       select: {
         id: true,
@@ -142,7 +142,7 @@ export const requireCompanyAccess = async (req, res, next) => {
       return next();
     }
 
-    const membership = await prisma.companyMember.findFirst({
+    const membership = await prisma.company_members.findFirst({
       where: {
         userId: req.user.id,
         companyId: companyId,
@@ -172,7 +172,7 @@ export const requireCompanyAccess = async (req, res, next) => {
 export const logActivity = async (req, res, next) => {
   try {
     if (req.user) {
-      await prisma.auditLog.create({
+      await prisma.audit_logs.create({
         data: {
           userId: req.user.id,
           action: `${req.method} ${req.path}`,

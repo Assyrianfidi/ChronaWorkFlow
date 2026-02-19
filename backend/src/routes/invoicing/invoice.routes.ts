@@ -5,9 +5,9 @@ import {
   validateUpdateInvoice,
   validateAddPayment,
   validateListInvoices,
-} from "../../controllers/invoicing/invoice.controller";
-import { auth, authorizeRoles } from "../../middleware/auth";
-import { ROLES } from "../../constants/roles";
+} from "../../controllers/invoicing/invoice.controller.js";
+import { auth, authorizeRoles } from "../../middleware/auth.js";
+import { ROLES } from "../../constants/roles.js";
 
 const router = Router();
 

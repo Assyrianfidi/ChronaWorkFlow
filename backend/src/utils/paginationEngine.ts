@@ -110,7 +110,7 @@ export class PaginationEngine {
           hasPrev: page > 1,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       throw new ApiError(
         "Failed to fetch paginated data",
         500,
@@ -193,7 +193,7 @@ export class PaginationEngine {
       }
 
       return { data, pagination };
-    } catch (error) {
+    } catch (error: any) {
       throw new ApiError(
         "Failed to fetch cursor paginated data",
         500,

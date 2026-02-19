@@ -1,0 +1,9 @@
+  column_name  |  data_type   
+---------------+--------------
+ id            | text
+ companyId     | text
+ billingStatus | USER-DEFINED
+ paymentStatus | USER-DEFINED
+ planType      | text
+(5 rows)
+

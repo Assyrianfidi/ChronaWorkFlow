@@ -21,11 +21,11 @@ router.get('/global-stats', async (req, res) => {
       totalInvoices,
       subscriptionStats,
     ] = await Promise.all([
-      prisma.user.count(),
-      prisma.user.count({ where: { isActive: true } }),
+      prisma.users.count(),
+      prisma.users.count({ where: { isActive: true } }),
       prisma.company.count(),
       prisma.company.count({ where: { isActive: true } }),
-      prisma.transaction.count(),
+      prisma.transactions.count(),
       prisma.invoice.count(),
       prisma.billing_status.groupBy({
         by: ['subscriptionPlan', 'subscriptionStatus'],
@@ -33,7 +33,7 @@ router.get('/global-stats', async (req, res) => {
       }),
     ]);
 
-    const userGrowth = await prisma.user.groupBy({
+    const userGrowth = await prisma.users.groupBy({
       by: ['createdAt'],
       _count: true,
       orderBy: { createdAt: 'desc' },
@@ -86,11 +86,14 @@ router.get('/revenue-metrics', async (req, res) => {
   try {
     const billingStatuses = await prisma.billing_status.findMany({
       where: {
-        subscriptionStatus: { in: ['ACTIVE', 'TRIALING'] },
+        // subscriptionStatus: { in: ['ACTIVE', // REMOVED - field does not exist in users schema
+ 'TRIALING'] },
       },
       select: {
-        subscriptionPlan: true,
-        subscriptionStatus: true,
+        // // subscriptionPlan: true, // REMOVED - field does not exist in users schema
+ // REMOVED - field does not exist in users schema
+        // // subscriptionStatus: true, // REMOVED - field does not exist in users schema
+ // REMOVED - field does not exist in users schema
         lastPaymentAmount: true,
         lastPaymentDate: true,
         currentPeriodStart: true,
@@ -133,7 +136,8 @@ router.get('/revenue-metrics', async (req, res) => {
 
     const churnedCompanies = await prisma.billing_status.count({
       where: {
-        subscriptionStatus: 'CANCELLED',
+        // subscriptionStatus: 'CANCELLED', // REMOVED - field does not exist in users schema
+
         cancelledAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
         },
@@ -142,7 +146,8 @@ router.get('/revenue-metrics', async (req, res) => {
 
     const activeSubscriptions = await prisma.billing_status.count({
       where: {
-        subscriptionStatus: { in: ['ACTIVE', 'TRIALING'] },
+        // subscriptionStatus: { in: ['ACTIVE', // REMOVED - field does not exist in users schema
+ 'TRIALING'] },
       },
     });
 
@@ -183,7 +188,7 @@ router.get('/system-health', async (req, res) => {
       apiUsageToday,
     ] = await Promise.all([
       prisma.$queryRaw`SELECT 1 as status`.then(() => 'healthy').catch(() => 'unhealthy'),
-      prisma.auditLog.count({
+      prisma.audit_logs.count({
         where: {
           action: { contains: 'ERROR' },
           createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
@@ -194,7 +199,7 @@ router.get('/system-health', async (req, res) => {
           detectedAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
         },
       }),
-      prisma.user_sessions.count({
+      prisma.users.sessions.count({
         where: {
           expiresAt: { gt: new Date() },
         },
@@ -255,7 +260,7 @@ router.get('/audit-trail', async (req, res) => {
     }
 
     const [logs, total] = await Promise.all([
-      prisma.auditLog.findMany({
+      prisma.audit_logs.findMany({
         where,
         include: {
           user: {
@@ -271,7 +276,7 @@ router.get('/audit-trail', async (req, res) => {
         skip: (parseInt(page) - 1) * parseInt(limit),
         take: parseInt(limit),
       }),
-      prisma.auditLog.count({ where }),
+      prisma.audit_logs.count({ where }),
     ]);
 
     res.json({
@@ -400,7 +405,7 @@ router.get('/users', async (req, res) => {
     if (role) where.role = role;
 
     const [users, total] = await Promise.all([
-      prisma.user.findMany({
+      prisma.users.findMany({
         where,
         select: {
           id: true,
@@ -420,7 +425,7 @@ router.get('/users', async (req, res) => {
         skip: (parseInt(page) - 1) * parseInt(limit),
         take: parseInt(limit),
       }),
-      prisma.user.count({ where }),
+      prisma.users.count({ where }),
     ]);
 
     res.json({
@@ -448,7 +453,7 @@ router.post('/impersonate', async (req, res) => {
   try {
     const { userId } = req.body;
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { id: userId },
     });
 

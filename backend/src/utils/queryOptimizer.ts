@@ -1,4 +1,4 @@
-import { prisma, PrismaClientSingleton } from '../lib/prisma';
+import { prisma, PrismaClientSingleton } from './prisma.js';
 
 /**
  * Query optimization utilities for database performance
@@ -17,7 +17,7 @@ export class QueryOptimizer {
 
     try {
       if (includeRelations) {
-        const transactions = await this.prisma.transaction.findMany({
+        const transactions = await this.prisma.transactions.findMany({
           where: { id: { in: transactionIds } },
         });
 
@@ -30,7 +30,7 @@ export class QueryOptimizer {
 
         return transactions;
       } else {
-        const transactions = await this.prisma.transaction.findMany({
+        const transactions = await this.prisma.transactions.findMany({
           where: { id: { in: transactionIds } },
         });
 
@@ -43,7 +43,7 @@ export class QueryOptimizer {
 
         return transactions;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Batch fetch failed", {
         error: error instanceof Error ? error.message : "Unknown error",
         transactionCount: transactionIds.length,
@@ -62,7 +62,7 @@ export class QueryOptimizer {
       // Use TransactionLine to get account balances
       const dateFilter = asOfDate ? { lte: asOfDate } : undefined;
 
-      const balances = await this.prisma.transactionLine.groupBy({
+      const balances = await this.prisma.transactions.transaction_lines.groupBy({
         by: ["accountId"],
         where: {
           accountId: { in: accountIds },
@@ -87,7 +87,7 @@ export class QueryOptimizer {
       });
 
       return balances;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Account balance calculation failed", {
         error: error instanceof Error ? error.message : "Unknown error",
         accountCount: accountIds.length,
@@ -124,21 +124,21 @@ export class QueryOptimizer {
           if (filters.endDate) whereClause.date.lte = filters.endDate;
         }
         if (filters.accountId) {
-          whereClause.lines = {
+          whereClause.transaction_lines = {
             some: { accountId: filters.accountId },
           };
         }
         if (filters.minAmount || filters.maxAmount) {
-          whereClause.totalAmount = {};
+          whereClause.amount = {};
           if (filters.minAmount)
-            whereClause.totalAmount.gte = filters.minAmount;
+            whereClause.amount.gte = filters.minAmount;
           if (filters.maxAmount)
-            whereClause.totalAmount.lte = filters.maxAmount;
+            whereClause.amount.lte = filters.maxAmount;
         }
       }
 
       const [transactions, total] = await Promise.all([
-        this.prisma.transaction.findMany({
+        this.prisma.transactions.findMany({
           where: whereClause,
           include: {
             lines: {
@@ -163,7 +163,7 @@ export class QueryOptimizer {
           skip,
           take: limit,
         }),
-        this.prisma.transaction.count({ where: whereClause }),
+        this.prisma.transactions.count({ where: whereClause }),
       ]);
 
       const duration = Date.now() - startTime;
@@ -187,7 +187,7 @@ export class QueryOptimizer {
           hasPrev: page > 1,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Paginated transactions fetch failed", {
         error: error instanceof Error ? error.message : "Unknown error",
         companyId,
@@ -213,16 +213,16 @@ export class QueryOptimizer {
 
       try {
         const batchResults = await this.prisma.$transaction(
-          batch.map((tx) =>
-            this.prisma.transaction.create({
+          batch.map((tx: any) =>
+            this.prisma.transactions.create({
               data: {
                 transactionNumber: tx.transactionNumber,
                 date: tx.date,
                 type: tx.type,
-                totalAmount: tx.totalAmount,
+                totalAmount: tx.amount,
                 description: tx.description,
                 companyId: tx.companyId,
-                lines: tx.lines || [],
+                lines: tx.transaction_lines || [],
               },
             }),
           ),
@@ -235,7 +235,7 @@ export class QueryOptimizer {
           batchSize: batch.length,
           processedCount: results.length,
         });
-      } catch (error) {
+      } catch (error: any) {
         console.error("Transaction batch failed", {
           error: error instanceof Error ? error.message : "Unknown error",
           batchNumber: Math.floor(i / batchSize) + 1,

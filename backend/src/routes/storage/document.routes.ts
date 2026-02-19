@@ -5,8 +5,8 @@ import {
   validateUploadDocument,
   validateUpdateDocument,
   validateListDocuments,
-} from "../../controllers/storage/document.controller";
-import { auth } from "../../middleware/auth";
+} from "../../controllers/storage/document.controller.js";
+import { auth } from "../../middleware/auth.js";
 
 const router = Router();
 
@@ -45,39 +45,39 @@ router.post(
   "/upload",
   upload.single("file"),
   validateUploadDocument,
-  documentController.uploadDocument.bind(documentController) as any,
+  documentController.uploadDocument as any,
 );
 
 // GET /api/documents - List documents
 router.get(
   "/",
   validateListDocuments,
-  documentController.listDocuments.bind(documentController) as any,
+  documentController.listDocuments as any,
 );
 
 // GET /api/documents/stats - Get document statistics
 router.get(
   "/stats",
-  documentController.getDocumentStats.bind(documentController) as any,
+  documentController.getDocumentStats as any,
 );
 
 // GET /api/documents/:documentId/download - Download document
 router.get(
   "/:documentId/download",
-  documentController.downloadDocument.bind(documentController) as any,
+  documentController.downloadDocument as any,
 );
 
 // PUT /api/documents/:documentId - Update document
 router.put(
   "/:documentId",
   validateUpdateDocument,
-  documentController.updateDocument.bind(documentController) as any,
+  documentController.updateDocument as any,
 );
 
 // DELETE /api/documents/:documentId - Delete document
 router.delete(
   "/:documentId",
-  documentController.deleteDocument.bind(documentController) as any,
+  documentController.deleteDocument as any,
 );
 
 export default router;

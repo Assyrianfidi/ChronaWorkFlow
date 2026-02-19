@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { body, param, query, validationResult } from "express-validator";
-import { invoiceService } from "../../services/invoicing/invoice.service";
-import { paymentService } from "../../services/invoicing/payment.service";
-import { pdfService } from "../../services/invoicing/pdf.service";
-import { emailService } from "../../services/email/email.service";
+import { invoiceService } from "../../services/invoicing/invoice.service.js";
+import { paymentService } from "../../services/invoicing/payment.service.js";
+import { pdfService } from "../../services/invoicing/pdf.service.js";
+import { emailService } from "../../services/email/email.service.js";
 
 export class InvoiceController {
   // Create invoice
@@ -25,7 +25,7 @@ export class InvoiceController {
         message: "Invoice created successfully",
         data: invoice,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating invoice:", error);
       res.status(500).json({
         success: false,
@@ -46,7 +46,7 @@ export class InvoiceController {
         success: true,
         data: invoice,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error getting invoice:", error);
       if (error instanceof Error && error.message === "Invoice not found") {
         return res.status(404).json({
@@ -82,7 +82,7 @@ export class InvoiceController {
         message: "Invoice updated successfully",
         data: invoice,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating invoice:", error);
       if (error instanceof Error && error.message === "Invoice not found") {
         return res.status(404).json({
@@ -131,7 +131,7 @@ export class InvoiceController {
         success: true,
         data: result,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error listing invoices:", error);
       res.status(500).json({
         success: false,
@@ -163,7 +163,7 @@ export class InvoiceController {
           email: emailResult,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending invoice:", error);
       res.status(500).json({
         success: false,
@@ -186,7 +186,7 @@ export class InvoiceController {
         `attachment; filename="invoice-${id}.pdf"`,
       );
       res.send(pdfBuffer);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error generating PDF:", error);
       res.status(500).json({
         success: false,
@@ -218,7 +218,7 @@ export class InvoiceController {
         message: "Payment recorded successfully",
         data: result,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding payment:", error);
       res.status(500).json({
         success: false,
@@ -239,7 +239,7 @@ export class InvoiceController {
         success: true,
         data: payments,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error getting payments:", error);
       res.status(500).json({
         success: false,
@@ -260,7 +260,7 @@ export class InvoiceController {
         success: true,
         data: summary,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error getting payment summary:", error);
       res.status(500).json({
         success: false,
@@ -282,7 +282,7 @@ export class InvoiceController {
         success: true,
         message: "Invoice voided successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting invoice:", error);
       res.status(500).json({
         success: false,
@@ -367,7 +367,7 @@ export const validateAddPayment = [
 export const validateListInvoices = [
   query("status")
     .optional()
-    .isIn(["DRAFT", "SENT", "PAID", "OVERDUE", "VOIDED"])
+    .isIn(["DRAFT", "OPEN", "PAID", "OPEN", "VOIDED"])
     .withMessage("Invalid status"),
   query("customerId").optional().isUUID().withMessage("Invalid customer ID"),
   query("dateFrom")

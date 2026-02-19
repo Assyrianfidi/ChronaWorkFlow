@@ -1,5 +1,5 @@
-import { prisma } from "../utils/prisma";
-import { ROLES, ROLES_HIERARCHY } from "../constants/roles";
+import { prisma } from "../utils/prisma.js";
+import { ROLES, ROLES_HIERARCHY } from "../constants/roles.js";
 
 /**
  * Database Security Service
@@ -269,9 +269,8 @@ class DatabaseSecurityService {
   static isBlocked(userId: any, ip: string) {
     const attempts = this.getUnauthorizedAttempts(100);
     const recentAttempts = attempts.filter((attempt: any) => {
-      const isRecent =
-        // @ts-ignore
-(Date.now() - new Date(attempt.timestamp).getTime()) < 15 * 60 * 1000; // 15 minutes
+      const attemptTime = new Date(attempt.timestamp).getTime();
+      const isRecent = (Date.now() - attemptTime) < 15 * 60 * 1000; // 15 minutes
       return isRecent && (attempt.userId === userId || attempt.ip === ip);
     });
 

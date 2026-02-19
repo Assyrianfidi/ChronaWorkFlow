@@ -1,0 +1,174 @@
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+DROP POLICY
+CREATE POLICY
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ schemaname |           tablename           | rls_enabled | policy_count 
+------------+-------------------------------+-------------+--------------
+ public     | accounts                      | t           |            1
+ public     | agency_client_relationships   | t           |            1
+ public     | api_usage_records             | t           |            1
+ public     | audit_logs                    | t           |            1
+ public     | automation_proposals          | t           |            1
+ public     | automation_rules              | t           |            1
+ public     | billing_status                | t           |            1
+ public     | churn_retention_analytics     | t           |            1
+ public     | company_members               | t           |            1
+ public     | custom_reports                | t           |            1
+ public     | customer_health_scores        | t           |            1
+ public     | dashboard_metrics_cache       | t           |            1
+ public     | departments                   | t           |            1
+ public     | documents                     | t           |            1
+ public     | executive_alerts              | t           |            1
+ public     | executive_analytics_snapshots | t           |            1
+ public     | executive_kpi_snapshots       | t           |            1
+ public     | feature_adoption_metrics      | t           |            1
+ public     | feature_usage                 | t           |            1
+ public     | founder_control_states        | t           |            1
+ public     | invoice_risk_analytics        | t           |            1
+ public     | invoices                      | t           |            1
+ public     | organization_users            | t           |            1
+ public     | organizations                 | t           |            1
+ public     | payments                      | t           |            1
+ public     | predictive_metrics            | t           |            1
+ public     | reconciliation_reports        | t           |            1
+ public     | revenue_analytics             | t           |            1
+ public     | suspicious_activities         | t           |            1
+ public     | transactions                  | t           |            1
+ public     | trend_patterns                | t           |            1
+ public     | usage_frequency_metrics       | t           |            1
+ public     | user_activity_logs            | t           |            1
+ public     | user_sessions                 | t           |            1
+(34 rows)
+

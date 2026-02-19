@@ -67,7 +67,7 @@ export async function executeQuery<T = any>(
 export async function transaction<T>(
   callback: (tx: PostgresJsDatabase<typeof schema>) => Promise<T>,
 ): Promise<T> {
-  return db.transaction(async (tx) => {
+  return db.transaction(async (tx: any) => {
     return await callback(tx);
   });
 }

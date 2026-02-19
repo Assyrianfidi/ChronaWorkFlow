@@ -8,9 +8,9 @@ import {
   forgotPassword,
   resetPassword,
   verifyEmail,
-} from "../controllers/auth.controller.ts";
-import { auth, authorizeRoles } from "../middleware/auth";
-import { ROLES } from "../constants/roles";
+} from '../controllers/auth.controller.js';
+import { auth, authorizeRoles } from "../middleware/auth.js";
+import { ROLES } from "../constants/roles.js";
 
 const router = express.Router();
 

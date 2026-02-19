@@ -1,8 +1,8 @@
 import { Router } from "express";
-import invoiceRoutes from "./invoice.routes";
-import customerRoutes from "./customer.routes";
-import productRoutes from "./product.routes";
-import reportsRoutes from "./reports.routes";
+import invoiceRoutes from "./invoice.routes.js";
+import customerRoutes from "./customer.routes.js";
+import productRoutes from "./product.routes.js";
+import reportsRoutes from "./reports.routes.js";
 
 const router = Router();
 

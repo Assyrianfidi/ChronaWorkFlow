@@ -24,7 +24,7 @@ export const enforceTenancy = async (req, res, next) => {
       });
     }
 
-    const membership = await prisma.companyMember.findFirst({
+    const membership = await prisma.company_members.findFirst({
       where: {
         userId: req.user.id,
         companyId,
@@ -69,7 +69,7 @@ export const validateCompanyOwnership = async (req, res, next) => {
       });
     }
 
-    const membership = await prisma.companyMember.findFirst({
+    const membership = await prisma.company_members.findFirst({
       where: {
         userId: req.user.id,
         companyId,

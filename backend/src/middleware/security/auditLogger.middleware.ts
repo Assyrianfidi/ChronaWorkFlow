@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import AuditLoggerService from "../../services/auditLogger.service";
-import MonitoringService from "../../services/monitoring.service";
+import AuditLoggerService from "../../services/auditLogger.service.js";
+import MonitoringService from "../../services/monitoring.service.js";
 
 function getIp(req: Request): string {
   return (req.ip || (req.headers["x-forwarded-for"] as string) || "unknown") as string;

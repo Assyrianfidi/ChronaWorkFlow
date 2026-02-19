@@ -1,20 +1,20 @@
-import { prisma } from "../../utils/prisma";
+import { prisma } from "../../utils/prisma.js";
 import {
   transactionCreateSchema,
   transactionListSchema,
   TransactionCreateInput,
   TransactionLineInput,
   toDecimal,
-} from "./transactions.model";
-import { ApiError } from "../../utils/errors";
+} from "./transactions.model.js";
+import { ApiError } from "../../utils/errors.js";
 import { StatusCodes } from "http-status-codes";
 
 export class TransactionsService {
   async list(companyId: string, limit: number) {
-    return prisma.transaction.findMany({
+    return prisma.transactions.findMany({
       where: { companyId },
       orderBy: { date: "desc" },
-      include: { lines: true },
+      include: { transaction_lines: true },
       take: limit,
     });
   }
@@ -40,7 +40,7 @@ export class TransactionsService {
     const parsed = transactionCreateSchema.parse(payload);
     this.validateBalance(parsed.lines);
 
-    return prisma.$transaction(async (tx) => {
+    return prisma.$transaction(async (tx: any) => {
       const transaction = await tx.transaction.create({
         data: {
           companyId: parsed.companyId,
@@ -53,7 +53,7 @@ export class TransactionsService {
       });
 
       await Promise.all(
-        parsed.lines.map((line) =>
+        parsed.lines.map((line: any) =>
           tx.transactionLine.create({
             data: {
               transactionId: transaction.id,

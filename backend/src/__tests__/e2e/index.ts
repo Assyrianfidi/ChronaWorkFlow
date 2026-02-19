@@ -3,9 +3,9 @@
  * Exports all end-to-end test configurations
  */
 
-export * from './ai-features.e2e.test';
-export * from './migration.e2e.test';
-export * from './trial-pricing.e2e.test';
+export * from './ai-features.e2e.test.js';
+export * from './migration.e2e.test.js';
+export * from './trial-pricing.e2e.test.js';
 
 // Test configuration
 export const E2E_CONFIG = {

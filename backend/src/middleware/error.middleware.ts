@@ -1,21 +1,12 @@
+import { ApiError, AppError } from "../utils/errors.js";
 import { Request, Response, NextFunction } from "express";
-import { config } from "../config/config";
+import { config } from "../config/config.js";
 import { Prisma } from "@prisma/client";
 
-export class AppError extends Error {
-  statusCode: number;
-  status: string;
-  isOperational: boolean;
+// Re-export for backward compatibility
+export { AppError };
 
-  constructor(message: string, statusCode: number) {
-    super(message);
-    this.statusCode = statusCode;
-    this.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
-    this.isOperational = true;
 
-    Error.captureStackTrace(this, this.constructor);
-  }
-}
 
 export const handleValidationError = (err: any) => {
   const errors = Object.values(err.errors).map((el: any) => el.message);

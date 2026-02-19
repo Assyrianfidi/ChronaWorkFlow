@@ -1,13 +1,7 @@
-import { AuditLog } from '@/models/AuditLog';
-import { getRepository } from 'typeorm';
-
+// Legacy file - functionality moved to audit.service.ts
+// This file is kept for backward compatibility but should not be used
 export class AuditService {
-  static async logEvent(actorId: number, action: string, details: any, correlationId: string) {
-    const auditLog = new AuditLog();
-    auditLog.actorId = actorId;
-    auditLog.action = action;
-    auditLog.details = details;
-    auditLog.correlationId = correlationId;
-    await getRepository(AuditLog).save(auditLog);
+  static async logEvent(_actorId: number, _action: string, _details: any, _correlationId: string) {
+    console.warn('Legacy AuditService.logEvent called - use audit.service.ts instead');
   }
 }

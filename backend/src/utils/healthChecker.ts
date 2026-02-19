@@ -3,7 +3,7 @@ import { CacheEngine } from "./cacheEngine.js";
 import { CircuitBreakerRegistry } from "./circuitBreaker.js";
 import { logger } from "./logger.js";
 import { DatabaseMonitor } from "./performanceMonitor.js";
-import { prisma } from "./prisma";
+import { prisma } from "./prisma.js";
 
 /**
  * Comprehensive health check system
@@ -47,7 +47,7 @@ export class HealthChecker {
     };
 
     const allHealthy = Object.values(results).every(
-      (r) => r.status === "healthy",
+      (r: any) => r.status === "healthy",
     );
     const statusCode = allHealthy ? 200 : 503;
 
@@ -80,7 +80,7 @@ export class HealthChecker {
       };
 
       res.status(200).json(ready);
-    } catch (error) {
+    } catch (error: any) {
       const notReady = {
         status: "not_ready",
         timestamp: new Date().toISOString(),
@@ -126,7 +126,7 @@ export class HealthChecker {
       }
 
       return { status: "healthy", latency };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: "unhealthy",
         error: error instanceof Error ? error.message : "Unknown error",
@@ -147,7 +147,7 @@ export class HealthChecker {
       } else {
         return { status: "unhealthy", error: "Cache value mismatch" };
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: "unhealthy",
         error: error instanceof Error ? error.message : "Unknown error",
@@ -208,7 +208,7 @@ export class HealthChecker {
 
       // This is a simplified check - in production you'd want to check actual disk space
       return { status: "healthy" };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: "unhealthy",
         error: error instanceof Error ? error.message : "Unknown error",

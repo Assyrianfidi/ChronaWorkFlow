@@ -6,9 +6,9 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import multer from 'multer';
-import { auth } from '../middleware/auth';
-import { quickBooksMigrationService } from '../services/quickbooks-migration.service';
-import { logger } from '../utils/logger';
+import { auth } from '../middleware/auth.js';
+import { quickBooksMigrationService } from '../services/quickbooks-migration.service.js';
+import { logger } from '../utils/logger.js';
 
 const router = Router();
 
@@ -76,7 +76,7 @@ router.post('/qbo', upload.single('file'), async (req: Request, res: Response, n
       success: true,
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error('QBO migration failed', { error });
     next(error);
   }
@@ -125,7 +125,7 @@ router.post('/iif', upload.single('file'), async (req: Request, res: Response, n
       success: true,
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error('IIF migration failed', { error });
     next(error);
   }
@@ -152,7 +152,7 @@ router.get('/:id/status', async (req: Request, res: Response, next: NextFunction
       success: true,
       data: status,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 });

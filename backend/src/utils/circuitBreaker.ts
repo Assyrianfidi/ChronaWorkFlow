@@ -80,7 +80,7 @@ export class CircuitBreaker {
       this.onSuccess(now);
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       // Record failure
       this.onFailure(now);
 

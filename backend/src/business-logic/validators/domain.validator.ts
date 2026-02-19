@@ -335,7 +335,7 @@ export class DomainValidator {
   static validateOrThrow(validation: ValidationResult): void {
     if (!validation.isValid) {
       const errorMessages = validation.errors
-        .map((e) => `${e.field}: ${e.message}`)
+        .map((e: any) => `${e.field}: ${e.message}`)
         .join("; ");
       throw new ApiError(
         `Validation failed: ${errorMessages}`,

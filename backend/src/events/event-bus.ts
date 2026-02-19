@@ -48,10 +48,10 @@ export class EventBus {
   async emit<T = any>(event: string, data?: T): Promise<void> {
     const handlers = this.events.get(event);
     if (handlers) {
-      const promises = Array.from(handlers).map((handler) => {
+      const promises = Array.from(handlers).map((handler: any) => {
         try {
           return Promise.resolve(handler(data));
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Error in event handler for ${event}:`, error);
           return Promise.resolve();
         }

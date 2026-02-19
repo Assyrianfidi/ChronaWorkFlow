@@ -1,6 +1,6 @@
 import { ApiError } from "../utils/errorHandler.js";
 import { ROLES } from "../constants/roles.js";
-import { prisma } from "../utils/prisma";
+import { prisma } from "../utils/prisma.js";
 
 /**
  * @desc    Get all reports (admin/manager can see all, others see only their own)
@@ -11,26 +11,14 @@ export const getReports = async (req: any, res: any, next: any) => {
   try {
     const { role, id: userId } = req.user;
 
-    // Build where clause based on user role
-    const where: any = {};
-    if (role === ROLES.USER) {
-      where.userId = userId;
-    }
+    // Build where clause based on company
+    const companyId = (req as any).user?.currentCompanyId;
+    const where: any = companyId ? { companyId } : {};
 
-    const reports = await prisma.reconciliationReport.findMany({
+    const reports = await prisma.reconciliation_reports.findMany({
       where,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-          },
-        },
-      },
       orderBy: {
-        createdAt: "desc",
+        generatedAt: "desc",
       },
     });
 
@@ -39,7 +27,7 @@ export const getReports = async (req: any, res: any, next: any) => {
       count: reports.length,
       data: reports,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 };
@@ -54,26 +42,17 @@ export const getReport = async (req: any, res: any, next: any) => {
     const { id } = req.params;
     const { role, id: userId } = req.user;
 
-    const report = await prisma.reconciliationReport.findUnique({
-      where: { id: parseInt(id, 10) },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-          },
-        },
-      },
+    const report = await prisma.reconciliation_reports.findUnique({
+      where: { id: id },
     });
 
     if (!report) {
       throw new ApiError("Report not found", 404);
     }
 
-    // Check if user is authorized to view this report
-    if (report.userId !== userId && !["admin", "manager"].includes(role)) {
+    // Check if user is authorized to view this report (company-level)
+    const companyId = (req as any).user?.currentCompanyId;
+    if (companyId && report.companyId !== companyId && !["admin", "manager"].includes(role)) {
       throw new ApiError("Not authorized to access this report", 403);
     }
 
@@ -81,7 +60,7 @@ export const getReport = async (req: any, res: any, next: any) => {
       success: true,
       data: report,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 };
@@ -93,7 +72,7 @@ export const getReport = async (req: any, res: any, next: any) => {
  */
 export const createReport = async (req: any, res: any, next: any) => {
   try {
-    const { title, amount } = req.body;
+    const { title, amount, reportType, description, status } = req.body;
     const { id: userId } = req.user;
 
     // Validate input
@@ -101,21 +80,13 @@ export const createReport = async (req: any, res: any, next: any) => {
       throw new ApiError("Please provide title and amount", 400);
     }
 
-    const report = await prisma.reconciliationReport.create({
+    const companyId = (req as any).user?.currentCompanyId || '';
+    const report = await prisma.reconciliation_reports.create({
       data: {
-        title,
-        amount: parseFloat(amount),
-        userId,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-          },
-        },
+        id: `report_${Date.now()}`,
+        companyId,
+        reportType: reportType || "",
+        data: { title, description: description || "", status: status || "" },
       },
     });
 
@@ -123,7 +94,7 @@ export const createReport = async (req: any, res: any, next: any) => {
       success: true,
       data: report,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 };
@@ -136,12 +107,12 @@ export const createReport = async (req: any, res: any, next: any) => {
 export const updateReport = async (req: any, res: any, next: any) => {
   try {
     const { id } = req.params;
-    const { title, amount } = req.body;
+    const { title, amount, description, status, reportType } = req.body || {};
     const { id: userId, role } = req.user;
 
     // Check if report exists
-    const existingReport = await prisma.reconciliationReport.findUnique({
-      where: { id: parseInt(id, 10) },
+    const existingReport = await prisma.reconciliation_reports.findUnique({
+      where: { id: id },
     });
 
     if (!existingReport) {
@@ -150,27 +121,20 @@ export const updateReport = async (req: any, res: any, next: any) => {
 
     // Check if user is authorized to update this report
     if (
-      existingReport.userId !== userId &&
+      existingReport.companyId !== (req as any).user?.currentCompanyId &&
       !["admin", "manager"].includes(role)
     ) {
       throw new ApiError("Not authorized to update this report", 403);
     }
 
-    const updatedReport = await prisma.reconciliationReport.update({
-      where: { id: parseInt(id, 10) },
+    const updatedReport = await prisma.reconciliation_reports.update({
+      where: { id: id },
       data: {
-        ...(title && { title }),
-        ...(amount && { amount: parseFloat(amount) }),
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-          },
-        },
+        ...(title && { data: { ...(existingReport.data as any), title } }),
+        ...(amount && { data: { ...(existingReport.data as any), amount } }),
+        ...(description && { data: { ...(existingReport.data as any), description } }),
+        ...(status && { data: { ...(existingReport.data as any), status: status || "" } }),
+        ...(reportType && { reportType }),
       },
     });
 
@@ -178,7 +142,7 @@ export const updateReport = async (req: any, res: any, next: any) => {
       success: true,
       data: updatedReport,
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 };
@@ -194,8 +158,8 @@ export const deleteReport = async (req: any, res: any, next: any) => {
     const { id: userId, role } = req.user;
 
     // Check if report exists
-    const report = await prisma.reconciliationReport.findUnique({
-      where: { id: parseInt(id, 10) },
+    const report = await prisma.reconciliation_reports.findUnique({
+      where: { id: id },
     });
 
     if (!report) {
@@ -203,19 +167,19 @@ export const deleteReport = async (req: any, res: any, next: any) => {
     }
 
     // Check if user is authorized to delete this report
-    if (report.userId !== userId && !["admin", "manager"].includes(role)) {
+    if (report.companyId !== (req as any).user?.currentCompanyId && !["admin", "manager"].includes(role)) {
       throw new ApiError("Not authorized to delete this report", 403);
     }
 
-    await prisma.reconciliationReport.delete({
-      where: { id: parseInt(id, 10) },
+    await prisma.reconciliation_reports.delete({
+      where: { id: id },
     });
 
     res.status(200).json({
       success: true,
       data: {},
     });
-  } catch (error) {
+  } catch (error: any) {
     next(error);
   }
 };

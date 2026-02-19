@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 export const gracefulShutdown = (
   server: Server,
-  prisma: PrismaClient,
+  prisma: any,
   signal: string
 ) => {
   console.log(`Received ${signal}. Shutting down gracefully...`);

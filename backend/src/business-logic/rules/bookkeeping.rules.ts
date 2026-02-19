@@ -3,7 +3,7 @@
  * TODO: Implement full bookkeeping rules
  */
 
-import { ApiError, ErrorCodes } from "../../utils/errorHandler";
+import { ApiError, ErrorCodes } from "../../utils/errorHandler.js";
 
 export interface LedgerEntry {
   id: string;
@@ -53,11 +53,11 @@ export class BookkeepingRules {
     }
 
     const totalDebits = transaction.entries
-      .filter((e) => e.debit)
-      .reduce((sum, e) => sum + e.amount, 0);
+      .filter((e: any) => e.debit)
+      .reduce((sum: any, e: any) => sum + e.amount, 0);
     const totalCredits = transaction.entries
-      .filter((e) => e.credit)
-      .reduce((sum, e) => sum + e.amount, 0);
+      .filter((e: any) => e.credit)
+      .reduce((sum: any, e: any) => sum + e.amount, 0);
 
     if (Math.abs(totalDebits - totalCredits) > 0.01) {
       throw new ApiError(
@@ -234,18 +234,18 @@ export class BookkeepingRules {
   }
 
   static calculateBalance(entries: LedgerEntry[], accountId: string): AccountBalance {
-    const accountEntries = entries.filter((e) => e.accountId === accountId);
+    const accountEntries = entries.filter((e: any) => e.accountId === accountId);
     const debitBalance = accountEntries
-      .filter((e) => e.debit)
-      .reduce((sum, e) => sum + e.amount, 0);
+      .filter((e: any) => e.debit)
+      .reduce((sum: any, e: any) => sum + e.amount, 0);
     const creditBalance = accountEntries
-      .filter((e) => e.credit)
-      .reduce((sum, e) => sum + e.amount, 0);
+      .filter((e: any) => e.credit)
+      .reduce((sum: any, e: any) => sum + e.amount, 0);
     const netBalance = debitBalance - creditBalance;
     const lastUpdated =
       accountEntries.length > 0
         ? new Date(
-            Math.max(...accountEntries.map((e) => e.timestamp.getTime())),
+            Math.max(...accountEntries.map((e: any) => e.timestamp.getTime())),
           )
         : new Date();
     return { accountId, debitBalance, creditBalance, netBalance, lastUpdated };
@@ -298,7 +298,7 @@ export class BookkeepingRules {
   ): Transaction {
     const reversalId = this.generateTransactionId();
     const timestamp = new Date();
-    const reversalEntries: LedgerEntry[] = originalTransaction.entries.map((entry) => ({
+    const reversalEntries: LedgerEntry[] = originalTransaction.entries.map((entry: any) => ({
       ...entry,
       id: this.generateEntryId(),
       debit: entry.credit,
