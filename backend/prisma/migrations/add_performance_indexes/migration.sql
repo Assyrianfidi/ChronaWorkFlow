@@ -39,7 +39,7 @@ CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_stripe_customer ON subscriptions("stripeCustomerId");
 
 -- Composite indexes for common query patterns
-CREATE INDEX IF NOT EXISTS idx_invoices_company_customer_status ON invoices("companyId", "customerId", status);
+-- Removed idx_invoices_company_customer_status - customerId column doesn't exist in baseline schema
 CREATE INDEX IF NOT EXISTS idx_payments_company_method_status ON payments("companyId", "paymentMethod", status);
 
 -- Partial indexes for active records (reduces index size by 50%+)
