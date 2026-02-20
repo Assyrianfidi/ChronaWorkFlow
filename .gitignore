@@ -145,6 +145,7 @@ coverage/
 tsconfig*.json
 !tsconfig.server.json
 jest.config.*
+!backend/jest.config.*
 .eslintrc.*
 .eslintignore
 .trunk/
