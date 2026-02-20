@@ -5,9 +5,6 @@ declare global {
   var prisma: any | undefined;
 }
 
-// Prevent multiple instances of Prisma Client in development
-const isTestEnv = process.env.NODE_ENV === "test";
-
 const canConstructPrismaClient = (() => {
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -36,12 +33,12 @@ class PrismaClientSingleton {
 
 const prisma =
   global.prisma ||
-  (!isTestEnv && canConstructPrismaClient
+  (canConstructPrismaClient
     ? PrismaClientSingleton.getInstance()
     : ({} as unknown as PrismaClient));
 
 // CRITICAL: Apply tenant isolation middleware for multi-tenant security
-if (!isTestEnv && canConstructPrismaClient && prisma) {
+if (canConstructPrismaClient && prisma) {
   applyTenantIsolationMiddleware(prisma);
 }
 
