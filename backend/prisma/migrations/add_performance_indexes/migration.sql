@@ -31,7 +31,7 @@ CREATE INDEX IF NOT EXISTS idx_company_members_user ON company_members("userId")
 CREATE INDEX IF NOT EXISTS idx_company_members_company_user ON company_members("companyId", "userId");
 
 -- Audit log queries
-CREATE INDEX IF NOT EXISTS idx_audit_logs_company_timestamp ON audit_logs("companyId", timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_org_timestamp ON audit_logs("organizationId", timestamp DESC);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_user_timestamp ON audit_logs("userId", timestamp DESC);
 
 -- Subscription billing queries
