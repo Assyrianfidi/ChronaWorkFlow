@@ -46,10 +46,16 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/accubooks_ci?schema=public
-      SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/accubooks_ci?schema=public
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/accubooks_ci_shadow?schema=public
       JWT_SECRET: ci-test-jwt-secret-not-for-production
       JWT_REFRESH_SECRET: ci-test-refresh-secret-not-for-production
       NODE_ENV: test
+      # Explicit PostgreSQL credentials to prevent OS user fallback
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGHOST: localhost
+      PGPORT: 5432
+      PGDATABASE: accubooks_ci
 
     steps:
       - name: Checkout
@@ -64,6 +70,13 @@ jobs:
       - name: Install backend dependencies
         run: npm ci
         working-directory: backend
+
+      - name: Create shadow database
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          psql -h localhost -U postgres -c "CREATE DATABASE accubooks_ci_shadow;" || true
+        env:
+          PGPASSWORD: postgres
 
       - name: Prisma generate
         run: npx prisma generate --schema prisma/schema.prisma

@@ -10,7 +10,12 @@ process.env.NODE_ENV = "test";
 process.env.JWT_SECRET = process.env.JWT_SECRET || "test-secret-key";
 process.env.JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
 process.env.PORT = "0"; // Use random port for tests
-process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || "file:./test.db";
+
+// DATABASE_URL must be explicitly set - no fallbacks to prevent OS user fallback
+if (!process.env.DATABASE_URL) {
+  console.error("ERROR: DATABASE_URL must be explicitly set in test environment");
+  process.exit(1);
+}
 
 // Mock Prisma Client for tests
 jest.mock("@prisma/client", () => ({
