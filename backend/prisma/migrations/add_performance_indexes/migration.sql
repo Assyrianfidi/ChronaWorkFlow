@@ -5,7 +5,7 @@
 -- Improves "WHERE status = 'PAID'" queries by 95%+
 CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices(status);
 CREATE INDEX IF NOT EXISTS idx_invoices_company_status ON invoices("companyId", status);
-CREATE INDEX IF NOT EXISTS idx_invoices_due_date ON invoices("dueDate") WHERE status IN ('SENT', 'PENDING');
+CREATE INDEX IF NOT EXISTS idx_invoices_due_date ON invoices("dueDate");
 
 -- Payment status queries (reconciliation, reports)
 -- Improves payment lookups by invoice and status
