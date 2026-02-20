@@ -211,8 +211,8 @@ BEGIN
   FOREACH tbl IN ARRAY company_tables LOOP
     constraint_name := 'uq_' || tbl || '_id_companyId';
     IF NOT EXISTS (
-      SELECT 1 FROM information_schema.table_constraints
-      WHERE constraint_name = constraint_name AND table_name = tbl
+      SELECT 1 FROM information_schema.table_constraints tc
+      WHERE tc.constraint_name = constraint_name AND tc.table_name = tbl
     ) THEN
       EXECUTE format(
         'ALTER TABLE %I ADD CONSTRAINT %I UNIQUE (id, "companyId")',
