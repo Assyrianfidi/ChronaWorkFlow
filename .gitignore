@@ -124,6 +124,9 @@ scripts/*
 !scripts/phase1-smoke.mjs
 !scripts/verify-e2e.mjs
 
+# Backend CI governance scripts (must be committed)
+!backend/scripts/*.sh
+
 # Test files
 tests/
 test-results/
