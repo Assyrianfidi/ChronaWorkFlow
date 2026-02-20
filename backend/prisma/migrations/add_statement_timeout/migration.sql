@@ -2,8 +2,10 @@
 -- Prevents long-running queries from exhausting connection pool
 -- Sets 30 second timeout for all statements
 
--- Set default statement timeout for the database
-ALTER DATABASE current_database() SET statement_timeout = '30s';
+-- Note: Statement timeout should be set at application level or session level
+-- ALTER DATABASE requires literal database name, not function call
+-- This is handled by application connection pool settings instead
+-- Migration intentionally left as no-op to maintain migration sequence
 
 -- Also set for current session (for immediate effect)
 SET statement_timeout = '30s';
