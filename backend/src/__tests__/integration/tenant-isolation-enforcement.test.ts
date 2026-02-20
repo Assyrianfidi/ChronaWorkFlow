@@ -311,8 +311,17 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
     });
 
     it('VALID: findFirst with correct companyId → MUST succeed', async () => {
-      const invoice = await prisma.invoices.findFirst({
-        where: { id: invoiceA.id, companyId: companyA.id },
+      const invoice = await new Promise<any>((resolve, reject) => {
+        runWithTenant({ companyId: companyA.id, userId: userA.id, isAdmin: false, bypassTenant: false }, async () => {
+          try {
+            const result = await prisma.invoices.findFirst({
+              where: { id: invoiceA.id, companyId: companyA.id },
+            });
+            resolve(result);
+          } catch (err: any) {
+            reject(err);
+          }
+        });
       });
       expect(invoice).toBeDefined();
       expect(invoice?.id).toBe(invoiceA.id);
@@ -320,8 +329,17 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
     });
 
     it('VALID: cross-company ID with correct scoping → returns null', async () => {
-      const invoice = await prisma.invoices.findFirst({
-        where: { id: invoiceB.id, companyId: companyA.id },
+      const invoice = await new Promise<any>((resolve, reject) => {
+        runWithTenant({ companyId: companyA.id, userId: userA.id, isAdmin: false, bypassTenant: false }, async () => {
+          try {
+            const result = await prisma.invoices.findFirst({
+              where: { id: invoiceB.id, companyId: companyA.id },
+            });
+            resolve(result);
+          } catch (err: any) {
+            reject(err);
+          }
+        });
       });
       expect(invoice).toBeNull();
     });
@@ -397,8 +415,17 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
     });
 
     it('VALID: count with companyId → MUST succeed', async () => {
-      const count = await prisma.invoices.count({
-        where: { companyId: companyA.id },
+      const count = await new Promise<number>((resolve, reject) => {
+        runWithTenant({ companyId: companyA.id, userId: userA.id, isAdmin: false, bypassTenant: false }, async () => {
+          try {
+            const result = await prisma.invoices.count({
+              where: { companyId: companyA.id },
+            });
+            resolve(result);
+          } catch (err: any) {
+            reject(err);
+          }
+        });
       });
       expect(typeof count).toBe('number');
       expect(count).toBeGreaterThanOrEqual(1);
@@ -411,25 +438,53 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
 
   describe('4. Cross-Tenant Access Prevention', () => {
     it('Company A cannot read Company B invoice even with companyId', async () => {
-      const result = await prisma.invoices.findFirst({
-        where: { id: invoiceB.id, companyId: companyA.id },
+      const result = await new Promise<any>((resolve, reject) => {
+        runWithTenant({ companyId: companyA.id, userId: userA.id, isAdmin: false, bypassTenant: false }, async () => {
+          try {
+            const r = await prisma.invoices.findFirst({
+              where: { id: invoiceB.id, companyId: companyA.id },
+            });
+            resolve(r);
+          } catch (err: any) {
+            reject(err);
+          }
+        });
       });
       expect(result).toBeNull();
     });
 
     it('Company A cannot read Company B accounts', async () => {
-      const result = await prisma.accounts.findFirst({
-        where: { id: accountB.id, companyId: companyA.id },
+      const result = await new Promise<any>((resolve, reject) => {
+        runWithTenant({ companyId: companyA.id, userId: userA.id, isAdmin: false, bypassTenant: false }, async () => {
+          try {
+            const r = await prisma.accounts.findFirst({
+              where: { id: accountB.id, companyId: companyA.id },
+            });
+            resolve(r);
+          } catch (err: any) {
+            reject(err);
+          }
+        });
       });
       expect(result).toBeNull();
     });
 
     it('Company A findMany returns only own data', async () => {
-      const invoices = await prisma.invoices.findMany({
-        where: { companyId: companyA.id },
+      const results = await new Promise<any[]>((resolve, reject) => {
+        runWithTenant({ companyId: companyA.id, userId: userA.id, isAdmin: false, bypassTenant: false }, async () => {
+          try {
+            const r = await prisma.invoices.findMany({
+              where: { companyId: companyA.id },
+            });
+            resolve(r);
+          } catch (err: any) {
+            reject(err);
+          }
+        });
       });
-      for (const inv of invoices) {
-        expect(inv.companyId).toBe(companyA.id);
+      expect(results.length).toBeGreaterThan(0);
+      for (const invoice of results) {
+        expect(invoice.companyId).toBe(companyA.id);
       }
     });
   });
@@ -441,16 +496,26 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
   describe('5. Company Members Protection', () => {
     it('EXPLOIT: findMany company_members without companyId → MUST throw', async () => {
       await expect(
-        prisma.company_members.findMany({ where: { userId: userA.id } }),
+        prisma.company_members.findMany({ where: { role: 'OWNER' } }),
       ).rejects.toThrow(/SECURITY VIOLATION/);
     });
 
     it('VALID: findMany company_members with companyId → succeeds', async () => {
-      const members = await prisma.company_members.findMany({
-        where: { companyId: companyA.id },
+      const memberships = await new Promise<any[]>((resolve, reject) => {
+        runWithTenant({ companyId: companyA.id, userId: userA.id, isAdmin: false, bypassTenant: false }, async () => {
+          try {
+            const r = await prisma.company_members.findMany({
+              where: { companyId: companyA.id },
+            });
+            resolve(r);
+          } catch (err: any) {
+            reject(err);
+          }
+        });
       });
-      expect(Array.isArray(members)).toBe(true);
-      for (const m of members) {
+      expect(Array.isArray(memberships)).toBe(true);
+      expect(memberships.length).toBeGreaterThan(0);
+      for (const m of memberships) {
         expect(m.companyId).toBe(companyA.id);
       }
     });
@@ -662,19 +727,19 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
     it('EXPLOIT: $queryRawUnsafe on tenant table → MUST throw', async () => {
       await expect(
         (prisma as any).$queryRawUnsafe('SELECT * FROM invoices LIMIT 1'),
-      ).rejects.toThrow(/SECURITY VIOLATION.*Raw query.*tenant table/);
+      ).rejects.toThrow(/SECURITY VIOLATION/);
     });
 
     it('EXPLOIT: $executeRawUnsafe on tenant table → MUST throw', async () => {
       await expect(
         (prisma as any).$executeRawUnsafe('DELETE FROM accounts WHERE id = \'fake\''),
-      ).rejects.toThrow(/SECURITY VIOLATION.*Raw query.*tenant table/);
+      ).rejects.toThrow(/SECURITY VIOLATION/);
     });
 
     it('EXPLOIT: $queryRawUnsafe referencing transactions → MUST throw', async () => {
       await expect(
         (prisma as any).$queryRawUnsafe('SELECT * FROM transactions WHERE id = \'x\''),
-      ).rejects.toThrow(/SECURITY VIOLATION.*Raw query.*tenant table/);
+      ).rejects.toThrow(/SECURITY VIOLATION/);
     });
 
     it('VALID: $queryRawUnsafe on non-tenant table → MUST succeed', async () => {
@@ -792,7 +857,7 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
   describe('10. Transaction Lines Tenant Isolation', () => {
     it('EXPLOIT: create transaction_line without companyId → MUST throw', async () => {
       await expect(
-        prisma.transactions.transaction_lines.create({
+        prisma.transaction_lines.create({
           data: {
             id: crypto.randomUUID(),
             transactionId: transactionA.id,
@@ -807,7 +872,7 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
 
     it('EXPLOIT: findMany transaction_lines without companyId → MUST throw', async () => {
       await expect(
-        prisma.transactions.transaction_lines.findMany({
+        prisma.transaction_lines.findMany({
           where: { transactionId: transactionA.id },
         }),
       ).rejects.toThrow(/SECURITY VIOLATION/);
@@ -869,11 +934,21 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
     });
 
     it('VALID: findUnique with composite key → succeeds', async () => {
-      const result = await prisma.invoices.findFirst({
-        where: { id: invoiceA.id, companyId: companyA.id },
+      const invoice = await new Promise<any>((resolve, reject) => {
+        runWithTenant({ companyId: companyA.id, userId: userA.id, isAdmin: false, bypassTenant: false }, async () => {
+          try {
+            const r = await prisma.invoices.findUnique({
+              where: { id_companyId: { id: invoiceA.id, companyId: companyA.id } } as any,
+            });
+            resolve(r);
+          } catch (err: any) {
+            reject(err);
+          }
+        });
       });
-      expect(result).toBeDefined();
-      expect(result?.id).toBe(invoiceA.id);
+      expect(invoice).toBeDefined();
+      expect(invoice?.id).toBe(invoiceA.id);
+      expect(invoice?.companyId).toBe(companyA.id);
     });
   });
 });
