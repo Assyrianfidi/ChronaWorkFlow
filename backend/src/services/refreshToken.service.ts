@@ -1,9 +1,9 @@
-import { PrismaClientSingleton } from '../utils/prisma.js';
-const prisma = PrismaClientSingleton.getInstance();
 import crypto from "crypto";
 import { logger } from "../utils/logger.js";
 
-// Fixed self-reference
+// In-memory implementation - refresh_tokens table not in Prisma schema
+// TODO: Add refresh_tokens model to schema.prisma for production persistence
+const tokenStore = new Map<string, { userId: string; expiresAt: Date; isValid: boolean }>();
 
 export class RefreshTokenService {
   private static readonly REFRESH_TOKEN_EXPIRY_DAYS = 30;
@@ -24,10 +24,9 @@ export class RefreshTokenService {
   }
 
   /**
-   * Create and store a new refresh token for a user
+   * Create a new refresh token for a user
    */
   static async createRefreshToken(userId: number): Promise<string> {
-    // Invalidate all existing refresh tokens for this user
     await this.invalidateUserRefreshTokens(userId);
 
     const token = this.generateRefreshToken();
@@ -35,21 +34,9 @@ export class RefreshTokenService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + this.REFRESH_TOKEN_EXPIRY_DAYS);
 
-    try {
-      await prisma.refresh_tokens.create({
-        data: {
-          tokenHash,
-          userId,
-          expiresAt,
-        },
-      });
-
-      logger.info(`Refresh token created for user ${userId}`);
-      return token;
-    } catch (error: any) {
-      logger.error(`Failed to create refresh token for user ${userId}:`, error);
-      throw new Error("Failed to create refresh token");
-    }
+    tokenStore.set(tokenHash, { userId: String(userId), expiresAt, isValid: true });
+    logger.info(`Refresh token created for user ${userId}`);
+    return token;
   }
 
   /**
@@ -59,28 +46,18 @@ export class RefreshTokenService {
     token: string,
   ): Promise<{ userId: number; user: any }> {
     const tokenHash = this.hashToken(token);
+    const stored = tokenStore.get(tokenHash);
 
-    try {
-      const refreshToken = await prisma.refresh_tokens.findUnique({
-        where: { tokenHash },
-        include: { user: true },
-      });
-
-      if (!refreshToken) {
-        throw new Error("Invalid refresh token");
-      }
-
-      if (refreshToken.expiresAt < new Date()) {
-        // Clean up expired token
-        await prisma.refresh_tokens.delete({ where: { id: refreshToken.id } });
-        throw new Error("Refresh token expired");
-      }
-
-      return { userId: refreshToken.userId, user: refreshToken.user };
-    } catch (error: any) {
-      logger.error("Refresh token verification failed:", error);
-      throw error;
+    if (!stored || !stored.isValid) {
+      throw new Error("Invalid refresh token");
     }
+
+    if (stored.expiresAt < new Date()) {
+      tokenStore.delete(tokenHash);
+      throw new Error("Refresh token expired");
+    }
+
+    return { userId: parseInt(stored.userId), user: { id: parseInt(stored.userId) } };
   }
 
   /**
@@ -88,12 +65,8 @@ export class RefreshTokenService {
    */
   static async rotateRefreshToken(oldToken: string): Promise<string> {
     const { userId } = await this.verifyRefreshToken(oldToken);
-
-    // Delete the old token
     const tokenHash = this.hashToken(oldToken);
-    await prisma.refresh_tokens.deleteMany({ where: { tokenHash } });
-
-    // Create new token
+    tokenStore.delete(tokenHash);
     return this.createRefreshToken(userId);
   }
 
@@ -101,16 +74,12 @@ export class RefreshTokenService {
    * Invalidate all refresh tokens for a user
    */
   static async invalidateUserRefreshTokens(userId: number): Promise<void> {
-    try {
-      await prisma.refresh_tokens.deleteMany({ where: { userId } });
-      logger.info(`All refresh tokens invalidated for user ${userId}`);
-    } catch (error: any) {
-      logger.error(
-        `Failed to invalidate refresh tokens for user ${userId}:`,
-        error,
-      );
-      throw new Error("Failed to invalidate refresh tokens");
+    for (const [hash, data] of tokenStore.entries()) {
+      if (data.userId === String(userId)) {
+        tokenStore.delete(hash);
+      }
     }
+    logger.info(`All refresh tokens invalidated for user ${userId}`);
   }
 
   /**
@@ -118,43 +87,28 @@ export class RefreshTokenService {
    */
   static async invalidateRefreshToken(token: string): Promise<void> {
     const tokenHash = this.hashToken(token);
-
-    try {
-      const deleted = await prisma.refresh_tokens.deleteMany({
-        where: { tokenHash },
-      });
-      if (deleted.count === 0) {
-        throw new Error("Refresh token not found");
-      }
-      logger.info("Refresh token invalidated");
-    } catch (error: any) {
-      logger.error("Failed to invalidate refresh token:", error);
-      throw error;
+    if (!tokenStore.delete(tokenHash)) {
+      throw new Error("Refresh token not found");
     }
+    logger.info("Refresh token invalidated");
   }
 
   /**
    * Clean up expired refresh tokens (maintenance task)
    */
   static async cleanupExpiredTokens(): Promise<number> {
-    try {
-      const deleted = await prisma.refresh_tokens.deleteMany({
-        where: {
-          expiresAt: {
-            lt: new Date(),
-          },
-        },
-      });
-
-      if (deleted.count > 0) {
-        logger.info(`Cleaned up ${deleted.count} expired refresh tokens`);
+    let count = 0;
+    const now = new Date();
+    for (const [hash, data] of tokenStore.entries()) {
+      if (data.expiresAt < now) {
+        tokenStore.delete(hash);
+        count++;
       }
-
-      return deleted.count;
-    } catch (error: any) {
-      logger.error("Failed to cleanup expired refresh tokens:", error);
-      throw new Error("Failed to cleanup expired tokens");
     }
+    if (count > 0) {
+      logger.info(`Cleaned up ${count} expired refresh tokens`);
+    }
+    return count;
   }
 
   /**
