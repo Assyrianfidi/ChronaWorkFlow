@@ -57,8 +57,8 @@ END $$;
 
 DO $$
 DECLARE
-  tbl TEXT;
-  company_tables TEXT[] := ARRAY[
+  v_tbl TEXT;
+  v_company_tables TEXT[] := ARRAY[
     'accounts', 'billing_status', 'churn_retention_analytics',
     'company_members', 'customer_health_scores', 'dashboard_metrics_cache',
     'executive_alerts', 'executive_analytics_snapshots',
@@ -70,41 +70,41 @@ DECLARE
     'user_activity_logs'
   ];
 BEGIN
-  FOREACH tbl IN ARRAY company_tables LOOP
-    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', tbl);
-    EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', tbl);
+  FOREACH v_tbl IN ARRAY v_company_tables LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', v_tbl);
+    EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', v_tbl);
 
     -- Drop existing policies if any (idempotent)
-    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_select ON %I', tbl);
-    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_insert ON %I', tbl);
-    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_update ON %I', tbl);
-    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_delete ON %I', tbl);
+    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_select ON %I', v_tbl);
+    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_insert ON %I', v_tbl);
+    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_update ON %I', v_tbl);
+    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_delete ON %I', v_tbl);
 
     -- SELECT: only rows matching current tenant
     EXECUTE format(
       'CREATE POLICY tenant_isolation_select ON %I FOR SELECT USING ("companyId" = current_setting(''app.current_company_id'', true))',
-      tbl
+      v_tbl
     );
 
     -- INSERT: enforce correct tenant on new rows
     EXECUTE format(
       'CREATE POLICY tenant_isolation_insert ON %I FOR INSERT WITH CHECK ("companyId" = current_setting(''app.current_company_id'', true))',
-      tbl
+      v_tbl
     );
 
     -- UPDATE: only own tenant rows, cannot change companyId
     EXECUTE format(
       'CREATE POLICY tenant_isolation_update ON %I FOR UPDATE USING ("companyId" = current_setting(''app.current_company_id'', true)) WITH CHECK ("companyId" = current_setting(''app.current_company_id'', true))',
-      tbl
+      v_tbl
     );
 
     -- DELETE: only own tenant rows
     EXECUTE format(
       'CREATE POLICY tenant_isolation_delete ON %I FOR DELETE USING ("companyId" = current_setting(''app.current_company_id'', true))',
-      tbl
+      v_tbl
     );
 
-    RAISE NOTICE 'RLS enabled on table: %', tbl;
+    RAISE NOTICE 'RLS enabled on table: %', v_tbl;
   END LOOP;
 END $$;
 
@@ -114,39 +114,39 @@ END $$;
 
 DO $$
 DECLARE
-  tbl TEXT;
-  org_tables TEXT[] := ARRAY[
+  v_tbl TEXT;
+  v_org_tables TEXT[] := ARRAY[
     'api_usage_records', 'audit_logs', 'automation_rules',
     'custom_reports', 'departments', 'documents', 'organization_users'
   ];
 BEGIN
-  FOREACH tbl IN ARRAY org_tables LOOP
-    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', tbl);
-    EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', tbl);
+  FOREACH v_tbl IN ARRAY v_org_tables LOOP
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', v_tbl);
+    EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', v_tbl);
 
-    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_select ON %I', tbl);
-    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_insert ON %I', tbl);
-    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_update ON %I', tbl);
-    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_delete ON %I', tbl);
+    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_select ON %I', v_tbl);
+    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_insert ON %I', v_tbl);
+    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_update ON %I', v_tbl);
+    EXECUTE format('DROP POLICY IF EXISTS tenant_isolation_delete ON %I', v_tbl);
 
     EXECUTE format(
       'CREATE POLICY tenant_isolation_select ON %I FOR SELECT USING ("organizationId" = current_setting(''app.current_organization_id'', true)::int)',
-      tbl
+      v_tbl
     );
     EXECUTE format(
       'CREATE POLICY tenant_isolation_insert ON %I FOR INSERT WITH CHECK ("organizationId" = current_setting(''app.current_organization_id'', true)::int)',
-      tbl
+      v_tbl
     );
     EXECUTE format(
       'CREATE POLICY tenant_isolation_update ON %I FOR UPDATE USING ("organizationId" = current_setting(''app.current_organization_id'', true)::int) WITH CHECK ("organizationId" = current_setting(''app.current_organization_id'', true)::int)',
-      tbl
+      v_tbl
     );
     EXECUTE format(
       'CREATE POLICY tenant_isolation_delete ON %I FOR DELETE USING ("organizationId" = current_setting(''app.current_organization_id'', true)::int)',
-      tbl
+      v_tbl
     );
 
-    RAISE NOTICE 'RLS enabled on table: %', tbl;
+    RAISE NOTICE 'RLS enabled on table: %', v_tbl;
   END LOOP;
 END $$;
 
@@ -196,9 +196,9 @@ END $$;
 
 DO $$
 DECLARE
-  tbl TEXT;
-  constraint_name TEXT;
-  company_tables TEXT[] := ARRAY[
+  v_tbl TEXT;
+  v_constraint_name TEXT;
+  v_company_tables TEXT[] := ARRAY[
     'accounts', 'churn_retention_analytics', 'company_members',
     'customer_health_scores', 'dashboard_metrics_cache', 'executive_alerts',
     'executive_analytics_snapshots', 'executive_kpi_snapshots',
@@ -208,17 +208,17 @@ DECLARE
     'user_activity_logs', 'transactions', 'transaction_lines'
   ];
 BEGIN
-  FOREACH tbl IN ARRAY company_tables LOOP
-    constraint_name := 'uq_' || tbl || '_id_companyId';
+  FOREACH v_tbl IN ARRAY v_company_tables LOOP
+    v_constraint_name := 'uq_' || v_tbl || '_id_companyId';
     IF NOT EXISTS (
       SELECT 1 FROM information_schema.table_constraints tc
-      WHERE tc.constraint_name = constraint_name AND tc.table_name = tbl
+      WHERE tc.constraint_name = v_constraint_name AND tc.table_name = v_tbl
     ) THEN
       EXECUTE format(
         'ALTER TABLE %I ADD CONSTRAINT %I UNIQUE (id, "companyId")',
-        tbl, constraint_name
+        v_tbl, v_constraint_name
       );
-      RAISE NOTICE 'Added composite unique (id, companyId) to %', tbl;
+      RAISE NOTICE 'Added composite unique (id, companyId) to %', v_tbl;
     END IF;
   END LOOP;
 END $$;
