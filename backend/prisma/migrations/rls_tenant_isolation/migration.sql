@@ -11,9 +11,49 @@
 -- at the start of every connection/transaction.
 -- ============================================================================
 
--- ---------------------------------------------------------------------------
--- 1. Enable RLS on all companyId-scoped tables
--- ---------------------------------------------------------------------------
+-- ============================================================================
+-- SECTION 1: Add companyId column to transaction_lines FIRST (required by RLS)
+-- ============================================================================
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'transaction_lines' AND column_name = 'companyId'
+  ) THEN
+    -- Add column
+    ALTER TABLE transaction_lines ADD COLUMN "companyId" TEXT;
+
+    -- Backfill from parent transactions
+    UPDATE transaction_lines tl
+    SET "companyId" = t."companyId"
+    FROM transactions t
+    WHERE tl."transactionId" = t.id;
+
+    -- Make NOT NULL after backfill
+    ALTER TABLE transaction_lines ALTER COLUMN "companyId" SET NOT NULL;
+
+    -- Add FK to companies
+    ALTER TABLE transaction_lines
+      ADD CONSTRAINT fk_transaction_lines_company
+      FOREIGN KEY ("companyId") REFERENCES companies(id) ON DELETE CASCADE;
+
+    -- Add composite unique
+    ALTER TABLE transaction_lines
+      ADD CONSTRAINT uq_transaction_lines_id_companyId
+      UNIQUE (id, "companyId");
+
+    -- Add index
+    CREATE INDEX IF NOT EXISTS idx_transaction_lines_companyId
+      ON transaction_lines ("companyId");
+
+    RAISE NOTICE 'Added companyId to transaction_lines with backfill';
+  END IF;
+END $$;
+
+-- ============================================================================
+-- SECTION 2: Enable RLS on all companyId-scoped tables
+-- ============================================================================
 
 DO $$
 DECLARE
@@ -68,9 +108,9 @@ BEGIN
   END LOOP;
 END $$;
 
--- ---------------------------------------------------------------------------
--- 2. Enable RLS on organizationId-scoped tables
--- ---------------------------------------------------------------------------
+-- ============================================================================
+-- SECTION 3: Enable RLS on organizationId-scoped tables
+-- ============================================================================
 
 DO $$
 DECLARE
@@ -110,9 +150,9 @@ BEGIN
   END LOOP;
 END $$;
 
--- ---------------------------------------------------------------------------
--- 3. Special tables with non-standard tenant fields
--- ---------------------------------------------------------------------------
+-- ============================================================================
+-- SECTION 4: Special tables with non-standard tenant fields
+-- ============================================================================
 
 -- automation_proposals uses tenantId
 ALTER TABLE automation_proposals ENABLE ROW LEVEL SECURITY;
@@ -138,11 +178,10 @@ CREATE POLICY tenant_isolation_insert ON founder_audit_logs FOR INSERT WITH CHEC
 CREATE POLICY tenant_isolation_update ON founder_audit_logs FOR UPDATE USING ("resourceId" = current_setting('app.current_company_id', true)) WITH CHECK ("resourceId" = current_setting('app.current_company_id', true));
 CREATE POLICY tenant_isolation_delete ON founder_audit_logs FOR DELETE USING ("resourceId" = current_setting('app.current_company_id', true));
 
--- ---------------------------------------------------------------------------
--- 4. Superuser bypass role (for migrations and admin operations)
--- ---------------------------------------------------------------------------
+-- ============================================================================
+-- SECTION 5: Superuser bypass role (for migrations and admin operations)
+-- ============================================================================
 
--- Create an admin role that bypasses RLS (for migrations, seeding, etc.)
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'accubooks_admin') THEN
@@ -151,51 +190,9 @@ BEGIN
   END IF;
 END $$;
 
--- ---------------------------------------------------------------------------
--- 5. Add companyId column to transaction_lines (schema change)
--- ---------------------------------------------------------------------------
-
--- Add companyId to transaction_lines if not exists
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_name = 'transaction_lines' AND column_name = 'companyId'
-  ) THEN
-    -- Add column
-    ALTER TABLE transaction_lines ADD COLUMN "companyId" TEXT;
-
-    -- Backfill from parent transactions
-    UPDATE transaction_lines tl
-    SET "companyId" = t."companyId"
-    FROM transactions t
-    WHERE tl."transactionId" = t.id;
-
-    -- Make NOT NULL after backfill
-    ALTER TABLE transaction_lines ALTER COLUMN "companyId" SET NOT NULL;
-
-    -- Add FK to companies
-    ALTER TABLE transaction_lines
-      ADD CONSTRAINT fk_transaction_lines_company
-      FOREIGN KEY ("companyId") REFERENCES companies(id) ON DELETE CASCADE;
-
-    -- Add composite unique
-    ALTER TABLE transaction_lines
-      ADD CONSTRAINT uq_transaction_lines_id_companyId
-      UNIQUE (id, "companyId");
-
-    -- Add index
-    CREATE INDEX IF NOT EXISTS idx_transaction_lines_companyId
-      ON transaction_lines ("companyId");
-
-    RAISE NOTICE 'Added companyId to transaction_lines with backfill';
-  END IF;
-END $$;
-
--- ---------------------------------------------------------------------------
--- 6. Add composite unique constraints (@@unique([id, companyId])) to all
---    tenant tables that don't already have them
--- ---------------------------------------------------------------------------
+-- ============================================================================
+-- SECTION 6: Add composite unique constraints (@@unique([id, companyId]))
+-- ============================================================================
 
 DO $$
 DECLARE
@@ -226,6 +223,6 @@ BEGIN
   END LOOP;
 END $$;
 
--- ---------------------------------------------------------------------------
+-- ============================================================================
 -- DONE
--- ---------------------------------------------------------------------------
+-- ============================================================================
