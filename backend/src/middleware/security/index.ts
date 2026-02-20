@@ -125,7 +125,7 @@ export default function applySecurityMiddlewares(app: express.Application) {
 
   app.use(
     cors({
-      origin: (_origin, callback) => callback(null, false),
+      origin: (_origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => callback(null, false),
       credentials: true,
     }),
   );
