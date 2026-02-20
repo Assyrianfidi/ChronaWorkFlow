@@ -642,6 +642,20 @@ function autoInjectTenantFilter(params: any, tenantField: string, action: string
 
     if (action === 'findUnique') {
       params.action = 'findFirst';
+
+      // Prisma findUnique(where: UniqueInput) supports compound unique selectors
+      // like { id_companyId: { id, companyId } }, but findFirst(where: WhereInput)
+      // does NOT. Normalize compound unique selectors into a standard where.
+      const where = params.args.where;
+      if (where && typeof where === 'object') {
+        for (const [key, value] of Object.entries(where)) {
+          if (key.includes('_') && value && typeof value === 'object') {
+            // Example: id_companyId -> { id, companyId }
+            Object.assign(where, value);
+            delete (where as any)[key];
+          }
+        }
+      }
     }
   }
 

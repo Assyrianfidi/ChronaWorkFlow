@@ -725,21 +725,21 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
 
   describe('8. Raw Query Hard Block', () => {
     it('EXPLOIT: $queryRawUnsafe on tenant table → MUST throw', async () => {
-      await expect(
-        (prisma as any).$queryRawUnsafe('SELECT * FROM invoices LIMIT 1'),
-      ).rejects.toThrow(/SECURITY VIOLATION/);
+      expect(() => {
+        (prisma as any).$queryRawUnsafe('SELECT * FROM invoices LIMIT 1');
+      }).toThrow(/SECURITY VIOLATION/);
     });
 
     it('EXPLOIT: $executeRawUnsafe on tenant table → MUST throw', async () => {
-      await expect(
-        (prisma as any).$executeRawUnsafe('DELETE FROM accounts WHERE id = \'fake\''),
-      ).rejects.toThrow(/SECURITY VIOLATION/);
+      expect(() => {
+        (prisma as any).$executeRawUnsafe("DELETE FROM accounts WHERE id = 'fake'");
+      }).toThrow(/SECURITY VIOLATION/);
     });
 
     it('EXPLOIT: $queryRawUnsafe referencing transactions → MUST throw', async () => {
-      await expect(
-        (prisma as any).$queryRawUnsafe('SELECT * FROM transactions WHERE id = \'x\''),
-      ).rejects.toThrow(/SECURITY VIOLATION/);
+      expect(() => {
+        (prisma as any).$queryRawUnsafe("SELECT * FROM transactions WHERE id = 'x'");
+      }).toThrow(/SECURITY VIOLATION/);
     });
 
     it('VALID: $queryRawUnsafe on non-tenant table → MUST succeed', async () => {
