@@ -40,7 +40,7 @@ DECLARE
     'reconciliation_reports',
     'revenue_analytics',
     'suspicious_activities',
-    'transaction_lines',
+    -- 'transaction_lines', -- REMOVED: No companyId in baseline schema, inherits via transactions FK
     'transactions',
     'trend_patterns',
     'usage_frequency_metrics',
@@ -252,7 +252,7 @@ DECLARE
     'executive_kpi_snapshots', 'feature_adoption_metrics', 'feature_usage',
     'founder_control_states', 'invoice_risk_analytics', 'invoices',
     'payments', 'predictive_metrics', 'reconciliation_reports',
-    'revenue_analytics', 'suspicious_activities', 'transaction_lines',
+    'revenue_analytics', 'suspicious_activities',
     'transactions', 'trend_patterns', 'usage_frequency_metrics',
     'user_activity_logs', 'api_usage_records', 'audit_logs',
     'automation_rules', 'custom_reports', 'departments', 'documents',
