@@ -144,6 +144,7 @@ coverage/
 !client/src/config/*.config.ts
 tsconfig*.json
 !tsconfig.server.json
+!backend/tsconfig*.json
 jest.config.*
 !backend/jest.config.*
 .eslintrc.*
