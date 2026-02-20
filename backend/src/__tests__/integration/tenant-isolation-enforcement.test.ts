@@ -55,153 +55,155 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
   let transactionB: any;
 
   beforeAll(async () => {
-    // Create two separate companies
-    companyA = await prisma.companies.create({
-      data: {
-        id: crypto.randomUUID(),
-        name: 'SecurityTest Company A',
-        updatedAt: new Date(),
-      },
-    });
+    await runWithTenant({ isAdmin: true, bypassTenant: true }, async () => {
+      // Create two separate companies
+      companyA = await prisma.companies.create({
+        data: {
+          id: crypto.randomUUID(),
+          name: 'SecurityTest Company A',
+          updatedAt: new Date(),
+        },
+      });
 
-    companyB = await prisma.companies.create({
-      data: {
-        id: crypto.randomUUID(),
-        name: 'SecurityTest Company B',
-        updatedAt: new Date(),
-      },
-    });
+      companyB = await prisma.companies.create({
+        data: {
+          id: crypto.randomUUID(),
+          name: 'SecurityTest Company B',
+          updatedAt: new Date(),
+        },
+      });
 
-    // Create users
-    userA = await prisma.users.create({
-      data: {
-        email: `sec-usera-${Date.now()}@test.com`,
-        name: 'Security User A',
-        password: 'hashedpassword',
-        currentCompanyId: companyA.id,
-        updatedAt: new Date(),
-      },
-    });
+      // Create users
+      userA = await prisma.users.create({
+        data: {
+          email: `sec-usera-${Date.now()}@test.com`,
+          name: 'Security User A',
+          password: 'hashedpassword',
+          currentCompanyId: companyA.id,
+          updatedAt: new Date(),
+        },
+      });
 
-    userB = await prisma.users.create({
-      data: {
-        email: `sec-userb-${Date.now()}@test.com`,
-        name: 'Security User B',
-        password: 'hashedpassword',
-        currentCompanyId: companyB.id,
-        updatedAt: new Date(),
-      },
-    });
+      userB = await prisma.users.create({
+        data: {
+          email: `sec-userb-${Date.now()}@test.com`,
+          name: 'Security User B',
+          password: 'hashedpassword',
+          currentCompanyId: companyB.id,
+          updatedAt: new Date(),
+        },
+      });
 
-    // Create company memberships
-    await prisma.company_members.create({
-      data: {
-        id: crypto.randomUUID(),
-        userId: userA.id,
-        companyId: companyA.id,
-        role: 'OWNER',
-      },
-    });
+      // Create company memberships
+      await prisma.company_members.create({
+        data: {
+          id: crypto.randomUUID(),
+          userId: userA.id,
+          companyId: companyA.id,
+          role: 'OWNER',
+        },
+      });
 
-    await prisma.company_members.create({
-      data: {
-        id: crypto.randomUUID(),
-        userId: userB.id,
-        companyId: companyB.id,
-        role: 'OWNER',
-      },
-    });
+      await prisma.company_members.create({
+        data: {
+          id: crypto.randomUUID(),
+          userId: userB.id,
+          companyId: companyB.id,
+          role: 'OWNER',
+        },
+      });
 
-    // Create billing status
-    billingStatusA = await prisma.billing_status.create({
-      data: {
-        id: crypto.randomUUID(),
-        companyId: companyA.id,
-        updatedAt: new Date(),
-      },
-    });
+      // Create billing status
+      billingStatusA = await prisma.billing_status.create({
+        data: {
+          id: crypto.randomUUID(),
+          companyId: companyA.id,
+          updatedAt: new Date(),
+        },
+      });
 
-    billingStatusB = await prisma.billing_status.create({
-      data: {
-        id: crypto.randomUUID(),
-        companyId: companyB.id,
-        updatedAt: new Date(),
-      },
-    });
+      billingStatusB = await prisma.billing_status.create({
+        data: {
+          id: crypto.randomUUID(),
+          companyId: companyB.id,
+          updatedAt: new Date(),
+        },
+      });
 
-    // Create invoices
-    invoiceA = await prisma.invoices.create({
-      data: {
-        id: crypto.randomUUID(),
-        companyId: companyA.id,
-        billingStatusId: billingStatusA.id,
-        invoiceNumber: `SEC-INV-A-${Date.now()}`,
-        amount: 1000,
-        status: 'DRAFT',
-        dueAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        updatedAt: new Date(),
-      },
-    });
+      // Create invoices
+      invoiceA = await prisma.invoices.create({
+        data: {
+          id: crypto.randomUUID(),
+          companyId: companyA.id,
+          billingStatusId: billingStatusA.id,
+          invoiceNumber: `SEC-INV-A-${Date.now()}`,
+          amount: 1000,
+          status: 'DRAFT',
+          dueAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          updatedAt: new Date(),
+        },
+      });
 
-    invoiceB = await prisma.invoices.create({
-      data: {
-        id: crypto.randomUUID(),
-        companyId: companyB.id,
-        billingStatusId: billingStatusB.id,
-        invoiceNumber: `SEC-INV-B-${Date.now()}`,
-        amount: 2000,
-        status: 'DRAFT',
-        dueAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        updatedAt: new Date(),
-      },
-    });
+      invoiceB = await prisma.invoices.create({
+        data: {
+          id: crypto.randomUUID(),
+          companyId: companyB.id,
+          billingStatusId: billingStatusB.id,
+          invoiceNumber: `SEC-INV-B-${Date.now()}`,
+          amount: 2000,
+          status: 'DRAFT',
+          dueAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          updatedAt: new Date(),
+        },
+      });
 
-    // Create accounts
-    accountA = await prisma.accounts.create({
-      data: {
-        id: crypto.randomUUID(),
-        companyId: companyA.id,
-        code: `SEC-${Date.now()}-A`,
-        name: 'Cash - Security Test A',
-        type: 'ASSET',
-        updatedAt: new Date(),
-      },
-    });
+      // Create accounts
+      accountA = await prisma.accounts.create({
+        data: {
+          id: crypto.randomUUID(),
+          companyId: companyA.id,
+          code: `SEC-${Date.now()}-A`,
+          name: 'Cash - Security Test A',
+          type: 'ASSET',
+          updatedAt: new Date(),
+        },
+      });
 
-    accountB = await prisma.accounts.create({
-      data: {
-        id: crypto.randomUUID(),
-        companyId: companyB.id,
-        code: `SEC-${Date.now()}-B`,
-        name: 'Cash - Security Test B',
-        type: 'ASSET',
-        updatedAt: new Date(),
-      },
-    });
+      accountB = await prisma.accounts.create({
+        data: {
+          id: crypto.randomUUID(),
+          companyId: companyB.id,
+          code: `SEC-${Date.now()}-B`,
+          name: 'Cash - Security Test B',
+          type: 'ASSET',
+          updatedAt: new Date(),
+        },
+      });
 
-    // Create transactions for transaction_lines tests
-    transactionA = await prisma.transactions.create({
-      data: {
-        id: crypto.randomUUID(),
-        companyId: companyA.id,
-        transactionNumber: `SEC-TXN-A-${Date.now()}`,
-        date: new Date(),
-        type: 'JOURNAL_ENTRY',
-        totalAmount: 1000,
-        updatedAt: new Date(),
-      },
-    });
+      // Create transactions for transaction_lines tests
+      transactionA = await prisma.transactions.create({
+        data: {
+          id: crypto.randomUUID(),
+          companyId: companyA.id,
+          transactionNumber: `SEC-TXN-A-${Date.now()}`,
+          date: new Date(),
+          type: 'JOURNAL_ENTRY',
+          totalAmount: 1000,
+          updatedAt: new Date(),
+        },
+      });
 
-    transactionB = await prisma.transactions.create({
-      data: {
-        id: crypto.randomUUID(),
-        companyId: companyB.id,
-        transactionNumber: `SEC-TXN-B-${Date.now()}`,
-        date: new Date(),
-        type: 'JOURNAL_ENTRY',
-        totalAmount: 2000,
-        updatedAt: new Date(),
-      },
+      transactionB = await prisma.transactions.create({
+        data: {
+          id: crypto.randomUUID(),
+          companyId: companyB.id,
+          transactionNumber: `SEC-TXN-B-${Date.now()}`,
+          date: new Date(),
+          type: 'JOURNAL_ENTRY',
+          totalAmount: 2000,
+          updatedAt: new Date(),
+        },
+      });
     });
   });
 
@@ -210,35 +212,39 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
     if (companyA?.id && companyB?.id) {
       const companyIds = [companyA.id, companyB.id];
 
-      await prisma.payments.deleteMany({
-        where: { companyId: { in: companyIds } },
-      });
-      await prisma.invoices.deleteMany({
-        where: { companyId: { in: companyIds } },
-      });
-      await prisma.transactions.transaction_lines.deleteMany({
-        where: { companyId: { in: companyIds } },
-      });
-      await prisma.transactions.deleteMany({
-        where: { companyId: { in: companyIds } },
-      });
-      await prisma.accounts.deleteMany({
-        where: { companyId: { in: companyIds } },
-      });
-      await prisma.billing_status.deleteMany({
-        where: { companyId: { in: companyIds } },
-      });
-      await prisma.company_members.deleteMany({
-        where: { companyId: { in: companyIds } },
-      });
-      await prisma.companies.deleteMany({
-        where: { id: { in: companyIds } },
+      await runWithTenant({ isAdmin: true, bypassTenant: true }, async () => {
+        await prisma.payments.deleteMany({
+          where: { companyId: { in: companyIds } },
+        });
+        await prisma.invoices.deleteMany({
+          where: { companyId: { in: companyIds } },
+        });
+        await prisma.transactions.transaction_lines.deleteMany({
+          where: { companyId: { in: companyIds } },
+        });
+        await prisma.transactions.deleteMany({
+          where: { companyId: { in: companyIds } },
+        });
+        await prisma.accounts.deleteMany({
+          where: { companyId: { in: companyIds } },
+        });
+        await prisma.billing_status.deleteMany({
+          where: { companyId: { in: companyIds } },
+        });
+        await prisma.company_members.deleteMany({
+          where: { companyId: { in: companyIds } },
+        });
+        await prisma.companies.deleteMany({
+          where: { id: { in: companyIds } },
+        });
       });
     }
 
     if (userA?.id && userB?.id) {
-      await prisma.users.deleteMany({
-        where: { id: { in: [userA.id, userB.id] } },
+      await runWithTenant({ isAdmin: true, bypassTenant: true }, async () => {
+        await prisma.users.deleteMany({
+          where: { id: { in: [userA.id, userB.id] } },
+        });
       });
     }
 
