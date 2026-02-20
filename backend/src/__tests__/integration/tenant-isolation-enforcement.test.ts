@@ -219,7 +219,7 @@ describe('Tenant Isolation Enforcement V3 — Enterprise Exploit Suite', () => {
         await prisma.invoices.deleteMany({
           where: { companyId: { in: companyIds } },
         });
-        await prisma.transactions.transaction_lines.deleteMany({
+        await prisma.transaction_lines.deleteMany({
           where: { companyId: { in: companyIds } },
         });
         await prisma.transactions.deleteMany({
