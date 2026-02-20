@@ -87,10 +87,12 @@ jobs:
         working-directory: backend
 
       - name: Structural Governance Validation
-        run: bash backend/scripts/validate-no-versioned-files.sh
+        run: bash scripts/validate-no-versioned-files.sh
+        working-directory: backend
 
       - name: Security Drift Detection
-        run: bash backend/scripts/security-drift-detector.sh
+        run: bash scripts/security-drift-detector.sh
+        working-directory: backend
 
       - name: Backend unit + integration tests
         run: echo "Tests require full PostgreSQL setup - covered by other checks"
