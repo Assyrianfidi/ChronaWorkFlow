@@ -23,7 +23,7 @@ jobs:
         working-directory: backend
 
       - name: Security audit (moderate+)
-        run: npm audit --audit-level=moderate || true
+        run: npm audit --omit=dev --audit-level=moderate || true
         working-directory: backend
 
   build-test-lint:

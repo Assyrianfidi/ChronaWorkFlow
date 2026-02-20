@@ -1,4 +1,3 @@
-// @ts-ignore
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
