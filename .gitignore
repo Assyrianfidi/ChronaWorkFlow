@@ -137,6 +137,14 @@ coverage/
 *.spec.ts
 *.spec.tsx
 
+# Backend tests must be committed for CI
+!backend/tests/
+!backend/tests/**
+!backend/src/__tests__/
+!backend/src/__tests__/**
+!backend/**/*.test.ts
+!backend/**/*.spec.ts
+
 # Config files not needed for deployment
 *.config.js
 *.config.ts
